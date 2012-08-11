@@ -138,8 +138,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     //csEventID contextSelect = nameRegistry->GetID("crystalspace.editor.context");
     RegisterQueue (editor->GetContext()->GetEventQueue(), activateObject);
     
-    // Prepare translations
-    translator = csQueryRegistry<iTranslator>(object_reg);
+	  cout << translator->GetMsg("Hello world!") << endl;
 
     // Prepare the property grid
     pgMan = new wxPropertyGridManager (window, pageId,

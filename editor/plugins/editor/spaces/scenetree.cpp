@@ -72,11 +72,11 @@ bool SceneTree::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   this->factory = factory;
   
   // Create this panel
-  Create (parent, -1, wxDefaultPosition, wxSize(300, 500));
+  Create (parent, -1, wxDefaultPosition, wxDefaultSize);
 
   // Create the tree control
   treectrl = new SceneTreeCtrl (object_reg, editor, this, SceneTree_Ctrl,
-				wxDefaultPosition, wxSize(300, 500));
+				wxDefaultPosition, wxDefaultSize);
   
   return true;
 }

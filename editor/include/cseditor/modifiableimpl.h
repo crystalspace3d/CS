@@ -3,8 +3,6 @@
 
 #include "iutil/modifiable.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(CSEditor) 
-
 /**
  * Implementation of some of the most common iModifiableParameter usage. 
  * Currently part of the particle editor space test code.
@@ -101,8 +99,5 @@ public:
 private:
   csArray<iModifiableParameter*> parameters;
 };
-
-}
-CS_PLUGIN_NAMESPACE_END(CSEditor)
 
 #endif

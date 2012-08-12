@@ -33,8 +33,7 @@
 
 // iModifiable
 #include "iutil/modifiable.h"
-// TODO: move this implementation to common folder
-#include "apps/varedittest/modifiableimpl.h"
+#include "include/cseditor/modifiableimpl.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {

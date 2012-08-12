@@ -77,6 +77,8 @@ bool SceneTree::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   // Create the tree control
   treectrl = new SceneTreeCtrl (object_reg, editor, this, SceneTree_Ctrl,
 				wxDefaultPosition, wxDefaultSize);
+
+  csPrintf("Treectrl size w: %d\n", treectrl->GetSize().GetWidth() );
   
   return true;
 }

@@ -110,7 +110,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
       csRef<iBase> result = loader->Parse(root, 0, 0, translator);
 
     } else {
-
       csReport(object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",
         csString().Format("Could not open file: %s", fullPath.data()));

@@ -264,15 +264,15 @@ void csWaterMeshObject::SetupObject ()
         csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
 		csDirtyAccessArray<csRGBpixel> colorarray;
 
-		for (int i = 0 ; i < 512 ; i++)
+		for (int i = 511 ; i > 0 ; i--)
 		{
 			for ( int j = 0 ; j < 512 ; j++)
 			{
-				float distanceFoam = csSquaredDist::PointPoint(csVector3(i,waterHeight,j), foampointsTemp.Get(0) ) ;
+				float distanceFoam = csSquaredDist::PointPoint(csVector3(j,waterHeight,i), foampointsTemp.Get(0) ) ;
 
 				for (int k = 1 ; k < foampointsTemp.GetSize() ; k++)
 				{
-					float distanceFoamT = csSquaredDist::PointPoint(csVector3(i,waterHeight,j), foampointsTemp.Get(k) ) ;
+					float distanceFoamT = csSquaredDist::PointPoint(csVector3(j,waterHeight,i), foampointsTemp.Get(k) ) ;
 					if(distanceFoamT < distanceFoam)
 					{
 						distanceFoam = distanceFoamT;

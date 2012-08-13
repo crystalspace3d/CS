@@ -3,23 +3,28 @@ SubDir TOP apps tools editor ;
 # TODO: remove the CS dependency on wx AUI
 if $(WX.AVAILABLE) = "yes"
 {
+  CSEDITOR.SOURCES = [ Wildcard *.cpp *.h ] ;
+
   Description : "Crystal Space Editor" ;
-  Application cseditor : [ Wildcard *.cpp *.h ] : console ;
+  Application cseditor : $(CSEDITOR.SOURCES) ;
   ExternalLibs cseditor : CRYSTAL WX ;
   CFlags cseditor : $(COMPILER.C++FLAGS.STRICTALIASING.DISABLE) ;
   LinkWith cseditor : crystalspace ;
   Win32Resource cseditor : [ ConcatDirs $(SUBDIR) cseditor.rc ] ;
   # To locate wx.rc
   Win32RcFlags cseditor : [ Match ^(-I.*) ^(-D.*) : [ SplitToList $(WX.CFLAGS) ] ] ;
+  FileListEntryApplications cseditor : app-tool ;
 
   SubVariant static ;
-  Description cseditor_static : "mesh viewing utility (static build)" ;
+  Description cseditor_static : "Crystal Space Editor (static build)" ;
   Application cseditor_static : $(CSEDITOR.SOURCES) : nohelp independent noinstall ;
-  CFlags cseditor_static : [ FDefines CS_STATIC_LINKED ] $(COMPILER.C++FLAGS.EXCEPTIONS.ENABLE) ;
-  MsvcCFlags cseditor_static : "/D CS_HAVE_CAL3D" ;
+  ExternalLibs cseditor_static : CRYSTAL WX ;
+  CFlags cseditor_static : $(COMPILER.C++FLAGS.STRICTALIASING.DISABLE) ;
   LinkWith cseditor_static : crystalspace ;
-  ExternalLibs cseditor_static : CEGUI ;
   FileListEntryApplications cseditor_static : app-tool-static ;
+  Win32Resource cseditor_static : [ ConcatDirs $(SUBDIR) cseditor.rc ] ;
+  # To locate wx.rc
+  Win32RcFlags cseditor_static : [ Match ^(-I.*) ^(-D.*) : [ SplitToList $(WX.CFLAGS) ] ] ;
 
   CSEDITOR.PLUGINLIST =
     animesh

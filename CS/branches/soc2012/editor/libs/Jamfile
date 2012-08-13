@@ -161,7 +161,7 @@ if $(WX.AVAILABLE) = "yes"
   SubDir TOP libs ;
 
   Description crystalspace_gui : "Crystal Space Graphical User Interface library" ;
-  Library crystalspace_gui : $(CSLIB.SOURCES) : shared notest ;
+  Library crystalspace_gui : $(CSLIB.SOURCES) : notest ;
   LibDepends crystalspace_gui : crystalspace ;
   ExternalLibs crystalspace_gui : WX ;
   CFlags crystalspace_gui :

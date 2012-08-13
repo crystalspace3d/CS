@@ -80,7 +80,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
   SCF_IMPLEMENT_FACTORY(CSPartEditSpace)
   
   CSPartEditSpace::CSPartEditSpace(iBase* parent) 
-  : scfImplementation1(this, parent), object_reg(0) 
+  : scfImplementationType(this, parent), object_reg(0) 
   {
     // Setup namespace-scoped pointer to editor, to be used by the static
     // event handler to reach the space

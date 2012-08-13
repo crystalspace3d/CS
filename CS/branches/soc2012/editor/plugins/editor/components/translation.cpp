@@ -27,9 +27,6 @@
 #include "iutil/document.h"
 #include "iutil/stringarray.h"
 
-#include <string>
-#include <iostream>
-
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
   SCF_IMPLEMENT_FACTORY (EditorTranslation)
@@ -75,29 +72,30 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
     csRef<iVFS> vfs = csQueryRegistry<iVFS>(object_reg);
 
-    string langPath ("/data/editor/lang/");
-    string langFile ("de_DE.xml");
+    csString langPath ("/data/editor/lang/");
+    csString langFile ("de_DE.xml");
 
-    csRef<iDataBuffer> path(vfs->GetRealPath(langPath.data()));
+    csRef<iDataBuffer> path(vfs->GetRealPath(langPath.GetData()));
     if (!path.IsValid())
     {
       csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",
-        csString().Format("Translation file path is not active: %s", langPath.data()));
+	"Translation file path %s is not active",
+	CS::Quote::Double(langPath.GetData()));
       return false;
     }
 
 #ifdef CS_DEBUG
-    csRef<iStringArray> ls(vfs->FindFiles(langPath.data()));
-    cout << "Available language files in /lang/:" << endl;
+    csRef<iStringArray> ls(vfs->FindFiles(langPath.GetData()));
+    printf ("Available language files in /lang/:\n");
     for(size_t i = 0; i < ls->GetSize(); i++)
-      cout << ls->Get(i) << endl;
+      printf ("%s\n", ls->Get(i));
 #endif
 
-    string fullPath(langPath);
+    csString fullPath(langPath);
     fullPath += langFile;
 
-    csRef<iFile> file(vfs->Open(fullPath.data() , VFS_FILE_READ));
+    csRef<iFile> file(vfs->Open(fullPath.GetData() , VFS_FILE_READ));
     if(file.IsValid())
     {
       csRef<iDataBuffer> data(file->GetAllData());
@@ -112,7 +110,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     } else {
       csReport(object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",
-        csString().Format("Could not open file: %s", fullPath.data()));
+	"Could not open file: %s",
+	CS::Quote::Double(fullPath.GetData()));
       return false;
     }
 

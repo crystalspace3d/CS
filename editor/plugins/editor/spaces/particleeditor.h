@@ -58,8 +58,7 @@
 
 #include "ivaria/translator.h"
 
-// TODO: maybe move this file
-#include "libs/cseditor/modifiableeditor.h"
+#include "cseditor/modifiableeditor.h"
 
 #include <stdarg.h>
 #include "csutil/array.h"

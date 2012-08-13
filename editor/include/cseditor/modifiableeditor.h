@@ -52,16 +52,17 @@
 namespace CS {
 namespace EditorApp {
 
-class CS_CRYSTALSPACE_EXPORT ModifiableEditor : public wxPanel 
+class /*CS_CRYSTALSPACE_EXPORT*/ ModifiableEditor : public wxPanel 
 {
 public:
-  ModifiableEditor  ( wxWindow*       parent,
-                      iEditor*        editor,
-                      wxWindowID      id,
-                      const wxPoint&  position,
-                      const wxSize&   size,
-                      long            style,
-                      const wxString& name 
+  ModifiableEditor  ( iObjectRegistry*  object_reg, 
+                      wxWindow*         parent,
+                      iEditor*          editor,
+                      wxWindowID        id,
+                      const wxPoint&    position,
+                      const wxSize&     size,
+                      long              style,
+                      const wxString&   name 
                     );
 
     /// Sets the current active modifiable entity in the grid
@@ -81,6 +82,7 @@ public:
 
     void OnGetNewValue            (wxPGProperty* property);
     void OnPropertyGridChanging   (wxPropertyGridEvent& event);
+    void OnPropertyGridChanged    (wxPropertyGridEvent& event);
 
     enum
     {

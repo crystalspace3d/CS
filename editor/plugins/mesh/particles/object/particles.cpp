@@ -82,13 +82,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     commonDirection (1.0f,0,0), individualSize (false), particleSize (1.0f)
   {
     // Setup the ids for various properties
-    // TODO: all of them
-    csRef<iStringSet> strings( csQueryRegistryTagInterface<iStringSet>(objectType->object_reg, "crystalspace.shared.stringset") );
-    id_particleOrientation = strings->Request("particleOrientation");
-    id_rotationMode = strings->Request("rotationMode");
-    id_individualSize = strings->Request("individualSize");
-    id_commonDirection = strings->Request("commonDirection");
-    id_particleSize = strings->Request("particleSize");
+    // TODO: rest of them
+    GENERATE_ID_START_REG(objectType->object_reg);
+    GENERATE_ID(particleOrientation);
+    GENERATE_ID(rotationMode);
+    GENERATE_ID(individualSize);
+    GENERATE_ID(commonDirection);
+    GENERATE_ID(particleSize);
+    GENERATE_ID(emitters);
+    GENERATE_ID(effectors);
   }
 
   ParticlesMeshFactory::~ParticlesMeshFactory()

@@ -147,7 +147,7 @@ public:
   /// Constructor initialized with a csArray
   csVariant (const csArray<csVariant>& a) { type = CSVAR_ARRAY; val.a = new csArray<csVariant>(a); }
   /// Constructor initialized with an iBase
-  // TODO
+  csVariant (iBase* ib) { type = CSVAR_IBASE; val.ib = ib; }
 
   /// Copy constructor.
   csVariant (const csVariant& var)
@@ -175,7 +175,7 @@ public:
 	&& (val.s != 0)) val.s->IncRef ();
 
     if ((type == CSVAR_IBASE)
-      && (val.ib != 0)) val.ib->IncRef();
+       && (val.ib != 0)) val.ib->IncRef();
 
     return var;
   }
@@ -272,7 +272,13 @@ public:
     val.t = new csTransform (t);
   }
   /// Assign an iBase
-  // TODO
+  void SetIBase(const csRef<iBase>& ib)
+  {
+    Clear();
+    type = CSVAR_IBASE;
+    val.ib = ib;
+    ib->IncRef();
+  }
   /// Assign a csArray
   void SetArray ( const csArray<csVariant>& a)
   {
@@ -348,7 +354,11 @@ public:
     return *val.t;
   }
   /// Retrieve an iBase
-  // TODO
+  iBase* GetIBase() const
+  {
+    CS_ASSERT(type == CSVAR_IBASE);
+    return val.ib;
+  }
   /// Retrieve a csArray
   csArray<csVariant> GetArray() const 
   {

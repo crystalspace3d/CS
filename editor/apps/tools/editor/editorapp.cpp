@@ -29,7 +29,6 @@
 #include "iutil/event.h"
 #include "iutil/eventq.h"
 #include "iutil/objreg.h"
-
 #include "context.h"
 
 #include "csutil/custom_new_disable.h"

@@ -101,12 +101,23 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     mainsizer = new wxBoxSizer(wxVERTICAL);
 
     // TODO: method to query the active context; also call here!!!
+    // Load PS plugins
+    csRef<iPluginManager> pluginManager = csQueryRegistry<iPluginManager> (object_reg);
+
+    // Load translator and document system plugins
+    emitterFactory = csLoadPlugin<iParticleBuiltinEmitterFactory>(pluginManager, "crystalspace.mesh.object.particles.emitter");
+
+    effectorFactory = csLoadPlugin<iParticleBuiltinEffectorFactory>(pluginManager, "crystalspace.mesh.object.particles.effector");
+
+
+    // "crystalspace.mesh.object.particles"
+      
 
     // Setup the event names
-    nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
-    addObject = nameRegistry->GetID("crystalspace.editor.context.addselectedobject");
-    clearObjects = nameRegistry->GetID("crystalspace.editor.context.clearselectedobjects");
-    activateObject = nameRegistry->GetID("crystalspace.editor.context.setactiveobject");
+    nameRegistry    = csEventNameRegistry::GetRegistry (object_reg);
+    addObject       = nameRegistry->GetID("crystalspace.editor.context.addselectedobject");
+    clearObjects    = nameRegistry->GetID("crystalspace.editor.context.clearselectedobjects");
+    activateObject  = nameRegistry->GetID("crystalspace.editor.context.setactiveobject");
 
     // Respond to context events
     //csEventID contextSelect = nameRegistry->GetID("crystalspace.editor.context");
@@ -114,10 +125,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     
     // Prepare translations 
     translator = csQueryRegistry<iTranslator>(object_reg);
-    cout << translator->GetMsg("Hello world!") << endl;
+    cout << translator->GetMsg("Hello world") << endl;
     
     
-    modifiableEditor = new ModifiableEditor(window, editor, wxID_ANY, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
+    modifiableEditor = new ModifiableEditor(object_reg, window, editor, wxID_ANY, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
     mainsizer->Add(modifiableEditor, 1, wxEXPAND | wxALL, borderWidth);
     window->SetSizer(mainsizer);
     mainsizer->SetSizeHints(window);
@@ -180,7 +191,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
     printf("It is a particle system factory!\n");
 
-    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
+    csRef<iParticleSystemBase> ipb = scfQueryInterface<iParticleSystemBase>(partSys);
+
+    //csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
+    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(ipb->GetEmitter(0)); 
     if (!modifiable)
     {
       // NoModifiable();

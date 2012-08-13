@@ -26,7 +26,7 @@ wxPGWindowList wxPGSliderEditor::CreateControls( wxPropertyGrid*  propgrid,
                  precision,
                  pos,
                  size,
-                 wxSL_HORIZONTAL );  
+                 wxSL_HORIZONTAL );
 
   // Setup event handler
   propgrid->Connect ( wxPG_SUBID1, wxEVT_SCROLL_THUMBTRACK, 
@@ -49,6 +49,8 @@ void wxPGSliderEditor::UpdateControl ( wxPGProperty* property, wxWindow* wnd ) c
       else if ( val > 1 )
         val = 1;
       ctrl->SetValue ( (int)(val * precision) );
+
+      // textVal->SetValue(wxString::Format(wxT("%ld"), val * precision));
     }
   }
 }
@@ -79,8 +81,9 @@ void wxPGSliderEditor::SetValueToUnspecified ( wxPGProperty* property, wxWindow*
 {
   // TODO
   wxSlider* ctrl = wxDynamicCast ( wnd, wxSlider );
-  if ( ctrl )
-    ctrl->SetValue (0);  
+  if ( ctrl ) {
+    ctrl->SetValue (0);
+  }
 }
 
 void wxPGSliderEditor::DrawValue ( wxDC&           dc,
@@ -91,9 +94,14 @@ void wxPGSliderEditor::DrawValue ( wxDC&           dc,
   wxSlider* slider = ( (wxPGSliderProperty*)property )->GetSlider();
   int curr = (int) ((double) property->GetValue() * precision);
   slider-> SetValue (curr);
+
   wxWindow* win = (wxWindow*) slider;
-  if (!win-> IsShown ())
-    win-> Show ();
+ // if (!win-> IsShown ())
+  //  win-> Show ();
+
+  wxTextCtrl* textCtrl = ( static_cast<wxPGSliderProperty*>(property) )->GetLabel();
+ // if (!textCtrl->IsShown() )
+  //  textCtrl->Show();
 }
 
 //----------------- wxPGSliderProperty ---------------------
@@ -123,6 +131,7 @@ wxPGSliderProperty::~wxPGSliderProperty ()
 
 void wxPGSliderProperty::Init ()
 {
+  // TODO: throw them both in a sizer
   ctrl = new wxSlider();
   double v_d = GetValue().GetDouble();
   wxPropertyGrid* propgrid = GetGrid();
@@ -135,11 +144,29 @@ void wxPGSliderProperty::Init ()
                 rect.GetPosition(),
                 rect.GetSize(),
                 wxSL_HORIZONTAL);
+
+  textCtrl = new wxTextCtrl();
+  textCtrl->Create( propgrid->GetPanel(),
+                    wxPG_SUBID1,
+                    wxString::Format(wxT("%ld"), v_d),
+                    wxPoint(rect.GetPosition().x - labelWidth, rect.GetPosition().y),
+                    wxSize(labelWidth, -1),
+                    wxSL_HORIZONTAL);
+
+  // Read-only for now
+  // Afterwards, setup event handlers so that each edit (slider, text) triggers
+  // the update of the other representation.
+  textCtrl->SetEditable(false);
 }
 
 wxSlider* wxPGSliderProperty::GetSlider () const
 {
   return ctrl;
+}
+
+wxTextCtrl* wxPGSliderProperty::GetLabel () const 
+{
+  return textCtrl;
 }
 
 wxRect wxPGSliderProperty::GetRect (wxPropertyGrid* propgrid) const
@@ -148,7 +175,7 @@ wxRect wxPGSliderProperty::GetRect (wxPropertyGrid* propgrid) const
                                             dynamic_cast<const wxPGProperty*>(this) );
   wxSize size = rect.GetSize();
   wxPoint pos = rect.GetPosition();
-  int splitterPos = propgrid->GetSplitterPosition() + 2;
+  int splitterPos = propgrid->GetSplitterPosition() + labelWidth + 2;
   pos.x += splitterPos;
   size.x -= splitterPos;
   size.y -= 1;

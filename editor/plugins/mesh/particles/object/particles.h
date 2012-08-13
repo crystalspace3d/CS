@@ -173,9 +173,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       description->Push(new csBasicModifiableParameter("Individual size", "", CSVAR_BOOL, id_individualSize));
       description->Push(new csBasicModifiableParameter("Common direction", "", CSVAR_VECTOR3, id_commonDirection));
       description->Push(new csBasicModifiableParameter("Particle size", "", CSVAR_VECTOR2, id_particleSize));
+      PUSH_PARAM(CSVAR_ARRAY, emitters, "Emitter list", "A list of the system's current emitters.");
       return description;
     }
-
 
     csVariant* GetParameterValue (csStringID id) const {
       if(id ==  id_particleOrientation)
@@ -188,7 +188,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
         return new csVariant(commonDirection);
       else if(id == id_particleSize)
         return new csVariant(particleSize);
-
+      //else if(id == id_emitters)
+      //  return new csVariant(emitters);
+      // Question: which is the best way to convert this to a csArray of csVariant?
       return nullptr;
     }
 
@@ -375,11 +377,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csVector2 particleSize;
     csBox3 minBB;
 
-    //-- iModifiable
-    csStringID id_particleOrientation, id_rotationMode, id_individualSize, id_commonDirection, id_particleSize;
-
     csRefArray<iParticleEmitter> emitters;
     csRefArray<iParticleEffector> effectors;
+
+    //-- iModifiable
+    csStringID id_particleOrientation, id_rotationMode, id_individualSize, id_commonDirection, id_particleSize, id_emitters, id_effectors;
   };
 
   /**

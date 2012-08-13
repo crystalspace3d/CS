@@ -126,14 +126,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
         csRef<iParticleSystemFactory> ps(scfQueryInterface<iParticleSystemFactory>(space->modifiableEditor->GetModifiable()));
         CS_ASSERT_MSG("This should be safe", ps.IsValid());
 
-        csRef<iParticleBuiltinEmitterFactory> factory(csQueryRegistry<iParticleBuiltinEmitterFactory>(space->object_reg));
-        csRef<iParticleBuiltinEmitterBox> em(factory->CreateBox());
+        csRef<iParticleBuiltinEmitterBox> em(space->emitterFactory->CreateBox());
         ps->AddEmitter(em);
         // TODO: update ps here
       }
 
       void OnButtonRemove(wxCommandEvent &event) {
-
+        // TODO: get a hold of the list and remove what is selected
       }
 
     private:
@@ -143,22 +142,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     };
 
   private:
-    static const int borderWidth = 4; 
+    static const int                        borderWidth = 4; 
 
-    iObjectRegistry*      object_reg;
-    csRef<iSpaceFactory>  factory;
+    iObjectRegistry*                        object_reg;
+    csRef<iSpaceFactory>                    factory;
+    csRef<iParticleBuiltinEmitterFactory>   emitterFactory;
+    csRef<iParticleBuiltinEffectorFactory>  effectorFactory;
+
+
     wxWindow*             window;
-
-    // TODO: actually use this
     wxBoxSizer*           mainsizer;
-
-    // Main ref to the editor
-    csRef<iEditor> editor;
-    csRef<iEventQueue>  queue;
-    csRef<iTranslator>  translator;
+    csRef<iEditor>        editor;
+    csRef<iEventQueue>    queue;
+    csRef<iTranslator>    translator;
 
     // Ref to the modifiable editor holding the propgrid
-    ModifiableEditor*   modifiableEditor;
+    ModifiableEditor*     modifiableEditor;
 
       enum {
         idButtonAdd = 42,

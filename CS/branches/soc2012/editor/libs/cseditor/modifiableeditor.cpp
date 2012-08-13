@@ -17,6 +17,7 @@
 */
 
 #include "cssysdef.h"
+#include "iutil/objreg.h"
 #include "cseditor/modifiableeditor.h"
 
 #include "imesh/particles.h"
@@ -142,13 +143,15 @@ protected:
 using namespace CS::EditorApp;
 
 BEGIN_EVENT_TABLE(ModifiableEditor, wxPanel)
-  EVT_PG_CHANGED(pageId, ModifiableEditor::OnPropertyGridChanging)
-  EVT_SIZE(ModifiableEditor::OnSize)
+  EVT_PG_CHANGING (pageId,  ModifiableEditor::OnPropertyGridChanging)
+  EVT_PG_CHANGED  (pageId,  ModifiableEditor::OnPropertyGridChanged)
+  EVT_SIZE        (         ModifiableEditor::OnSize)
 END_EVENT_TABLE()
 
-ModifiableEditor::ModifiableEditor( wxWindow* parent, iEditor* editor, wxWindowID id, const wxPoint& position, const wxSize& size, long style, const wxString& name )
+ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* parent, iEditor* editor, wxWindowID id, const wxPoint& position, const wxSize& size, long style, const wxString& name )
   : wxPanel (parent, id, position, size, style, name)
 {
+  this->object_reg = object_reg;
   this->editor = editor;
 
   // Since the PG components are being dynamically loaded, this function never gets
@@ -156,7 +159,7 @@ ModifiableEditor::ModifiableEditor( wxWindow* parent, iEditor* editor, wxWindowI
   // errors (on Windows, at least)
   // Also, this currently causes *a lot* of first-chance exceptions to get thrown
   // when the app is closing
-  //wxPGInitResourceModule();
+  wxPGInitResourceModule();
 
   // Prepare the property grid
   pgMan = new wxPropertyGridManager (this, pageId,
@@ -200,7 +203,7 @@ void ModifiableEditor::Populate ()
 
   // Fetch the iTranslator, to attempt to fetch existing translations of
   // the parameter names and descriptions
-  // TODO: make translations work again
+  csRef<iTranslator> translator = csQueryRegistry<iTranslator>(object_reg);
     
   pgMan->AddPage (wxT("Properties"));
   pgMan->SetExtraStyle ( wxPG_EX_HELP_AS_TOOLTIPS );
@@ -223,8 +226,7 @@ void ModifiableEditor::Populate ()
       csVariant* variant = activeModifiable->GetParameterValue(param->GetID());
   
       wxString originalName( param->GetName(), wxConvUTF8 );
-      //wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
-      wxString translation( originalName );
+      wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
       wxString description( param->GetDescription(), wxConvUTF8 );
 
       switch (param->GetType())
@@ -473,8 +475,45 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
   //*/
 }
 
-
 void ModifiableEditor::OnPropertyGridChanging (wxPropertyGridEvent& event)
+{
+  // Perform validation
+  // TODO: perform each one
+  csRef<iModifiableDescription> description = activeModifiable->GetDescription();
+  const iModifiableParameter* param = description->GetParameterByIndex(event.GetProperty()->GetIndexInParent());
+  const iModifiableConstraint* constraint = param->GetConstraint();
+
+  if(constraint != nullptr) {
+    switch(constraint->GetType()) {
+    case MODIFIABLE_CONSTRAINT_BOUNDED:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_ENUM:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_VFS_FILE:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_VFS_DIR:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_VFS_PATH:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_TEXT_ENTRY:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_TEXT_BLOB:
+      break;
+
+    case MODIFIABLE_CONSTRAINT_BITMASK:
+      break;
+    }
+  }
+  csPrintf("Evaluating constraint of: %s\n", param->GetName());
+}
+
+void ModifiableEditor::OnPropertyGridChanged (wxPropertyGridEvent& event)
 {
   wxPGProperty* property = event.GetProperty ();
   OnGetNewValue (property);

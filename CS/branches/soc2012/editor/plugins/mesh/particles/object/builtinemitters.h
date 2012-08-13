@@ -23,6 +23,7 @@
 
 #include "imesh/particles.h"
 #include "iutil/comp.h"
+#include "cseditor/modifiableimpl.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
@@ -75,26 +76,32 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     virtual csPtr<iParticleBuiltinEmitterCylinder> CreateCylinder () const;
 
     //-- iComponent
-    virtual bool Initialize (iObjectRegistry*)
+    virtual bool Initialize (iObjectRegistry* object_reg)
     {
+      this->object_reg = object_reg;
       return true;
     }
+
+  private:
+    iObjectRegistry* object_reg;
   };
 
 
   template<class T>
-  class ParticleEmitterHelper : public scfImplementation3<ParticleEmitterHelper<T>,
+  class ParticleEmitterHelper : public scfImplementation4<ParticleEmitterHelper<T>,
                                                           T,
                                                           scfFakeInterface<iParticleBuiltinEmitterBase>,
-                                                          scfFakeInterface<iParticleEmitter> >
+                                                          scfFakeInterface<iParticleEmitter>,
+                                                          iModifiable>
   {
   public:
-    typedef scfImplementation3<ParticleEmitterHelper<T>,
+    typedef scfImplementation4<ParticleEmitterHelper<T>,
                                T,
                                scfFakeInterface<iParticleBuiltinEmitterBase>,
-                               scfFakeInterface<iParticleEmitter> > base;
+                               scfFakeInterface<iParticleEmitter>,
+                               iModifiable> base;
 
-    ParticleEmitterHelper ()
+    ParticleEmitterHelper (iObjectRegistry* object_reg)
       : base (this),
       isEnabled (true), startTime (0), duration (FLT_MAX),
       initialTTLMin(1.0f), initialTTLMax (1.0f), initialMassMin (1.0f), 
@@ -102,7 +109,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       position (0.0f), placement (CS_PARTICLE_BUILTIN_VOLUME), 
       initialLinearVelocity (0.0f), initialAngularVelocity (0.0f), 
       initialVelocityMag (0.0f), uniformVelocity (false)
-    {}
+    {
+      GENERATE_ID_START;   
+        GENERATE_ID(isEnabled);
+        GENERATE_ID(startTime);
+        GENERATE_ID(duration);
+        GENERATE_ID(initialTTLMin);
+        GENERATE_ID(initialTTLMax);
+        GENERATE_ID(initialMassMin);
+        GENERATE_ID(initialMassMax);
+        GENERATE_ID(position);
+        GENERATE_ID(placement);
+        GENERATE_ID(initialLinearVelocity);
+        GENERATE_ID(initialAngularVelocity);
+        GENERATE_ID(initialVelocityMag);
+        GENERATE_ID(uniformVelocity);
+    }
 
     //-- iParticleEmitter
     virtual size_t ParticlesToEmit (iParticleSystemBase* system,
@@ -226,6 +248,124 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       angular = initialAngularVelocity;
     }
 
+    //-- iModifiable
+    const csStringID GetID() const
+    {
+      // TODO: maybe an equivalent of wxID_ANY?
+      return 42;
+    }
+
+    csPtr<iModifiableDescription> GetDescription() const
+    {
+      csBasicModifiableDescription* description = new csBasicModifiableDescription();
+
+      PUSH_PARAM (CSVAR_BOOL, isEnabled, "Enabled", "Whether this emitter is emitting particles");
+      PUSH_PARAM (CSVAR_FLOAT, startTime, "Start time", "Time, in milliseconds, when this emitter starts producing particles");
+      PUSH_PARAM (CSVAR_FLOAT, duration, "Duration", "Time, in milliseconds, this particle emitter should emit particles");
+      PUSH_PARAM (CSVAR_FLOAT, initialTTLMin, "Initial minimum TTL", "Minimum initial particle lifespan");
+      PUSH_PARAM (CSVAR_FLOAT, initialTTLMax, "Initial maximum TTL", "Maximum initial particle lifespan");
+      PUSH_PARAM (CSVAR_FLOAT, initialMassMin, "Initial minimum mass", "");
+      PUSH_PARAM (CSVAR_FLOAT, initialMassMax, "Initial maximum mass", "");
+      PUSH_PARAM (CSVAR_VECTOR3, position, "Position", "Emitter position relative to the system(?)");
+      PUSH_PARAM (CSVAR_LONG, placement, "PS placement", "");  // TODO: drop-down for this enum
+      PUSH_PARAM (CSVAR_VECTOR3, initialLinearVelocity, "Initial linear velocity", "");
+      PUSH_PARAM (CSVAR_VECTOR3, initialAngularVelocity, "Initial angular velocity", "");
+      PUSH_PARAM (CSVAR_FLOAT, initialVelocityMag, "Initial velocity magnitude", "");
+      PUSH_PARAM (CSVAR_BOOL, uniformVelocity, "Uniform velocity", "");
+
+      return description;
+    }
+
+    csVariant* GetParameterValue(csStringID id) const 
+    {
+      if(id == id_isEnabled) 
+        return new csVariant(isEnabled);
+      else if(id == id_startTime)
+        return new csVariant(startTime);
+      else if(id == id_duration)
+        return new csVariant(duration);
+      else if(id == id_initialTTLMin)
+        return new csVariant(initialTTLMin);
+      else if(id == id_initialTTLMax)
+        return new csVariant(initialTTLMax);
+      else if(id == id_initialMassMin)
+        return new csVariant(initialMassMin);
+      else if(id == id_initialMassMax)
+        return new csVariant(initialMassMax);
+      else if(id == id_position)
+        return new csVariant(position);
+      else if(id == id_placement)
+        return new csVariant(placement);
+      else if(id == id_initialLinearVelocity)
+        return new csVariant(initialLinearVelocity);
+      else if(id == id_initialAngularVelocity)
+        return new csVariant(initialAngularVelocity);
+      else if(id == id_initialVelocityMag)
+        return new csVariant(initialVelocityMag);
+      else if(id == id_uniformVelocity)
+        return new csVariant(uniformVelocity);
+      
+      return nullptr;
+    }
+
+    bool SetParameterValue(csStringID id, const csVariant& value) 
+    {
+      if(id == id_isEnabled) {
+        SetEnabled(value.GetBool());
+        return true;
+      }
+      else if(id == id_startTime) {
+        SetStartTime(value.GetFloat());
+        return true;
+      }
+      else if(id == id_duration) {
+        SetDuration(value.GetFloat());
+        return true;
+      }
+      else if(id == id_initialTTLMin) {
+        SetInitialTTL(value.GetFloat(), initialTTLMax);
+        return true;
+      }
+      else if(id == id_initialTTLMax) {
+        SetInitialTTL(initialTTLMin, value.GetFloat());
+        return true;
+      }
+      else if(id == id_initialMassMin) {
+        SetInitialMass(value.GetFloat(), initialMassMax);
+        return true;
+      }
+      else if(id == id_initialMassMax) {
+        SetInitialMass(initialMassMin, value.GetFloat());
+        return true;
+      }
+      else if(id == id_position) {
+        SetPosition(value.GetVector3());
+        return true;
+      }
+      else if(id == id_placement) {
+        SetParticlePlacement(static_cast<csParticleBuiltinEmitterPlacement>(value.GetLong()));
+        return true;
+      }
+      else if(id == id_initialLinearVelocity) {
+        SetInitialVelocity(value.GetVector3(), initialAngularVelocity);
+        return true;
+      }
+      else if(id == id_initialAngularVelocity) {
+        SetInitialVelocity(initialLinearVelocity, value.GetVector3());
+        return true;
+      }
+      else if(id == id_initialVelocityMag) {
+        initialVelocityMag = value.GetFloat();
+        return true;
+      }
+      else if(id == id_uniformVelocity) {
+        SetUniformVelocity(value.GetBool());
+        return true;
+      }
+
+      return false;
+    }
+
   protected:
     //-- iParticleEmitter
     bool isEnabled;
@@ -245,12 +385,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     bool uniformVelocity;
 
     typedef ParticleEmitterHelper<T> BaseType;
+
+    private:
+      //-- iModifiable
+      csStringID id_isEnabled, id_startTime, id_duration, id_initialTTLMin, id_initialTTLMax,
+        id_initialMassMin, id_initialMassMax, id_position, id_placement, id_initialLinearVelocity,
+        id_initialAngularVelocity, id_initialVelocityMag, id_uniformVelocity;
   };
 
   class ParticleEmitterSphere : public ParticleEmitterHelper<iParticleBuiltinEmitterSphere>
   {
   public:
-    ParticleEmitterSphere ();
+    ParticleEmitterSphere (iObjectRegistry* object_reg);
     virtual ~ParticleEmitterSphere ();
 
     virtual csPtr<iParticleEmitter> Clone () const;
@@ -279,7 +425,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   class ParticleEmitterBox : public ParticleEmitterHelper<iParticleBuiltinEmitterBox>
   {
   public:
-    ParticleEmitterBox ();
+    ParticleEmitterBox (iObjectRegistry* object_reg);
     virtual ~ParticleEmitterBox ();
 
     virtual csPtr<iParticleEmitter> Clone () const;
@@ -309,7 +455,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     ParticleEmitterHelper<iParticleBuiltinEmitterCylinder>
   {
   public:
-    ParticleEmitterCylinder ();
+    ParticleEmitterCylinder (iObjectRegistry* object_reg);
     virtual ~ParticleEmitterCylinder ();
 
     virtual csPtr<iParticleEmitter> Clone () const;
@@ -347,7 +493,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     ParticleEmitterHelper<iParticleBuiltinEmitterCone>
   {
   public:
-    ParticleEmitterCone ();
+    ParticleEmitterCone (iObjectRegistry* object_reg);
     virtual ~ParticleEmitterCone ();
 
     virtual csPtr<iParticleEmitter> Clone () const;

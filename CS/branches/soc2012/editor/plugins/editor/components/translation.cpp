@@ -106,7 +106,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
       csRef<iLoaderPlugin> loader = csLoadPlugin<iLoaderPlugin> (object_reg, "crystalspace.translator.loader.xml");
       csRef<iBase> result = loader->Parse(root, 0, 0, translator);
-
+      csRef<iTranslator> tl = csQueryRegistry<iTranslator>(object_reg);
     } else {
       csReport(object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",

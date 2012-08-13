@@ -19,7 +19,8 @@
 //----------------- wxPGSliderEditor ---------------------
 
 /**
- * Re-implemented wxSlider for wxPropertyGrid
+ * Re-implemented wxSlider for wxPropertyGrid. Contains a value slider, as well as
+ * a text-field for displaying the exact value.
  */
 class WXDLLIMPEXP_PG wxPGSliderEditor : public wxPGEditor 
 {
@@ -30,7 +31,8 @@ class WXDLLIMPEXP_PG wxPGSliderEditor : public wxPGEditor
 public:
   wxPGSliderEditor (int p = 10000)
     : precision(p)
-  {}
+  {
+  }
 
   ~wxPGSliderEditor ()
   {}
@@ -69,6 +71,9 @@ public:
   /// Gets the property's corresponding slider.
   wxSlider* GetSlider () const;
 
+  /// Returns the text control meant to show the actual value of the slider
+  wxTextCtrl* GetLabel() const;
+
   /// Gets the property slider's bounding rectangle.
   wxRect GetRect (wxPropertyGrid* propgrid) const;
 
@@ -77,7 +82,9 @@ public:
 
 private:
   wxSlider* ctrl;
+  wxTextCtrl* textCtrl;
   int minVal, maxVal;
+  static const int labelWidth = 32;
 };
 
 #endif

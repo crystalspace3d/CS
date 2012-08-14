@@ -44,7 +44,7 @@ csLight::csLight (csEngine* engine,
   float d,
   float red, float green, float blue,
   csLightDynamicType dyntype) :
-    scfImplementationType (this), light_id (0),
+    scfImplementationType (this), light_id (0), objectModel(this),
     userSpecular (false), halo (0), dynamicType (dyntype), 
     type (CS_LIGHT_POINTLIGHT), cutoffDistance (d),
     directionalCutoffRadius (d), userDirectionalCutoffRadius (false),

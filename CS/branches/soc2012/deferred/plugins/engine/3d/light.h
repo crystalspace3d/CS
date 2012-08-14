@@ -75,6 +75,36 @@ protected:
   /// Movable for the light
   mutable csMovable movable;
 
+  /// Object model for the light
+  class csLightObjectModel : public csObjectModel
+  {
+  private:
+    csLight* parent;
+
+  public:
+    csLightObjectModel(csLight* parent) : parent(parent)
+    {
+    }
+
+    virtual void SetObjectBoundingBox(const csBox3&)
+    {
+      // doesn't make sense - ignore it
+    }
+
+    virtual const csBox3& GetObjectBoundingBox()
+    {
+      return parent->GetLocalBBox();
+    }
+
+    virtual void GetRadius (float& radius, csVector3& center)
+    {
+      radius = csMax(parent->GetCutoffDistance(), parent->GetDirectionalCutoffRadius());
+      center = csVector3(0);
+    }
+  };
+
+  csLightObjectModel objectModel;
+
   /// Color.
   csColor color;
   /// Specular color
@@ -403,6 +433,11 @@ public:
   virtual iMovable* GetMovable () const
   {
     return &movable;
+  }
+
+  virtual iObjectModel* GetObjectModel ()
+  {
+    return &objectModel;
   }
 
   virtual void SetParent (iSceneNode* parent);

@@ -22,6 +22,8 @@
 #include "common.h"
 #include "swappable.h"
 
+#include "maxrect.h"
+
 namespace lighter
 {
   class LightmapMask;
@@ -70,8 +72,8 @@ namespace lighter
     inline int GetWidth () const { return width; }
     inline int GetHeight () const { return height; }
 
-    inline CS::SubRectanglesCompact& GetAllocator () { return lightmapAllocator; }
-    inline const CS::SubRectanglesCompact& GetAllocator () const { return lightmapAllocator; }
+    inline MaxRectanglesCompact& GetAllocator () { return lightmapAllocator; }
+    inline const MaxRectanglesCompact& GetAllocator () const { return lightmapAllocator; }
     inline void UpdateDimensions ()
     {
       width = lightmapAllocator.GetRectangle().Width();
@@ -130,7 +132,7 @@ namespace lighter
     int width, height;
 
     // Area allocator
-    CS::SubRectanglesCompact lightmapAllocator;
+    MaxRectanglesCompact lightmapAllocator;
 
     // Filename
     csString filename;

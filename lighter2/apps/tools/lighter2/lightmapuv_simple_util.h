@@ -55,15 +55,15 @@ namespace lighter
 
   struct MPTAAMAlloc
   {
-    static CS::SubRectangles::SubRect* Alloc (CS::SubRectangles& allocator,
+    static MaxRectangles::SubRect* Alloc (MaxRectangles& allocator,
       int w, int h, csRect& rect)
     { return allocator.Alloc (w, h, rect);  }
   };
 
   struct MPTAAMAllocNoGrow
   {
-    static CS::SubRectangles::SubRect* Alloc (
-      CS::SubRectanglesCompact& allocator, int w, int h, csRect& rect)
+    static MaxRectangles::SubRect* Alloc (
+      MaxRectanglesCompact& allocator, int w, int h, csRect& rect)
     { return allocator.AllocNoGrow (w, h, rect);  }
   };
 
@@ -76,16 +76,16 @@ namespace lighter
 
   template<class AllocMixin>
   static bool MapPrimsToAlloc (csArray<PrimToMap>& primsToMap, 
-    CS::SubRectanglesCompact& alloc, 
-    csArray<CS::SubRectangles::SubRect*>& outSubRects, 
+    MaxRectanglesCompact& alloc, 
+    csArray<MaxRectangles::SubRect*>& outSubRects, 
     bool failDump = false)
   {
     bool success = true;
     csRect oldSize (alloc.GetRectangle());
-    csArray<CS::SubRectanglesCompact::SubRect*> subRects;
+    csArray<MaxRectanglesCompact::SubRect*> subRects;
     for (size_t p = 0; p < primsToMap.GetSize(); p++)
     {
-      CS::SubRectanglesCompact::SubRect* sr = 
+      MaxRectanglesCompact::SubRect* sr = 
         AllocMixin::Alloc (alloc, int (ceilf (primsToMap[p].uvsize.x)),
           int (ceilf (primsToMap[p].uvsize.y)), primsToMap[p].rect);
       if (sr == 0)
@@ -118,7 +118,7 @@ namespace lighter
   {
     size_t allocIndex;
     csArray<csVector2> positions;
-    csArray<CS::SubRectangles::SubRect*> subRects;
+    csArray<MaxRectangles::SubRect*> subRects;
   };
   typedef csHash<AllocResult, size_t> AllocResultHash;
 
@@ -150,7 +150,9 @@ namespace lighter
     size_t allocator;
     bool allMapped = false;
     bool newCreated = false;
-    csArray<CS::SubRectangles::SubRect*> subRects;
+    int success = resultFailure;
+
+    csArray<MaxRectangles::SubRect*> subRects;
     for (size_t a = 0; a < allocs.GetSize(); a++)
     {
       size_t useAlloc = testOrder[a].index;
@@ -185,7 +187,7 @@ namespace lighter
         res->positions.GetExtend (prim.sourceIndex) = uvRemap;
         res->subRects.GetExtend (prim.sourceIndex, 0) = subRects[p];
       }
-      return newCreated ? resultWithNew : resultAllocated;
+      success = newCreated ? resultWithNew : resultAllocated;
     }
     else
     {
@@ -199,7 +201,7 @@ namespace lighter
       }
 #endif
     }
-    return resultFailure;
+    return success;
   }
 
   static void MergeResultHash (AllocResultHash& to, const AllocResultHash& from)
@@ -354,9 +356,9 @@ namespace lighter
       lightmaps (lightmaps) {}
 
     size_t GetSize() const { return lightmaps.GetSize(); }
-    CS::SubRectanglesCompact& Get (size_t n)
+    MaxRectanglesCompact& Get (size_t n)
     { return lightmaps[n]->GetAllocator(); }
-    CS::SubRectanglesCompact& New (size_t& index) 
+    MaxRectanglesCompact& New (size_t& index) 
     { 
       Lightmap *newL = new Lightmap (globalConfig.GetLMProperties ().maxLightmapU,
                                      globalConfig.GetLMProperties ().maxLightmapV);

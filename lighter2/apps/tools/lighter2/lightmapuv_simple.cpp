@@ -68,7 +68,6 @@ namespace lighter
     newFactory->coplanarGroups.Empty ();
 
     csArray<SizeAndIndex> sizes;
-    csArray<csVector2> minuvs;
 
     // Layout every primitive by itself    
     for (size_t i = 0; i < coplanarPrims.GetSize (); i++)
@@ -131,7 +130,6 @@ namespace lighter
           * @@@ Does not take object translation into account. */
           minuv.x = floor (minuv.x);
           minuv.y = floor (minuv.y);
-          minuvs.GetExtend (i) = minuv;
         }
       }
     }
@@ -149,13 +147,35 @@ namespace lighter
         (int)ceilf (sizes[s].uvsize.y), lmArea, lmID);
       if (!res) continue; 
 
+      SimpleUVObjectLayouter::SurfaceAndRatio& surface 
+        = newFactory->surfaceGroup.GetExtend(lmID);
+
+      surface.rect.Union(lmArea);
+
       FactoryPrimitiveArray& outArray = outPrims.GetExtend (lmID);
       csArray<csArray<size_t> >& coplanarGroup = 
         newFactory->coplanarGroups.GetExtend (lmID);
       csArray<size_t>& thisGroup = 
         coplanarGroup.GetExtend (coplanarGroup.GetSize());
+
+      csSet<size_t> movedIndex;
+      
+      // We offset the primitves uv to their position in the lightmap
+      csVector2 offset (lmArea.xmin,lmArea.ymin);
+
       for (size_t p = 0; p < prims.GetSize(); p++)
       {
+        Primitive::TriangleType& t = prims[p].GetTriangle();
+        for (int i=0; i<3; i ++)
+        {
+          size_t index = t[i];
+          if (!movedIndex.Contains(index))
+          {
+            newFactory->lightmapUVs[index] += offset;
+            movedIndex.AddNoTest(index);
+          }
+        }
+
         size_t outIdx = outArray.Push (prims[p]);
         thisGroup.Push (outIdx);
       }
@@ -164,6 +184,14 @@ namespace lighter
       csArray<csVector2>& groupUVsizes = 
         newFactory->uvsizes.GetExtend (lmID);
       groupUVsizes.Push (sizes[s].uvsize);
+
+      surface.filledRatio += sizes[s].uvsize.x * sizes[s].uvsize.y;
+    }
+
+    for (int i = 0; i < newFactory->surfaceGroup.GetSize(); i++)
+    {
+      newFactory->surfaceGroup[i].filledRatio /=
+        newFactory->surfaceGroup[i].rect.Area();
     }
     
     if (noSplit && (localLightmaps.GetSize() > 1)) return 0;
@@ -373,29 +401,6 @@ namespace lighter
     }
   }
 
-  class ArraysOneUV
-  {
-  public:
-    class ArrayType
-    {
-      int u, v;
-    public:
-      ArrayType (int u, int v) : u (u), v (v) {}
-
-      size_t GetSize () const { return 1; }
-      csVector2 GetUVSize (size_t n) const 
-      { 
-        return csVector2 (u, v);
-      }
-    };
-    ArrayType pseudoArray;
-    ArraysOneUV (int u, int v) : pseudoArray (u, v) {}
-
-    size_t GetSize() const { return 1; }
-    ArrayType Get (size_t index) const 
-    { return pseudoArray; }
-  };
-
   bool SimpleUVFactoryLayouter::AllocLightmap (LightmapPtrDelArray& lightmaps, 
     int u, int v, csRect &lightmapArea, int &lightmapID)
   {
@@ -492,6 +497,7 @@ namespace lighter
         maxUV.y = csMax (maxUV.y, lightmapUV.y);
       }
     }
+    // Move primitives to Origin first
     if ((maxUV.x - minUV.x) > (maxUV.y - minUV.y))
     {
       csSet<size_t>::GlobalIterator it (primsUsedVerts.GetIterator());
@@ -499,9 +505,18 @@ namespace lighter
       {
         size_t index = it.Next();
         csVector2& lightmapUV = lightmapUVs[index];
-        float t = lightmapUV.x;
-        lightmapUV.x = lightmapUV.y;
+        float t = lightmapUV.x - minUV.x;
+        lightmapUV.x = lightmapUV.y - minUV.y;
         lightmapUV.y = t;
+      }
+    }
+    else
+    {
+      csSet<size_t>::GlobalIterator it (primsUsedVerts.GetIterator());
+      while (it.HasNext())
+      {
+        size_t index = it.Next();
+        lightmapUVs[index] -= minUV;
       }
     }
     csSet<size_t>::GlobalIterator it (primsUsedVerts.GetIterator());
@@ -568,6 +583,18 @@ namespace lighter
     q->Push (queuedPrims);
   }
 
+  void SimpleUVFactoryLayouter::QueuePDGroupLayout (
+    LayoutTransform* layoutTransform,
+    Sector* sector, const csBitArray& pdBits)
+  {
+    SectorAndPDBits s;
+    s.pdBits = pdBits;
+    s.sector = sector;
+
+    csArray<LayoutTransform*>& queue = pdLayoutTransforms.GetOrCreate(s);
+    queue.Push(layoutTransform);
+  }
+
   //-------------------------------------------------------------------------
 
   size_t SimpleUVObjectLayouter::LayoutUVOnPrimitives (PrimitiveArray &prims, 
@@ -584,21 +611,55 @@ namespace lighter
     return layoutID;
   }
 
+  size_t SimpleUVObjectLayouter::LayoutUVOnGroup(PrimitiveArray &prims,
+    size_t groupNum, Sector* sector, const csBitArray& pdBits)
+  {
+    SimpleUVFactoryLayouter::LayoutTransform* lt = 
+      new SimpleUVFactoryLayouter::LayoutTransform(surfaceGroup[groupNum].rect);
+
+    size_t id = layoutTransforms.Push(lt);
+
+    if (pdBits.AllBitsFalse())
+    {
+      parent->globalLayoutTransforms.Push(layoutTransforms[id]);
+    }
+    else
+    {
+      parent->QueuePDGroupLayout(layoutTransforms[id],sector,pdBits);
+    }
+
+    return id;
+  }
+
   void SimpleUVObjectLayouter::FinalLightmapLayout (PrimitiveArray &prims, 
                                                     size_t layoutID,
                                                     size_t groupNum, 
-                                                    ObjectVertexData& vertexData, 
+                                                    ObjectVertexData& vertexData,
+                                                    bool unwrappedByObject,
                                                     uint& lmID)
   {
     /* Primitives were enqueued for PD layouting. layouted onto a PD lightmap. That lightmap itself was
        placed somewhere on a global LM. So when remapping this must be taken
        into consideration. */
-    const PDLayoutedGroup* layouted = pdLayouts.GetElementPointer (layoutID);
-    CS_ASSERT(layouted);
-    lmID = uint (layouted->lmID);
+    const PDLayoutedGroup* layouted;
+    csVector2 offset(0,0);
+    if (unwrappedByObject)
+    {
+      SimpleUVFactoryLayouter::LayoutTransform& lt = *layoutTransforms[layoutID];
+      lmID = uint(lt.lmID);
+      offset.x = lt.rect.xmin + 1;
+      offset.y = lt.rect.ymin + 1;
+    }
+    else
+    {
+      layouted = pdLayouts.GetElementPointer (layoutID);
+      CS_ASSERT(layouted);
+      lmID = uint (layouted->lmID);
+    }
 
     const csArray<csArray<size_t> >& coplanarGroup = coplanarGroups[groupNum];
     csSet<size_t> remapped;
+    csVector2 move(0,0);
     for (size_t c = 0; c < coplanarGroup.GetSize(); c++)
     {
       const csArray<size_t>& coPrim = coplanarGroup[c];
@@ -607,14 +668,16 @@ namespace lighter
         Primitive& prim = prims[coPrim[p]];
         const Primitive::TriangleType& t = prim.GetTriangle ();
         // Be careful to remap each distinct vertex only once
-        const csVector2& move = layouted->remaps[c];
+
+        if (!unwrappedByObject) move = layouted->remaps[c];
+
         for (size_t v = 0; v < 3; v++)
         {
           size_t index = t [v];
           if (!remapped.Contains (index))
           {
             csVector2 &uv = vertexData.lightmapUVs[index];
-            uv = lightmapUVs[index] + move + csVector2(0.5f,0.5f);
+            uv = lightmapUVs[index] + csVector2(0.5f,0.5f) + offset + move;
             remapped.AddNoTest (index);
           }
         }

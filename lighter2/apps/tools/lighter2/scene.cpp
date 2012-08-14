@@ -101,8 +101,9 @@ namespace lighter
   {
     // Build KD-tree
     ObjectHash::GlobalIterator objIt = allObjects.GetIterator ();
+    PortalRefArray::Iterator portalIt = allPortals.GetIterator();
     KDTreeBuilder builder;
-    kdTree = builder.BuildTree (objIt,progress);
+    kdTree = builder.BuildTree (objIt,portalIt,progress);
   }
 
   void Sector::InitPhotonMap()
@@ -148,7 +149,7 @@ namespace lighter
 
         if (light->IsRealLight())
         {
-          numPhotonsToEmit += getLightPhotonsNumber(light,sectorBBox);
+          numPhotonsToEmit += (int)getLightPhotonsNumber(light,sectorBBox);
 
           objIt.Reset();
           while (objIt.HasNext())
@@ -546,6 +547,10 @@ namespace lighter
     {
       csRef<Sector> sect = sectIt.Next();
       returns.Push(sectorProcessor->BuildKDTree(sect,&progress));
+      if(buildPhotonMaps)
+      {
+        sect->InitPhotonMap();
+      }
     }
 
     globalLighter->threadManager->Wait(returns);
@@ -559,7 +564,15 @@ namespace lighter
         csRef<Sector> sect = sectIt.Next();
         returns.Push(sectorProcessor->BuildPhotonMaps(sect,&progress));
       }
+      globalLighter->threadManager->Wait(returns);
 
+      returns.DeleteAll();
+      sectIt.Reset();
+      while (sectIt.HasNext())
+      {
+        csRef<Sector> sect = sectIt.Next();
+        returns.Push(sectorProcessor->BalancePhotonMaps(sect,&progress));
+      }
       globalLighter->threadManager->Wait(returns);
     }
   }
@@ -676,10 +689,18 @@ namespace lighter
   THREADED_CALLABLE_IMPL2(SectorProcessor,BuildPhotonMaps, csRef<Sector> sector,
     Statistics::Progress* progress)
   {
-    sector->InitPhotonMap();
     PhotonmapperLighting lighting;
 
     lighting.EmitPhotons(sector,*progress);
+    return true;
+  }
+
+  THREADED_CALLABLE_IMPL2(SectorProcessor,BalancePhotonMaps, csRef<Sector> sector,
+    Statistics::Progress* progress)
+  {
+    sector->InitPhotonMap();
+    PhotonmapperLighting lighting;
+
     lighting.BalancePhotons(sector,*progress);
     return true;
   }

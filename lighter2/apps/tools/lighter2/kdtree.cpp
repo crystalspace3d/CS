@@ -23,6 +23,7 @@
 #include "primitive.h"
 #include "statistics.h"
 #include "object.h"
+#include "scene.h"
 
 #include "csutil/alignedalloc.h"
 
@@ -42,6 +43,7 @@ namespace lighter
   {}
 
   KDTree* KDTreeBuilder::BuildTree (ObjectHash::GlobalIterator& objects,
+                                    csRefArray<Portal>::Iterator& portals,
                                     Statistics::Progress& progress)
   {
     //The whole kdTreeProcess will make 2% of the global calculation
@@ -52,7 +54,7 @@ namespace lighter
       return 0;
 
     // Collect all primitives into endpoints and boxes for building
-    SetupEndpoints (objects);
+    SetupEndpoints (objects,portals);
     progress.IncProgress (progressStep*0.33f);
 
     // Recursively build internal nodes from the boxes lists
@@ -71,10 +73,16 @@ namespace lighter
     return tree;
   }
 
-  bool KDTreeBuilder::SetupEndpoints (ObjectHash::GlobalIterator& objects)
+  bool KDTreeBuilder::SetupEndpoints (ObjectHash::GlobalIterator& objects,
+                                      PortalRefArray::Iterator& portals)
   {
     numPrimitives = 0;
     PrimBox *box = 0, *next = boxAllocator.Alloc (), *first = next;
+    while (portals.HasNext())
+    {
+      csRef<Portal> portal = portals.Next();
+      FillEndPoints(box,next,portal->portalPrimitives);
+    }
     while (objects.HasNext())
     {
       csRef<Object> obj = objects.Next ();
@@ -83,41 +91,9 @@ namespace lighter
       for (size_t i = 0; i < allPrimitives.GetSize (); ++i)
       {
         //For all submeshes...
-        PrimitiveArray& primArray = allPrimitives[i];
-        for (size_t j = 0; j < primArray.GetSize (); ++j)
-        {
-          Primitive& prim = primArray[j];
-          numPrimitives++;
-
-          box = next;
-          next = boxAllocator.Alloc ();
-          box->flags = PrimBox::STATE_STRADDLING;
-          box->primitive = &prim;
-
-          //Extract AABB and extract end-points
-          primHelper.Init (&prim);
-          objectExtents.AddBoundingBox (primHelper.aabb);
-          
-          for (size_t a = 0; a < 3; ++a)
-          {
-            //Min
-            box->side[0].SetPosition (a, primHelper.aabb.Min (a));
-
-            //Max
-            box->side[1].SetNext (a, &next->side[0]);
-            box->side[1].SetPosition (a, primHelper.aabb.Max (a));
-
-            if (primHelper.aabb.Min (a) == primHelper.aabb.Max (a))
-            {
-              //planar in axis
-              box->side[0].SetSide (a, EndPoint::SIDE_PLANAR);
-              box->side[1].SetSide (a, EndPoint::SIDE_PLANAR);
-              box->side[0].SetNext (a, &next->side[0]);
-            }
-          }
-
-        }
+        FillEndPoints(box,next,allPrimitives[i]);
       }
+      
     }
 
     if (box != 0)
@@ -125,18 +101,54 @@ namespace lighter
       //Finish and sort the lists
       for (size_t a = 0; a < 3; ++a)
       {
-	//Finish last box
-	box->side[1].SetNext (a, 0);
-	if (box->side[0].GetSide (a) == EndPoint::SIDE_PLANAR)
-	  box->side[0].SetNext (a, 0);
-  
-	//Save first and sort
-	endPointList.head[a] = &first->side[0];
-	endPointList.SortList (a);
+        //Finish last box
+        box->side[1].SetNext (a, 0);
+        if (box->side[0].GetSide (a) == EndPoint::SIDE_PLANAR)
+	        box->side[0].SetNext (a, 0);
+
+	      //Save first and sort
+	      endPointList.head[a] = &first->side[0];
+	      endPointList.SortList (a);
       }
     }
 
     return true;
+  }
+
+  void KDTreeBuilder::FillEndPoints (PrimBox* &box, PrimBox* &next, PrimitiveArray &primArray)
+  {
+    for (size_t j = 0; j < primArray.GetSize (); ++j)
+    {
+      Primitive& prim = primArray[j];
+      numPrimitives++;
+
+      box = next;
+      next = boxAllocator.Alloc ();
+      box->flags = PrimBox::STATE_STRADDLING;
+      box->primitive = &prim;
+
+      //Extract AABB and extract end-points
+      primHelper.Init (&prim);
+      objectExtents.AddBoundingBox (primHelper.aabb);
+          
+      for (size_t a = 0; a < 3; ++a)
+      {
+        //Min
+        box->side[0].SetPosition (a, primHelper.aabb.Min (a));
+
+        //Max
+        box->side[1].SetNext (a, &next->side[0]);
+        box->side[1].SetPosition (a, primHelper.aabb.Max (a));
+
+        if (primHelper.aabb.Min (a) == primHelper.aabb.Max (a))
+        {
+          //planar in axis
+          box->side[0].SetSide (a, EndPoint::SIDE_PLANAR);
+          box->side[1].SetSide (a, EndPoint::SIDE_PLANAR);
+          box->side[0].SetNext (a, &next->side[0]);
+        }
+      }
+    }
   }
 
   bool KDTreeBuilder::BuildKDNodeRecursive (EndPointList* epList, KDNode* node, 
@@ -525,10 +537,11 @@ namespace lighter
 
           int32 kdFlags = 0;
 
-          if (prim->GetObject ()->GetFlags ().Check (OBJECT_FLAG_NOSHADOW))
+          if (prim->isFromPortal() || prim->GetObject ()->GetFlags ().Check (OBJECT_FLAG_NOSHADOW))
             kdFlags |= KDPRIM_FLAG_NOSHADOW;
-	  if (prim->GetMaterial() && prim->GetMaterial()->IsTransparent())
-	    kdFlags |= KDPRIM_FLAG_TRANSPARENT;
+
+          if (prim->GetMaterial() && prim->GetMaterial()->IsTransparent())
+            kdFlags |= KDPRIM_FLAG_TRANSPARENT;
 
           //Extract our info
           const csVector3& N = prim->GetPlane ().Normal ();

@@ -23,6 +23,7 @@
 #include "lightmap.h"
 #include "lightmapuv.h"
 #include "lightmapuv_simple.h"
+#include "lightmapuv_maxrects.h"
 #include "primitive.h"
 #include "raygenerator.h"
 #include "raytracer.h"

@@ -57,7 +57,6 @@ class /*CS_CRYSTALSPACE_EXPORT*/ ModifiableEditor : public wxPanel
 public:
   ModifiableEditor  ( iObjectRegistry*  object_reg, 
                       wxWindow*         parent,
-                      iEditor*          editor,
                       wxWindowID        id,
                       const wxPoint&    position,
                       const wxSize&     size,
@@ -66,7 +65,7 @@ public:
                     );
 
     /// Sets the current active modifiable entity in the grid
-    void SetModifiable            (iModifiable*);
+    void SetModifiable            (iModifiable* modifiable);
     /// Gets the currently active modifiable entity in the grid
     iModifiable* GetModifiable    () const;
     /// Gets called by the space owning this component

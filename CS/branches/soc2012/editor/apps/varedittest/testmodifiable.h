@@ -1,9 +1,5 @@
 /*
-  Copyright (C) 2011 Christian Van Brussel, Eutyche Mukuama, Dodzi de Souza
-      Institute of Information
-      and Communication Technologies, Electronics and Applied Mathematics
-      at Universite catholique de Louvain, Belgium
-      http://www.uclouvain.be/en-icteam.html
+  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -19,10 +15,10 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#ifndef MYGRAPHNODE1_H
-#define MYGRAPHNODE1_H
+#ifndef __TEST_MODIFIABLE_H__
+#define __TEST_MODIFIABLE_H__
 
-#include "modifiableimpl.h"
+#include "cseditor/modifiableimpl.h"
 
 /// Test entity for GUI generation.
 class csTestModifiable : public scfImplementation1<csTestModifiable, iModifiable>
@@ -31,6 +27,7 @@ public:
   csTestModifiable(const char* name, const char* job, long itemCount, iObjectRegistry* object_reg);
   virtual ~csTestModifiable();
   
+  //-- iModifiable
   const csStringID GetID() const;
   csPtr<iModifiableDescription> GetDescription () const;
 
@@ -38,17 +35,19 @@ public:
   bool SetParameterValue (csStringID id, const csVariant& value);
 
 private:
+  long              itemCount;
+  bool              awesome;
+  float             floatThingy;
+  csVector2         position;
+  csColor           color;
+  scfString         name;
+  scfString         job;
+  iObjectRegistry* object_reg;
+
+  //-- iModifiable
   csStringID id_testModifiable;
   csStringID id_name, id_job, id_position, id_color, id_itemCount, id_awesome, id_floatThingy;
 
-  long itemCount;
-  bool awesome;
-  float floatThingy;
-  csVector2 position;
-  csColor color;
-  scfString name;
-  scfString job;
-  iObjectRegistry* object_reg;
 };
 
-#endif// MYGRAPHNODE1_H
+#endif// __TEST_MODIFIABLE_H__

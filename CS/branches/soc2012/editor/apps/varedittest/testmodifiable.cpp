@@ -1,9 +1,5 @@
 /*
-  Copyright (C) 2011 Christian Van Brussel, Eutyche Mukuama, Dodzi de Souza
-      Institute of Information
-      and Communication Technologies, Electronics and Applied Mathematics
-      at Universite catholique de Louvain, Belgium
-      http://www.uclouvain.be/en-icteam.html
+  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public

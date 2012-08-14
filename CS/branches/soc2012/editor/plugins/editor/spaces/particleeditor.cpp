@@ -128,7 +128,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     cout << translator->GetMsg("Hello world") << endl;
     
     
-    modifiableEditor = new ModifiableEditor(object_reg, window, editor, wxID_ANY, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
+    modifiableEditor = new ModifiableEditor(object_reg, window, wxID_ANY, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
     mainsizer->Add(modifiableEditor, 1, wxEXPAND | wxALL, borderWidth);
     window->SetSizer(mainsizer);
     mainsizer->SetSizeHints(window);
@@ -191,10 +191,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
     printf("It is a particle system factory!\n");
 
-    csRef<iParticleSystemBase> ipb = scfQueryInterface<iParticleSystemBase>(partSys);
+    //csRef<iParticleSystemBase> ipb = scfQueryInterface<iParticleSystemBase>(partSys);
 
-    //csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
-    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(ipb->GetEmitter(0)); 
+    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
+    // csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(ipb->GetEmitter(0)); 
     if (!modifiable)
     {
       // NoModifiable();

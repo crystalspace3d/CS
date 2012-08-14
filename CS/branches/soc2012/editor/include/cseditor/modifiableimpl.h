@@ -3,6 +3,9 @@
 
 #include "iutil/objreg.h"
 #include "iutil/modifiable.h"
+#include "iutil/stringarray.h"
+#include "iutil/array.h"
+#include "csutil/stringarray.h"
 
 /**
  * Sets up the generation of modifiable property IDs. This should be followed 
@@ -137,6 +140,75 @@ public:
 
 private:
   csArray<iModifiableParameter*> parameters;
+};
+
+/**
+ * Basic implementation of the iModifiableConstraint interface. Its specialized
+ * sub-classes are recommended for use.
+ */
+class csConstraint : public scfImplementation1<csConstraint, iModifiableConstraint>
+{
+public:
+  virtual ~csConstraint()
+  {
+  }
+
+  iModifiableConstraintType GetType() const
+  {
+    return type;
+  }
+
+protected:
+  csConstraint(iModifiableConstraintType type)
+    : scfImplementation1(this),
+      type(type)
+  {
+  }
+
+private:
+  iModifiableConstraintType type;
+};
+
+/**
+ * Implements an enum constraint for a CSVAR_LONG iModifiable field. Contains a list of
+ * long values that are members of the respective enum, as well as their string labels,
+ * for displaying in a combo box.
+ */
+class csEnumConstraint : public csConstraint
+{
+public:
+  /**
+   * Main constructor. Takes ownership of the arrays.  
+   */
+  csEnumConstraint(csStringArray* labels, csArray<long>* values)
+    : csConstraint(MODIFIABLE_CONSTRAINT_ENUM)
+  {
+    CS_ASSERT_MSG ("Number of labels must match number of values.",
+      labels->GetSize() == values->GetSize());
+
+    this->labels = labels;
+    this->values = values;
+  }
+
+  ~csEnumConstraint()
+  {
+    delete labels;
+    delete values;
+  }
+
+  csStringArray* GetLabels() const
+  {
+    return labels;
+  }
+
+  csArray<long>* GetValues() const
+  {
+    return values;
+  }
+
+private:
+  csStringArray* labels;
+  csArray<long>* values;
 };
 
 #endif

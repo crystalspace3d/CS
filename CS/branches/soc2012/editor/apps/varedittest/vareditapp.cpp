@@ -1,9 +1,5 @@
 /*
-  Copyright (C) 2011 Christian Van Brussel, Eutyche Mukuama, Dodzi de Souza
-      Institute of Information
-      and Communication Technologies, Electronics and Applied Mathematics
-      at Universite catholique de Louvain, Belgium
-      http://www.uclouvain.be/en-icteam.html
+  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -25,7 +21,9 @@
 #define CS_NO_MALLOC_OVERRIDE
 
 #include "cssysdef.h"
+
 #include "vareditapp.h"
+#include "vareditframe.h"
 #include "testmodifiable.h"
 
 #include "imap/reader.h"
@@ -33,10 +31,13 @@
 #include "iutil/stringarray.h"
 #include "iutil/vfs.h"
 #include "ivaria/translator.h"
+#include <iostream>
 
 CS_IMPLEMENT_APPLICATION
 
 IMPLEMENT_APP(VarEditTestApp);
+
+using namespace std;
 
 bool VarEditTestApp::OnInit()
 {
@@ -82,15 +83,6 @@ bool VarEditTestApp::OnInit()
   string langPath ("/data/editor/lang/");
   string langFile ("de_DE.xml");
   
-  // Removed since the language files are now in data/editor/lang
-  /*
-  if(!vfs->Mount("/lang", "$^apps$/varedittest$/lang$/")) {
-    cout << "Failed to mount" << endl;
-  } else {
-    cout << "Mounted data..." << endl;
-    cout << "Opening lang file..." << endl;
-    */
-
     csRef<iDataBuffer> path(vfs->GetRealPath(langPath.data()));
     if(path.IsValid()) {
       cout << "Path functioning: " << langPath << endl;
@@ -124,8 +116,6 @@ bool VarEditTestApp::OnInit()
     } else {
       cout << "Could not open file..." << fullPath << endl;
     }
-
-  //}
 
   csRef<iStringArray> mnt(vfs->GetMounts());
 

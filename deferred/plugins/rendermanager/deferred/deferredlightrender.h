@@ -699,12 +699,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	clipVolume->cullMode = CS::Graphics::cullNormal;
 	clipVolume->mixmode = CS_FX_TRANSPARENT;
 
-	// mask in back faces that are behind geometry
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS2);
-	DrawMesh(clipVolume, persistentData.zOnlyShader, svStack);
-
         // mask out front faces that are behind geometry
 	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS1);
+	DrawMesh(clipVolume, persistentData.zOnlyShader, svStack);
+
+	// mask in back faces that are behind geometry
+	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS2);
 	DrawMesh(clipVolume, persistentData.zOnlyShader, svStack);
       }
 

@@ -117,13 +117,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
         space(p)
       {}
 
-      virtual void OnSize (wxSizeEvent& ev) {
-        if (space) space->OnSize (ev);
+      virtual void OnSize (wxSizeEvent& ev)
+      {
+        if (space) 
+          space->OnSize (ev);
       }
 
-      void OnButtonAdd(wxCommandEvent &event) {
-        // it's ok to hardcouple a link with the PS here
-        csRef<iParticleSystemFactory> ps(scfQueryInterface<iParticleSystemFactory>(space->modifiableEditor->GetModifiable()));
+      void OnButtonAddEmitter(wxCommandEvent &event)
+      {
+        csRef<iParticleSystemFactory> ps(scfQueryInterface<iParticleSystemFactory>(space->mainEditor->GetModifiable()));
         CS_ASSERT_MSG("This should be safe", ps.IsValid());
 
         csRef<iParticleBuiltinEmitterBox> em(space->emitterFactory->CreateBox());
@@ -131,8 +133,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
         // TODO: update ps here
       }
 
-      void OnButtonRemove(wxCommandEvent &event) {
+      void OnButtonRemoveEmitter(wxCommandEvent &event)
+      {
         // TODO: get a hold of the list and remove what is selected
+      }
+
+      void OnButtonAddEffector(wxCommandEvent &event) 
+      {
+
+      }
+
+      void OnButtonRemoveEffector(wxCommandEvent &event) 
+      {
+
       }
 
     private:
@@ -151,17 +164,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
 
     wxWindow*             window;
-    wxBoxSizer*           mainsizer;
+    wxBoxSizer            *mainSizer, *middleSizer, *middleLSizer, *middleRSizer;
+    wxListBox             *emitterList, *effectorList;
     csRef<iEditor>        editor;
     csRef<iEventQueue>    queue;
     csRef<iTranslator>    translator;
 
-    // Ref to the modifiable editor holding the propgrid
-    ModifiableEditor*     modifiableEditor;
+    /// Used to edit the general PS propertiees
+    ModifiableEditor*     mainEditor;
+    /// Used to edit the selectid emitter/ effector
+    ModifiableEditor*     secondaryEditor;
 
       enum {
-        idButtonAdd = 42,
-        idButtonRemove
+        idMainEditor = 42,
+        idSecondaryEditor,
+        idButtonAddEmitter,
+        idButtonRemoveEmitter,
+        idButtonAddEffector,
+        idButtonRemoveEffector,
+        idEmitterList,
+        idEffectorList
     };
   };
 }

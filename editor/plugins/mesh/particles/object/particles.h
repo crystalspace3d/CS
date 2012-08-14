@@ -168,8 +168,57 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     csPtr<iModifiableDescription> GetDescription () const {
       csBasicModifiableDescription* description = new csBasicModifiableDescription();
-      description->Push(new csBasicModifiableParameter("Particle orientation", "", CSVAR_LONG, id_particleOrientation));
-      description->Push(new csBasicModifiableParameter("Rotation mode", "", CSVAR_LONG, id_rotationMode));
+      csBasicModifiableParameter* param = new csBasicModifiableParameter("Particle render orientation", "", CSVAR_LONG, id_particleOrientation);
+      csEnumConstraint* constraint = new csEnumConstraint;
+      constraint->PushValue(CS_PARTICLE_CAMERAFACE, 
+        "Billboard always facing the camera");
+      constraint->PushValue(CS_PARTICLE_CAMERAFACE_APPROX,
+        "Billboard always facing the camera direction");
+      constraint->PushValue(CS_PARTICLE_ORIENT_COMMON,
+        "Orient around a common direction (y/up direction), facing the camera");
+      constraint->PushValue(CS_PARTICLE_ORIENT_COMMON_APPROX,
+        "Orient around a common direction (y/up direction), facing the camera, using the camera direction");
+      constraint->PushValue(CS_PARTICLE_ORIENT_VELOCITY,
+        "Use velocity vector as direction");
+      constraint->PushValue(CS_PARTICLE_ORIENT_SELF,
+        "Orient particles according to their internal rotation");
+      constraint->PushValue(CS_PARTICLE_ORIENT_SELF_FORWARD,
+        "Orient self forward - towards camera");
+      param->SetConstraint(constraint);
+      description->Push(param);
+
+      param = new csBasicModifiableParameter("Rotation mode", "", CSVAR_LONG, id_rotationMode);
+      constraint = new csEnumConstraint;
+      constraint->PushValue(CS_PARTICLE_ROTATE_NONE, "No rotation");
+      constraint->PushValue(CS_PARTICLE_ROTATE_TEXCOORD, "Rotate texture coordinates");
+      constraint->PushValue(CS_PARTICLE_ROTATE_VERTICES, "Rotate particle vertices in the billboard plane");
+      param->SetConstraint(constraint);
+      description->Push(param);
+
+      param = new csBasicModifiableParameter("Sort mode", "", CSVAR_LONG, id_sortMode);
+      constraint = new csEnumConstraint;
+      constraint->PushValue(CS_PARTICLE_SORT_NONE, "No sorting");
+      constraint->PushValue(CS_PARTICLE_SORT_DISTANCE, "Sort by distance to the camera");
+      constraint->PushValue(CS_PARTICLE_SORT_DOT, "Sort by the dot product of the normalized camera vector and the particle direction");
+      param->SetConstraint(constraint);
+      description->Push(param);
+
+      param = new csBasicModifiableParameter("Integration mode", "", CSVAR_LONG, id_integrationMode);
+      constraint = new csEnumConstraint;
+      constraint->PushValue(CS_PARTICLE_INTEGRATE_NONE, "No integration");
+      constraint->PushValue(CS_PARTICLE_INTEGRATE_LINEAR, "Integrate linear velocity into linear position");
+      constraint->PushValue(CS_PARTICLE_INTEGRATE_BOTH, "Integrate both linear and angular velocity into pose");
+      param->SetConstraint(constraint);
+      description->Push(param);
+
+      param = new csBasicModifiableParameter("Transformation mode", "", CSVAR_LONG, id_transformMode);
+      constraint = new csEnumConstraint;
+      constraint->PushValue(CS_PARTICLE_LOCAL_MODE, "Fully local mode - all positions and coordinates are relative to the particle system");
+      constraint->PushValue(CS_PARTICLE_LOCAL_EMITTER, "Particle positions and effectors operate in world space, emitters in local mode");
+      constraint->PushValue(CS_PARTICLE_WORLD_MODE, "All coordinates are in world space");
+      param->SetConstraint(constraint);
+      description->Push(param);
+
       description->Push(new csBasicModifiableParameter("Individual size", "", CSVAR_BOOL, id_individualSize));
       description->Push(new csBasicModifiableParameter("Common direction", "", CSVAR_VECTOR3, id_commonDirection));
       description->Push(new csBasicModifiableParameter("Particle size", "", CSVAR_VECTOR2, id_particleSize));
@@ -182,15 +231,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
         return new csVariant(particleOrientation);
       else if(id == id_rotationMode)
         return new csVariant(rotationMode);
+      else if(id == id_sortMode)
+        return new csVariant(sortMode);
+      else if(id == id_integrationMode)
+        return new csVariant(integrationMode);
+      else if(id == id_transformMode)
+        return new csVariant(transformMode);
       else if(id == id_individualSize)
         return new csVariant(individualSize);
       else if(id == id_commonDirection)
         return new csVariant(commonDirection);
       else if(id == id_particleSize)
         return new csVariant(particleSize);
-      //else if(id == id_emitters)
-      //  return new csVariant(emitters);
-      // Question: which is the best way to convert this to a csArray of csVariant?
       return nullptr;
     }
 
@@ -202,7 +254,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       else if(id == id_rotationMode) {
         rotationMode = (csParticleRotationMode)value.GetLong();
         return true;
-      }        
+      } 
+      else if(id == id_sortMode) {
+        SetSortMode((csParticleSortMode)value.GetLong());
+        return true;
+      }
+      else if(id == id_integrationMode)
+      {
+        SetIntegrationMode((csParticleIntegrationMode)value.GetLong());
+        return true;
+      }
+      else if(id == id_transformMode)
+      {
+        SetTransformMode(((csParticleTransformMode)value.GetLong()));
+        return true;
+      }
       else if(id == id_individualSize) {
         individualSize = value.GetBool();
         return true;
@@ -381,7 +447,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csRefArray<iParticleEffector> effectors;
 
     //-- iModifiable
-    csStringID id_particleOrientation, id_rotationMode, id_individualSize, id_commonDirection, id_particleSize, id_emitters, id_effectors;
+    csStringID id_particleOrientation, id_rotationMode, id_sortMode, id_integrationMode, id_transformMode, id_individualSize, id_commonDirection, id_particleSize, id_emitters, id_effectors;
   };
 
   /**

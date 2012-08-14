@@ -178,7 +178,18 @@ class csEnumConstraint : public csConstraint
 {
 public:
   /**
-   * Main constructor. Takes ownership of the arrays.  
+   * Doesn't initialize the list. Requires calls to PushValue(value, label) to
+   * populate the valid fields.
+   */
+  csEnumConstraint()
+    : csConstraint(MODIFIABLE_CONSTRAINT_ENUM)
+  {
+    labels = new csStringArray;
+    values = new csArray<long>;
+  }  
+
+  /**
+   * \remark Takes ownership of the arrays.  
    */
   csEnumConstraint(csStringArray* labels, csArray<long>* values)
     : csConstraint(MODIFIABLE_CONSTRAINT_ENUM)
@@ -194,6 +205,12 @@ public:
   {
     delete labels;
     delete values;
+  }
+
+  void PushValue(long value, const char* label)
+  {
+    values->Push(value);
+    labels->Push(label);
   }
 
   csStringArray* GetLabels() const

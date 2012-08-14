@@ -63,8 +63,6 @@ enum csVariantType
   //CSVAR_KEYVAL, // put on hold
   /// A list of key-value pairs, such as a hashmap
   //CSVAR_KEYVALLIST, // put on hold
-  /// A VFS path
-  //CSVAR_VFSPATH,
   /// csMatrix3 type
   CSVAR_MATRIX3,
   /// csTransform type

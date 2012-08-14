@@ -18,6 +18,7 @@
 
 #include "cssysdef.h"
 #include "iutil/objreg.h"
+#include "cseditor/modifiableimpl.h"
 #include "cseditor/modifiableeditor.h"
 
 #include "imesh/particles.h"
@@ -148,7 +149,7 @@ BEGIN_EVENT_TABLE(ModifiableEditor, wxPanel)
   EVT_SIZE        (         ModifiableEditor::OnSize)
 END_EVENT_TABLE()
 
-ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* parent, iEditor* editor, wxWindowID id, const wxPoint& position, const wxSize& size, long style, const wxString& name )
+ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* parent, wxWindowID id, const wxPoint& position, const wxSize& size, long style, const wxString& name )
   : wxPanel (parent, id, position, size, style, name)
 {
   this->object_reg = object_reg;
@@ -162,7 +163,6 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
 #ifndef wxPG_USE_WXMODULE
   wxPGInitResourceModule();
 #endif
-
   // Prepare the property grid
   pgMan = new wxPropertyGridManager (this, pageId,
     wxDefaultPosition, size,
@@ -174,7 +174,8 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
     // Plus defaults.
     wxPG_EX_HELP_AS_TOOLTIPS);
 
-  pgMan->SetPropertyAttributeAll (wxPG_BOOL_USE_CHECKBOX,true);
+  pgMan->SetPropertyAttributeAll (wxPG_BOOL_USE_CHECKBOX, true);
+  pgMan->SetDescBoxHeight( 48, true );
 }
 
 void ModifiableEditor::SetModifiable(iModifiable* modifiable) 
@@ -203,7 +204,7 @@ void ModifiableEditor::Populate ()
 	
   csRef<iModifiableDescription> description(activeModifiable->GetDescription());
 
-  // Fetch the iTranslator, to attempt to fetch existing translations of
+  // Get the iTranslator, to attempt to fetch existing translations of
   // the parameter names and descriptions
   csRef<iTranslator> translator = csQueryRegistry<iTranslator>(object_reg);
     
@@ -245,11 +246,41 @@ void ModifiableEditor::Populate ()
 
       case CSVAR_LONG :
       {
-	wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
-	wxIntProperty* intP = new wxIntProperty(translation, originalName);
-	page->Append(intP);
-	intP->SetValue(longValue);					
-	pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
+  if( param->GetConstraint() != nullptr
+      && param->GetConstraint()->GetType() == MODIFIABLE_CONSTRAINT_ENUM)
+  {
+    const csEnumConstraint* ec = static_cast<const csEnumConstraint*>(param->GetConstraint());
+    csStringArray* csLabels = ec->GetLabels();
+    wxArrayString labels;
+    for(auto i = csLabels->GetIterator(); i.HasNext(); ) 
+    {
+      labels.Add( wxString( i.Next(), wxConvUTF8) );
+    }
+
+    csArray<long>* csValues = ec->GetValues();
+    wxArrayInt values;
+    for(auto i = csValues->GetIterator(); i.HasNext(); )
+    {
+      values.Add(i.Next());
+    }
+
+    wxEnumProperty* enumP = new wxEnumProperty( translation,
+                                                originalName,
+                                                labels,
+                                                values,
+                                                (int)variant->GetLong() ); 
+    page->Append(enumP);
+  }
+  else 
+  {
+    wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
+    wxIntProperty* intP = new wxIntProperty(translation, originalName);
+    page->Append(intP);
+    intP->SetValue(longValue);
+    // Needed to actually refresh the grid and show the value
+    pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
+  }
+	
 	page->SetPropertyHelpString(originalName, description);
       }
       break;
@@ -367,7 +398,6 @@ void ModifiableEditor::Populate ()
   }
   //*/
 }
-  
 
 //---------------------------------------------------
 
@@ -390,12 +420,6 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
   csVariantType compareType = editedParameter->GetType();
   csVariant* variant( activeModifiable->GetParameterValue( editedParameter->GetID()) );
   csVariant oldValue = *variant;
-
-  // TODO: somehow notify iModifiable entity to refresh itself
-  //        I think the best way is to post an event; this is currently
-  //        just a GUI module - it shouldn't give orders to the objects
-  //        directly, let (in this case) the actual particle editor do
-  //        the refreshing
   
   if (compareType == CSVAR_STRING)
   {

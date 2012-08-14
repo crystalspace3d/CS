@@ -74,6 +74,9 @@ public:
   /// Returns the text control meant to show the actual value of the slider
   wxTextCtrl* GetLabel() const;
 
+  /// Gets the wrapping panel
+  wxPanel* GetPanel() const;
+
   /// Gets the property slider's bounding rectangle.
   wxRect GetRect (wxPropertyGrid* propgrid) const;
 
@@ -83,8 +86,14 @@ public:
 private:
   wxSlider* ctrl;
   wxTextCtrl* textCtrl;
+  wxPanel* wrapper;
+  wxSizer* wrapperSizer;
+
   int minVal, maxVal;
   static const int labelWidth = 32;
+
+  // Not used at the moment
+  void OnScroll(wxEvent& event);
 };
 
 #endif

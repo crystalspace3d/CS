@@ -72,9 +72,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
   CSPartEditSpace* editorSpace;
 
   BEGIN_EVENT_TABLE(CSPartEditSpace::Space, wxPanel)
-    EVT_SIZE(CSPartEditSpace::Space::OnSize)
-    EVT_BUTTON(idButtonAdd, CSPartEditSpace::Space::OnButtonAdd)
-    EVT_BUTTON(idButtonRemove, CSPartEditSpace::Space::OnButtonRemove)
+    EVT_SIZE  (                       CSPartEditSpace::Space::OnSize)
+    EVT_BUTTON(idButtonAddEmitter,    CSPartEditSpace::Space::OnButtonAddEmitter)
+    EVT_BUTTON(idButtonRemoveEmitter, CSPartEditSpace::Space::OnButtonRemoveEmitter)
+    EVT_BUTTON(idButtonAddEffector,   CSPartEditSpace::Space::OnButtonAddEffector)
+    EVT_BUTTON(idButtonAddEffector,   CSPartEditSpace::Space::OnButtonRemoveEffector)
   END_EVENT_TABLE()
 
   SCF_IMPLEMENT_FACTORY(CSPartEditSpace)
@@ -89,7 +91,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
   CSPartEditSpace::~CSPartEditSpace() 
   {
-    delete modifiableEditor;
+    delete mainEditor;
   }
 
   bool CSPartEditSpace::Initialize(iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent)
@@ -98,7 +100,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     this->editor = editor;
     factory = fact;
     window = new CSPartEditSpace::Space(this, parent);
-    mainsizer = new wxBoxSizer(wxVERTICAL);
+    mainSizer = new wxBoxSizer(wxVERTICAL);
 
     // TODO: method to query the active context; also call here!!!
     // Load PS plugins
@@ -128,24 +130,67 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     cout << translator->GetMsg("Hello world") << endl;
     
     
-    modifiableEditor = new ModifiableEditor(object_reg, window, wxID_ANY, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
-    mainsizer->Add(modifiableEditor, 1, wxEXPAND | wxALL, borderWidth);
-    window->SetSizer(mainsizer);
-    mainsizer->SetSizeHints(window);
+    mainEditor = new ModifiableEditor(object_reg, window, idMainEditor, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
+    mainSizer->Add(mainEditor, 1, wxEXPAND | wxALL, borderWidth);
+    window->SetSizer(mainSizer);
+    mainSizer->SetSizeHints(window);
 
-    wxButton* but = new wxButton(window, idButtonAdd, wxT("Add"));
-    but->SetSize(-1, 32);
-    mainsizer->Add(but,
-      0,
-      wxALL | wxEXPAND,
-      borderWidth);
+    middleSizer = new wxBoxSizer(wxHORIZONTAL);
+    middleLSizer = new wxBoxSizer(wxVERTICAL);
+    middleRSizer = new wxBoxSizer(wxVERTICAL);
 
-    but = new wxButton(window, idButtonRemove, wxT("Remove"));
+    mainSizer->Add(middleSizer, 1, wxEXPAND, borderWidth );
+    middleSizer->Add(middleLSizer, 1, wxEXPAND | wxALL, borderWidth);
+    middleSizer->Add(middleRSizer, 1, wxEXPAND | wxALL, borderWidth);
+
+    //-- Emitter GUI
+    middleLSizer->Add(new wxStaticText(window, wxID_ANY, wxT("Emitters")));
+    emitterList = new wxListBox (window,idEmitterList);
+    middleLSizer->Add ( emitterList,
+                        1,
+                        wxALL | wxEXPAND,
+                        borderWidth );
+
+    wxButton* but = new wxButton(window, idButtonAddEmitter, wxT("Add"));
     but->SetSize(-1, 32);
-    mainsizer->Add(but,
-      0,
-      wxALL | wxEXPAND,
-      borderWidth);
+    middleLSizer->Add ( but,
+                        0,
+                        wxALL | wxEXPAND,
+                        borderWidth );
+
+    but = new wxButton(window, idButtonRemoveEmitter, wxT("Remove"));
+    but->SetSize(-1, 32);
+    middleLSizer->Add ( but,
+                        0,
+                        wxALL | wxEXPAND,
+                        borderWidth );
+
+    //-- Effector GUI
+    middleRSizer->Add(new wxStaticText(window, wxID_ANY, wxT("Effectors")));
+    effectorList = new wxListBox(window, idEffectorList);
+    middleRSizer->Add(effectorList,
+                      1,
+                      wxALL | wxEXPAND,
+                      borderWidth);
+
+    but = new wxButton(window, idButtonAddEffector, wxT("Add"));
+    but->SetSize(-1, 32);
+    middleRSizer->Add(but,
+                      0,
+                      wxALL | wxEXPAND,
+                      borderWidth);
+
+    but = new wxButton(window, idButtonRemoveEffector, wxT("Remove"));
+    but->SetSize(-1, 32);
+    middleRSizer->Add(but,
+                      0,
+                      wxALL | wxEXPAND,
+                      borderWidth);
+
+    secondaryEditor = new ModifiableEditor(object_reg, window, idSecondaryEditor,
+      wxDefaultPosition, wxDefaultSize, 0L, wxT("Secondary editor"));
+
+    mainSizer->Add(secondaryEditor, 1, wxALL | wxEXPAND, borderWidth);
 
     printf ("\nInitialized property editing panel!\n");
     return true;
@@ -156,8 +201,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
   void CSPartEditSpace::OnSize(wxSizeEvent& event)
   {
-    //modifiableEditor->OnSize(event);
-    mainsizer->SetDimension(0, 0, event.GetSize().GetWidth(), event.GetSize().GetHeight());
+    //mainEditor->OnSize(event);
+    mainSizer->SetDimension(0, 0, event.GetSize().GetWidth(), event.GetSize().GetHeight());
     event.Skip();
   }
 
@@ -201,7 +246,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       return;
     }
    
-    modifiableEditor->SetModifiable(modifiable);
+    mainEditor->SetModifiable(modifiable);
   }
 
   wxWindow* CSPartEditSpace::GetwxWindow ()

@@ -159,7 +159,9 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
   // errors (on Windows, at least)
   // Also, this currently causes *a lot* of first-chance exceptions to get thrown
   // when the app is closing
+#ifndef wxPG_USE_WXMODULE
   wxPGInitResourceModule();
+#endif
 
   // Prepare the property grid
   pgMan = new wxPropertyGridManager (this, pageId,

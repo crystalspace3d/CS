@@ -252,14 +252,14 @@ void ModifiableEditor::Populate ()
     const csEnumConstraint* ec = static_cast<const csEnumConstraint*>(param->GetConstraint());
     csStringArray* csLabels = ec->GetLabels();
     wxArrayString labels;
-    for(auto i = csLabels->GetIterator(); i.HasNext(); ) 
+    for(csStringArray::Iterator i = csLabels->GetIterator(); i.HasNext(); ) 
     {
       labels.Add( wxString( i.Next(), wxConvUTF8) );
     }
 
     csArray<long>* csValues = ec->GetValues();
     wxArrayInt values;
-    for(auto i = csValues->GetIterator(); i.HasNext(); )
+    for(csArray<long>::Iterator i = csValues->GetIterator(); i.HasNext(); )
     {
       values.Add(i.Next());
     }

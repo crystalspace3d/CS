@@ -31,6 +31,8 @@
 #include "csutil/cfgacc.h"
 #include "csutil/scopeddelete.h"
 
+#include "igeom/trimesh.h"
+
 #include "gbuffer.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
@@ -194,8 +196,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       // shader variable for volume color
       csRef<csShaderVariable> lightVolumeColor;
 
-      // shader variable IDs for shader types
-      csStringID gbufUse;
+      // object model ID
+      csStringID clipID;
 
       // persistent shadow data - we query deferred shadow data from it
       typename ShadowHandler::PersistentData* shadowPersist;
@@ -321,6 +323,43 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	return mesh;
       }
 
+      csRenderMesh* GetClipVolume(iLight* light)
+      {
+	iObjectModel* objectModel = light->QuerySceneNode()->GetObjectModel();
+
+	csRenderMesh* mesh = nullptr;
+	if(objectModel)
+	{
+	  iTriangleMesh* triMesh = objectModel->GetTriangleData(clipID);
+	  if(triMesh)
+	  {
+	    // cosntruct temporary arrays
+	    csDirtyAccessArray<csVector3> vertices;
+	    csDirtyAccessArray<csVector3> normals;
+	    csDirtyAccessArray<csTriangle> triangles;
+
+	    size_t triCount = triMesh->GetTriangleCount();
+	    size_t vertexCount = triMesh->GetVertexCount();
+
+	    // allocate big enough buffer
+	    vertices.SetSize(vertexCount);
+	    triangles.SetSize(triCount);
+
+	    // copy data
+	    memcpy(vertices.GetArray(), triMesh->GetVertices(), vertexCount * sizeof(csVector3));
+	    memcpy(triangles.GetArray(), triMesh->GetTriangles(), triCount * sizeof(csTriangle));
+
+	    // normals are calculated by CreateRenderMesh
+
+	    // create render mesh from tri mesh
+	    return CreateRenderMesh(vertices, normals, triangles);
+	  }
+	}
+
+	// no clip volume
+	return nullptr;
+      }
+
       /**
        * Initialize persistent data, must be called once before using the
        * light renderer.
@@ -347,8 +386,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// setup config accessor
         csConfigAccess cfg(objRegistry);
 
-        // populate string IDs
-        gbufUse = stringSet->Request ("gbuffer use");
+	// get clip ID
+	clipID = stringSet->Request("clip");
 
 	// get shaders - the paths should really be configurable
 	pointShader = LoadShader("/shader/deferred/point_light.xml", "deferred_point_light");
@@ -625,30 +664,68 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       csShaderVariable* shadowSpreadSV = persistentData.shadowSpread;
       svStack[shadowSpreadSV->GetName()] = shadowSpreadSV;
 
-      // get camera
+      // get camera and mirroring
       iCamera* cam = rview->GetCamera();
+      bool camMirrored = cam->IsMirrored();
 
-      // get transform
+      // set transform and mirror mode
       obj->object2world = CreateLightTransform(light);
-
-      // set mirroring
-      obj->do_mirror = cam->IsMirrored();
+      obj->do_mirror = camMirrored;
 
       csVector3 camPos(csVector3(0.0f, 0.0f, 1.0f) / cam->GetTransform());
       bool insideLight = IsPointInsideLight(camPos, light, obj->object2world);
 
+      CS::Utility::ScopedDelete<csRenderMesh> clipVolume(persistentData.GetClipVolume(light));
+
+      bool maskStencil = clipVolume.IsValid() || !insideLight;
+
+      if(maskStencil)
+      {
+	// use stencil masking
+	graphics3D->SetShadowState(CS_SHADOW_VOLUME_BEGIN);
+      }
+
+      if(clipVolume.IsValid())
+      {
+	// start with all masked out
+	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS1);
+	obj->cullMode = CS::Graphics::cullFlipped;
+	obj->mixmode = CS_FX_TRANSPARENT;
+	DrawMesh(obj, persistentData.zOnlyShader, svStack);
+
+	// set clip volume transform and mesh modes
+	clipVolume->object2world = light->GetMovable()->GetFullTransform();
+	clipVolume->do_mirror = camMirrored;
+	clipVolume->cullMode = CS::Graphics::cullNormal;
+	clipVolume->mixmode = CS_FX_TRANSPARENT;
+
+	// mask in back faces that are behind geometry
+	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS2);
+	DrawMesh(clipVolume, persistentData.zOnlyShader, svStack);
+
+        // mask out front faces that are behind geometry
+	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS1);
+	DrawMesh(clipVolume, persistentData.zOnlyShader, svStack);
+      }
+
       if(!insideLight)
       {
-	// fill stencil buffer
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_BEGIN);
+	// mask out front faces that are behind geometry
+	obj->cullMode = CS::Graphics::cullNormal;
+	obj->mixmode = CS_FX_TRANSPARENT;
+	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS1);
+        DrawMesh(obj, persistentData.zOnlyShader, svStack);
+      }
 
-	// mark passing front faces
-	graphics3D->SetShadowState(CS_SHADOW_VOLUME_FAIL1);
-        DrawLightMesh(obj, persistentData.zOnlyShader, svStack, CS_FX_TRANSPARENT, true);
-
+      if(maskStencil)
+      {
 	// use stencil test
 	graphics3D->SetShadowState(CS_SHADOW_VOLUME_USE);
       }
+
+      // set cull and mix mode
+      obj->cullMode = CS::Graphics::cullFlipped;
+      obj->mixmode = CS_FX_ADD;
 
       // light doesn't cast shadows - draw without shadowing
       if(!persistentData.doShadows || light->GetFlags().Check(CS_LIGHT_NOSHADOWS))
@@ -657,7 +734,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	shadowSpreadSV->SetValue(0);
 
 	// draw the light without shadows
-	DrawLightMesh(obj, shader, svStack, CS_FX_ADD);
+	DrawMesh(obj, shader, svStack);
       }
       // shadow does cast shadows - draw with shadowing
       else
@@ -676,31 +753,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	    shadowSpreadSV->SetValue(spread);
 
 	    // draw light with shadows
-	    DrawLightMesh(obj, shader, localStack, CS_FX_ADD);
+	    DrawMesh(obj, shader, localStack);
 	  }
 	}
       }
 
-      if(!insideLight)
+      if(maskStencil)
       {
+	// clear stencil mask
 	graphics3D->SetShadowState(CS_SHADOW_VOLUME_FINISH);
       }
-    }
-
-    /**
-     * Draws the given light mesh using the supplied shader.
-     */
-    inline void DrawLightMesh(csRenderMesh* m,
-                       iShader* shader,
-                       csShaderVariableStack& svStack,
-                       uint mixmode,
-		       bool stencil = false)
-    {
-      // set render modes
-      m->cullMode = CS::Graphics::cullFlipped;
-      m->mixmode = mixmode;
-
-      DrawMesh(m, shader, svStack, stencil ? CS_ZBUF_TEST : CS_ZBUF_INVERT);
     }
 
     /**
@@ -730,7 +792,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       graphics3D->SetProjectionMatrix(oldProj);
     }
 
-    void DrawMesh(csRenderMesh* m, iShader* shader, csShaderVariableStack& svStack, csZBufMode zmode)
+    void DrawMesh(csRenderMesh* m, iShader* shader, csShaderVariableStack& svStack, csZBufMode zmode = CS_ZBUF_INVERT)
     {
       m->z_buf_mode = zmode;
 

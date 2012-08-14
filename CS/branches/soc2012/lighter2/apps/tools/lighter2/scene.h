@@ -66,6 +66,7 @@ namespace lighter
 
         prim.SetTriangle(t);
         prim.ComputePlane();
+        prim.SetPortal(this);
         portalPrimitives.Push(prim);
       }
       
@@ -98,6 +99,9 @@ namespace lighter
 
     THREADED_CALLABLE_DECL2(SectorProcessor,BuildPhotonMaps,csThreadReturn,
       csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,true);
+
+    THREADED_CALLABLE_DECL2(SectorProcessor,BalancePhotonMaps,csThreadReturn,
+      csRef<Sector>,sector,Statistics::Progress*, progress,THREADED,false,true)
 
     THREADED_CALLABLE_DECL7(SectorProcessor,ComputeObjectGroupLighting,csThreadReturn,
       csArray<csRef<Object> >*,objectsBatch, bool, enableRaytracer, bool, enablePhotonMapper,int,pass,

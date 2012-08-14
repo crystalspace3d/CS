@@ -1,4 +1,4 @@
-nal/*
+/*
   Copyright (C) 2008 by Greg Hoffman
   Portions Copyright (C) 2009 by Seth Berrier
 
@@ -167,6 +167,9 @@ namespace lighter
   void PhotonmapperLighting::BalancePhotons(Sector *sect, Statistics::Progress& progress)
   {
     Statistics::ProgressState progressState(progress, (int)(0.6*globalStats.photonmapping.numStoredPhotons),0.02f);
+
+    // Scale the photons for this light
+    sect->ScalePhotons(1.0/sect->numPhotonsToEmit);
 
     // Balance the PhotonMap KD-Trees
     sect->BalancePhotons(progressState);
@@ -536,7 +539,7 @@ namespace lighter
     }
 
     // Scale the photons for this light
-    sect->ScalePhotons(1.0/sect->numPhotonsToEmit);
+    //sect->ScalePhotons(1.0/sect->numPhotonsToEmit);
     if (enableCaustics)
     {
       sect->ScaleCausticPhotons(1.0/numCausticPhotonsPerSector);
@@ -567,6 +570,9 @@ namespace lighter
       // TODO: Why would a hit be returned and 'hit.primitive' be NULL?
       if (!hit.primitive || !hit.primitive->GetMaterial()) { return; }
 
+      // Get the sector where the primitive hitted
+      Sector* hitSector = hit.primitive->GetObject()->GetSector();
+
       // Get the surface normal and direction from light source
       csVector3 N = hit.primitive->ComputeNormal(hit.hitPoint);
       csVector3 L = photon.direction;
@@ -593,12 +599,12 @@ namespace lighter
       {
         if(!produceCaustic)
         {
-          sect->AddPhoton(reflColor, hit.hitPoint, L);
+          hitSector->AddPhoton(reflColor, hit.hitPoint, L);
         }
         else if (!hitPtMaterial->produceCaustic)
         {
           // Add the photon to the caustic photon map
-          sect->AddCausticPhoton(reflColor, hit.hitPoint, L);
+          hitSector->AddCausticPhoton(reflColor, hit.hitPoint, L);
           return;
         }
       }
@@ -630,7 +636,7 @@ namespace lighter
 
             // Emit a new Photon
             const PhotonRay newPhoton = { hit.hitPoint, scatterDir, newColor, newPower, photon.source, RAY_TYPE_REFLECT, refrIndex };
-            EmitPhoton(sect, newPhoton, maxDepth, depth+1, ignoreDirect, produceCaustic);
+            EmitPhoton(hitSector, newPhoton, maxDepth, depth+1, ignoreDirect, produceCaustic);
           }
         }
         else
@@ -647,7 +653,7 @@ namespace lighter
 
           // Emit a new Photon
           const PhotonRay newPhoton = { hit.hitPoint, scatterDir, newColor, newPower, photon.source, RAY_TYPE_REFLECT, refrIndex };
-          EmitPhoton(sect, newPhoton, maxDepth, depth+1, ignoreDirect, produceCaustic);
+          EmitPhoton(hitSector, newPhoton, maxDepth, depth+1, ignoreDirect, produceCaustic);
         }
       }
     }

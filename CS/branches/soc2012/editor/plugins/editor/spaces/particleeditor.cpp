@@ -116,10 +116,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       
 
     // Setup the event names
-    nameRegistry    = csEventNameRegistry::GetRegistry (object_reg);
-    addObject       = nameRegistry->GetID("crystalspace.editor.context.addselectedobject");
-    clearObjects    = nameRegistry->GetID("crystalspace.editor.context.clearselectedobjects");
-    activateObject  = nameRegistry->GetID("crystalspace.editor.context.setactiveobject");
+    nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
+    //addObject = nameRegistry->GetID("crystalspace.editor.context.selection.addselectedobject");
+    //clearObjects = nameRegistry->GetID("crystalspace.editor.context.selection.clearselectedobjects");
+    activateObject = nameRegistry->GetID("crystalspace.editor.context.selection.setactiveobject");
 
     // Respond to context events
     //csEventID contextSelect = nameRegistry->GetID("crystalspace.editor.context");
@@ -193,6 +193,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     mainSizer->Add(secondaryEditor, 1, wxALL | wxEXPAND, borderWidth);
 
     printf ("\nInitialized property editing panel!\n");
+
+    // Populate with the current active object 
+    Populate (); 
+
     return true;
   }
 

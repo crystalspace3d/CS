@@ -116,7 +116,12 @@ private:
     ~LogTextCtrl ();
 
   private:
+    void OnEnterWindow (wxMouseEvent& event);
+
+  private:
     Logger* logger;
+
+    DECLARE_EVENT_TABLE ();
   };
   csArray<wxTextCtrl*> textCtrls;
 

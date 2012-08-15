@@ -17,8 +17,10 @@
 */
 #include "cssysdef.h"
 #include "cstool/initapp.h"
+#include "csutil/event.h"
 #include "csutil/scf.h"
 #include "ieditor/context.h"
+#include "ieditor/operator.h"
 #include "iengine/engine.h"
 #include "iengine/camera.h"
 #include "iengine/campos.h"
@@ -27,6 +29,7 @@
 #include "iengine/sector.h"
 #include "imap/loader.h"
 #include "imap/saver.h"
+#include "imesh/particles.h"
 #include "iutil/object.h"
 #include "iutil/plugin.h"
 #include "ivaria/pmeter.h"
@@ -61,11 +64,11 @@ bool SceneManager::Initialize (iEditor* editor)
   iEventNameRegistry* registry =
     csEventNameRegistry::GetRegistry (object_reg);
   eventSetActiveObject =
-    registry->GetID ("crystalspace.editor.context.setactiveobject");
+    registry->GetID ("crystalspace.editor.context.selection.setactiveobject");
   eventSetCamera =
-    registry->GetID ("crystalspace.editor.context.setcamera");
+    registry->GetID ("crystalspace.editor.context.camera.setcamera");
   eventSetCollection = 
-    registry->GetID ("crystalspace.editor.context.setcollection");
+    registry->GetID ("crystalspace.editor.context.fileloader.setcollection");
 
   csEventID events[] = {
     eventSetActiveObject,
@@ -75,6 +78,9 @@ bool SceneManager::Initialize (iEditor* editor)
   };
 
   RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
+
+  // Register a mouse listener to the global event queue
+  mouseListener.AttachNew (new SceneManager::MouseListener (this));
 
   return true;
 }
@@ -350,9 +356,25 @@ void SceneManager::CreateViewmeshScene (iMeshFactoryWrapper* meshFactory,
   camera->SetSector (meshSector);
   cameraManager->SetCameraMode (CS::Utility::CAMERA_ROTATE);
 
+  // Hack: if this is a particle mesh factory, then set its deep creation
+  // parameter to 'false'.
+  csRef<iParticleSystemFactory> partSys =
+    scfQueryInterface<iParticleSystemFactory> (meshFactory->GetMeshObjectFactory ()); 
+  bool deepCreation;
+  if (partSys)
+  {
+    deepCreation = partSys->GetDeepCreation ();
+    partSys->SetDeepCreation (false);
+  }
+
+  // Create the mesh
   csRef<iMeshWrapper> meshWrapper =
     engine->CreateMeshWrapper (meshFactory, "viewmesh", meshSector);
 
+  // Put back the 'deep creation' parameter
+  if (partSys) partSys->SetDeepCreation (deepCreation);
+
+  // Setup the camera manager
   csBox3 bbox = meshWrapper->GetWorldBoundingBox ();
   cameraManager->SetCameraTarget (bbox.GetCenter ());
   float boxSize = bbox.GetSize ().Norm ();
@@ -402,6 +424,31 @@ void SceneManager::PositionCamera (iCamera* camera, csBox3& bbox)
     (bbox.GetCenter () + csVector3 (0.0f, 0.0f, - boxSize));
   camera->GetTransform ().LookAt
     (csVector3 (0.0f, 0.0f, boxSize), csVector3 (0.0f, 1.0f, 0.0f));
+}
+
+// -------------------------------------------------------------------------------------
+
+SceneManager::MouseListener::MouseListener (SceneManager* manager)
+  : scfImplementationType (this), manager (manager)
+{
+  csRef<iEventQueue> eventQueue =
+    csQueryRegistry<iEventQueue> (manager->object_reg);
+  eventQueue->RegisterListener (this, csevMouseEvent (manager->object_reg));
+}
+
+bool SceneManager::MouseListener::HandleEvent (iEvent &event)
+{
+  iEventNameRegistry* nameRegistry = csEventNameRegistry::GetRegistry (manager->object_reg);
+  if (event.Name == csevMouseDown (nameRegistry, 0)
+      && csMouseEventHelper::GetButton (&event) == 0)
+  {
+    iOperatorManager* operatorManager = manager->editor->GetOperatorManager ();
+    csRef<iOperator> op = operatorManager->CreateOperator ("crystalspace.editor.operator.select");
+    operatorManager->Invoke(op, &event);
+    return true;
+  }
+
+  return false;
 }
 
 }

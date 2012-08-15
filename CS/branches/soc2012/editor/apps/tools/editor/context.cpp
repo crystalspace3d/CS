@@ -47,17 +47,17 @@ Context::Context (iObjectRegistry* obj_reg)
   csRef<iEventNameRegistry> registry =
     csQueryRegistry<iEventNameRegistry> (object_reg);
   eventSetActiveObject =
-    registry->GetID ("crystalspace.editor.context.setactiveobject");
+    registry->GetID ("crystalspace.editor.context.selection.setactiveobject");
   eventAddSelectedObject =
-    registry->GetID ("crystalspace.editor.context.addselectedobject");
+    registry->GetID ("crystalspace.editor.context.selection.addselectedobject");
   eventRemoveSelectedObject =
-    registry->GetID ("crystalspace.editor.context.removeselectedobject");
+    registry->GetID ("crystalspace.editor.context.selection.removeselectedobject");
   eventClearSelectedObjects =
-    registry->GetID ("crystalspace.editor.context.clearselectedobjects");
+    registry->GetID ("crystalspace.editor.context.selection.clearselectedobjects");
   eventSetCamera =
-    registry->GetID ("crystalspace.editor.context.setcamera");
+    registry->GetID ("crystalspace.editor.context.camera.setcamera");
   eventSetCollection =
-    registry->GetID ("crystalspace.editor.context.setcollection");
+    registry->GetID ("crystalspace.editor.context.fileloader.setcollection");
 }
 
 Context::~Context ()
@@ -135,19 +135,30 @@ iObject* Context::GetActiveObject () const
   return active;
 }
 
-void Context::AddSelectedObject (iObject* obj)
+void Context::AddSelectedObject (iObject* object)
 {
-  if (selection.Find (obj) == csArrayItemNotFound)
-  {
-    selection.Push (obj);
-  }
-  PostEvent (eventAddSelectedObject);
+  if (!object || selection.Find (object) != csArrayItemNotFound)
+    return;
+  selection.Push (object);
+
+  // Post the event
+  csRef<iEvent> event = eventQueue->CreateEvent (eventAddSelectedObject);
+  event->Add ("object", object);
+  eventQueue->Post (event);
+  eventQueue->Process ();
 }
 
-void Context::RemoveSelectedObject (iObject* obj)
+void Context::RemoveSelectedObject (iObject* object)
 {
-  selection.Delete (obj);
-  PostEvent (eventRemoveSelectedObject);
+  if (!object || selection.Find (object) == csArrayItemNotFound)
+    return;
+  selection.Delete (object);
+
+  // Post the event
+  csRef<iEvent> event = eventQueue->CreateEvent (eventRemoveSelectedObject);
+  event->Add ("object", object);
+  eventQueue->Post (event);
+  eventQueue->Process ();
 }
 
 void Context::ClearSelectedObjects ()

@@ -36,7 +36,9 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
-class CS3DSpace : public scfImplementation1<CS3DSpace, iSpace>,
+class CS3DSpace
+  : public wxEvtHandler,
+    public scfImplementation1<CS3DSpace, iSpace>,
     public csBaseEventHandler
 {
 public:
@@ -55,12 +57,13 @@ public:
   //-- iEventHandler
   bool HandleEvent (iEvent &event);
 
-  void OnSize (wxSizeEvent& event);
-  
 private:
   virtual void OnFrameBegin ();
   virtual void OnFramePrint ();
   
+  void OnSize (wxSizeEvent& event);
+  void OnEnterWindow (wxMouseEvent& event);
+
 private:
   iObjectRegistry* object_reg;
   iEditor* editor;
@@ -106,7 +109,7 @@ private:
     public:
       Space (CS3DSpace* p, wxWindow* parent, wxWindowID id = wxID_ANY,
 	    const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize)
-      : wxPanel (parent, id, pos, size), space(p)
+      : wxPanel (parent, id, pos, size), space (p)
       {}
     
       //-- wxPanel

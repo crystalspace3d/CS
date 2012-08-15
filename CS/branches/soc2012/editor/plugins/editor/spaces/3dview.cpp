@@ -81,6 +81,10 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   window = new CS3DSpace::Space
     (this, parent, -1, wxPoint (0,0), wxSize (-1,-1));
   wxwin->SetParent (window);
+
+  // Listen to the 'enter window' event in order to put back the focus on this window
+  wxwin->GetWindow ()->Connect
+    (wxEVT_ENTER_WINDOW, wxMouseEventHandler (CS3DSpace::OnEnterWindow), 0, this);
   
   // Setup the view and the camera context
   view = csPtr<iView> (new csView (engine, g3d));
@@ -95,7 +99,7 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   iEventNameRegistry* registry =
     csEventNameRegistry::GetRegistry (object_reg);
   eventSetCollection = 
-    registry->GetID ("crystalspace.editor.context.setcollection");
+    registry->GetID ("crystalspace.editor.context.fileloader.setcollection");
   RegisterQueue (editor->GetContext ()->GetEventQueue (),
 		 eventSetCollection);
 
@@ -200,6 +204,12 @@ void CS3DSpace::OnSize (wxSizeEvent& event)
   view->SetRectangle (0, 0, size.x, size.y, false);
 
   event.Skip ();
+}
+
+void CS3DSpace::OnEnterWindow (wxMouseEvent& event)
+{
+  csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
+  wxwin->GetWindow ()->SetFocus ();
 }
 
 //---------------------------------------------------------------

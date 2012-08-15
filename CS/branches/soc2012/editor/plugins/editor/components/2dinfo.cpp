@@ -144,15 +144,20 @@ void CS2DInfo::UpdateFrame ()
 
   if (sectorName == "viewmesh")
   {
-    WriteShadow (x, y, fontColor, "%s",
-		 camera->GetSector ()->GetMeshes ()->Get (0)->GetFactory ()->QueryObject ()->GetName ());
+    csString name = camera->GetSector ()->GetMeshes ()->Get (0)->GetFactory ()->QueryObject ()->GetName ();
+    if (!name) name = "Unnamed object";
+    WriteShadow (x, y, fontColor, "%s", name.GetData ());
     y -= lineSize;
   }
 
   else if (selection.GetSize ())
   {
     if (selection.GetSize () == 1)
-      WriteShadow (x, y, fontColor, "%s", selection[0]->GetName ());
+    {
+      csString name = selection[0]->GetName ();
+      if (!name) name = "Unnamed object";
+      WriteShadow (x, y, fontColor, "%s", name.GetData ());
+    }
     else
       WriteShadow (x, y, fontColor, "%i objects selected", selection.GetSize ());
     y -= lineSize;

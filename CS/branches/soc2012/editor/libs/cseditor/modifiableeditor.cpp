@@ -176,6 +176,14 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
 
   pgMan->SetPropertyAttributeAll (wxPG_BOOL_USE_CHECKBOX, true);
   pgMan->SetDescBoxHeight( 48, true );
+
+  // Temporary
+  /*
+  wxPropertyGrid::RegisterAdditionalEditors();
+  wxIntProperty* prop = new wxIntProperty(wxT("LABLEEL"), wxT("NAME"), 42);
+  prop->SetEditor(wxPG_EDITOR(SpinCtrl));
+  pgMan->GetGrid()->Append(prop);
+  */
 }
 
 void ModifiableEditor::SetModifiable(iModifiable* modifiable) 
@@ -213,13 +221,19 @@ void ModifiableEditor::Populate ()
 
   size_t nPg = pgMan->GetPageCount ();
 	
-  if (nPg >0)
+  if (nPg > 0)
   { 
     page = pgMan->GetPage (wxT ("Properties"));
     pgMan->SetDescription (wxT ("Page Manager"), wxT ("New Page added!"));
 
-    wxString categoryName (wxT("= entity name here ="), wxConvUTF8);
-	  
+    csRef<iObject> asObject(scfQueryInterface<iObject>(activeModifiable));
+    const char* name;
+    if (asObject)
+      name = asObject->GetName();
+    else
+      name = wxT("iModifiable Entity");
+    wxString categoryName (name, wxConvUTF8);
+
     wxPropertyCategory * ctgr = new wxPropertyCategory (categoryName);
     page ->Append (ctgr);
 
@@ -249,6 +263,7 @@ void ModifiableEditor::Populate ()
   if( param->GetConstraint() != nullptr
       && param->GetConstraint()->GetType() == MODIFIABLE_CONSTRAINT_ENUM)
   {
+    // Generate a combo-box based on enum values
     const csEnumConstraint* ec = static_cast<const csEnumConstraint*>(param->GetConstraint());
     csStringArray* csLabels = ec->GetLabels();
     wxArrayString labels;
@@ -273,10 +288,10 @@ void ModifiableEditor::Populate ()
   }
   else 
   {
+    // Plain old text field
     wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
     wxIntProperty* intP = new wxIntProperty(translation, originalName);
     page->Append(intP);
-    intP->SetValue(longValue);
     // Needed to actually refresh the grid and show the value
     pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
   }
@@ -289,11 +304,14 @@ void ModifiableEditor::Populate ()
       { 
 	double value = variant->GetFloat();
 
-  // Generate a homebrewed slider 
-	wxPGSliderProperty* sliderP = new wxPGSliderProperty (translation, originalName, value, 0, 10000);
-	page->Append (sliderP);
-	sliderP->Init ();
+  // Generate a homebrewed slider
+  wxFloatProperty* fp = new wxFloatProperty(translation, originalName, value);
+  wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(), wxT("SliderEditor"));
+  fp->SetEditor(rHandle);
+  page->Append(fp);
+
 	page->SetPropertyHelpString (originalName, description);
+
       }
       break;
 
@@ -470,7 +488,6 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
   }
   else if (compareType == CSVAR_VECTOR2)
   {
-
     float valueX = property->Item(0)->GetValue().GetDouble ();
     float valueY = property->Item(1)->GetValue().GetDouble ();
     variant->SetVector2(csVector2(valueX,valueY));
@@ -510,6 +527,16 @@ void ModifiableEditor::OnPropertyGridChanging (wxPropertyGridEvent& event)
   const iModifiableConstraint* constraint = param->GetConstraint();
 
   if(constraint != nullptr) {
+    // The better option, imho is to just rely on
+    // dynamic binding to do the work of that switch
+    // and simply call:
+    if(!constraint->Validate(activeModifiable->GetParameterValue(param->GetID())))
+    {
+      event.Veto();
+      return;
+    }
+
+      /*
     switch(constraint->GetType()) {
     case MODIFIABLE_CONSTRAINT_BOUNDED:
       break;
@@ -535,6 +562,7 @@ void ModifiableEditor::OnPropertyGridChanging (wxPropertyGridEvent& event)
     case MODIFIABLE_CONSTRAINT_BITMASK:
       break;
     }
+    //*/
   }
   csPrintf("Evaluating constraint of: %s\n", param->GetName());
 }

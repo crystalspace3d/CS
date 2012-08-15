@@ -33,7 +33,8 @@ struct iModifiableConstraint : public virtual iBase
   SCF_INTERFACE(iModifiableConstraint, 1, 0, 0);
 
   virtual iModifiableConstraintType GetType() const = 0;
-  // TODO: callbacks
+  
+  virtual bool Validate(const csVariant& variant) const = 0;
 };
 
 
@@ -54,7 +55,7 @@ struct iModifiableConstraintBounded : public virtual iModifiableConstraint
 struct iModifiableConstraintEnum : public virtual iModifiableConstraint
 {
   virtual size_t GetValueCount () const = 0;
-  virtual csVariant& GetValue (size_t index) const = 0;
+  virtual long GetValue (size_t index) const = 0;
 };
 
 
@@ -94,6 +95,8 @@ struct iModifiableParameter : public virtual iBase
 /**
  * The descriptor of an iModifiable object. Contains ways to expose and access its
  * properties.
+ * 
+ * \see csModifiableDescription for an implementation
  */
 struct iModifiableDescription : public virtual iBase
 {

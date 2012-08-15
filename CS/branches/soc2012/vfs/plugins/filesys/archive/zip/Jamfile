@@ -1,0 +1,8 @@
+SubDir TOP plugins filesys archive zip ;
+
+if $(ZLIB.AVAILABLE) = "yes"
+{
+Description zip : "Virtual File System zip archive support plugin" ;
+Plugin zip : [ Wildcard *.cpp *.h ] ;
+LinkWith zip : crystalspace ;
+}

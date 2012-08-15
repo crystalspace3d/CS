@@ -80,9 +80,9 @@ csArchive::csArchive (const char *filename)
   comment_length = 0;
   csArchive::filename = CS::StrDup (filename);
 
-  file.AttachNew (new csPhysicalFile (filename, "rb"));
+  file = OpenBaseFile (VFS_FILE_READ);
   if (file->GetStatus() != VFS_STATUS_OK)	/* Create new archive file */
-    file.AttachNew (new csPhysicalFile (filename, "wb"));
+    file = OpenBaseFile (VFS_FILE_WRITE);
   else
     ReadDirectory ();
 }
@@ -99,6 +99,27 @@ csArchive::~csArchive ()
     ArchiveEntry* e = lazy[i];
     delete e;
   }
+}
+
+csPtr<iFile> csArchive::OpenBaseFile (int mode)
+{
+  // default file handle opening mechanism
+  iFile *file = nullptr;
+
+  switch (mode)
+  {
+  case VFS_FILE_READ:
+    file = new csPhysicalFile (filename, "rb");
+    break;
+  case VFS_FILE_WRITE:
+    file = new csPhysicalFile (filename, "wb");
+    break;
+  case VFS_FILE_APPEND:
+    file = new csPhysicalFile (filename, "ab");
+    break;
+  }
+
+  return csPtr<iFile> (file);
 }
 
 void csArchive::ResetArchiveEntry (ArchiveEntry *f, size_t size, bool pack)
@@ -670,10 +691,10 @@ skip_entry:
 
     temp->SetPos (0);
 
-    file.AttachNew (new csPhysicalFile (filename, "wb"));
+    file = OpenBaseFile (VFS_FILE_WRITE);
     if (file->GetStatus() != VFS_STATUS_OK)
     {
-      file.AttachNew (new csPhysicalFile (filename, "rb"));
+      file = OpenBaseFile (VFS_FILE_READ);
       goto temp_failed;
     }
     while (fsize)
@@ -683,13 +704,13 @@ skip_entry:
       if (file->Write (buff, bytes_read) < bytes_read)
       {
         /* Yuck! Keep at least temporary file */
-        file.AttachNew (new csPhysicalFile (filename, "rb"));
+        file = OpenBaseFile (VFS_FILE_READ);
         return false;
       }
       fsize -= bytes_read;
     }
     /* Hurray! We're done */
-    file.AttachNew (new csPhysicalFile (filename, "rb"));
+    file = OpenBaseFile (VFS_FILE_READ);
   }
 
   /* Now if we are here, all operations have been successful */

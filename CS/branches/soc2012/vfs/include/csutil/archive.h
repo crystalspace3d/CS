@@ -135,6 +135,10 @@ private:
     size_t size = 0, bool pack = true);
   void ResetArchiveEntry (ArchiveEntry *f, size_t size, bool pack);
 
+protected:
+  /// Open underlying file handle. Override this to change behavior.
+  virtual csPtr<iFile> OpenBaseFile (int mode);
+
 public:
   /// Open the archive.
   csArchive (const char *filename);
@@ -226,7 +230,7 @@ public:
    * user can be prompted to free some space on drive then retry
    * Flush().
    */
-  bool Flush ();
+  virtual bool Flush ();
 
   /// Get Nth file in archive or 0
   void *GetFile (size_t no)

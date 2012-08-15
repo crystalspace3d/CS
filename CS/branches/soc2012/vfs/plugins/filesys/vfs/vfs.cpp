@@ -55,9 +55,12 @@
 #include "csutil/util.h"
 #include "csutil/vfsplat.h"
 #include "csutil/fifo.h"
+#include "csutil/scopeddelete.h"
+#include "cstool/vfspathhelper.h"
 #include "iutil/databuff.h"
 #include "iutil/objreg.h"
 #include "iutil/verbositymanager.h"
+#include "iutil/document.h"
 
 #define NEW_CONFIG_SCANNING
 
@@ -68,6 +71,9 @@ namespace
   const char CS_PATH_SEPARATOR_STRING  [] = { CS_PATH_SEPARATOR,  '\0' };
   // VFS path separator ('/'), in string format
   const char VFS_PATH_SEPARATOR_STRING [] = { VFS_PATH_SEPARATOR, '\0' };
+  // Both path separators in string format (either '\/' or '//')
+  const char ANY_PATH_SEPARATOR_STRING [] = { CS_PATH_SEPARATOR,
+                                              VFS_PATH_SEPARATOR, '\0' };
   // VFS root path
   const char *VFS_ROOT_PATH = VFS_PATH_SEPARATOR_STRING;
   // whitespace characters (subject to trimming) in VFS
@@ -82,9 +88,6 @@ namespace
   // Returns: NULL-terminated list of pointers to null-terminated C-string
   // Remarks: each string entries need not be freed separately.
   const char **SplitRealPath (const char *pathList);
-
-  csString ComposeVfsPath (const char *base, const char *suffix);
-  csString &AppendVfsPath (csString &base, const char *suffix);
 
   // Transform a path so that every \ or / is replaced with $/.
   // If 'add_end' is true there will also be a $/ at the end if there
@@ -108,6 +111,8 @@ typedef csStringFast<CS_MAXPATHLEN> PathString;
 // NOTE on naming convention: public classes begin with "cs"
 // while private (local) classes do not.
 //***********************************************************
+
+class FindFilesContext;
 
 // Private structure used to keep a "node" in virtual filesystem tree.
 // The nodes are not refcounted objects. Any access on this structure
@@ -152,9 +157,13 @@ public:
   // Unmount filesystems from a list of real-world path
   bool UnmountFileSystem (const char **realPath);
   // Find all files in a subpath
-  void FindFiles (const char *suffix, const char *mask, iStringArray *FileList);
+  void FindFiles (const char *suffix,
+                  const char *mask,
+                  FindFilesContext &context);
   // Find a file and return the appropiate csFile object
-  iFile *Open (int mode, const char *suffix);
+  iFile *Open (int mode,
+               const char *suffix,
+               const csVfsOptionList &options);
   // Delete a file
   bool Delete (const char *suffix);
   // Does file exists?
@@ -176,6 +185,8 @@ public:
   // Return the list of mounted real path in a single string.
   // Each entry is delimited by VFS_PATH_DIVIDER plus an extra whitespace
   csString GetMountListString ();
+  // Call Flush() on every mounted filesystem
+  void Flush ();
 private:
   // Find a file either on disk or in archive - in this node only
   // - takes suffix (rest of the path, deeper in the tree)
@@ -188,6 +199,34 @@ private:
 
   // Mutex on this node.
   CS::Threading::ReadWriteMutex mutex;
+};
+
+// Private structure to keep context information in FindFiles ()
+class FindFilesContext : private NonCopyable
+{
+private:
+  // hashtable to find duplicates
+  csHash<size_t, const char *> table;
+  // list of filenames to construct
+  scfStringArray *list;
+
+public:
+  // constructor
+  FindFilesContext () : list (new scfStringArray) { }
+  // destructor
+  ~FindFilesContext () { delete list; }
+
+  // Insert a given path to the list if there are no duplicates
+  void Insert (const char *path);
+  // Take ownership of the list. Once this function is called, any
+  // subsequent calls to any function will fail
+  csPtr<iStringArray> GetResult ();
+};
+
+// private structure to hold archive handler metadata
+struct ArchiveHandlerMetadata
+{
+  csStringArray extensions;
 };
 
 // ------------------------------------------------------------- VfsNode --- //
@@ -531,8 +570,16 @@ csString VfsNode::GetMountListString ()
   return result;
 }
 
-void VfsNode::FindFiles (const char *suffix, const char *mask,
-  iStringArray *fileList)
+void VfsNode::Flush ()
+{
+  CS::Threading::ScopedReadLock lock (mutex);
+  for (size_t i = 0; i < fileSystems.GetSize (); ++i)
+    fileSystems.Get (i)->Flush ();
+}
+
+void VfsNode::FindFiles (const char *suffix,
+                         const char *mask,
+                         FindFilesContext &context)
 {
 
   size_t i;
@@ -579,17 +626,26 @@ void VfsNode::FindFiles (const char *suffix, const char *mask,
       if (addSlash)
         vpath << VFS_PATH_SEPARATOR;
 
-      // TODO: check for duplicates
       // insert
-      fileList->Push (vpath);
+      context.Insert (vpath);
     }
   }
 }
 
+// If there IS a directory of given path within current node, returns true
+// Note that it is still possible to contain a file of given path
 bool VfsNode::IsDir (const char *vfsPath)
 {
-  // TODO: implement feature
-  return true;
+  // make sure no one messes up with current node
+  CS::Threading::ScopedReadLock lock (mutex);
+  // check through every single filesystem mounted
+  for (size_t i = 0; i < fileSystems.GetSize (); ++i)
+  {
+    // if file is found in one of filesystems, return true
+    if (fileSystems.Get (i)->IsDir (vfsPath))
+      return true;
+  }
+  return false;
 }
 
 bool VfsNode::IsEmpty ()
@@ -601,7 +657,9 @@ bool VfsNode::IsEmpty ()
   return fileSystems.IsEmpty () && children.IsEmpty ();
 }
 
-iFile* VfsNode::Open (int mode, const char *filename)
+iFile* VfsNode::Open (int mode,
+                      const char *filename,
+                      const csVfsOptionList &options)
 {
   csRef<iFile> f;
 
@@ -613,7 +671,7 @@ iFile* VfsNode::Open (int mode, const char *filename)
     // no need to use smart pointers here
     iFileSystem *fs = fileSystems.Get (i);
 
-    f = fs->Open (filename, vfsPath, mode, false);
+    f = fs->Open (filename, vfsPath, mode, options);
     if (f->GetStatus () == VFS_STATUS_OK)
       break; // done
     else
@@ -624,7 +682,6 @@ iFile* VfsNode::Open (int mode, const char *filename)
   }
   return f;
 }
-
 
 csRef<iFileSystem> VfsNode::FindFile (const char *suffix, size_t rank)
 {
@@ -759,6 +816,34 @@ bool VfsNode::SetFilePermission (const char *suffix,
   return false;
 }
 
+// ---------------------------------------------------- FindFilesContext --- //
+
+void FindFilesContext::Insert (const char *path)
+{
+  // do nothing if this context has been finalized (no longer own the list)
+  if (!list)
+    return;
+
+  if (table.Get (path, (size_t)-1) == (size_t)-1)
+    return; // already exists
+
+  // first push into the list
+  list->Push (path);
+  // index of last inserted element
+  size_t index = list->GetSize () - 1;
+  // note that inserted string is from scfStringArray, in order to make sure
+  // we own the string
+  table.Put (list->Get (index), index);
+}
+
+csPtr<iStringArray> FindFilesContext::GetResult ()
+{
+  iStringArray *result = list;
+  // relinquish ownership
+  list = nullptr;
+  return csPtr<iStringArray> (result);
+}
+
 // --------------------------------------------------------------- csVFS --- //
 
 SCF_IMPLEMENT_FACTORY (csVFS)
@@ -782,7 +867,7 @@ csVFS::csVFS (iBase *iParent) :
   // insert root node manually
   nodeTable.Put (VFS_ROOT_PATH, root);
   // initialize compile-time static nodes other than root nodes
-  //InitStaticNodes ();
+  InitStaticNodes ();
 }
 
 csVFS::~csVFS ()
@@ -804,6 +889,89 @@ csVFS::~csVFS ()
   cs_free (basedir);
   cs_free (resdir);
   cs_free (appdir);
+}
+
+bool csVFS::AddProtocolHandler (const char *className, const char *protocol)
+{
+  // @@@TODO: implement logic
+  return false;
+}
+
+bool csVFS::AddArchiveHandler (const char *className,
+                               const ArchiveHandlerMetadata &metadata)
+{
+  // @@@TODO: implement logic
+  return false;
+}
+
+void csVFS::RegisterPlugin (const char *className)
+{
+  CS_ASSERT (name); // name must not be NULL
+
+  // get metadata to access required information
+  csRef<iDocument> metadata = iSCF::SCF->GetPluginMetadata (className);
+  csRef<iDocumentNode> rootNode = metadata->GetRoot ();
+
+  // filesystem factory information
+  csRef<iDocumentNodeIterator> factoryNodes = rootNode->GetNodes ("filesystem");
+  while (factoryNodes->HasNext ())
+  {
+    // get <filesystem> node
+    csRef<iDocumentNode> factoryNode = factoryNodes->Next ();
+
+    // is this associated with given class (plugin)?
+    csRef<iDocumentNode> classNode = factoryNode->GetNode ("class");
+    if (!classNode.IsValid () ||
+        strcmp (className, classNode->GetContentsValue ()) != 0)
+      continue; // if the name doesn't match, we don't want to process this...
+
+    // get protocol
+    csRef<iDocumentNodeIterator> protocolList =
+      factoryNode->GetNodes ("protocol");
+
+    while (protocolList->HasNext ())
+    {
+      // get protocol entry
+      csRef<iDocumentNode> protocolNode = protocolList->Next ();
+      const char *protocol = protocolNode->GetContentsValue ();
+      // store protocol mapping information
+      AddProtocolHandler (className, protocol);
+    }
+  }
+
+  // archiveHandler information (if any)
+  csRef<iDocumentNode> ahNode = rootNode->GetNode ("archiveHandler");
+  if (ahNode.IsValid ())
+  {
+    // contains archive handler information; process it
+    csRef<iDocumentNodeIterator> archiveTypes =
+      ahNode->GetNodes ("archiveType");
+
+    // each archiveType element contains information
+    while (archiveTypes->HasNext ())
+    {
+      csRef<iDocumentNode> archiveType = archiveTypes->Next ();
+      // is this associated with given class (plugin)?
+      csRef<iDocumentNode> classNode = archiveType->GetNode ("class");
+      if (!classNode.IsValid () ||
+          strcmp (className, classNode->GetContentsValue ()) != 0)
+        continue; // name mismatch; we don't want to process this...
+
+      ArchiveHandlerMetadata metadata;
+
+      // read extension entries
+      csRef<iDocumentNodeIterator> extensions =
+        archiveType->GetNodes ("extension");
+      while (extensions->HasNext ())
+      {
+        csRef<iDocumentNode> extension = extensions->Next ();
+        metadata.extensions.Push (extension->GetContentsValue ());
+      }
+
+      // get any relevant information
+      AddArchiveHandler (className, metadata);
+    }
+  }
 }
 
 bool csVFS::Initialize (iObjectRegistry* r)
@@ -879,7 +1047,28 @@ bool csVFS::Initialize (iObjectRegistry* r)
   LoadVfsConfig (config, basedir, seen, verbose_scan);
 #endif
 
-  return ReadConfig ();
+  if (ReadConfig ())
+  {
+    // prepare plugin list; will be initialized lazily
+    // get filesystem factories and archive handlers
+    csRef<iStringArray> pluginList =
+      iSCF::SCF->QueryClassList ("crystalspace.filesys.");
+
+    while (!pluginList->IsEmpty ())
+    {
+      // @@@FIXME: is this ordering what we really want to use?
+      // pop entry
+      char *pluginName = pluginList->Pop ();
+      // Check metadata to see whether they could be used
+      RegisterPlugin (pluginName);
+      // cleanup
+      delete [] pluginName;
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 bool csVFS::ReadConfig ()
@@ -891,6 +1080,12 @@ bool csVFS::ReadConfig ()
     AddLink (iterator->GetKey (true), iterator->GetStr ());
   }
   return true;
+}
+
+// Initialize static nodes
+void csVFS::InitStaticNodes ()
+{
+  // @@@TODO: implement static nodes
 }
 
 // Expand VFS variables
@@ -1071,20 +1266,11 @@ VfsNode *csVFS::CreateNodePath (const char *vfsPath) /* expanded vfs path */
   // return pre-existing node
   return node;
 }
-/*
-// this method is not thread safe. use appropriate locking if required
-void csVFS::DestroySubtree (VfsNode *& subtreeRoot)
+
+iFileSystem *CreateArchiveFS (iFileSystem *parent)
 {
-  if (subtreeRoot)
-  {
-    // postorder traversal; destroy all children then destroy itself
-    for (size_t i = 0; i < subtreeRoot->children.Size (); ++i)
-      DestroySubtree (subtreeRoot->children.Get (i));
-    delete subtreeRoot;
-    subtreeRoot = nullptr;
-  }
+  return nullptr;
 }
-*/
 
 csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
 {
@@ -1094,6 +1280,8 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
   const size_t pDelimiterLen = strlen (pDelimiter);
   // string length of path
   size_t length = strlen (realPath);
+  // pure path without protocol nor delimiter
+  const char *purePath = realPath;
   // buffer to hold protocol portion of path (without delimiter)
   CS_ALLOC_STACK_ARRAY (char, protocol, length);
 
@@ -1110,8 +1298,10 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
       {
         // delimiter found;
         // pEnd points at the last character of delimiter
-        // so (pEnd - realPath) - pDelimiterLen is 1 character short
-        size_t pLen = ((size_t)(pEnd - realPath)) - pDelimiterLen + 1;
+        // so pEnd + 1 points at the start of pure path section
+        purePath = pEnd + 1;
+        // thus (purePath - realPath) - pDelimiterLen is length of protocol
+        size_t pLen = ((size_t)(purePath - realPath)) - pDelimiterLen;
         memcpy (protocol, realPath, pLen);  // copy contents
         protocol [pLen] = '\0'; // null-terminate
         break;
@@ -1126,9 +1316,88 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
     strcpy (protocol, "file"); // default
 
   // TODO: filesystem instantiation logic here
-  csPtr<iFileSystem> fs = csPtr<iFileSystem> (nullptr);
 
-  return fs;
+  // get list of filesystem classes for a particular protocol
+  // to avoid threading issues, must work on a copy of original list
+  scfStringArray fsClasses /*= GetFSClasses ()*/;
+
+  iFileSystem *fs = nullptr;
+
+  while (!fs && !fsClasses.IsEmpty ())
+  {
+    // get last entry of the list
+    CS::Utility::ScopedDelete<char> fsClass (fsClasses.Pop ());
+
+    // get factory
+    csRef<iFileSystemFactory> factory =
+          scfCreateInstance<iFileSystemFactory> (fsClass);
+
+    // failed to get factory
+    if (!factory)
+      continue;
+
+    int status;
+    // try instantiating with pure path
+    fs = factory->Create (purePath, status);
+
+    // if it failed and got VFS_STATUS_DIRISFILE, switch to archive discovery
+    if (!fs && status == VFS_STATUS_DIRISFILE)
+    {
+      csString partial (purePath);
+
+      while (!partial.IsEmpty ())
+      {
+        // move to parent directory
+        size_t lastChar = partial.Length () - 1;
+
+        if (((partial[lastChar] == VFS_PATH_SEPARATOR)
+           || partial[lastChar] == CS_PATH_SEPARATOR)
+            && lastChar > 0)
+        {
+          // it ends with trailing slash.. make sure this doesn't count
+          --lastChar;
+        }
+
+        size_t pos = partial.FindLast (ANY_PATH_SEPARATOR_STRING, lastChar);
+        if (pos == (size_t)-1)
+          pos = 0; // not found; truncate the whole string
+        else
+          ++pos; // point to next char
+        partial.Truncate (pos);
+        // try again
+        fs = factory->Create (purePath, status);
+        // if failed to get the filesystem, continue
+        if (!fs)
+          continue;
+
+        // succeeded; current situation is the following
+        // 1. base path is [0,pos)
+        // 2. suffix portion is [pos,length)
+        // 3. archive name is [pos, 1st path separator from suffix)
+
+        // get archive name (without slashes)
+        csString archiveName (purePath + pos);
+        size_t archiveNameEnd = archiveName.Find (ANY_PATH_SEPARATOR_STRING);
+        archiveName.Truncate (archiveNameEnd);
+        // get suffix after archive name portion
+        const char *suffix = purePath + (pos + archiveNameEnd);
+
+        iFileSystem *parent = fs;
+        fs = nullptr;
+
+        while (!fs)
+        {
+          // get archive handler, trying every single one
+          csRef<iArchiveHandler> archive;
+          // @@@TODO: complete iArchiveHandler finishing mechanism
+
+          fs = archive->GetFileSystem (parent, archiveName, suffix);
+        } // !while
+      } // !if
+    } // !while
+  } // !if
+
+  return csPtr<iFileSystem> (fs);
 }
 
 bool csVFS::AddLink (const char *virtualPath, const char *realPath)
@@ -1161,7 +1430,7 @@ bool csVFS::AddLink (const char *virtualPath, const char *realPath)
   // got iFileSystems; find the required node and insert them
   {
     // first, acquire write lock
-    CS::Threading::ScopedWriteLock lock (mutex);
+    CS::Threading::ScopedWriteLock lock (nodeMutex);
 
     // acquire the node, creating the whole path if necessary
     VfsNode *node = CreateNodePath (expandedPath);
@@ -1301,47 +1570,7 @@ VfsNode *csVFS::GetNode (const char *path, const char **suffix)
 
   return node;
 }
-/*
-bool csVFS::PreparePath (const char *path, bool isDir, VfsNode *&node,
-  const char **suffix)
-{
-  node = 0;
-  if (suffix)
-    *suffix = "";
-  // try expansion (get normalized path)
-  char *fname = ExpandPathFast (path, isDir);
-  if (!fname)
-    return false;
-  // retrieve corresponding node with suffix information
-  node = GetNode (fname, suffix);
-  cs_free (fname);
-  return (node != 0);
-}
 
-bool csVFS::CheckIfMounted (const char *virtualPath)
-{
-  // this function used to behave differently than what had been said
-  // by the comments
-  bool ok = false;
-  char * const xPath = ExpandPathFast (virtualPath, true);
-  if (xPath != 0)
-  {
-    const char *suffix;
-    VfsNode *node = GetNode (xPath, &suffix);
-    if (node != 0)
-    {
-      // a node has been found.
-      if (suffix && *suffix == '\0')
-      {
-        // node is perfect match.
-        ok = !node->fileSystems.IsEmpty (); // true if filesystems are mounted
-      }
-    }
-    cs_free (xPath);
-  }
-  return ok;
-}
-*/
 bool csVFS::IsValidDir (const char *vfsPath)
 {
   // expand path as directory
@@ -1356,7 +1585,7 @@ bool csVFS::IsValidDir (const char *vfsPath)
     VfsNode *node = nullptr;
     const char *suffix;
     // acquire read lock
-    CS::Threading::ScopedReadLock lock (mutex);
+    CS::Threading::ScopedReadLock lock (nodeMutex);
     // get corresponding node...
     node = GetNode (xPath, &suffix);
 
@@ -1373,7 +1602,6 @@ bool csVFS::IsValidDir (const char *vfsPath)
       {
         // partial match; e.g. node /some/path/ for /some/path/example/
         // true if given suffix refers to directory
-        // TODO: implement VfsNode::IsDir ()
         result = node->IsDir (suffix);
       }
     }
@@ -1431,7 +1659,7 @@ bool csVFS::Exists (const char *path)
   char *pathExpanded = ExpandPathFast (path, false);
 
   // acquire read lock
-  CS::Threading::ScopedReadLock lock (mutex);
+  CS::Threading::ScopedReadLock lock (nodeMutex);
 
   // get the deepest node possible
   node = GetNode (pathExpanded, &suffix);
@@ -1515,17 +1743,16 @@ csRef<iStringArray> csVFS::MountRoot (const char *Path)
 
 csPtr<iStringArray> csVFS::FindFiles (const char *Path)
 {
-  scfStringArray *fl = new scfStringArray;		// the output list
+  FindFilesContext context; // context; contains output list
 
-  //csString news;
   if (Path != 0)
   {
     VfsNode *node;				// the node we are searching
     char mask [VFS_MAX_PATH_LEN + 1];		// the filename mask
     char *xPath = ExpandPathFast (Path, false); // the expanded path
     const char *suffixWithMask = nullptr;   // suffix relative to the node
-    // acquire read lock
-    CS::Threading::ScopedReadLock lock (mutex);
+    // acquire read lock on nodes
+    CS::Threading::ScopedReadLock lock (nodeMutex);
     // get node, as well as suffix portion of path
     node = GetNode (xPath, &suffixWithMask);
     // Now separate the mask from directory suffix
@@ -1552,32 +1779,38 @@ csPtr<iStringArray> csVFS::FindFiles (const char *Path)
 
       for (size_t i = 0; i < count; ++i)
       {
+        // get the node
         VfsNode *child = node->children.Get (i);
-        // does it end with slash? if not, add one
-
-        // construct the path
-        //news.Clear ();
-        //news.Append (child->vfsPath);
-
+        // vfs path of a node must end in slash
+        CS_ASSERT (child->vfsPath [strlen (child->vfsPath)-1]
+                                              == VFS_PATH_SEPARATOR);
         // if the path doesn't already exist, add it
-        if (fl->Find (child->vfsPath) == csArrayItemNotFound)
-          fl->Push (child->vfsPath);
+        context.Insert (child->vfsPath);
       }
     }
 
 
     // Now find all files in given directory node
     if (node)
-      node->FindFiles (suffix, mask, fl);
+      node->FindFiles (suffix, mask, context);
 
     // free memory
     cs_free (xPath);
   }
 
-  return csPtr<iStringArray> (fl);
+  // take ownership from context, then return
+  return context.GetResult ();
 }
 
 csPtr<iFile> csVFS::Open (const char *filename, int mode)
+{
+  // use another overload
+  return Open (filename, mode, csVfsOptionList ());
+}
+
+csPtr<iFile> csVFS::Open (const char *filename,
+                          int mode,
+                          const csVfsOptionList &options)
 {
   if (!filename)
     return 0;
@@ -1588,13 +1821,13 @@ csPtr<iFile> csVFS::Open (const char *filename, int mode)
   {
     const char *suffix;
 
-    // acquire read lock
-    CS::Threading::ScopedReadLock lock (mutex);
+    // acquire read lock on nodes
+    CS::Threading::ScopedReadLock lock (nodeMutex);
 
     VfsNode *node = GetNode (path, &suffix);
 
     if (node)
-      f = node->Open (mode, suffix);
+      f = node->Open (mode, suffix, options);
   }
 
   cs_free (path);
@@ -1604,7 +1837,22 @@ csPtr<iFile> csVFS::Open (const char *filename, int mode)
 
 bool csVFS::Sync ()
 {
-  //ArchiveCache->FlushAll ();
+  // flush each nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
+
+  // either BFS or DFS would work, but DFS is simpler
+  csArray<VfsNode *> stack;
+  stack.Push (root);
+  while (!stack.IsEmpty ())
+  {
+    VfsNode *node = stack.Pop ();
+    // flush filesystems within the node
+    node->Flush ();
+    // put all children into the stack
+    for (size_t i = 0; i < node->children.GetSize (); ++i)
+      stack.Push (node->children.Get (i));
+  }
+
   return true;
 }
 
@@ -1724,8 +1972,8 @@ bool csVFS::Mount (const char *virtualPath, const char *realPath)
 
   // got iFileSystems; find the required node and insert them
   {
-    // first, acquire write lock
-    CS::Threading::ScopedWriteLock lock (mutex);
+    // first, acquire write lock on the nodes
+    CS::Threading::ScopedWriteLock lock (nodeMutex);
 
     // acquire the node, creating the whole path if necessary
     VfsNode *node = CreateNodePath (pathExpanded);
@@ -1778,8 +2026,8 @@ bool csVFS::Unmount (const char *virtualPath, const char *realPath)
   // expand vfs path (i.e. normalize)
   char *pathExpanded = ExpandPathFast (virtualPath, true);
 
-  // acquire upgradable lock
-  CS::Threading::ScopedUpgradeableLock lock (mutex);
+  // acquire upgradable lock on nodes
+  CS::Threading::ScopedUpgradeableLock lock (nodeMutex);
   // get node of given vfs path
   VfsNode *node = GetNode (pathExpanded, &suffix);
 
@@ -1797,7 +2045,7 @@ bool csVFS::Unmount (const char *virtualPath, const char *realPath)
       if (node->IsEmpty ())
       {
         // upgrade the lock
-        mutex.UpgradeUnlockAndWriteLock ();
+        nodeMutex.UpgradeUnlockAndWriteLock ();
         // remove from config list
         csString s ("VFS.Mount.");
         s += node->configKey;
@@ -1812,7 +2060,7 @@ bool csVFS::Unmount (const char *virtualPath, const char *realPath)
         // 3. free memory
         delete node;
         // unlock
-        mutex.WriteUnlock ();
+        nodeMutex.WriteUnlock ();
       }
     }
   }
@@ -1858,7 +2106,8 @@ size_t csVFS::GetMountedNodes (csArray<VfsNode *> &nodeList)
 
 bool csVFS::SaveMounts (const char *filename)
 {
-  CS::Threading::ScopedWriteLock lock (mutex);
+  // acquire read lock for nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
   csArray<VfsNode *> nodeList;
   // get list of mounts
   GetMountedNodes (nodeList);
@@ -1920,7 +2169,7 @@ bool csVFS::TryChDirAuto (const char *dir, const char *filename)
     else
     {
       // make sure file exists
-      csString testPath = ComposeVfsPath (dir, filename);
+      csString testPath = csVfsPathHelper::ComposePath (dir, filename);
       ok = Exists (testPath);
     }
   }
@@ -1939,7 +2188,7 @@ bool csVFS::ChDirAuto (const char *path, const csStringArray* paths,
   {
     for (size_t i = 0; i < paths->GetSize (); ++i)
     {
-      csString testpath = ComposeVfsPath (paths->Get (i), path);
+      csString testpath = csVfsPathHelper::ComposePath (paths->Get (i), path);
       if (TryChDirAuto (testpath, filename))
 	    return true;
     }
@@ -1986,6 +2235,9 @@ bool csVFS::GetFileTime (const char *filename, csFileTime &oTime)
   char *expandedPath = ExpandPathFast (filename, false);
 
   const char *suffix = nullptr;
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
+
   VfsNode *node = GetNode (expandedPath, &suffix);
 
   bool success = node ? node->GetFileTime (suffix, oTime) : false;
@@ -2003,6 +2255,10 @@ bool csVFS::SetFileTime (const char *filename, const csFileTime &iTime)
   char *expandedPath = ExpandPathFast (filename, false);
 
   const char *suffix = nullptr;
+
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
+
   VfsNode *node = GetNode (expandedPath, &suffix);
 
   bool success = node ? node->SetFileTime (suffix, iTime) : false;
@@ -2020,6 +2276,9 @@ bool csVFS::GetFilePermission (const char *filename, csFilePermission &oPerm)
   char *expandedPath = ExpandPathFast (filename, false);
 
   const char *suffix = nullptr;
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
+
   VfsNode *node = GetNode (expandedPath, &suffix);
 
   bool success = node ? node->GetFilePermission (suffix, oPerm) : false;
@@ -2038,6 +2297,9 @@ bool csVFS::SetFilePermission (const char *filename,
   char *expandedPath = ExpandPathFast (filename, false);
 
   const char *suffix = nullptr;
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
+
   VfsNode *node = GetNode (expandedPath, &suffix);
 
   bool success = node ? node->SetFilePermission (suffix, iPerm) : false;
@@ -2057,8 +2319,8 @@ bool csVFS::GetFileSize (const char *filename, size_t &oSize)
   const char *suffix = nullptr;
 
   const char *expandedPath = ExpandPathFast (filename, false);
-  // acquire read lock
-  CS::Threading::ScopedReadLock lock (mutex);
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
 
   node = GetNode (expandedPath, &suffix);
 
@@ -2080,8 +2342,8 @@ bool csVFS::GetFileSize (const char *filename, uint64_t &oSize)
   const char *suffix = nullptr;
 
   char *expandedPath = ExpandPathFast (filename, false);
-  // acquire read lock
-  CS::Threading::ScopedReadLock lock (mutex);
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
 
   node = GetNode (expandedPath, &suffix);
 
@@ -2099,8 +2361,8 @@ csPtr<iDataBuffer> csVFS::GetRealPath (const char *filename)
 
   // expand vfs path
   char *pathExpanded = ExpandPathFast (filename, false);
-  // make sure no one writes to current node
-  CS::Threading::ScopedReadLock lock (mutex);
+  // make sure no one writes to node structure
+  CS::Threading::ScopedReadLock lock (nodeMutex);
   // find appropriate node
   const char *suffix;
   VfsNode *node = GetNode (pathExpanded, &suffix);
@@ -2142,7 +2404,7 @@ csRef<iStringArray> csVFS::GetMounts ()
 {
   scfStringArray *mounts = new scfStringArray;
   // acquire read lock, so we can safely read
-  CS::Threading::ScopedReadLock lock (mutex);
+  CS::Threading::ScopedReadLock lock (nodeMutex);
   csArray<VfsNode *> nodeList;
   // get a list of nodes with actual mounted filesystems
   GetMountedNodes (nodeList);
@@ -2263,29 +2525,6 @@ const char **SplitRealPath (const char *pathList)
   return header;
 }
 
-// compose two vfs path components
-csString ComposeVfsPath (const char *base, const char *suffix)
-{
-  csString path (base); // start from base path
-  // append the suffix and return
-  return AppendVfsPath (path, suffix);
-}
-
-// append suffix to given vfs base path
-csString &AppendVfsPath (csString &base, const char *suffix)
-{
-  const size_t len = base.Length (); // length of path
-
-  // if the base path already doesn't end with VFS_PATH_SEPARATOR, add one.
-  if (len > 0 && base[len - 1] != VFS_PATH_SEPARATOR)
-    base << VFS_PATH_SEPARATOR;
-
-  // add the suffix part
-  base << suffix;
-  // done.
-  return base;
-}
-
 // Transform a path so that every \ or / is replaced with $/.
 // If 'add_end' is true there will also be a $/ at the end if there
 // is not already one there.
@@ -2339,7 +2578,7 @@ char *AllocNormalizedPath (const char *s)
   if (s != 0)
   {
     // add trailing delimiter, then duplicate
-    return CS::StrDup (ComposeVfsPath (s, ""));
+    return CS::StrDup (csVfsPathHelper::ComposePath (s, ""));
   }
   return nullptr;
 }
@@ -2350,7 +2589,7 @@ bool LoadVfsConfig (csConfigFile& cfg, const char *dir,
   bool ok = false;
   if (dir != 0)
   {
-    csString s = ComposeVfsPath (dir, "vfs.cfg");
+    csString s = csVfsPathHelper::ComposePath (dir, "vfs.cfg");
     if (seen.Contains(s))
       ok = true;
     else

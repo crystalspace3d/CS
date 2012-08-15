@@ -508,6 +508,7 @@ namespace RenderManager
 	}
 
 	// initalize textures
+	// @@@FIXME: this doesn't properly initialize depth textures
 	{
 	  // create quad
 	  csSimpleRenderMesh quad;

@@ -24,6 +24,7 @@
 #include <iengine/light.h>
 #include <iengine/material.h>
 #include <iengine/mesh.h>
+#include <iengine/portal.h>
 #include <iengine/sector.h>
 #include <iengine/texture.h>
 #include "iutil/event.h"
@@ -31,6 +32,7 @@
 #include <iutil/object.h>
 #include <iutil/objreg.h>
 #include <iutil/plugin.h>
+#include <ivaria/engseq.h>
 #include <ivideo/shader/shader.h>
 
 #include <wx/wx.h>
@@ -50,6 +52,7 @@ BEGIN_EVENT_TABLE (SceneTree, wxPanel)
 END_EVENT_TABLE ()
 
 BEGIN_EVENT_TABLE (SceneTreeCtrl, wxTreeCtrl)
+  EVT_ENTER_WINDOW (SceneTreeCtrl::OnEnterWindow)
   EVT_TREE_ITEM_ACTIVATED (SceneTree_Ctrl, SceneTreeCtrl::OnItemActivated)
   EVT_TREE_SEL_CHANGED (SceneTree_Ctrl, SceneTreeCtrl::OnSelChanged)
 END_EVENT_TABLE ()
@@ -106,8 +109,9 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
 			      wxWindow *parent, const wxWindowID id,
 			      const wxPoint& pos, const wxSize& size)
   : wxTreeCtrl (parent, id, pos, size,
-		wxTR_MULTIPLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_EDIT_LABELS | wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT),
-    editor (editor)
+		wxTR_MULTIPLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_EDIT_LABELS
+		| wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT | wxTR_NO_LINES | wxTR_FULL_ROW_HIGHLIGHT),
+    editor (editor), selecting (false)
 {
   imageList = new wxImageList (16, 16);
   AssignImageList (imageList);
@@ -118,19 +122,37 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
   // Register the event handler
   iEventNameRegistry* registry =
     csEventNameRegistry::GetRegistry (object_reg);
-  csEventID eventSetCollection =
-    registry->GetID ("crystalspace.editor.context.setcollection");
-  RegisterQueue (editor->GetContext ()->GetEventQueue (),
-		 eventSetCollection);
+  eventSetCollection =
+    registry->GetID ("crystalspace.editor.context.fileloader.setcollection");
+  eventAddSelectedObject =
+    registry->GetID ("crystalspace.editor.context.selection.addselectedobject");
+  eventRemoveSelectedObject =
+    registry->GetID ("crystalspace.editor.context.selection.removeselectedobject");
+  eventClearSelectedObjects =
+    registry->GetID ("crystalspace.editor.context.selection.clearselectedobjects");
 
+  csEventID events[] = {
+    eventSetCollection,
+    eventAddSelectedObject,
+    eventRemoveSelectedObject,
+    eventClearSelectedObjects,
+    CS_EVENTLIST_END
+  };
+
+  RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
+
+  // Initialize the categories
   categories.Put (CAMERA_POSITION, "Camera positions");
   categories.Put (LIGHT, "Lights");
   categories.Put (LIGHT_FACTORY, "Light factories");
   categories.Put (MATERIAL, "Materials");
   categories.Put (MESH, "Meshes");
   categories.Put (MESH_FACTORY, "Mesh factories");
+  categories.Put (PORTAL, "Portals");
   categories.Put (SECTOR, "Sectors");
+  categories.Put (SEQUENCE, "Sequences");
   categories.Put (SHADER, "Shaders");
+  categories.Put (TRIGGER, "Triggers");
   categories.Put (TEXTURE, "Textures");
   categories.Put (UNKNOWN, "Unknown type");
 
@@ -139,7 +161,19 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
 
 bool SceneTreeCtrl::HandleEvent (iEvent &event)
 {
-  UpdateTree ();
+  if (event.Name == eventSetCollection)
+    UpdateTree ();
+
+  else if (!selecting)
+  {
+    if (event.Name == eventAddSelectedObject)
+      OnAddSelectedObject (event);
+    else if (event.Name == eventRemoveSelectedObject)
+      OnRemoveSelectedObject (event);
+    else if (event.Name == eventClearSelectedObjects)
+      OnClearSelectedObjects ();
+  }
+
   return false;
 }
 
@@ -165,8 +199,7 @@ void SceneTreeCtrl::UpdateTree ()
     return;
   }
 
-  iObject* collisionObject = collection->QueryObject ();
-  csRef<iObjectIterator> it = collisionObject->GetIterator ();
+  csRef<iObjectIterator> it = collection->QueryObject ()->GetIterator ();
   if (!it->HasNext ())
   {
     InsertItem (GetRootItem (), 0,
@@ -182,7 +215,6 @@ void SceneTreeCtrl::UpdateTree ()
     // Search the type of the object
     csRef<iMeshWrapper> mesh =
       scfQueryInterface<iMeshWrapper> (object);
-
     if (mesh)
     {
       AppendObject (object, MESH);
@@ -191,7 +223,6 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iMeshFactoryWrapper> meshFactory =
       scfQueryInterface<iMeshFactoryWrapper> (object);
-
     if (meshFactory)
     {
       AppendObject (object, MESH_FACTORY);
@@ -200,7 +231,6 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iTextureWrapper> texture =
       scfQueryInterface<iTextureWrapper> (object);
-
     if (texture)
     {
       AppendObject (object, TEXTURE);
@@ -209,7 +239,6 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iMaterialWrapper> material =
       scfQueryInterface<iMaterialWrapper> (object);
-
     if (material)
     {
       AppendObject (object, MATERIAL);
@@ -218,7 +247,6 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iShader> shader =
       scfQueryInterface<iShader> (object);
-
     if (shader)
     {
       AppendObject (object, SHADER);
@@ -227,7 +255,6 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iLightFactory> lightFactory =
       scfQueryInterface<iLightFactory> (object);
-
     if (lightFactory)
     {
       AppendObject (object, LIGHT_FACTORY);
@@ -236,7 +263,6 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iLight> light =
       scfQueryInterface<iLight> (object);
-
     if (light)
     {
       AppendObject (object, LIGHT);
@@ -245,16 +271,38 @@ void SceneTreeCtrl::UpdateTree ()
     
     csRef<iSector> sector =
       scfQueryInterface<iSector> (object);
-
     if (sector)
     {
       AppendObject (object, SECTOR);
       continue;
     }
     
+    csRef<iPortal> portal =
+      scfQueryInterface<iPortal> (object);
+    if (portal)
+    {
+      AppendObject (object, PORTAL);
+      continue;
+    }
+    
+    csRef<iSequenceWrapper> sequenceWrapper =
+      scfQueryInterface<iSequenceWrapper> (object);
+    if (sequenceWrapper)
+    {
+      AppendObject (object, SEQUENCE);
+      continue;
+    }
+    
+    csRef<iSequenceTrigger> sequenceTrigger =
+      scfQueryInterface<iSequenceTrigger> (object);
+    if (sequenceTrigger)
+    {
+      AppendObject (object, TRIGGER);
+      continue;
+    }
+    
     csRef<iCameraPosition> cameraPosition =
       scfQueryInterface<iCameraPosition> (object);
-
     if (cameraPosition)
     {
       AppendObject (object, CAMERA_POSITION);
@@ -264,17 +312,19 @@ void SceneTreeCtrl::UpdateTree ()
     AppendObject (object, UNKNOWN);
   }
 
-  // Rename the categories to make appear the count of children objects
+  // Post-process the categories
   for (int i = 0; i < TYPE_COUNT; i++)
     if (rootIDs[i].IsOk ())
     {
+      // Rename the category in order to make appear the count of children objects
       unsigned int count = GetChildrenCount (rootIDs[i], false);
       csString text;
       text.Format ("%s (%u)", categories[i]->GetData (), count);
       SetItemText (rootIDs[i], wxString (text.GetData (), *wxConvCurrent));
-    }
 
-  //ExpandAll ();
+      // Sort the child list
+      SortChildren (rootIDs[i]);
+    }
 }
 
 void SceneTreeCtrl::AppendObject (iObject* object, ObjectType type)
@@ -308,8 +358,10 @@ void SceneTreeCtrl::AppendObject (iObject* object, ObjectType type)
   if (name.Trim ().IsEmpty ())
     name = "Unnamed object";
 
-  AppendItem (rootIDs[type], wxString (name, *wxConvCurrent),
-	      /*imageIdx*/ -1, -1, new SceneTreeItemData (object));
+  wxTreeItemId id = AppendItem (rootIDs[type], wxString (name, *wxConvCurrent),
+				/*imageIdx*/ -1, -1, new SceneTreeItemData (object));
+
+  objects.Put (object, id);
 }
 
 void SceneTreeCtrl::OnItemActivated (wxTreeEvent& event)
@@ -337,7 +389,10 @@ void SceneTreeCtrl::OnSelChanged (wxTreeEvent& event)
   wxArrayTreeItemIds selectionIds;
   unsigned int selSize = GetSelections (selectionIds);
   
-  objectSelectionContext->ClearSelectedObjects ();
+  selecting = true;
+
+  if (objectSelectionContext->GetSelectedObjects ().GetSize ())
+    objectSelectionContext->ClearSelectedObjects ();
   
   for (unsigned int i = 0; i < selSize; i++)
   {
@@ -352,6 +407,41 @@ void SceneTreeCtrl::OnSelChanged (wxTreeEvent& event)
 
     objectSelectionContext->AddSelectedObject (object);
   }
+
+  selecting = false;
+}
+
+void SceneTreeCtrl::OnAddSelectedObject (iEvent& event)
+{
+  csRef<iBase> base;
+  event.Retrieve ("object", base);
+  csRef<iObject> object = scfQueryInterface<iObject> (base);
+
+  wxTreeItemId* id = objects.GetElementPointer (object);
+  if (id && id->IsOk ())
+    SelectItem (*id);
+}
+
+void SceneTreeCtrl::OnRemoveSelectedObject (iEvent& event)
+{
+  csRef<iBase> base;
+  event.Retrieve ("object", base);
+  csRef<iObject> object = scfQueryInterface<iObject> (base);
+
+  wxTreeItemId* id = objects.GetElementPointer (object);
+  if (id && id->IsOk ())
+    UnselectItem (*id);
+}
+
+void SceneTreeCtrl::OnClearSelectedObjects ()
+{
+  UnselectAll ();
+}
+
+void SceneTreeCtrl::OnEnterWindow (wxMouseEvent& event)
+{
+  // Put back the focus on this window
+  SetFocus ();
 }
 
 }

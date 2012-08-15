@@ -91,6 +91,40 @@ private:
   csEventID eventSetCollection;
 
   bool internalChange;
+
+  class MouseListener : public scfImplementation1<MouseListener, iEventHandler>
+  {
+  public:
+    MouseListener (SceneManager* manager);
+
+    //-- iEventHandler
+    bool HandleEvent (iEvent &event);
+
+  private:
+    SceneManager* manager;
+
+    CS_EVENTHANDLER_NAMES ("crystalspace.editor.component.scenemanager.mouse");
+  
+    virtual const csHandlerID * GenericPrec (csRef<iEventHandlerRegistry> &r1, 
+					     csRef<iEventNameRegistry> &r2, csEventID event) const 
+    {
+      static csHandlerID precConstraint[1];
+      precConstraint[0] = CS_HANDLERLIST_END;
+      return precConstraint;
+    }
+
+    virtual const csHandlerID * GenericSucc (csRef<iEventHandlerRegistry> &r1, 
+					     csRef<iEventNameRegistry> &r2, csEventID event) const 
+    {
+      static csHandlerID precConstraint[2];
+      precConstraint[0] = r1->GetGenericID("crystalspace.utilities.cameramanager");
+      precConstraint[1] = CS_HANDLERLIST_END;
+      return precConstraint;
+    }
+
+    CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS;
+  };
+  csRef<MouseListener> mouseListener;
 };
 
 }

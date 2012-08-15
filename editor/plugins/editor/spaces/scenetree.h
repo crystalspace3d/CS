@@ -84,15 +84,18 @@ private:
 
 enum ObjectType
 {
-  MESH_FACTORY = 0,
-  LIGHT_FACTORY,
-  TEXTURE,
+  TEXTURE = 0,
   MATERIAL,
   SHADER,
+  MESH_FACTORY,
+  LIGHT_FACTORY,
   CAMERA_POSITION,
   SECTOR,
+  PORTAL,
   MESH,
   LIGHT,
+  TRIGGER,
+  SEQUENCE,
   UNKNOWN,
   TYPE_COUNT
 };
@@ -114,6 +117,12 @@ private:
   void OnItemActivated (wxTreeEvent& event);
   void OnSelChanged (wxTreeEvent& event);
 
+  void OnAddSelectedObject (iEvent& event);
+  void OnRemoveSelectedObject (iEvent& event);
+  void OnClearSelectedObjects ();
+
+  void OnEnterWindow (wxMouseEvent& event);
+
 private:
   iEditor* editor;
 
@@ -122,7 +131,15 @@ private:
   int rootIconIdx;
   csArray<wxTreeItemId> rootIDs;
   csHash<csString, int> categories;
-  
+  csHash<wxTreeItemId, iObject*> objects;
+
+  csEventID eventSetCollection;
+  csEventID eventAddSelectedObject;
+  csEventID eventRemoveSelectedObject;
+  csEventID eventClearSelectedObjects;
+
+  bool selecting;
+
   DECLARE_EVENT_TABLE ();
 };
 

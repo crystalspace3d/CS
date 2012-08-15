@@ -17,7 +17,6 @@
 */
 
 #include "cssysdef.h"
-#include "cstool/initapp.h"
 #include "csutil/scf.h"
 #include "ieditor/context.h"
 #include "iengine/engine.h"
@@ -25,6 +24,7 @@
 #include "imap/saver.h"
 #include "iutil/cmdline.h"
 #include "iutil/plugin.h"
+#include "iutil/vfs.h"
 #include "ivaria/pmeter.h"
 
 #include "maploader.h"
@@ -55,11 +55,11 @@ bool MapLoader::Initialize (iEditor* editor)
   object_reg = editor->GetContext ()->GetObjectRegistry ();
 
   // Request the main loader plugins of Crystal Space
-  if (!csInitializer::RequestPlugins (object_reg,
-				      //CS_REQUEST_IMAGELOADER,
-        CS_REQUEST_LEVELLOADER,
-        CS_REQUEST_END))
-    return ReportError ("Can't initialize standard Crystal Space plugins!");
+  csRef<iThreadedLoader> threadedLoader =
+    csQueryRegistryOrLoad<iThreadedLoader> (object_reg, "crystalspace.level.threadedloader");
+  if (!threadedLoader) return ReportError ("Failed to initialize the iThreadedloader plugin!");
+  csRef<iLoader> loader = csQueryRegistryOrLoad<iLoader> (object_reg, "crystalspace.level.loader");
+  if (!loader) return ReportError ("Failed to initialize the iLoader plugin!");
 
   // Setup the saveable flag of the engine
   csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
@@ -67,10 +67,8 @@ bool MapLoader::Initialize (iEditor* editor)
   engine->SetSaveableFlag (true);
 
   // Load the iSaver plugin
-  if (!csInitializer::RequestPlugins (object_reg,
-				      CS_REQUEST_LEVELSAVER,
-				      CS_REQUEST_END))
-    return ReportError ("Failed to initialize the iSaver plugin!");
+  csRef<iSaver> saver = csQueryRegistryOrLoad<iSaver> (object_reg, "crystalspace.level.saver");
+  if (!saver) return ReportError ("Failed to initialize the iSaver plugin!");
 
   vfs = csQueryRegistry<iVFS> (object_reg);
   if (!vfs) return ReportError ("Failed to locate Virtual File System!");
@@ -108,9 +106,15 @@ bool MapLoader::Initialize (iEditor* editor)
   const char* realPath = cmdline->GetOption ("R");
   if (realPath)
   {
-    vfs->Mount ("/tmp/cseditor", realPath);
+    // For some reason vfs Mount likes to have $/ instead of / for paths. 
+    csString tempPath = realPath;
+    tempPath.ReplaceAll ("/", "$/");
+
+    if (!vfs->Mount ("/tmp/cseditor", tempPath))
+      ReportError ("Cannot mount real path %s\n", CS::Quote::Single (realPath));
+
     //vfs->ChDir ("/tmp/cseditor");
-    realPath = "/tmp/cseditor";
+    else realPath = "/tmp/cseditor";
   }
 
   // Check for a path and filename provided by the user

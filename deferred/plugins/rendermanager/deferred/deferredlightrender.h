@@ -29,7 +29,6 @@
 #include "csgfx/normalmaptools.h"
 
 #include "csutil/cfgacc.h"
-#include "csutil/scopeddelete.h"
 
 #include "igeom/trimesh.h"
 
@@ -147,6 +146,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
      */
     struct PersistentData
     {
+      // typedefs
+      struct ClipVolume
+      {
+	bool init;
+	bool valid;
+	long shapeNumber;
+	csRenderMesh mesh;
+
+	ClipVolume() : init(false)
+	{
+	}
+      };
+
+      typedef csHash
+      <
+	ClipVolume, csWeakRef<iLight>, CS::Memory::AllocatorMalloc,
+	csArraySafeCopyElementHandler<CS::Container::HashElement<ClipVolume, csWeakRef<iLight> > >
+      > ClipVolumeHash;
+
       // object registry
       iObjectRegistry* objReg;
 
@@ -161,21 +179,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       /* Mesh used for drawing point lights. Assumed to be center at the 
        * origin with a radius of 1. */
-      CS::Utility::ScopedDelete<csRenderMesh> sphereMesh; 
+      csRenderMesh sphereMesh; 
 
       /* Mesh used for drawing spot lights. Assumed to be a cone with a 
        * height and radius of 1, aligned with the positive y-axis, and its
        * base centered at the origin. */
-      CS::Utility::ScopedDelete<csRenderMesh> coneMesh;
+      csRenderMesh coneMesh;
 
       /* Mesh and material used for drawing directional lights. Assumed to be
        * a 1x1x1 box centered at the origin. */
-      CS::Utility::ScopedDelete<csRenderMesh> boxMesh;
+      csRenderMesh boxMesh;
 
       /* Mesh and material used for drawing ambient light. Assumed to be in the
        * xy plane with the bottom left corner at the origin with a width and 
        * height equal to the screens width and height. */
-      CS::Utility::ScopedDelete<csRenderMesh> quadMesh;
+      csRenderMesh quadMesh;
 
       // shaders used for lighting computations
       csRef<iShader> pointShader;
@@ -198,6 +216,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       // object model ID
       csStringID clipID;
+
+      // cached clip volumes
+      ClipVolumeHash clipVolumes;
 
       // persistent shadow data - we query deferred shadow data from it
       typename ShadowHandler::PersistentData* shadowPersist;
@@ -234,15 +255,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
 
       // builds a rendermesh from a trimesh given via dirty access arrays
-      csRenderMesh* CreateRenderMesh(csDirtyAccessArray<csVector3>& vertices,
-				     csDirtyAccessArray<csVector3>& normals,
-				     csDirtyAccessArray<csTriangle>& triangles)
+      csRenderMesh CreateRenderMesh(csDirtyAccessArray<csVector3>& vertices,
+				    csDirtyAccessArray<csVector3>& normals,
+				    csDirtyAccessArray<csTriangle>& triangles)
       {
 	// allocate rendermesh
-	csRenderMesh* mesh = new csRenderMesh;
+	csRenderMesh mesh;
 
 	// create buffer holder
-	mesh->buffers.AttachNew(new csRenderBufferHolder);
+	mesh.buffers.AttachNew(new csRenderBufferHolder);
 
 	// copy position buffer
 	{
@@ -254,7 +275,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  buffer->CopyInto(vertices.GetArray(), vertices.GetSize());
 
 	  // attach it
-	  mesh->buffers->SetRenderBuffer(CS_BUFFER_POSITION, buffer);
+	  mesh.buffers->SetRenderBuffer(CS_BUFFER_POSITION, buffer);
 	}
 
 	// copy normal buffer
@@ -273,7 +294,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  buffer->CopyInto(normals.GetArray(), normals.GetSize());
 
 	  // attach it
-	  mesh->buffers->SetRenderBuffer(CS_BUFFER_NORMAL, buffer);
+	  mesh.buffers->SetRenderBuffer(CS_BUFFER_NORMAL, buffer);
 	}
 
 	// copy index buffer
@@ -302,35 +323,55 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  buffer->CopyInto(tris, numIndex);
 
 	  // attach it
-	  mesh->buffers->SetRenderBuffer(CS_BUFFER_INDEX, buffer);
+	  mesh.buffers->SetRenderBuffer(CS_BUFFER_INDEX, buffer);
 
 	  // set mesh type
-	  mesh->meshtype = CS_MESHTYPE_TRIANGLES;
+	  mesh.meshtype = CS_MESHTYPE_TRIANGLES;
 
 	  // set index range
-	  mesh->indexstart = 0;
-	  mesh->indexend = (uint)numIndex;
+	  mesh.indexstart = 0;
+	  mesh.indexend = (uint)numIndex;
 	}
 
 	// set clipping options
-	mesh->clip_plane = CS_CLIP_NOT;
-	mesh->clip_portal = CS_CLIP_NOT;
-	mesh->clip_z_plane = CS_CLIP_NOT;
+	mesh.clip_plane = CS_CLIP_NOT;
+	mesh.clip_portal = CS_CLIP_NOT;
+	mesh.clip_z_plane = CS_CLIP_NOT;
 
 	// no material
-	mesh->material = nullptr;
+	mesh.material = nullptr;
 
 	return mesh;
       }
 
       csRenderMesh* GetClipVolume(iLight* light)
       {
+	// get object model
 	iObjectModel* objectModel = light->QuerySceneNode()->GetObjectModel();
 
-	csRenderMesh* mesh = nullptr;
+	// check whether it's valid - we can't work without an object model
 	if(objectModel)
 	{
+	  // try to get a cached result
+	  ClipVolume& cached = clipVolumes.GetOrCreate(light);
+	  const long shapeNumber = objectModel->GetShapeNumber();
+	  if(cached.init && cached.shapeNumber == shapeNumber)
+	  {
+	    // got one
+	    return cached.valid ? &cached.mesh : nullptr;
+	  }
+	  else
+	  {
+	    cached.init = true;
+	  }
+
+	  // no cached result - update
+	  cached.shapeNumber = shapeNumber;
+
+	  // get triangle data
 	  iTriangleMesh* triMesh = objectModel->GetTriangleData(clipID);
+
+	  // no triangle data means no clip volume
 	  if(triMesh)
 	  {
 	    // cosntruct temporary arrays
@@ -352,12 +393,39 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	    // normals are calculated by CreateRenderMesh
 
 	    // create render mesh from tri mesh
-	    return CreateRenderMesh(vertices, normals, triangles);
+	    cached.mesh = CreateRenderMesh(vertices, normals, triangles);
+	    cached.valid = true;
+
+	    return &cached.mesh;
 	  }
+	  else
+	  {
+	    cached.valid = false;
+	  }
+
+	  // fallthrough
 	}
 
 	// no clip volume
 	return nullptr;
+      }
+
+      void UpdateNewFrame()
+      {
+	typename ClipVolumeHash::GlobalIterator clipIt = clipVolumes.GetIterator();
+	while(clipIt.HasNext())
+	{
+	  csWeakRef<iLight> light;
+	  clipIt.NextNoAdvance(light);
+
+	  // free data if light is gone
+	  if(!light.IsValid())
+	  {
+	    clipVolumes.DeleteElement(clipIt);
+	    continue;
+	  }
+	  clipIt.Advance();
+	}
       }
 
       /**
@@ -415,8 +483,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	CS::Geometry::Primitives::GenerateBox(csBox3(-1,-1,0,1,1,1), vertices, texels, normals, triangles);
 
 	// create box mesh
-	boxMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
-	boxMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.box";
+	boxMesh = CreateRenderMesh(vertices, normals, triangles);
+	boxMesh.db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.box";
 
         // build sphere
         csEllipsoid ellipsoid(csVector3(0.0f, 0.0f, 0.0f), csVector3(1.0f, 1.0f, 1.0f));
@@ -424,8 +492,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	CS::Geometry::Primitives::GenerateSphere(ellipsoid, sphereDetail, vertices, texels, normals, triangles);
 
 	// create sphere mesh
-	sphereMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
-	sphereMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.sphere";
+	sphereMesh = CreateRenderMesh(vertices, normals, triangles);
+	sphereMesh.db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.sphere";
 
         // build cone
         int coneDetail = cfg->GetInt("RenderManager.Deferred.ConeDetail", 16);
@@ -449,31 +517,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	}
 
 	// create cone mesh
-	coneMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
-	coneMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.cone";
+	coneMesh = CreateRenderMesh(vertices, normals, triangles);
+	coneMesh.db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.cone";
 
         // build quad
 	CS::Geometry::Primitives::GenerateQuad(csVector3(-1,-1,0), csVector3(-1,1,0), csVector3(1,1,0), csVector3(1,-1,0),
 					       vertices, texels, normals, triangles);
 
 	// create quad mesh
-	quadMesh.Reset(CreateRenderMesh(vertices, normals, triangles));
-	quadMesh->db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.quad";
+	quadMesh = CreateRenderMesh(vertices, normals, triangles);
+	quadMesh.db_mesh_name = "crystalspace.rendermanager.deferred.lightrender.quad";
 
 	// set rendermodes for quad mesh as they're constant
-	quadMesh->mixmode = CS_FX_COPY;
-	quadMesh->alphaType = csAlphaMode::alphaNone;
-	quadMesh->do_mirror = false;
-	quadMesh->cullMode = CS::Graphics::cullDisabled;
+	quadMesh.mixmode = CS_FX_COPY;
+	quadMesh.alphaType = csAlphaMode::alphaNone;
+	quadMesh.do_mirror = false;
+	quadMesh.cullMode = CS::Graphics::cullDisabled;
 
 	// release plugins we don't need anymore
 	loader.Invalidate();
 	shaderManager.Invalidate();
-      }
-
-      PersistentData() : sphereMesh(nullptr), coneMesh(nullptr),
-			 boxMesh(nullptr), quadMesh(nullptr)
-      {
       }
     };
 
@@ -524,13 +587,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       switch(light->GetType())
       {
       case CS_LIGHT_POINTLIGHT:
-        obj = persistentData.sphereMesh;
+        obj = &persistentData.sphereMesh;
         break;
       case CS_LIGHT_DIRECTIONAL:
-        obj = persistentData.boxMesh;
+        obj = &persistentData.boxMesh;
         break;
       case CS_LIGHT_SPOTLIGHT:
-        obj = persistentData.coneMesh;
+        obj = &persistentData.coneMesh;
         break;
       default:
         CS_ASSERT(false);
@@ -559,15 +622,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       switch(light->GetType())
       {
       case CS_LIGHT_POINTLIGHT:
-	mesh = persistentData.sphereMesh;
+	mesh = &persistentData.sphereMesh;
 	shader = persistentData.pointShader;
         break;
       case CS_LIGHT_DIRECTIONAL:
-	mesh = persistentData.boxMesh;
+	mesh = &persistentData.boxMesh;
 	shader = persistentData.directionalShader;
         break;
       case CS_LIGHT_SPOTLIGHT:
-	mesh = persistentData.coneMesh;
+	mesh = &persistentData.coneMesh;
 	shader = persistentData.spotShader;
         break;
       default:
@@ -675,9 +738,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       csVector3 camPos(csVector3(0.0f, 0.0f, 1.0f) / cam->GetTransform());
       bool insideLight = IsPointInsideLight(camPos, light, obj->object2world);
 
-      CS::Utility::ScopedDelete<csRenderMesh> clipVolume(persistentData.GetClipVolume(light));
+      csRenderMesh* clipVolume = persistentData.GetClipVolume(light);
 
-      bool maskStencil = clipVolume.IsValid() || !insideLight;
+      bool maskStencil = clipVolume || !insideLight;
 
       if(maskStencil)
       {
@@ -685,7 +748,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	graphics3D->SetShadowState(CS_SHADOW_VOLUME_BEGIN);
       }
 
-      if(clipVolume.IsValid())
+      if(clipVolume)
       {
 	// start with all masked out
 	graphics3D->SetShadowState(CS_SHADOW_VOLUME_PASS1);
@@ -785,7 +848,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       shader->PushVariables(svStack);
 
       // draw quad
-      DrawMesh(persistentData.quadMesh, shader, svStack, zmode);
+      DrawMesh(&persistentData.quadMesh, shader, svStack, zmode);
 
       // restore old projection and transform
       graphics3D->SetWorldToCamera(oldView);

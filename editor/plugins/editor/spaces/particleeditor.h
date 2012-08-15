@@ -60,12 +60,10 @@
 
 #include "cseditor/modifiableeditor.h"
 
-#include <stdarg.h>
 #include "csutil/array.h"
 #include "csutil/csstring.h"
 #include <iutil/event.h>
 #include <iutil/objreg.h>
-#include <string>
 
 #include <wx/dnd.h>
 #include <wx/event.h>

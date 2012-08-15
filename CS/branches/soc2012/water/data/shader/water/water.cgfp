@@ -86,9 +86,11 @@ float4 main (vert2frag IN,
 	float2 Inposition = IN.o2wPos; 
 	float4 distanceFoamcolor = float4(0.0,0.0,0.0,0.0);
 	
-	if(Inposition.x < 512.0 && Inposition.y < 512.0)
+	if(Inposition.x < 512.0 && Inposition.y < 512.0  && Inposition.x > 0 && Inposition.y > 0)
 	{
 		Inposition.y = 512 - Inposition.y;
+		Inposition.x /= 512;
+		Inposition.y /= 512;		
 		float4 distanceFoamcolor = tex2D(foamDist, Inposition);
 	}
 	

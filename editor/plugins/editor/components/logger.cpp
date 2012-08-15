@@ -153,6 +153,12 @@ const wxString& Logger::FormatReport (ReportEntry& report)
   return errorText;
 }
 
+//---------------------------------------------------------------
+
+BEGIN_EVENT_TABLE (Logger::LogTextCtrl, wxTextCtrl)
+  EVT_ENTER_WINDOW (Logger::LogTextCtrl::OnEnterWindow)
+END_EVENT_TABLE ()
+
 Logger::LogTextCtrl::LogTextCtrl (wxWindow* parent, Logger* logger)
   : wxTextCtrl (parent, -1, wxT (""), wxDefaultPosition, wxDefaultSize,
 		wxTE_MULTILINE | wxTE_READONLY | wxHSCROLL),
@@ -164,6 +170,12 @@ Logger::LogTextCtrl::LogTextCtrl (wxWindow* parent, Logger* logger)
 Logger::LogTextCtrl::~LogTextCtrl ()
 {
   logger->textCtrls.Delete (this);
+}
+
+void Logger::LogTextCtrl::OnEnterWindow (wxMouseEvent& event)
+{
+  // Put back the focus on this window
+  SetFocus ();
 }
 
 }

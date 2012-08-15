@@ -149,20 +149,15 @@ private:
 class csConstraint : public scfImplementation1<csConstraint, iModifiableConstraint>
 {
 public:
-  virtual ~csConstraint()
+  csConstraint(iModifiableConstraintType type)
+    : scfImplementation1(this),
+      type(type)
   {
   }
 
   iModifiableConstraintType GetType() const
   {
     return type;
-  }
-
-protected:
-  csConstraint(iModifiableConstraintType type)
-    : scfImplementation1(this),
-      type(type)
-  {
   }
 
 private:
@@ -174,11 +169,12 @@ private:
  * long values that are members of the respective enum, as well as their string labels,
  * for displaying in a combo box.
  */
-class csEnumConstraint : public csConstraint
+class csEnumConstraint :
+  public csConstraint
 {
 public:
   /**
-   * Doesn't initialize the list. Requires calls to PushValue(value, label) to
+   * Doesn't initialize the lists. Requires calls to PushValue(value, label) to
    * populate the valid fields.
    */
   csEnumConstraint()
@@ -207,6 +203,25 @@ public:
     delete values;
   }
 
+  bool Validate(const csVariant& variant) const
+  {
+    // No point performing the check - the value was selected from
+    // a combo box. And nobody is trying to hack the editor either.
+    return true;
+  }
+
+  //-- iModifiableConstraintEnum
+  size_t GetValueCount () const 
+  {
+    return labels->GetSize();
+  }
+
+  long GetValue (size_t index) const
+  {
+    return values->Get(index);
+  }
+
+  //-- csEnumConstraint
   void PushValue(long value, const char* label)
   {
     values->Push(value);

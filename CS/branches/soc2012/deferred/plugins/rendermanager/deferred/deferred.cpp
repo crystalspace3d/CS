@@ -463,6 +463,7 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
   contextsScannedForTargets.Empty ();
   portalPersistent.UpdateNewFrame ();
   lightPersistent.UpdateNewFrame ();
+  lightRenderPersistent.UpdateNewFrame ();
   reflectRefractPersistent.UpdateNewFrame ();
   framebufferTexPersistent.UpdateNewFrame ();
 

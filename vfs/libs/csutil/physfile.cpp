@@ -348,11 +348,36 @@ uint64_t csPhysicalFile::PartialView::GetPos()
   return pos;
 }
 
-bool csPhysicalFile::PartialView::SetPos(off64_t p, int ref)
+bool csPhysicalFile::PartialView::SetPos(off64_t newPos, int relativeTo)
 {
-  if (p > size)
-    return false;
-  pos = p;
+  // is newPos negative (backwards)
+  bool negative = newPos < 0;
+  // take absolute value
+  uint64_t distance = negative ? -newPos : newPos;
+  // only virtual pointer is moved
+  switch (relativeTo)
+  {
+    case VFS_POS_CURRENT:
+      // relative to current position
+      if (negative) // remember, this is unsigned arithmetic
+        pos = (pos < distance) ? 0 : pos - distance;
+      else
+        pos += distance;
+      break;
+    case VFS_POS_END:
+      // relative to end of view
+      if (negative)
+        pos = (size < distance) ? 0 : size - distance;
+      else
+        pos = size;
+      break;
+    case VFS_POS_ABSOLUTE:
+    default:
+      // absolute mode requested, or unknown constant
+      pos = ((uint64_t)newPos > size) ? size : newPos;
+      break;
+  }
+
   return true;
 }
 

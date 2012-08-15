@@ -8,6 +8,11 @@
         <implementation>csVFS</implementation>
         <description>Crystal Space Virtual File System</description>
       </class>
+      <class>
+        <name>crystalspace.filesys.native</name>
+        <implementation>NativeFSFactory</implementation>
+        <description>Factory for Native iFileSystem</description>
+      </class>
     </classes>
   </scf>
 </plugin>

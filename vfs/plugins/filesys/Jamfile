@@ -1,3 +1,4 @@
 SubDir TOP plugins filesys ;
 
 SubInclude TOP plugins filesys vfs ;
+SubInclude TOP plugins filesys archive ;

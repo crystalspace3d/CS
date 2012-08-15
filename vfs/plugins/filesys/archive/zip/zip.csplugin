@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- zip.csplugin -->
+<plugin>
+  <scf>
+    <classes>
+      <class>
+        <name>crystalspace.filesys.archive.zip</name>
+        <implementation>csZipFSHandler</implementation>
+        <description>Crystal Space VFS Zip Archive Support</description>
+      </class>
+      <class>
+        <name>crystalspace.filesys.archive.handler.zip</name>
+        <implementation>csZipFSHandler</implementation>
+        <description>Crystal Space VFS Zip Archive Handler Interface</description>
+      </class>
+    </classes>
+  </scf>
+  <!-- iFileSystem meta information -->
+  <filesystem>
+    <class>crystalspace.filesys.archive.zip</class>
+    <protocol>zip</protocol>
+    <protocol>archive</protocol>
+  </filesystem>
+  <!-- archive-filesystem specific meta information -->
+  <archiveHandler>
+    <archiveType>
+      <class>crystalspace.filesys.archive.handler.zip</class>
+      <extension>zip</extension>
+      <extension>ZIP</extension>
+    </archiveType>
+  </archiveHandler>
+</plugin>

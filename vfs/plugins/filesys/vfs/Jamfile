@@ -1,7 +1,5 @@
 SubDir TOP plugins filesys vfs ;
 
-if $(ZLIB.AVAILABLE) = "yes"
-{
 Description vfs : "Virtual File System plugin" ;
 Plugin vfs : [ Wildcard *.cpp *.h ] ;
 LinkWith vfs : crystalspace ;
@@ -32,7 +30,6 @@ SEARCH on $(VFS_CONFIGFILE:G=config) = $(LOCATE_TARGET) ;
 VfsCfgGen $(VFS_CONFIGFILE:G=config) : $(SUBDIR)/vfs.cfg.template ;
 Depends install_config :
   [ DoInstall $(VFS_CONFIGFILE:G=config) : $(appconfdir) ] ;
-}
 
 SubDir TOP ;
 # Create a file list for vfs.cfg

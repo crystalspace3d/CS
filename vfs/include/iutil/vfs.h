@@ -21,7 +21,7 @@
 #define __CS_IUTIL_VFS_H__
 
 // current dev environment is 64-bit
-// @@@TODO: move this to configure phase
+// @@@FIXME: move this to configure phase
 #define CS_SIZE_T_64BIT
 
 /**\file
@@ -30,7 +30,9 @@
 /**\addtogroup vfs
  * @{ */
 #include "csutil/scf.h"
+#include "csutil/hash.h"
 #include "iutil/databuff.h"
+#include "iutil/pluginconfig.h"
 #include <time.h>
 
 //#ifndef CS_OFF64_T_DEFINED
@@ -205,29 +207,35 @@ namespace CS
 #define VFS_FILE_UNCOMPRESSED	0x80000000
 /** @} */
 
-/**\name File status codes
+/**\name VFS status codes
  * @{ */
 /// File status ok
-#define	VFS_STATUS_OK			0
+#define	VFS_STATUS_OK                   0
 /// Unclassified error
-#define VFS_STATUS_OTHER		1
+#define VFS_STATUS_OTHER                1
 /// Device has no more space for file data
-#define	VFS_STATUS_NOSPACE		2
+#define	VFS_STATUS_NOSPACE              2
 /// Not enough system resources
-#define VFS_STATUS_RESOURCES		3
+#define VFS_STATUS_RESOURCES            3
 /**
  * Access denied: either you have no write access, the filesystem is read-only
  * or you tried to read a file opened for write access
  */
-#define VFS_STATUS_ACCESSDENIED		4
+#define VFS_STATUS_ACCESSDENIED         4
 /// An error occured during reading or writing data
-#define VFS_STATUS_IOERROR		5
+#define VFS_STATUS_IOERROR              5
 /// File is too large to be fully addressed in memory space
-#define VFS_STATUS_FILETOOLARGE		6
-/// Requested operation is not supported on current system
-#define VFS_STATUS_UNSUPPORTED		0x00008000
+#define VFS_STATUS_FILETOOLARGE         6
+/// File or directory was not found
+#define VFS_STATUS_FILENOTFOUND         7
+/// Directory within base path is a file
+#define VFS_STATUS_DIRISFILE            8
+/// One or more arguments are invalid
+#define VFS_STATUS_INVALIDARGS          9
+/// Requested operation is not supported
+#define VFS_STATUS_UNSUPPORTED          0x00008000
 /// Requested operation should be supported, but not implemented yet
-#define VFS_STATUS_NOTIMPLEMENTED	0x00008001
+#define VFS_STATUS_NOTIMPLEMENTED       0x00008001
 /** @} */
 
 /**\name File positioning modes
@@ -241,6 +249,9 @@ namespace CS
 /// Relative positioning from the end
 #define VFS_POS_END		2
 /** @} */
+
+/// List of extra options to be supplied to VFS operations
+typedef csHash<csVariant,csString> csVfsOptionList;
 
 /**
  * A replacement for FILE type in the virtual file space.
@@ -340,7 +351,7 @@ struct iFile : public virtual iBase
  */
 struct iFileSystem : public virtual iBase
 {
-  SCF_INTERFACE(iFileSystem, 0, 0, 0);
+  SCF_INTERFACE(iFileSystem, 1, 0, 2);
 
   /**
    * Opens a file within current file system. 
@@ -348,14 +359,16 @@ struct iFileSystem : public virtual iBase
    * \param pathPrefix Absolute virtual path where current iFileSystem is
    *   mounted.
    * \param mode File mode to open.
-   * \param useCaching if true and filesystem supports caching, caching will be
-   *   enabled.
+   * \param options (optional) Arbitrary options that might be used in file 
+   *   opening process. Available options might vary between iFileSystem
+   *   implementations.
    * \return Pointer to iFile instance of corresponding file.
    */
   virtual csPtr<iFile> Open (const char *path,
                              const char *pathPrefix,
                              int mode,
-                             bool useCaching) = 0;
+                             const csVfsOptionList &options
+                                         = csVfsOptionList ()) = 0;
 
   /**
    * Moves a file within current file system. 
@@ -450,6 +463,39 @@ struct iFileSystem : public virtual iBase
    * \return Last error status. If there was no error, returns VFS_STATUS_OK.
    */
   virtual int GetStatus () = 0;
+
+  /**
+   * Query whether a given path is directory.
+   * \param filename Virtual path to see whether it is a directory
+   * \return true if path represents a directory; false otherwise.
+   * \remarks This function also returns false when given path does not have
+   *   a corresponding filesystem object. Use Exists() to determine whether
+   *   the path exists.
+   */
+  virtual bool IsDir (const char *path) = 0;
+
+  /**
+   * Flush any pending read/write operation within current iFileSystem.
+   */
+  virtual bool Flush () = 0;
+};
+
+/**
+ * Instantiates iFileSystem from a path string
+ */
+struct iFileSystemFactory : public virtual iBase
+{
+  SCF_INTERFACE (iFileSystemFactory, 0, 0, 0);
+
+  /**
+   * If this factory supports given real path, returns pointer to iFileSystem.
+   * Otherwise, returns 0 (nullptr).
+   * \param realPath Real path without protocol specifier
+   * \param oStatus reference of variable to receive VFS_STATUS status code
+   * \remarks In order to prevent memory leak, you must assign the pointer to
+   *    csPtr<> then assign it to csRef<>.
+   */
+  virtual iFileSystem *Create (const char *realPath, int &oStatus) = 0;
 };
 
 /**
@@ -457,18 +503,20 @@ struct iFileSystem : public virtual iBase
  */
 struct iArchiveHandler : public virtual iBase
 {
-  SCF_INTERFACE(iArchiveHandler, 0, 0, 0);
+  SCF_INTERFACE(iArchiveHandler, 1, 0, 0);
 
   /**
    * Checks whether this archive handler supports a given file, and returns
    * iFileSystem instance if supported.
-   * \param archive  iFile instance of archive file
-   * \param filename (optional) filename to override
+   * \param parentFS    parent iFileSystem containing requested archive file
+   * \param archivePath path of archive file within parent filesystem
+   * \param suffix      path of directory root within the archive
+   * \remarks In order to prevent memory leak, you must assign the pointer to
+   *    csPtr<> then assign it to csRef<>.
    */
-  virtual csPtr<iFileSystem> GetFileSystem (iFile *archive,
-                                            const char *filename = 0) = 0;
-
-  
+  virtual iFileSystem *GetFileSystem (iFileSystem *parentFS,
+                                      const char *archivePath,
+                                      const char *suffix) = 0;  
 };
 
 /**
@@ -502,7 +550,7 @@ struct iArchiveHandler : public virtual iBase
  */
 struct iVFS : public virtual iBase
 {
-  SCF_INTERFACE(iVFS, 4, 0, 0);
+  SCF_INTERFACE(iVFS, 4, 0, 1);
 
 
   /// Set current working directory
@@ -558,6 +606,21 @@ struct iVFS : public virtual iBase
    * \sa #VFS_FILE_MODE
    */
   virtual csPtr<iFile> Open (const char *filename, int mode) = 0;
+
+  /**
+   * Open a file on the VFS filesystem.
+   * \param filename The VFS path of the file in the VFS filesystem.
+   * \param mode Combination of VFS_FILE_XXX constants.
+   * \param options Arbitrary options that might be used in file-opening
+   *  process. Each option might or might not honored, depending on underlying
+   *  iFileSystem implementation.
+   * \return A valid iFile if the file was opened successfully, otherwise an
+   *  invalidated iFile.  Use csRef<>::IsValid() to check validity.
+   * \sa #VFS_FILE_MODE
+   */
+  virtual csPtr<iFile> Open (const char *filename,
+                             int mode,
+                             const csVfsOptionList &options) = 0;
 
   /**
    * Get an entire file at once. This is more effective than opening files 

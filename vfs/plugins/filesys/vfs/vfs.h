@@ -47,6 +47,9 @@ struct HeapRefCounted :
 
 typedef CS::Memory::AllocatorHeap<csRef<HeapRefCounted> > VfsHeap;
 
+// Set of metadata for archive handler
+struct ArchiveHandlerMetadata;
+
 /**
  * The Virtual Filesystem Class is intended to be the only way for Crystal
  * Space engine to access the files. This gives unified control over the
@@ -75,14 +78,16 @@ class csVFS : public scfImplementation2<csVFS, iVFS, iComponent>
 private:
   friend class VfsNode;
 
-  /// Mutex to make VFS thread-safe.
-  mutable CS::Threading::ReadWriteMutex mutex;
+  /// Mutexes to make VFS thread-safe.
+  mutable CS::Threading::ReadWriteMutex nodeMutex;
+  mutable CS::Threading::ReadWriteMutex factoryMutex;
 
   // A table of VFS nodes
   csHash<VfsNode *, const char *> nodeTable;
   // Pointer to root node
   VfsNode * const root;
-  
+
+  // Set of data to store in thread-local storage
   struct VfsTls
   {
     // Current working directory (in fact, the automatically-added prefix path)
@@ -158,6 +163,10 @@ public:
   virtual csPtr<iStringArray> FindFiles (const char *path);
   /// Replacement for standard fopen()
   virtual csPtr<iFile> Open (const char *filename, int mode);
+  /// Replacement for standard fopen(), allowing arbitrary options
+  virtual csPtr<iFile> Open (const char *filename,
+                             int mode,
+                             const csHash<csVariant,csString> &options);
   /**
    * Get an entire file at once. You should delete[] returned data
    * after usage. This is more effective than opening files and reading
@@ -237,6 +246,20 @@ public:
   virtual csRef<iStringArray> GetRealMountPaths (const char *virtualPath);
 
 private:
+  /// Initialize static nodes
+  void InitStaticNodes ();
+
+  /// Register a plugin of given name
+  void RegisterPlugin (const char *className);
+
+  /// Register a given protocol
+  bool AddProtocolHandler (const char *className,
+                           const char *protocol);
+
+  /// Register
+  bool AddArchiveHandler (const char *className,
+                          const ArchiveHandlerMetadata &metadata);
+
   /// Same as ExpandPath() but with less overhead
   char *ExpandPathFast (const char *path, bool isDir = false);
 
@@ -283,7 +306,7 @@ private:
   VfsNode *CreateNodePath (const char *vfsPath);
 
   /**
-   * Check if a virtual path represents an 
+   * Check if a virtual path represents a valid directory.
    */
   bool IsValidDir (const char *vfsPath);
 

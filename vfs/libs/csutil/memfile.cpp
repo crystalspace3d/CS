@@ -56,23 +56,37 @@ int csMemFile::GetStatus() { return status; }
 void csMemFile::Flush() {}
 bool csMemFile::AtEOF() { return (cursor >= size); }
 uint64_t csMemFile::GetPos() { return cursor; }
-bool csMemFile::SetPos(off64_t p, int ref)
+bool csMemFile::SetPos(off64_t newPos, int relativeTo)
 {
-  switch (ref)
+  // is newPos negative (backwards)
+  bool negative = newPos < 0;
+  // take absolute value
+  uint64_t distance = negative ? -newPos : newPos;
+  // only virtual pointer is moved
+  switch (relativeTo)
   {
-  case 0: // absolute mode
-    if (p < 0)
-    {
-      p = size; // prevent  being negative
-      //return false;
-    }
-
-    cursor = (p < (off64_t)size) ? p : size;
-    break;
-  default:
-    // Unknown mode
-    return false;
+    case VFS_POS_CURRENT:
+      // relative to current position
+      if (negative) // remember, this is unsigned arithmetic
+        cursor = (cursor < distance) ? 0 : cursor - distance;
+      else
+        cursor += distance;
+      break;
+    case VFS_POS_END:
+      // relative to end of view
+      if (negative)
+        cursor = (size < distance) ? 0 : size - distance;
+      else
+        cursor = size;
+      break;
+    case VFS_POS_ABSOLUTE:
+      // absolute mode requested
+      cursor = ((uint64_t)newPos > size) ? size : newPos;
+      break;
+    default:
+      return false;
   }
+
   return true;
 }
 

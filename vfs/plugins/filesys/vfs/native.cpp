@@ -44,6 +44,8 @@
 #include "csutil/databuf.h"
 #include "csutil/filepermission.h"
 #include "csutil/scfstringarray.h"
+#include "cstool/vfspartialview.h"
+#include "cstool/vfsfilebase.h"
 
 // VC++ defines _S_IFDIR instead of S_IFDIR
 // Define _S_IFDIR for other platform
@@ -133,9 +135,14 @@ namespace
 CS_PLUGIN_NAMESPACE_BEGIN(VFS)
 {
 
+class NativeFSFactory;
+
 // OS Native iFileSystem
 class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
 {
+  // friend the factory so it can call the constructor
+  friend class NativeFSFactory;
+
   // Unexpanded, real-world mountpoint of this instance
   char *mountRoot;
   // Real-world mountpoint of this instance
@@ -162,7 +169,7 @@ public:
   virtual csPtr<iFile> Open (const char *path,
                              const char *pathPrefix,
                              int mode,
-                             bool useCaching);
+                             const csVfsOptionList &options);
   // Move file from OldPath to NewPath
   virtual bool Move (const char *oldPath, const char *newPath);
   // Get permission set of a file
@@ -180,6 +187,10 @@ public:
   virtual bool Exists (const char *filename);
   // Delete a given file
   virtual bool Delete (const char *filename);
+  // Check whether given path is a directory
+  virtual bool IsDir (const char *filename);
+  // Flush pending operation (does nothing)
+  virtual bool Flush () { return true; }
   // Retrieve directory listing
   virtual csPtr<iStringArray> List (const char *path);
   // Get mount root
@@ -188,8 +199,24 @@ public:
   virtual int GetStatus ();
 };
 
+// Factory interface for NativeFS
+class NativeFSFactory : public scfImplementation2<NativeFSFactory,
+                                                  iFileSystemFactory,
+                                                  iComponent>
+{
+public:
+  // Create filesystem instance
+  virtual iFileSystem *Create (const char *realPath, int &oStatus);
+  // constructor
+  NativeFSFactory (iBase *iParent);
+  // destructor
+  virtual ~NativeFSFactory () { }
+  // scf initializer
+  virtual bool Initialize (iObjectRegistry *objectRegistry);
+};
+
 // OS Native iFile
-class NativeFile : public scfImplementation1<NativeFile, iFile>
+class NativeFile : public scfImplementationExt0<NativeFile, csVfsFileBase>
 {
   class View;
 
@@ -202,8 +229,6 @@ class NativeFile : public scfImplementation1<NativeFile, iFile>
   char *realPath;
   // File size
   uint64_t size;
-  // Last error
-  int lastError;
   // Native file handle
   FILE *handle;
   // Read-only?
@@ -227,8 +252,6 @@ public:
   virtual const char *GetName () { return virtualPath; }
   // Query file size
   virtual uint64_t GetSize () { return size; }
-  // Query and reset last error status
-  virtual int GetStatus ();
   // Read Length bytes into the buffer at which Data points.
   virtual size_t Read (char *data, size_t length);
   // Write Length bytes from the buffer at which Data points.
@@ -250,6 +273,29 @@ public:
                                        uint64_t size = ~(uint64_t)0);
 };
 
+
+// View for NativeFile
+class NativeFile::View : public scfImplementationExt0<View, csVfsPartialView>
+{
+  friend class NativeFile;
+  // Constructor
+  View (NativeFile *parent, uint64_t offset, uint64_t size) :
+    scfImplementationType (this, parent, offset, size)
+  {
+    /* nothing to do here */
+  }
+
+public:
+  // Destructor
+  virtual ~View () { /* nothing really to do here */ }
+  /**
+   * Query the name of this view.
+   * \returns The C-string "#NativeFile::View"
+   * \remarks Override this method to change name in subclasses
+   */
+  virtual const char *GetName () { return "#NativeFile::View"; }
+};
+/*
 // View for NativeFile
 class NativeFile::View : public scfImplementation1<View, iFile>
 {
@@ -266,6 +312,7 @@ class NativeFile::View : public scfImplementation1<View, iFile>
   // last error status of this view
   int lastError;
 
+  virtual const char *GetName () { return "#NativeFile::View"; }
   // Constructor
   View (NativeFile *parent, uint64_t offset, uint64_t size);
 public:
@@ -297,9 +344,8 @@ public:
   virtual csPtr<iFile> GetPartialView (uint64_t offset,
                                        uint64_t size = ~(uint64_t)0);
 };
-
-
-// NativeFile methods
+*/
+// --- NativeFile ---------------------------------------------------------- //
 /* NativeFile Constructor
  - takes parent      (pointer to filesystem which invoked the constructor)
          virtualPath (full VFS path to file)
@@ -312,7 +358,7 @@ public:
 NativeFile::NativeFile (NativeFS *parent,
                         const char *virtualPath,
                         const char *realPath, int mode) :
- scfImplementationType (this)
+  scfImplementationType (this)
 {
   // TODO: Add debug messages
 
@@ -484,14 +530,6 @@ void NativeFile::UpdateError ()
   lastError = ErrnoToVfsStatus (errno);
 }
 
-// Reset and return last error status
-int NativeFile::GetStatus ()
-{
-  int status = lastError;
-  lastError = VFS_STATUS_OK;
-  return status;
-}
-
 // Read DataSize bytes from file
 size_t NativeFile::Read (char *data, size_t dataSize)
 {
@@ -501,6 +539,8 @@ size_t NativeFile::Read (char *data, size_t dataSize)
     lastError = VFS_STATUS_ACCESSDENIED;
     return 0;
   }
+
+  CS::Threading::RecursiveMutexScopedLock lock (mutex);
 
   if (!handle)
   {
@@ -526,6 +566,8 @@ size_t NativeFile::Write (const char *data, size_t dataSize)
     lastError = VFS_STATUS_ACCESSDENIED;
     return 0;
   }
+
+  CS::Threading::RecursiveMutexScopedLock lock (mutex);
 
   if (!handle)
   {
@@ -692,238 +734,10 @@ csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
     return csPtr<iFile> (nullptr);
   }
 
-  // TODO: check boundary conditions more thoroughly
-  // make sure offset is within [0, file size]
-  if (offset > this->size)
-    offset = this->size;
-
-  // make sure offset+size is within [offset, file size]
-  // this is safe since offset <= this->size
-  if (size > this->size - offset)
-    size = this->size - offset;
-
-  // only pass safe values to View constructor
   return csPtr<iFile> (new View (this, offset, size));
 }
 
-// NativeFile::View methods
-/* View Constructor
- - takes parent (underlying NativeFile instance)
-         offset (offset in parent NativeFile where this view starts)
-         size   (size of this view)
-  All parameters must be valid. The constructor assumes they are, and
-  bypasses any checks boundary conditions.
- */ 
-NativeFile::View::View (NativeFile *parent,
-                        uint64_t offset,
-                        uint64_t size) :
- scfImplementationType (this, parent),
- pos (0),
- lastError (VFS_STATUS_OK)
-{
-  // assign members as appropriate
-  this->parent = parent;
-  this->offset = offset;
-  this->size   = size;
-}
-
-// NativeFile::View destructor
-NativeFile::View::~View ()
-{
-  // Free memory and resources
-  parent = 0;
-}
-
-// Reset and return last error status
-int NativeFile::View::GetStatus ()
-{
-  int status = lastError;
-  lastError = VFS_STATUS_OK;
-  return status;
-}
-
-// Read DataSize bytes from file
-size_t NativeFile::View::Read (char *data, size_t dataSize)
-{
-  // Save last error status
-  int parentError = parent->lastError;
-  // Save last position
-  uint64_t lastPos = parent->GetPos ();
-
-  // Apply offset of this view
-  parent->SetPos (offset + pos);
-  // Reset parent error so we can collect status info
-  parent->lastError = VFS_STATUS_OK;
-  // make sure read doesn't exceed view boundary
-  size_t toRead = (size - pos < dataSize) ? size - pos : dataSize;
-
-  // try reading...
-  size_t bytesRead = Read (data, toRead);
-  // update last error of this view..
-  if (lastError == VFS_STATUS_OK)
-    lastError = parent->lastError;
-
-  // restore parent's last position
-  parent->SetPos (lastPos);
-  // restore parent's last error
-  parent->lastError = parentError;
-
-  return bytesRead;
-}
-
-// Write DataSize bytes to file
-size_t NativeFile::View::Write (const char *data, size_t dataSize)
-{
-  // partial view is read-only; access denied.
-  lastError = VFS_STATUS_ACCESSDENIED;
-  return 0;
-}
-
-// Flush strem
-void NativeFile::View::Flush ()
-{
-  // you can't flush a read-only view
-  // therefore do nothing.
-}
-
-// Check whether pointer is at End of File
-bool NativeFile::View::AtEOF ()
-{
-  return pos >= size;
-}
-
-// Query file pointer (absolute position)
-uint64_t NativeFile::View::GetPos ()
-{
-  return pos;
-}
-
-// Set file pointer (relative position; absolute by default)
-bool NativeFile::View::SetPos (off64_t newPos, int relativeTo)
-{
-  // is newPos negative (backwards)
-  bool negative = newPos < 0;
-  // take absolute value
-  uint64_t distance = negative ? -newPos : newPos;
-  // only virtual pointer is moved
-  switch (relativeTo)
-  {
-    case VFS_POS_CURRENT:
-      // relative to current position
-      if (negative) // remember, this is unsigned arithmetic
-        pos = (pos < distance) ? 0 : pos - distance;
-      else
-        pos += distance;
-      break;
-    case VFS_POS_END:
-      // relative to end of view
-      if (negative)
-        pos = (size < distance) ? 0 : size - distance;
-      else
-        pos = size;
-      break;
-    case VFS_POS_ABSOLUTE:
-    default:
-      // absolute mode requested, or unknown constant
-      pos = ((uint64_t)newPos > size) ? size : newPos;
-      break;
-  }
-
-  return true;
-}
-
-// Get all data into a single buffer.
-csPtr<iDataBuffer> NativeFile::View::GetAllData (bool nullTerminated)
-{
-  // TODO: implement mmap () feature
-  // TODO: use private heap for allocation
-  // it uses malloc () for now
-
-  // Since client code doesn't know about buffer length, nullTerminated is
-  // useless for now.
-
-  char *data = (char *)cs_malloc(size + 1);
-  if (!data)
-  {
-    // TODO: update error code
-    return csPtr<iDataBuffer> (nullptr);
-  }
-
-  // backup pointer
-  uint64_t oldPos = GetPos ();
-  // set pointer at beginning
-  SetPos (0);
-  // read!
-  size_t bytesRead = Read (data, size);
-  data[bytesRead] = 0; // null-terminated.
-
-  // TODO: add handling if bytesRead < size ?
-
-  // restore pointer
-  SetPos (oldPos);
-
-  if (nullTerminated)
-    ++bytesRead;
-
-  return csPtr<iDataBuffer> (
-    new CS::DataBuffer<Memory::AllocatorMalloc> (data, bytesRead));
-}
-
-// Get all data into a single buffer with custom allocator.
-// - takes pointer of iAllocator interface to be used for memory allocation
-// - returns smart pointer to iDataBuffer containing requested data
-csPtr<iDataBuffer> 
-NativeFile::View::GetAllData (CS::Memory::iAllocator *allocator)
-{
-
-  using CS::Memory::AllocatorInterface;
-
-  // create iDataBuffer instance with custom allocator
-  iDataBuffer *buffer =
-    new CS::DataBuffer<AllocatorInterface> (size,
-                                            AllocatorInterface (allocator));
-
-  char *data = buffer->GetData();
-  if (!data)
-  {
-    // TODO: update error code
-    return csPtr<iDataBuffer> (nullptr);
-  }
-
-  // backup pointer
-  uint64_t oldPos = GetPos ();
-  // set pointer at beginning
-  SetPos (0);
-  // read!
-  size_t bytesRead = Read (data, size);
-
-  // TODO: add handling if bytesRead < size ?
-
-  // restore pointer
-  SetPos (oldPos);
-
-  return csPtr<iDataBuffer> (buffer);
-}
-
-// Get subset of file as iFile
-csPtr<iFile> NativeFile::View::GetPartialView (uint64_t offset,
-                                               uint64_t size)
-{
-  // TODO: check boundary conditions more thoroughly
-  // make sure offset is within [0, current view size]
-  if (offset > this->size)
-    offset = this->size;
-
-  // make sure offset+size is within [offset, current view size]
-  // this is safe since offset <= this->size
-  if (size > this->size - offset)
-    size = this->size - offset;
-
-  // only pass safe values to View constructor
-  return csPtr<iFile> (new View (parent, this->offset + offset, size));
-}
-
-// NativeFS methods
+// --- NativeFS ------------------------------------------------------------ //
 /* NativeFS constructor
  - takes realPath (real path as mount root of this particular instance)
  - Remarks: realPath is assumed to be non-null and end with trailing path
@@ -937,7 +751,7 @@ NativeFS::NativeFS (const char *realPath) : scfImplementationType (this)
   memcpy (mountRoot, realPath, mountRootLen);
   // platform-expand mount root
   mountRootExpanded = (char *)cs_malloc (CS_MAXPATHLEN + 1);
-  // FIXME: we just assume the length; this is due to bad API design...
+  // @@@FIXME: we just assume the length; this is due to bad API design...
   csExpandPlatformFilename (mountRoot, mountRootExpanded);
 
   // Set last error to VFS_STATUS_OK
@@ -1002,7 +816,7 @@ void NativeFS::UpdateError ()
 csPtr<iFile> NativeFS::Open (const char *path,
                              const char *pathPrefix,
                              int mode,
-                             bool /*useCaching*/)
+                             const csVfsOptionList &options)
 {
   // TODO: implement checks for boundary cases
 
@@ -1219,6 +1033,23 @@ bool NativeFS::Delete (const char *filename)
   return true;
 }
 
+// Query whether a given path is directory
+bool NativeFS::IsDir (const char *path)
+{
+  // first transform to native path
+  csString realPath (ToRealPath (path));
+
+  struct stat info;
+  // query information with stat
+  if (CS::Platform::Stat (realPath, &info) == 0)
+  {
+    // return true if directory bit is set
+    if (info.st_mode & _S_IFDIR)
+      return true;
+  }
+  return false;
+}
+
 // retrieve directory listing
 csPtr<iStringArray> NativeFS::List (const char *path)
 {
@@ -1277,6 +1108,32 @@ int NativeFS::GetStatus ()
   int status = lastError;
   lastError = VFS_STATUS_OK;
   return status;
+}
+
+// --- NativeFSFactory ----------------------------------------------------- //
+
+SCF_IMPLEMENT_FACTORY (NativeFSFactory)
+
+// Factory interface for NativeFS
+iFileSystem *NativeFSFactory::Create (const char *realPath, int &oStatus)
+{
+  iFileSystem *fs = new NativeFS (realPath);
+  // success
+  oStatus = VFS_STATUS_OK;
+  return fs;
+}
+
+// constructor
+NativeFSFactory::NativeFSFactory (iBase *iParent)
+ : scfImplementationType (this, iParent)
+{
+}
+
+// scf initializer
+bool NativeFSFactory::Initialize (iObjectRegistry *objectRegistry)
+{
+  // object registry is not really needed as of now...
+  return true;
 }
 
 }

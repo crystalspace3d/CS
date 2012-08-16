@@ -24,7 +24,7 @@
 #include <iengine/light.h>
 #include <iengine/material.h>
 #include <iengine/mesh.h>
-#include <iengine/portal.h>
+#include <iengine/portalcontainer.h>
 #include <iengine/sector.h>
 #include <iengine/texture.h>
 #include "iutil/event.h"
@@ -217,6 +217,14 @@ void SceneTreeCtrl::UpdateTree ()
       scfQueryInterface<iMeshWrapper> (object);
     if (mesh)
     {
+      csRef<iPortalContainer> portalContainer =
+	scfQueryInterface<iPortalContainer> (mesh->GetMeshObject ());
+      if (portalContainer)
+      {
+	AppendObject (object, PORTAL);
+	continue;
+      }
+    
       AppendObject (object, MESH);
       continue;
     }
@@ -274,14 +282,6 @@ void SceneTreeCtrl::UpdateTree ()
     if (sector)
     {
       AppendObject (object, SECTOR);
-      continue;
-    }
-    
-    csRef<iPortal> portal =
-      scfQueryInterface<iPortal> (object);
-    if (portal)
-    {
-      AppendObject (object, PORTAL);
       continue;
     }
     

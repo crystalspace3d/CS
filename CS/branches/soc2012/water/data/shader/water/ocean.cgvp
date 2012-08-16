@@ -50,6 +50,7 @@ float WaveDispVert(float2 k, float amp, float2 pos, float freq, float phase, flo
 
 vert2frag main (app2vert IN, 
 			 uniform float time,
+			 uniform float4 colorVer,
 			 uniform float3 amps,
 			 uniform float3 kxs,
 			 uniform float3 kys,
@@ -119,7 +120,7 @@ vert2frag main (app2vert IN,
 	OUT.PosRefr.wz = reflrefrTC.wz;
 
 	OUT.NormalTC = IN.TexCoord;
-	OUT.Color = IN.Color;	
+	OUT.Color = colorVer;	
 	
     return OUT;
 }

@@ -28,7 +28,7 @@
 #include "ivaria/pmeter.h"
 
 #include "maploader.h"
-#include "vfsfiledialog.h"
+#include "cseditor/vfsfiledialog.h"
 
 #include <wx/frame.h>
 #include <wx/menuitem.h>
@@ -239,11 +239,10 @@ bool MapLoader::HandleEvent (iEvent &event)
   if (event.GetName () == openItem->GetEventID ())
   {
     // Ask the user to specify a file from the file dialog
-    VFSFileDialog dialog ((wxWindow*) editor->GetwxFrame (), -1, _("Select file to open"),
+    VFSFileDialog dialog ((wxWindow*) editor->GetwxFrame (), wxID_ANY, wxT("Select the file to open"),
 			  wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE,
 			  vfs, lastResource.path + lastResource.file, VFS_OPEN);
-    if (!dialog.ShowModal ())
-      return false;
+    if (!dialog.ShowModal ()) return false;
 
     // Save the last file selected & push that file on the loading list
     lastResource.path = dialog.GetPath ();

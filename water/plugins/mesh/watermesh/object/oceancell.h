@@ -72,13 +72,9 @@ namespace WaterMesh
     csDirtyAccessArray<csRef<iRenderBuffer> >vertex_bufferARR;
     csDirtyAccessArray<csRef<iRenderBuffer> >texel_bufferARR;
     csDirtyAccessArray<csRef<iRenderBuffer> >index_bufferARR;
-    csDirtyAccessArray<csRef<iRenderBuffer> >normal_bufferARR;
-    csDirtyAccessArray<csRef<iRenderBuffer> >color_bufferARR;
 	
     csDirtyAccessArray< csDirtyAccessArray<csVector3> > vertsARR;
-    csDirtyAccessArray< csDirtyAccessArray<csVector3> > normsARR;
     csDirtyAccessArray< csDirtyAccessArray<csVector2> > texsARR;
-    csDirtyAccessArray< csDirtyAccessArray<csColor> >  colsARR;
     csDirtyAccessArray< csDirtyAccessArray<csTriangle> > trisARR;
 	        
   public:

@@ -47,35 +47,13 @@ csOceanCell::~csOceanCell()
 void csOceanCell::SetupVertices()
 {
 	csDirtyAccessArray<csVector3> verts[16];
-	csDirtyAccessArray<csVector3> norms[16];
-	csDirtyAccessArray<csColor> cols[16];
 	csDirtyAccessArray<csVector2> texs[16];
 	csDirtyAccessArray<csTriangle> tris[16];
 
   if(!isSetup)
   {
 
-    //NOTE: Can be converted into a mathmethical statement instead of switch
-    float gran;
-    switch(type)
-    {
-      default:
-      case LOD_LEVEL_1:
-        gran = 0.1f;
-        break;
-      case LOD_LEVEL_2:
-        gran = 0.2f;
-        break;
-      case LOD_LEVEL_3:
-        gran = 0.4f;
-        break;
-      case LOD_LEVEL_4:
-        gran = 0.8f;
-        break;
-      case LOD_LEVEL_5:
-        gran = 1.6f;
-        break;
-    }
+    float gran = pow(2.0,(double)type)*0.1f;
 
     uint maxjd = (uint) (len * gran);
     uint maxj = maxjd + 1;
@@ -90,8 +68,6 @@ void csOceanCell::SetupVertices()
 		   {
 		     verts[k].Push(csVector3 ((i * wid / maxid), oHeight, (j * len / maxjd)));
 		     texs[k].Push(csVector2((i * wid / maxid), (j * len / maxjd)));
-			 cols[k].Push(csColor (0.17f,0.27f,0.26f));
-			 norms[k].Push(csVector3 (0, 1, 0));
 		   }
         }
 		
@@ -110,7 +86,7 @@ void csOceanCell::SetupVertices()
 	    }
 	}
 
-	
+	//Outer mesh
 	for (uint k = 0; k < 16 ; k++)
 	{
 		// The top mesh
@@ -326,15 +302,10 @@ void csOceanCell::SetupVertices()
 		}
 	}
 
-	
-
-
 	for (uint k = 0 ; k < 16 ; k++)
 	{
 		vertsARR.Push(verts[k]);
-		colsARR.Push(cols[k]);
 		texsARR.Push(texs[k]);
-		normsARR.Push(norms[k]);
 		trisARR.Push(tris[k]);
 	}
 
@@ -389,33 +360,6 @@ void csOceanCell::SetupBuffers()
 		  index_bufferARR[i]->CopyInto (trisARR[i].GetArray(), trisARR[i].GetSize()*3);
 	 }
   }
-  
-  if (!normal_bufferARR.GetSize())
-  {    
-	  for(uint i = 0; i < 16; i++)
-	  {
-		// Create a buffer that doesn't copy the data.
-		normal_bufferARR.Push( csRenderBuffer::CreateRenderBuffer (
-        normsARR[i].GetSize(), CS_BUF_STATIC, CS_BUFCOMP_FLOAT,
-        3));
-
-		normal_bufferARR[i]->CopyInto (normsARR[i].GetArray(), normsARR[i].GetSize());
-		}
-		
-  }
-
-  if (!color_bufferARR.GetSize())
-  {   
-	  for(uint i = 0; i < 16; i++)
-	  {
-		// Create a buffer that doesn't copy the data.
-		color_bufferARR.Push(  csRenderBuffer::CreateRenderBuffer (
-        colsARR[i].GetSize(), CS_BUF_STATIC, CS_BUFCOMP_FLOAT,
-        3));
-	  
-		color_bufferARR[i]->CopyInto (colsARR[i].GetArray(), colsARR[i].GetSize());
-	  }
-  }
 
   buffersNeedSetup = false;
 }
@@ -435,10 +379,6 @@ void csOceanCell::SetupBufferHolder()
 	  bufferHolder->SetRenderBuffer(CS_BUFFER_INDEX, index_bufferARR[i]);
 	  bufferHolder->SetRenderBuffer(CS_BUFFER_POSITION, vertex_bufferARR[i]);
 	  bufferHolder->SetRenderBuffer(CS_BUFFER_TEXCOORD0, texel_bufferARR[i]);
-
-	  //Ocean color and normals shouldn't change..
-	  bufferHolder->SetRenderBuffer(CS_BUFFER_NORMAL, normal_bufferARR[i]);
-	  bufferHolder->SetRenderBuffer(CS_BUFFER_COLOR, color_bufferARR[i]);
 
 	  bufferHolderARR.Push(bufferHolder);
   }

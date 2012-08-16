@@ -35,7 +35,7 @@
 #include <wx/combobox.h>
 #include <wx/artprov.h>
 
-#include "vfsfiledialog.h"
+#include "cseditor/vfsfiledialog.h"
 
 //Image Stuff
 #define DEFAULT_IMAGE_SIZE 16
@@ -45,6 +45,8 @@
 #include "data/editor/images/folder_open.xpm"
 //#include "images/new_dir.xpm"
 //#include "images/toparent.xpm"
+
+using namespace CS::EditorApp;
 
 BEGIN_EVENT_TABLE (VFSFileDialog, wxDialog)
   EVT_TREE_SEL_CHANGED(DIRECTORY_TREE, VFSFileDialog::OnDirTreeSelChange)
@@ -72,7 +74,7 @@ VFSFileDialog::VFSFileDialog ( wxWindow *parent,
 			       long style,
 			       iVFS* vfs,
 			       const csString& startpath,
-			       fileDialogType type) : 
+			       FileDialogType type) : 
 wxDialog( parent, id, title, position, size, style), vfs (vfs)
 {
   dialogType = type;
@@ -152,7 +154,7 @@ wxDialog( parent, id, title, position, size, style), vfs (vfs)
   dirtree->SetImageList( imageList );
   dirtree->SetItemImage( rootId, imageIdList[IMAGE_FOLDER_OPEN] );
 
-  FileDlgTreeItemData* data = new FileDlgTreeItemData(wxT("/"));
+  VFSFileDialog::FileDlgTreeItemData* data = new VFSFileDialog::FileDlgTreeItemData(wxT("/"));
   dirtree->SetItemData( rootId, data );
   dirtree->SelectItem(rootId);
   dirtree->Expand (rootId);
@@ -211,7 +213,8 @@ csString VFSFileDialog::GetPathByTreeItem(wxTreeItemId id)
 
   while(cur != dirtree->GetRootItem())
   {
-    FileDlgTreeItemData* data = (FileDlgTreeItemData*)dirtree->GetItemData( cur );
+    VFSFileDialog::FileDlgTreeItemData* data =
+      (VFSFileDialog::FileDlgTreeItemData*)dirtree->GetItemData(cur);
 
     if(data)
     {
@@ -338,8 +341,8 @@ bool VFSFileDialog::LoadVFSTreeBranch(wxTreeItemId parent, const char *path)
       curTestPath.Remove(0, curTestPath.Find('/', TRUE) +1);
 
       wxTreeItemId curTreeItem = dirtree->AppendItem(parent, curTestPath );
-      FileDlgTreeItemData*  data = new FileDlgTreeItemData( curTestPath.Append('/') );
-      
+      VFSFileDialog::FileDlgTreeItemData* data =
+	new VFSFileDialog::FileDlgTreeItemData( curTestPath.Append('/') );
 			
       dirtree->SetItemData( curTreeItem, data );
       dirtree->SetItemImage( curTreeItem, imageIdList[IMAGE_FOLDER_CLOSED]);

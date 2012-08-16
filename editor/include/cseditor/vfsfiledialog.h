@@ -40,16 +40,54 @@ class wxChoice;
 #include <wx/treectrl.h>
 #include <wx/dialog.h>
 
-enum fileDialogType
+namespace CS {
+namespace EditorApp {
+
+/**
+ * Type of the operation to be made by a given VFSFileDialog.
+ */
+enum FileDialogType
 {
-  VFS_OPEN,
-  VFS_SAVE
+  VFS_OPEN,    /*!< 'Open' operation. */
+  VFS_SAVE     /*!< 'Save' operation. */
 };
 
-// TODO: put this is cseditor
-class VFSFileDialog : public wxDialog
+/**
+ * Dialog for selecting a iVFS path.
+ *
+ * The following code snippet shows how to create and use the VFS dialog:
+ * \code
+ *  // Create the VFS file dialog.
+ *  wxWindow* parent = ...
+ *  VFSFileDialog dialog (parent, wxID_ANY, _("Select the file to open"),
+ *                        wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE,
+ *			  vfs, "/data/castle/world", VFS_OPEN);
+ *
+ *  // Display it and wait for the user leaving the dialog.
+ *  if (!dialog.ShowModal ()) return false;
+ *
+ *  // Do something with the selected path.
+ *  csString path = dialog.GetPath ();
+ *  csString file = dialog.GetFilename ();
+ *  // ...
+ * \endcode
+ */
+class CS_CRYSTALSPACE_EXPORT VFSFileDialog : public wxDialog
 {
 public:
+  /**
+   * Constructor.
+   * \param parent Parent window of the dialog.
+   * \param id ID of this dialog (can be wxID_ANY).
+   * \param title Title of the dialog (typically displayed at the top of the window).
+   * \param pos Position in screen space.
+   * \param size Size in screen space.
+   * \param style Style of the dialog.
+   * \param vfs Optional reference to the iVFS plugin. If not provided, then it will be taken
+   * from the iObjectRegistry.
+   * \param startpath Starting path of the dialog.
+   * \param dialogType Type of the operation to be made by this dialog.
+   */
   VFSFileDialog
     ( wxWindow *parent,
       wxWindowID id,
@@ -57,13 +95,15 @@ public:
       const wxPoint& pos = wxDefaultPosition,
       const wxSize& size = wxDefaultSize,
       long style = wxDEFAULT_DIALOG_STYLE,
-      iVFS* vfs = 0,
+      iVFS* vfs = nullptr,
       const csString& startpath = "/",
-      fileDialogType dialogType = VFS_OPEN
+      FileDialogType dialogType = VFS_OPEN
       );
   ~VFSFileDialog();
 
+  /// Get the path selected by the user
   const char* GetPath() { return curdvpath.GetData(); }
+  /// Get the file selected by the user
   const char* GetFilename() { return filename.GetData(); }
 
 protected:
@@ -159,23 +199,26 @@ private:
 
   csString curdvpath;
   csString filename;
-  fileDialogType dialogType;
+  FileDialogType dialogType;
 
   csRef<iVFS> vfs;
+
+  class FileDlgTreeItemData : public wxTreeItemData
+  {
+  public:
+    explicit FileDlgTreeItemData(const wxString& newData ) : data(newData) {}
+
+    const wxChar *GetData() const { return data.c_str(); }
+    void SetData(wxString newData) { data = newData; }
+
+  private:
+    wxString data;
+  };
 
   DECLARE_EVENT_TABLE();
 };
 
-class FileDlgTreeItemData : public wxTreeItemData
-{
-public:
-  explicit FileDlgTreeItemData(const wxString& newData ) : data(newData) {}
-
-  const wxChar *GetData() const { return data.c_str(); }
-  void SetData(wxString newData) { data = newData; }
-
-private:
-  wxString data;
-};
+} // namespace EditorApp
+} //namespace CS
 
 #endif

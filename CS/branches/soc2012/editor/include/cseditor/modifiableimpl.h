@@ -150,7 +150,7 @@ class csConstraint : public scfImplementation1<csConstraint, iModifiableConstrai
 {
 public:
   csConstraint(iModifiableConstraintType type)
-    : scfImplementation1(this),
+    : scfImplementationType (this),
       type(type)
   {
   }

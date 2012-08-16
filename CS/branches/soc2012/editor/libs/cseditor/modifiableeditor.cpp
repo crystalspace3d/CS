@@ -227,11 +227,11 @@ void ModifiableEditor::Populate ()
     pgMan->SetDescription (wxT ("Page Manager"), wxT ("New Page added!"));
 
     csRef<iObject> asObject(scfQueryInterface<iObject>(activeModifiable));
-    const char* name;
+    csString name;
     if (asObject)
       name = asObject->GetName();
     else
-      name = wxT("iModifiable Entity");
+      name = "iModifiable Entity";
     wxString categoryName (name, wxConvUTF8);
 
     wxPropertyCategory * ctgr = new wxPropertyCategory (categoryName);

@@ -383,6 +383,8 @@ void SceneTreeCtrl::OnItemActivated (wxTreeEvent& event)
 
 void SceneTreeCtrl::OnSelChanged (wxTreeEvent& event)
 {
+  if (selecting) return;
+
   csRef<iContextObjectSelection> objectSelectionContext =
     scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
 
@@ -419,7 +421,11 @@ void SceneTreeCtrl::OnAddSelectedObject (iEvent& event)
 
   wxTreeItemId* id = objects.GetElementPointer (object);
   if (id && id->IsOk ())
+  {
+    selecting = true;
     SelectItem (*id);
+    selecting = false;
+  }
 }
 
 void SceneTreeCtrl::OnRemoveSelectedObject (iEvent& event)
@@ -430,12 +436,18 @@ void SceneTreeCtrl::OnRemoveSelectedObject (iEvent& event)
 
   wxTreeItemId* id = objects.GetElementPointer (object);
   if (id && id->IsOk ())
+  {
+    selecting = true;
     UnselectItem (*id);
+    selecting = false;
+  }
 }
 
 void SceneTreeCtrl::OnClearSelectedObjects ()
 {
+  selecting = true;
   UnselectAll ();
+  selecting = false;
 }
 
 void SceneTreeCtrl::OnEnterWindow (wxMouseEvent& event)

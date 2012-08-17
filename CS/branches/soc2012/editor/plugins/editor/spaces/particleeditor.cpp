@@ -71,18 +71,31 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
   CSPartEditSpace* editorSpace;
 
-  BEGIN_EVENT_TABLE(CSPartEditSpace::Space, wxPanel)
-    EVT_SIZE  (                       CSPartEditSpace::Space::OnSize)
-    EVT_BUTTON(idButtonAddEmitter,    CSPartEditSpace::Space::OnButtonAddEmitter)
-    EVT_BUTTON(idButtonRemoveEmitter, CSPartEditSpace::Space::OnButtonRemoveEmitter)
-    EVT_BUTTON(idButtonAddEffector,   CSPartEditSpace::Space::OnButtonAddEffector)
-    EVT_BUTTON(idButtonAddEffector,   CSPartEditSpace::Space::OnButtonRemoveEffector)
+  /// Helper function; apparently this functionality isn't built into wx
+  bool ListBoxHasSelection(wxListBox* listBox) {
+    wxArrayInt sel;
+    listBox->GetSelections(sel);
+    return sel.size() != 0;
+  }
+
+  // This table triggers a bunch of MFP conversion warnings, but due to
+  // the fact that the wxPanel is the first class being inherited, there
+  // shouldn't be any problems.
+  BEGIN_EVENT_TABLE(CSPartEditSpace, wxPanel)
+    EVT_SIZE  (                       CSPartEditSpace::OnSize)
+    EVT_BUTTON(idButtonAddEmitter,    CSPartEditSpace::OnButtonAddEmitter)
+    EVT_BUTTON(idButtonRemoveEmitter, CSPartEditSpace::OnButtonRemoveEmitter)
+    EVT_BUTTON(idButtonAddEffector,   CSPartEditSpace::OnButtonAddEffector)
+    EVT_BUTTON(idButtonRemoveEffector,CSPartEditSpace::OnButtonRemoveEffector)
+    EVT_LISTBOX(idEmitterList,        CSPartEditSpace::OnEmitterSelect)
+    EVT_LISTBOX(idEffectorList,       CSPartEditSpace::OnEffectorSelect)
   END_EVENT_TABLE()
 
   SCF_IMPLEMENT_FACTORY(CSPartEditSpace)
   
   CSPartEditSpace::CSPartEditSpace(iBase* parent) 
-  : scfImplementationType(this, parent), object_reg(0) 
+  : scfImplementationType(this, parent),
+    object_reg(0) 
   {
     // Setup namespace-scoped pointer to editor, to be used by the static
     // event handler to reach the space
@@ -92,15 +105,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
   CSPartEditSpace::~CSPartEditSpace() 
   {
     delete mainEditor;
+    delete secondaryEditor;
   }
 
   bool CSPartEditSpace::Initialize(iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent)
   {
     object_reg = obj_reg;
     this->editor = editor;
-    factory = fact;
-    window = new CSPartEditSpace::Space(this, parent);
+    spaceFactory = fact;
     mainSizer = new wxBoxSizer(wxVERTICAL);
+
+    // Initializes the wxPanel part of the space
+    Create(parent);
 
     // TODO: method to query the active context; also call here!!!
     // Load PS plugins
@@ -109,11 +125,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     // Load translator and document system plugins
     emitterFactory = csLoadPlugin<iParticleBuiltinEmitterFactory>(pluginManager, "crystalspace.mesh.object.particles.emitter");
 
-    effectorFactory = csLoadPlugin<iParticleBuiltinEffectorFactory>(pluginManager, "crystalspace.mesh.object.particles.effector");
-
-
-    // "crystalspace.mesh.object.particles"
-      
+    effectorFactory = csLoadPlugin<iParticleBuiltinEffectorFactory>(pluginManager, "crystalspace.mesh.object.particles.effector");      
 
     // Setup the event names
     nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
@@ -126,14 +138,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     RegisterQueue (editor->GetContext()->GetEventQueue(), activateObject);
     
     // Prepare translations 
-    translator = csQueryRegistry<iTranslator>(object_reg);
-    cout << translator->GetMsg("Hello world") << endl;
+    translator = csQueryRegistry<iTranslator>(object_reg);    
     
-    
-    mainEditor = new ModifiableEditor(object_reg, window, idMainEditor, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
+    // Prepare modifiable editors
+    mainEditor = new ModifiableEditor(object_reg, this, idMainEditor, wxDefaultPosition, parent->GetSize(), 0L, wxT("Modifiable editor"));
     mainSizer->Add(mainEditor, 1, wxEXPAND | wxALL, borderWidth);
-    window->SetSizer(mainSizer);
-    mainSizer->SetSizeHints(window);
+    SetSizer(mainSizer);
+    mainSizer->SetSizeHints(this);
 
     middleSizer = new wxBoxSizer(wxHORIZONTAL);
     middleLSizer = new wxBoxSizer(wxVERTICAL);
@@ -144,21 +155,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     middleSizer->Add(middleRSizer, 1, wxEXPAND | wxALL, borderWidth);
 
     //-- Emitter GUI
-    middleLSizer->Add(new wxStaticText(window, wxID_ANY, wxT("Emitters")));
-    emitterList = new wxListBox (window,idEmitterList);
+    middleLSizer->Add(new wxStaticText(this, wxID_ANY, wxT("Emitters")));
+    emitterList = new wxListBox (this,idEmitterList);
     middleLSizer->Add ( emitterList,
                         1,
                         wxALL | wxEXPAND,
                         borderWidth );
 
-    wxButton* but = new wxButton(window, idButtonAddEmitter, wxT("Add"));
+    wxButton* but = new wxButton(this, idButtonAddEmitter, wxT("Add"));
     but->SetSize(-1, 32);
     middleLSizer->Add ( but,
                         0,
                         wxALL | wxEXPAND,
                         borderWidth );
 
-    but = new wxButton(window, idButtonRemoveEmitter, wxT("Remove"));
+    but = new wxButton(this, idButtonRemoveEmitter, wxT("Remove"));
     but->SetSize(-1, 32);
     middleLSizer->Add ( but,
                         0,
@@ -166,33 +177,33 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
                         borderWidth );
 
     //-- Effector GUI
-    middleRSizer->Add(new wxStaticText(window, wxID_ANY, wxT("Effectors")));
-    effectorList = new wxListBox(window, idEffectorList);
+    middleRSizer->Add(new wxStaticText(this, wxID_ANY, wxT("Effectors")));
+    effectorList = new wxListBox(this, idEffectorList);
     middleRSizer->Add(effectorList,
                       1,
                       wxALL | wxEXPAND,
                       borderWidth);
 
-    but = new wxButton(window, idButtonAddEffector, wxT("Add"));
+    but = new wxButton(this, idButtonAddEffector, wxT("Add"));
     but->SetSize(-1, 32);
     middleRSizer->Add(but,
                       0,
                       wxALL | wxEXPAND,
                       borderWidth);
 
-    but = new wxButton(window, idButtonRemoveEffector, wxT("Remove"));
+    but = new wxButton(this, idButtonRemoveEffector, wxT("Remove"));
     but->SetSize(-1, 32);
     middleRSizer->Add(but,
                       0,
                       wxALL | wxEXPAND,
                       borderWidth);
 
-    secondaryEditor = new ModifiableEditor(object_reg, window, idSecondaryEditor,
+    secondaryEditor = new ModifiableEditor(object_reg, this, idSecondaryEditor,
       wxDefaultPosition, wxDefaultSize, 0L, wxT("Secondary editor"));
 
     mainSizer->Add(secondaryEditor, 1, wxALL | wxEXPAND, borderWidth);
 
-    printf ("\nInitialized property editing panel!\n");
+    printf ("\nInitialized particle editing panel!\n");
 
     // Populate with the current active object 
     Populate (); 
@@ -205,13 +216,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
   void CSPartEditSpace::OnSize(wxSizeEvent& event)
   {
-    //mainEditor->OnSize(event);
     mainSizer->SetDimension(0, 0, event.GetSize().GetWidth(), event.GetSize().GetHeight());
     event.Skip();
   }
 
   void CSPartEditSpace::Populate()
   {
+    // Get the object from the context
     csRef<iContextObjectSelection> objectSelectionContext =
       scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
 
@@ -222,6 +233,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       //NoModifiable();
       return;
     }
+
+    csString entityName(result->GetName());
 
     csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper>(result);
     if (!fac)
@@ -238,24 +251,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       return;
     }
 
-    printf("It is a particle system factory!\n");
-
-    //csRef<iParticleSystemBase> ipb = scfQueryInterface<iParticleSystemBase>(partSys);
-
-    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory()); 
-    // csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(ipb->GetEmitter(0)); 
+    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory());  
     if (!modifiable)
     {
       // NoModifiable();
       return;
     }
+
+    // Caches a casted pointer to the factory
+    factory = partSys;
    
-    mainEditor->SetModifiable(modifiable);
+    // Updates the GUI
+    mainEditor->SetModifiableLabel(modifiable, entityName);
+    UpdateEmitterList();
+    UpdateEffectorList();
   }
 
-  wxWindow* CSPartEditSpace::GetwxWindow ()
+  wxWindow* CSPartEditSpace::GetwxWindow()
   {
-    return window;
+    return this;
   }
 
   bool CSPartEditSpace::GetEnabled() const {
@@ -270,16 +284,104 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
   {
     csRef<iEventNameRegistry> strings = csQueryRegistry<iEventNameRegistry>( object_reg );
 
+#ifdef CS_DEBUG
     printf("\tCaught event: %s (ID #%u)\n",
       strings->GetString( event.GetName() ),
       (unsigned int) event.GetName() );
+#endif
 
     if (event.Name == activateObject) {
-      printf("You selected something!\n");
+      // The user activated (double-clicked) something!
       Populate();
     }
 
     return false;
+  }
+
+  void CSPartEditSpace::OnButtonAddEmitter( wxCommandEvent &event )
+  {
+    // TODO: context menu to pick
+    csRef<iParticleBuiltinEmitterBox> em = emitterFactory->CreateBox();
+    factory->AddEmitter(em);
+    UpdateEmitterList();
+  }
+
+  void CSPartEditSpace::OnButtonRemoveEmitter( wxCommandEvent &event )
+  {
+    if(!ListBoxHasSelection(emitterList)) return;
+
+    factory->RemoveEmitter(event.GetSelection());
+    UpdateEmitterList();
+  }
+
+  void CSPartEditSpace::OnButtonAddEffector( wxCommandEvent &event )
+  {
+    // TODO: context menu to pick
+    csRef<iParticleBuiltinEffectorForce> eff = effectorFactory->CreateForce();
+    factory->AddEffector(eff);
+    UpdateEmitterList();
+  }
+
+  void CSPartEditSpace::OnButtonRemoveEffector( wxCommandEvent &event )
+  {
+    if(!ListBoxHasSelection(effectorList)) return;
+
+    factory->RemoveEffector(event.GetSelection());
+    UpdateEffectorList();
+  }
+
+  void CSPartEditSpace::OnEmitterSelect( wxCommandEvent& event )
+  {
+    effectorList->DeselectAll();
+    iParticleEmitter* emt = static_cast<iParticleEmitter*>(emitterList->GetClientData(event.GetSelection()));
+    csRef<iModifiable> mod = scfQueryInterface<iModifiable>(emt);
+
+    if(mod.IsValid()) {
+      csString label(csString(emitterList->GetString(event.GetSelection()).GetData()));
+      secondaryEditor->SetModifiableLabel(mod, label);
+    } else {
+      csReport(object_reg, CS_REPORTER_SEVERITY_ERROR,
+        "crystalspace.editor.space.partedit",
+        "Tried to edit emitter not implementing iModifiable.");
+
+      return;
+    }
+  }
+
+  void CSPartEditSpace::OnEffectorSelect( wxCommandEvent& event )
+  {
+    emitterList->DeselectAll();
+    iParticleEffector* eff = static_cast<iParticleEffector*>(effectorList->GetClientData(event.GetSelection()));
+    csRef<iModifiable> mod = scfQueryInterface<iModifiable>(eff);
+
+    if(mod.IsValid()) {
+      csString label(csString(effectorList->GetString(event.GetSelection()).GetData()));
+      secondaryEditor->SetModifiableLabel(mod, label);
+    } else {
+      csReport(object_reg, CS_REPORTER_SEVERITY_ERROR,
+        "crystalspace.editor.space.partedit",
+        "Tried to edit effector not implementing iModifiable.");
+
+      return;
+    }
+  }
+
+  void CSPartEditSpace::UpdateEmitterList()
+  {
+    emitterList->Clear();
+    for(size_t i = 0; i < factory->GetEmitterCount(); i++) {
+      iParticleEmitter* em = factory->GetEmitter(i);
+      emitterList->Append(wxString::Format(wxT("Emitter #%d"), i), (void*)em);
+    }
+  }
+
+  void CSPartEditSpace::UpdateEffectorList()
+  {
+    effectorList->Clear();
+    for(size_t i = 0; i < factory->GetEffectorCount(); i++) {
+      iParticleEffector* em = factory->GetEffector(i);
+      effectorList->Append(wxString::Format(wxT("Effector #%d"), i), (void*)em);
+    }
   }
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)

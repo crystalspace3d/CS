@@ -153,7 +153,6 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
   : wxPanel (parent, id, position, size, style, name)
 {
   this->object_reg = object_reg;
-  this->editor = editor;
 
   // Since the PG components are being dynamically loaded, this function never gets
   // to be run and initialize the wxpg resource module, causing some pretty nasty
@@ -175,7 +174,11 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
     wxPG_EX_HELP_AS_TOOLTIPS);
 
   pgMan->SetPropertyAttributeAll (wxPG_BOOL_USE_CHECKBOX, true);
-  pgMan->SetDescBoxHeight( 48, true );
+  pgMan->SetDescBoxHeight( 56, true );
+
+  // Get the iTranslator, to attempt to fetch existing translations of
+  // the parameter names and descriptions
+  translator = csQueryRegistry<iTranslator>(object_reg);
 
   // Temporary
   /*
@@ -189,7 +192,15 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
 void ModifiableEditor::SetModifiable(iModifiable* modifiable) 
 {
   activeModifiable = modifiable;
+  activeModifiableName = "Unnamed entity";
   // Force a refresh
+  Populate();
+}
+
+void ModifiableEditor::SetModifiableLabel( iModifiable* modifiable, csString& label )
+{
+  activeModifiable = modifiable;
+  activeModifiableName = label;
   Populate();
 }
 
@@ -209,212 +220,214 @@ void ModifiableEditor::Populate ()
 {
   // All pages are cleared from the page manager
   pgMan->Clear ();
-	
-  csRef<iModifiableDescription> description(activeModifiable->GetDescription());
-
-  // Get the iTranslator, to attempt to fetch existing translations of
-  // the parameter names and descriptions
-  csRef<iTranslator> translator = csQueryRegistry<iTranslator>(object_reg);
-    
   pgMan->AddPage (wxT("Properties"));
   pgMan->SetExtraStyle ( wxPG_EX_HELP_AS_TOOLTIPS );
+	// Append the main Item as the root
+  Append(activeModifiable, activeModifiableName);
+}
 
-  size_t nPg = pgMan->GetPageCount ();
-	
-  if (nPg > 0)
-  { 
-    page = pgMan->GetPage (wxT ("Properties"));
-    pgMan->SetDescription (wxT ("Page Manager"), wxT ("New Page added!"));
+//---------------------------------------------------
+void ModifiableEditor::Append(iModifiable* element, csString& name) {
 
-    csRef<iObject> asObject(scfQueryInterface<iObject>(activeModifiable));
-    csString name;
-    if (asObject)
-      name = asObject->GetName();
-    else
-      name = "iModifiable Entity";
-    wxString categoryName (name, wxConvUTF8);
+  csRef<iModifiableDescription> description(element->GetDescription());
 
-    wxPropertyCategory * ctgr = new wxPropertyCategory (categoryName);
-    page ->Append (ctgr);
+  page = pgMan->GetPage (wxT ("Properties"));
+  pgMan->SetDescription (wxT ("Page Manager"), wxT ("New Page added!"));
 
-    for (size_t i = 0; i< description->GetParameterCount(); i++)
+  wxString categoryName (name, wxConvUTF8);
+
+  wxPropertyCategory *root = new wxPropertyCategory (categoryName);
+  page ->Append (root);
+
+  for (size_t i = 0; i< description->GetParameterCount(); i++)
+  {
+    const iModifiableParameter* param = description->GetParameterByIndex(i);
+    csVariant* variant = element->GetParameterValue(param->GetID());
+
+    wxString originalName( param->GetName(), wxConvUTF8 );
+    wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
+    wxString description( param->GetDescription(), wxConvUTF8 );
+
+    AppendVariant(root, variant, param->GetConstraint(), originalName, translation, description);
+
+    delete variant;
+  } // end loop through properties
+  pgMan->Refresh();
+}
+
+//---------------------------------------------------
+
+void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant, const iModifiableConstraint* constraint, const wxString& originalName, const wxString& translatedName, const wxString& translatedDescription)
+{
+  switch (variant->GetType())
     {
-      const iModifiableParameter* param = description->GetParameterByIndex(i);
-      csVariant* variant = activeModifiable->GetParameterValue(param->GetID());
-  
-      wxString originalName( param->GetName(), wxConvUTF8 );
-      wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
-      wxString description( param->GetDescription(), wxConvUTF8 );
+    case CSVAR_STRING:
+      {
+        wxString stringValue (variant->GetString(), wxConvUTF8);
 
-      switch (param->GetType())
-      {
-      case CSVAR_STRING:
-      {
-  wxString stringValue (variant->GetString(), wxConvUTF8);
-	wxStringProperty* stringP = new wxStringProperty (translation, originalName);
-	page->Append (stringP);
-	stringP->SetValue (stringValue);
-	page->SetPropertyHelpString(originalName, description);
+        wxStringProperty* stringP = new wxStringProperty (translatedName, originalName);
+        page->AppendIn(categoryID, stringP);
+        stringP->SetValue (stringValue);
+
       }
       break;
 
-      case CSVAR_LONG :
+    case CSVAR_LONG :
       {
-  if( param->GetConstraint() != nullptr
-      && param->GetConstraint()->GetType() == MODIFIABLE_CONSTRAINT_ENUM)
-  {
-    // Generate a combo-box based on enum values
-    const csEnumConstraint* ec = static_cast<const csEnumConstraint*>(param->GetConstraint());
-    csStringArray* csLabels = ec->GetLabels();
-    wxArrayString labels;
-    for(csStringArray::Iterator i = csLabels->GetIterator(); i.HasNext(); ) 
-    {
-      labels.Add( wxString( i.Next(), wxConvUTF8) );
-    }
+        if( constraint != nullptr
+          && constraint->GetType() == MODIFIABLE_CONSTRAINT_ENUM)
+        {
+          // Generate a combo-box based on enum values
+          const csEnumConstraint* ec = dynamic_cast<const csEnumConstraint*>(constraint);
+          csStringArray* csLabels = ec->GetLabels();
+          wxArrayString labels;
+          for(csStringArray::Iterator i = csLabels->GetIterator(); i.HasNext(); ) 
+          {
+            labels.Add( wxString( i.Next(), wxConvUTF8) );
+          }
 
-    csArray<long>* csValues = ec->GetValues();
-    wxArrayInt values;
-    for(csArray<long>::Iterator i = csValues->GetIterator(); i.HasNext(); )
-    {
-      values.Add(i.Next());
-    }
+          csArray<long>* csValues = ec->GetValues();
+          wxArrayInt values;
+          for(csArray<long>::Iterator i = csValues->GetIterator(); i.HasNext(); )
+          {
+            values.Add(i.Next());
+          }
 
-    wxEnumProperty* enumP = new wxEnumProperty( translation,
-                                                originalName,
-                                                labels,
-                                                values,
-                                                (int)variant->GetLong() ); 
-    page->Append(enumP);
-  }
-  else 
-  {
-    // Plain old text field
-    wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
-    wxIntProperty* intP = new wxIntProperty(translation, originalName);
-    page->Append(intP);
-    // Needed to actually refresh the grid and show the value
-    pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
-  }
-	
-	page->SetPropertyHelpString(originalName, description);
+          wxEnumProperty* enumP = new wxEnumProperty( translatedName,
+            originalName,
+            labels,
+            values,
+            (int)variant->GetLong() ); 
+          page->AppendIn(categoryID, enumP);
+        }
+        else 
+        {
+          // Plain old text field
+          wxString longValue = wxString::Format (wxT("%ld"), (int) variant->GetLong());
+          wxIntProperty* intP = new wxIntProperty(translatedName, originalName);
+          page->AppendIn(categoryID, intP);
+          // Needed to actually refresh the grid and show the value
+          pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
+        }
+
+        
       }
       break;
 
-      case CSVAR_FLOAT:
+    case CSVAR_FLOAT:
       { 
-	double value = variant->GetFloat();
+        double value = variant->GetFloat();
 
-  // Generate a homebrewed slider
-  wxFloatProperty* fp = new wxFloatProperty(translation, originalName, value);
-  wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(), wxT("SliderEditor"));
-  fp->SetEditor(rHandle);
-  page->Append(fp);
-
-	page->SetPropertyHelpString (originalName, description);
-
+        // Generate a homebrewed slider
+        wxFloatProperty* fp = new wxFloatProperty(translatedName, originalName, value);
+        //wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(), wxT("SliderEditor"));
+        //fp->SetEditor(rHandle);
+        page->AppendIn(categoryID, fp);
       }
       break;
 
-      case CSVAR_BOOL:
+    case CSVAR_BOOL:
       {
-	wxBoolProperty* boolP = new wxBoolProperty(translation, originalName);
-  boolP->SetValue ( variant->GetBool ());
-	page->Append (boolP);
-	pgMan->SetPropertyAttribute (boolP, wxPG_BOOL_USE_CHECKBOX, (long)1, wxPG_RECURSE);	
-	page->SetPropertyHelpString(originalName, description);
+        wxBoolProperty* boolP = new wxBoolProperty(translatedName, originalName);
+        boolP->SetValue ( variant->GetBool ());
+        page->AppendIn(categoryID, boolP);
+        pgMan->SetPropertyAttribute (boolP, wxPG_BOOL_USE_CHECKBOX, (long)1, wxPG_RECURSE);	
       }
       break;
-	
-      case CSVAR_COLOR :
+
+    case CSVAR_COLOR :
       {
-	csColor colorValue(variant->GetColor ());
-	int red   = colorValue[0] * 255;
-	int blue  = colorValue[1] * 255;
-	int green = colorValue[2] * 255;
-	wxColourProperty* colorP = new wxColourProperty (translation, originalName, wxColour (red,blue,green) );
-	page->Append (colorP);
-	page->SetPropertyHelpString(originalName, description);
-
+        csColor colorValue(variant->GetColor ());
+        int red   = colorValue[0] * 255;
+        int blue  = colorValue[1] * 255;
+        int green = colorValue[2] * 255;
+        wxColourProperty* colorP = new wxColourProperty (translatedName, originalName, wxColour (red,blue,green) );
+        page->AppendIn(categoryID, colorP);
       }
       break;
-	
-      case CSVAR_VECTOR3 :
+
+    case CSVAR_VECTOR3 :
       {
-	csVector3 vector3Value (variant->GetVector3());
-	double x = vector3Value.x;
-	double y = vector3Value.y;
-	double z = vector3Value.z;
-	wxVectorProperty *vector3P = new wxVectorProperty(translation, originalName, wxVector3f(x,y,z));
-	page->Append (vector3P);
-	page->SetPropertyHelpString(originalName, description);
-
+        csVector3 vector3Value (variant->GetVector3());
+        double x = vector3Value.x;
+        double y = vector3Value.y;
+        double z = vector3Value.z;
+        wxVectorProperty *vector3P = new wxVectorProperty(translatedName, originalName, wxVector3f(x,y,z));
+        page->AppendIn(categoryID, vector3P);
       }
       break;
-      
-      case CSVAR_VECTOR2 :
+
+    case CSVAR_VECTOR2 :
       {
-	csVector2 vector2Value (variant->GetVector2());
-	double x = vector2Value.x;
-	double y = vector2Value.y;
-	wxVector2Property *vector2P = new wxVector2Property(translation, originalName ,wxVector2f(x,y));
-	page->Append (vector2P);
-	page->SetPropertyHelpString(originalName,description);
-
+        csVector2 vector2Value (variant->GetVector2());
+        double x = vector2Value.x;
+        double y = vector2Value.y;
+        wxVector2Property *vector2P = new wxVector2Property(translatedName, originalName ,wxVector2f(x,y));
+        page->AppendIn(categoryID, vector2P);
       }
       break;
-				
-      case CSVAR_VECTOR4 :
+
+    case CSVAR_VECTOR4 :
       {
-	csVector4 vector4Value (variant->GetVector4());
-	double x = vector4Value.x;
-	double y = vector4Value.y;
-	double z = vector4Value.z;
-	double w = vector4Value.w;
-	wxVector4Property *vector4P = new wxVector4Property(translation, originalName, wxVector4f(x,y,z,w));
-	page->Append (vector4P);
-	page->SetPropertyHelpString(originalName, description );
-
+        csVector4 vector4Value (variant->GetVector4());
+        double x = vector4Value.x;
+        double y = vector4Value.y;
+        double z = vector4Value.z;
+        double w = vector4Value.w;
+        wxVector4Property *vector4P = new wxVector4Property(translatedName, originalName, wxVector4f(x,y,z,w));
+        page->AppendIn(categoryID, vector4P);
       }
       break;
 
-      case CSVAR_MATRIX3: 
+    case CSVAR_MATRIX3: 
       {
 
       }
       break;
 
-      case CSVAR_TRANSFORM:
+    case CSVAR_TRANSFORM:
       {
 
       }
       break;
 
-      case CSVAR_IBASE:
+    case CSVAR_IBASE:
       {
-
+        iBase* object = variant->GetIBase();
+        csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(object);
+        if(modifiable.IsValid()) {
+          //Append(modifiable, csString("Nested modifiable"));
+        }
 
       }
       break;
 
-      case CSVAR_ARRAY:
+    case CSVAR_ARRAY:
       {
-
+        wxPGProperty* catProp = new wxStringProperty(originalName, wxT("<composed>"));
+        catProp->SetFlag(wxPG_PROP_DISABLED);
+        page->Append(catProp);
+        csArray<csVariant> array = variant->GetArray();
+        for(auto i = array.GetIterator(); i.HasNext(); ) {
+          
+          // An array may have a constraint that matches the type
+          // of the element within; if not, it's ignored
+          //csVariant var = i.Next();
+          AppendVariant(catProp->GetId(), &(i.Next()), constraint, wxString::Format(wxT("%s[%d]"), originalName, i),
+            wxString::Format(wxT("%d"), i), wxString());
+        }
       }
       break;
 
-      default:
-	pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
+    default:
+      pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
+
       } // end switch
-    
-      delete variant;
-    } // end loop through properties
-    pgMan->Refresh();
-  } 
-  else
-  {
-    pgMan->SetDescription(wxT("Page Manager :"), wxT("Error page no added"));
-  }
-  //*/
+
+      if(page->GetProperty(originalName))
+        page->SetPropertyHelpString(originalName, translatedDescription );
+      else
+        printf("Couldn't find property with name: %s\n", originalName);
 }
 
 //---------------------------------------------------
@@ -433,7 +446,11 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
   size_t index = property->GetIndexInParent ();
 
   csRef<iModifiableDescription> desc = activeModifiable->GetDescription();
-  const iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
+  //csStringID paramID = reinterpret_cast<csStringID>(property->GetClientData());
+  
+  // This FAILS with nested properties, such as in the case of arrays, or nested 
+  // iModifiables
+  const iModifiableParameter* editedParameter = desc->GetParameter(index);
 
   csVariantType compareType = editedParameter->GetType();
   csVariant* variant( activeModifiable->GetParameterValue( editedParameter->GetID()) );
@@ -507,7 +524,9 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
   }
   else if (compareType == CSVAR_ARRAY)
   {
-
+    // maybe just generate unique IDs for each array element?
+    printf("Edited an array! ID=%d\n", editedParameter->GetID());
+    //activeModifiable->SetParameterValue(, *variant);
   }
   else
   {

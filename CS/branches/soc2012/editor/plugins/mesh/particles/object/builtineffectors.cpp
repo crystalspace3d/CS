@@ -42,31 +42,31 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
   csPtr<iParticleBuiltinEffectorForce> ParticleEffectorFactory::CreateForce () const
   {
-    return new ParticleEffectorForce;
+    return new ParticleEffectorForce(object_reg);
   }
 
   csPtr<iParticleBuiltinEffectorLinColor> 
     ParticleEffectorFactory::CreateLinColor () const
   {
-    return new ParticleEffectorLinColor;
+    return new ParticleEffectorLinColor(object_reg);
   }
 
   csPtr<iParticleBuiltinEffectorLinear> 
     ParticleEffectorFactory::CreateLinear () const
   {
-    return new ParticleEffectorLinear;
+    return new ParticleEffectorLinear(object_reg);
   }
 
   csPtr<iParticleBuiltinEffectorVelocityField> 
     ParticleEffectorFactory::CreateVelocityField () const
   {
-    return new ParticleEffectorVelocityField;
+    return new ParticleEffectorVelocityField(object_reg);
   }
 
   csPtr<iParticleBuiltinEffectorLight> 
     ParticleEffectorFactory::CreateLight () const
   {
-    return new ParticleEffectorLight;
+    return new ParticleEffectorLight(object_reg);
   }
 
 
@@ -98,11 +98,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
   }
 
-  ParticleEffectorLinColor::ParticleEffectorLinColor ()
+  ParticleEffectorLinColor::ParticleEffectorLinColor (iObjectRegistry* object_reg)
     : scfImplementationType (this),
     precalcInvalid (true)
   {
-
+    
   }
 
   csPtr<iParticleEffector> ParticleEffectorLinColor::Clone () const
@@ -238,7 +238,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
   //------------------------------------------------------------------------
 
-  ParticleEffectorLinear::ParticleEffectorLinear ()
+  ParticleEffectorLinear::ParticleEffectorLinear (iObjectRegistry* object_reg)
     : scfImplementationType (this),
       mask (CS_PARTICLE_MASK_ALL), precalcInvalid (true)
   {
@@ -525,7 +525,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
   //------------------------------------------------------------------------
 
-  ParticleEffectorLight::ParticleEffectorLight ()
+  ParticleEffectorLight::ParticleEffectorLight (iObjectRegistry* object_reg)
     : scfImplementationType (this), cutoffDistance (5.0f)
   {
 

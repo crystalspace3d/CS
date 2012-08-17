@@ -67,15 +67,14 @@
 
 #include <wx/dnd.h>
 #include <wx/event.h>
+#include <wx/listctrl.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
   using namespace CS::EditorApp;
   using namespace std;
 
-  // TODO: move all the propgrid stuff to the modifiable editor,
-  // and just keep a ref to that modifiable editor
-  class CSPartEditSpace : public csBaseEventHandler, public scfImplementation1<CSPartEditSpace, iSpace>
+  class CSPartEditSpace : public wxPanel, public csBaseEventHandler, public scfImplementation1<CSPartEditSpace, iSpace>
   {
   public:
     CSPartEditSpace(iBase* parent);
@@ -83,7 +82,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
     // iSpace
     virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent);
-    virtual iSpaceFactory* GetFactory () const { return factory; }
+    virtual iSpaceFactory* GetFactory () const { return spaceFactory; }
     virtual wxWindow* GetwxWindow ();
     virtual void SetEnabled (bool enabled);
     virtual bool GetEnabled () const;
@@ -92,11 +91,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     // iEventHandler 
     bool HandleEvent(iEvent &event);
 
-    void OnSize (wxSizeEvent& event);
+    // Various events
+    void OnSize           (wxSizeEvent& event);
 
     /**
      * Checks the current editor context and, if available, gets the selected
-     * iModifiable, passing it to the modifiable editor and updating the rest of
+     * particle system, passing it to the modifiable editor and updating the rest of
      * the GUI.
      */
     void Populate();
@@ -107,71 +107,39 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     csStringID          clearObjects;
     csStringID          activateObject;
 
-    class Space : public wxPanel
-    {
-    public:
-      Space(CSPartEditSpace* p, wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize)
-        : wxPanel (parent, id, pos, size),
-        space(p)
-      {}
-
-      virtual void OnSize (wxSizeEvent& ev)
-      {
-        if (space) 
-          space->OnSize (ev);
-      }
-
-      void OnButtonAddEmitter(wxCommandEvent &event)
-      {
-        csRef<iParticleSystemFactory> ps(scfQueryInterface<iParticleSystemFactory>(space->mainEditor->GetModifiable()));
-        CS_ASSERT_MSG("This should be safe", ps.IsValid());
-
-        csRef<iParticleBuiltinEmitterBox> em(space->emitterFactory->CreateBox());
-        ps->AddEmitter(em);
-        // TODO: update ps here
-      }
-
-      void OnButtonRemoveEmitter(wxCommandEvent &event)
-      {
-        // TODO: get a hold of the list and remove what is selected
-      }
-
-      void OnButtonAddEffector(wxCommandEvent &event) 
-      {
-
-      }
-
-      void OnButtonRemoveEffector(wxCommandEvent &event) 
-      {
-
-      }
-
-    private:
-      CSPartEditSpace* space;
-
-      DECLARE_EVENT_TABLE()
-    };
+    
+    void OnButtonAddEmitter(wxCommandEvent &event);
+    void OnButtonRemoveEmitter(wxCommandEvent &event);
+    void OnButtonAddEffector(wxCommandEvent &event);
+    void OnButtonRemoveEffector(wxCommandEvent &event);
+    void OnEmitterSelect(wxCommandEvent& event);
+    void OnEffectorSelect(wxCommandEvent& event);
 
   private:
     static const int                        borderWidth = 4; 
 
     iObjectRegistry*                        object_reg;
-    csRef<iSpaceFactory>                    factory;
+    csRef<iSpaceFactory>                    spaceFactory;
+    /// The PS factory currently being edited
+    csRef<iParticleSystemFactory>           factory;
     csRef<iParticleBuiltinEmitterFactory>   emitterFactory;
     csRef<iParticleBuiltinEffectorFactory>  effectorFactory;
 
-
-    wxWindow*             window;
     wxBoxSizer            *mainSizer, *middleSizer, *middleLSizer, *middleRSizer;
     wxListBox             *emitterList, *effectorList;
     csRef<iEditor>        editor;
     csRef<iEventQueue>    queue;
     csRef<iTranslator>    translator;
 
+    
+
     /// Used to edit the general PS propertiees
     ModifiableEditor*     mainEditor;
     /// Used to edit the selectid emitter/ effector
     ModifiableEditor*     secondaryEditor;
+
+    void UpdateEmitterList  ();
+    void UpdateEffectorList ();
 
       enum {
         idMainEditor = 42,
@@ -183,6 +151,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
         idEmitterList,
         idEffectorList
     };
+
+      DECLARE_EVENT_TABLE()
   };
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)

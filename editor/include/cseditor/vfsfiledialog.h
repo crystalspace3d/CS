@@ -72,7 +72,7 @@ enum FileDialogType
  *  // ...
  * \endcode
  */
-class CS_CRYSTALSPACE_EXPORT VFSFileDialog : public wxDialog
+class /*CS_CRYSTALSPACE_EXPORT*/ VFSFileDialog : public wxDialog
 {
 public:
   /**
@@ -99,12 +99,12 @@ public:
       const csString& startpath = "/",
       FileDialogType dialogType = VFS_OPEN
       );
-  ~VFSFileDialog();
+  virtual ~VFSFileDialog();
 
   /// Get the path selected by the user
-  const char* GetPath() { return curdvpath.GetData(); }
+  virtual const char* GetPath() { return curdvpath.GetData(); }
   /// Get the file selected by the user
-  const char* GetFilename() { return filename.GetData(); }
+  virtual const char* GetFilename() { return filename.GetData(); }
 
 protected:
   //EVENT Methods

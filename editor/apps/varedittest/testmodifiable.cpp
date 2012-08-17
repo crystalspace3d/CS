@@ -37,18 +37,22 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
   color(0.5f, 0.2f, 0.2f),
   scfImplementationType(this)
 {
-  csRef<iStringSet> strings( csQueryRegistryTagInterface<iStringSet>(object_reg, "crystalspace.shared.stringset") );
-
   // We need to generate unique IDs for all the properties needing to be made 
   // modifiable through our system.
-  id_name = strings->Request("test_name");
-  id_job = strings->Request("test_job");
-  id_color = strings->Request("test_color");
-  id_position = strings->Request("test_position");
-  id_itemCount = strings->Request("test_itemcount");
-  id_awesome = strings->Request("test_awesome");
-  id_floatThingy = strings->Request("test_float");
-  id_testModifiable = strings->Request("test_dude");
+  GENERATE_ID_START;
+  GENERATE_ID(name);
+  GENERATE_ID(job);
+  GENERATE_ID(color);
+  GENERATE_ID(position);
+  GENERATE_ID(itemCount);
+  GENERATE_ID(awesome);
+  GENERATE_ID(floatThingy);
+  GENERATE_ID(floatArray);
+  GENERATE_ID(testModifiable);
+
+  floatArray.Push(40.0f);
+  floatArray.Push(41.0f);
+  floatArray.Push(42.0f);
 }
 
 csTestModifiable :: ~csTestModifiable() { }
@@ -61,14 +65,14 @@ csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
 
   csBasicModifiableDescription* description = new csBasicModifiableDescription();
   
-  // The old implementation stored a direct pointer to the actual modifiable value (from the class that implemented iModifiable) and performed its sets/gets using that pointer. In this case (also with specialized string/long/float etc. modifiables the need for chained ifs in GetParameter and SetParameter functions would have been eliminated.
-  description->Push(new csBasicModifiableParameter("Name", "the dude's name", CSVAR_STRING, id_name));
-  description->Push(new csBasicModifiableParameter("Job", "the dude's jawb", CSVAR_STRING, id_job));
-  description->Push(new csBasicModifiableParameter("Item count", "How many items this guy has. Coming soon: constraint to prevent negative values!", CSVAR_LONG, id_itemCount));
-  description->Push(new csBasicModifiableParameter("Awesome", "Am I awesome, or what?", CSVAR_BOOL, id_awesome));
-  description->Push(new csBasicModifiableParameter("FloatThingy", "some float", CSVAR_FLOAT, id_floatThingy));
-  description->Push(new csBasicModifiableParameter("Color", "my color", CSVAR_COLOR, id_color));
-  description->Push(new csBasicModifiableParameter("Position", "spatial position of the unit", CSVAR_VECTOR2, id_position));
+  PUSH_PARAM(CSVAR_STRING, name, "Name", "the dude's name");
+  PUSH_PARAM(CSVAR_STRING, job, "Job", "the dude's jawb");
+  PUSH_PARAM(CSVAR_LONG, itemCount, "Item count", "How many items this guy has (unrelated to the array)."); 
+  PUSH_PARAM(CSVAR_BOOL, awesome, "Awesome", "Am I awesome, or what?");
+  PUSH_PARAM(CSVAR_FLOAT, floatThingy, "FloatThingy", "some float");
+  PUSH_PARAM(CSVAR_ARRAY, floatArray, "Array of floats", "testing arrays being editable in the propgrid");
+  PUSH_PARAM(CSVAR_COLOR, color, "Color", "my color");
+  PUSH_PARAM(CSVAR_VECTOR2, position, "Position", "spatial position of the unit");
 
   return csPtr<iModifiableDescription>(description);
 }
@@ -84,6 +88,8 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
     return new csVariant(awesome);
   } else if(id == id_floatThingy) {
     return new csVariant(floatThingy);
+  } else if(id == id_floatArray) {
+    return new csVariant(MakeVariantArray(floatArray));
   } else if(id == id_position) {    
     return new csVariant(position);
   } else if(id == id_color) {
@@ -91,21 +97,14 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
   }
 
   return nullptr;
-  // Maybe trigger an assertion here?
-  // or change to the old version and return false
 }
 
 bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value) {
 
-  // Broadcast a set event
-  // TODO: maybe only do it if the assignment succeeds?
-  csRef<iEventQueue> eq( csQueryRegistry<iEventQueue>( object_reg ) );
-  csRef<iEventNameRegistry> nameReg( csQueryRegistry<iEventNameRegistry>( object_reg ) );
-  csRef<iEvent> event( eq->CreateBroadcastEvent( nameReg->GetID("crystalspace.modifiable.param.set") ) );  
-  eq->GetEventOutlet()->Broadcast(event->GetName());
+  // Broadcast a varriant set event
+  BROADCAST_SET_EVENT();
 
   if(id == id_name) {
-    // should we implement constraints here?
     name = value.GetString();
     return true;
   } else if(id == id_job) {
@@ -119,6 +118,9 @@ bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value
     return true;
   } else if(id == id_floatThingy) {
     floatThingy = value.GetFloat();
+    return true;
+  } else if(id == id_floatArray) {
+    floatArray = GetRegularArray<float>(value.GetArray());
     return true;
   } else if(id == id_position) {
     position = value.GetVector2();

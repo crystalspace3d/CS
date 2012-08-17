@@ -7609,7 +7609,7 @@ printf("wxPropertyGrid::DoSelectProperty--CreateControls()\n");
                 m_wndEditor = wndList.m_primary;
                 m_wndEditor2 = wndList.m_secondary;
                 primaryCtrl = GetEditorControl();
-
+  
                 // NOTE: It is allowed for m_wndEditor to be NULL - in this case
                 //       value is drawn as normal, and m_wndEditor2 is assumed
                 //       to be a right-aligned button that triggers a separate editor

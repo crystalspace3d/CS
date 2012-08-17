@@ -24,6 +24,8 @@
 #include "imesh/particles.h"
 #include "iutil/comp.h"
 
+#include "cseditor/modifiableimpl.h"
+
 struct iLight;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
@@ -51,25 +53,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     virtual csPtr<iParticleBuiltinEffectorLight> CreateLight () const;
 
     //-- iComponent
-    virtual bool Initialize (iObjectRegistry*)
+    virtual bool Initialize (iObjectRegistry* object_reg)
     {
+      this->object_reg = object_reg;
       return true;
     }
+
+  private:
+    iObjectRegistry* object_reg;
   };
 
   //------------------------------------------------------------------------
 
   class ParticleEffectorForce : public 
-    scfImplementation2<ParticleEffectorForce,
+    scfImplementation3<ParticleEffectorForce,
                        iParticleBuiltinEffectorForce,
-                       scfFakeInterface<iParticleEffector> >
+                       scfFakeInterface<iParticleEffector>,
+                       iModifiable>
   {
   public:
-    ParticleEffectorForce ()
+    ParticleEffectorForce (iObjectRegistry* object_reg)
       : scfImplementationType (this),
       acceleration (0.0f), force (0.0f), randomAcceleration (0.0f, 0.0f, 0.0f),
       do_randomAcceleration (false)
     {
+      GENERATE_ID_START;
+        GENERATE_ID(acceleration);
+        GENERATE_ID(force);
+        GENERATE_ID(randomAcceleration);
+        GENERATE_ID(do_randomAcceleration);
     }
 
     //-- iParticleEffector
@@ -113,23 +125,83 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return randomAcceleration;
     }
 
+    //-- iModifiable
+    const csStringID GetID() const
+    {
+      return 42;
+    }
+
+    csPtr<iModifiableDescription> GetDescription() const 
+    {
+      iModifiableDescription* description = new csBasicModifiableDescription();
+      PUSH_PARAM(CSVAR_VECTOR3, acceleration, "Acceleration", "Rate at which the force increases");
+      PUSH_PARAM(CSVAR_VECTOR3, force, "Force", "Effector's initial force");
+      PUSH_PARAM(CSVAR_BOOL, do_randomAcceleration, "Enable random acceleration", "");
+      PUSH_PARAM(CSVAR_VECTOR3, randomAcceleration, "Random acceleration", "");
+      return description;
+    }
+
+    csVariant* GetParameterValue(csStringID id) const
+    {
+      if(id == id_acceleration) {
+        return new csVariant(GetAcceleration());
+      } 
+      if(id == id_force) {
+        return new csVariant(GetForce());
+      }
+      if(id == id_randomAcceleration) {
+        return new csVariant(GetRandomAcceleration());
+      }
+      if(id == id_do_randomAcceleration) {
+        return new csVariant(do_randomAcceleration);
+      }
+
+      return nullptr;
+    }
+
+    bool SetParameterValue(csStringID id, const csVariant& value)
+    {
+      if(id == id_acceleration) {
+        SetAcceleration(value.GetVector3());
+        return true;
+      } 
+      if(id == id_force) {
+        SetForce(value.GetVector3());
+        return true;
+      }
+      if(id == id_randomAcceleration) {
+        SetRandomAcceleration(value.GetVector3());
+        return true;
+      }
+      if(id == id_do_randomAcceleration) {
+        do_randomAcceleration = value.GetBool();
+        return true;
+      }
+
+      return false;
+    }
+
   private:
     csVector3 acceleration;
     csVector3 force;
     csVector3 randomAcceleration;
     bool do_randomAcceleration;
+
+    //-- iModifiable
+    csStringID id_acceleration, id_force, id_randomAcceleration, id_do_randomAcceleration;
   };
 
   //------------------------------------------------------------------------
 
   class ParticleEffectorLinColor : public
-    scfImplementation2<ParticleEffectorLinColor,
+    scfImplementation3<ParticleEffectorLinColor,
                        iParticleBuiltinEffectorLinColor,
-                       scfFakeInterface<iParticleEffector> >
+                       scfFakeInterface<iParticleEffector>,
+                       iModifiable>
   {
   public:
     //-- ParticleEffectorLinColor
-    ParticleEffectorLinColor ();
+    ParticleEffectorLinColor (iObjectRegistry* object_reg);
 
     //-- iParticleEffector
     virtual csPtr<iParticleEffector> Clone () const;
@@ -168,6 +240,30 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return colorList.GetSize ();
     }
 
+    //-- iModifiable
+    const csStringID GetID() const
+    {
+      return 42;
+    }
+
+    csPtr<iModifiableDescription> GetDescription() const
+    {
+      csBasicModifiableDescription* description = new csBasicModifiableDescription;
+
+      return description;
+    }
+
+    csVariant* GetParameterValue(csStringID id) const
+    {
+
+      return nullptr;
+    }
+
+    bool SetParameterValue(csStringID id, const csVariant& value)
+    {
+      return false;
+    }
+
   private:
     void Precalc ();
 
@@ -188,18 +284,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     };
     bool precalcInvalid;
     csArray<PrecalcEntry> precalcList;
+
+    //-- iModifiable
+    // ...
   };
 
   //------------------------------------------------------------------------
 
   class ParticleEffectorLinear : public
-    scfImplementation2<ParticleEffectorLinear,
+    scfImplementation3<ParticleEffectorLinear,
                        iParticleBuiltinEffectorLinear,
-                       scfFakeInterface<iParticleEffector> >
+                       scfFakeInterface<iParticleEffector>,
+                       iModifiable>
   {
   public:
     //-- ParticleEffectorLinear
-    ParticleEffectorLinear ();
+    ParticleEffectorLinear (iObjectRegistry* object_reg);
 
     //-- iParticleEffector
     virtual csPtr<iParticleEffector> Clone () const;
@@ -245,6 +345,30 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return paramList.GetSize ();
     }
 
+    //-- iModifiable
+    const csStringID GetID() const
+    {
+      return 42;
+    }
+
+    csPtr<iModifiableDescription> GetDescription() const
+    {
+      csBasicModifiableDescription* description = new csBasicModifiableDescription;
+
+      return description;
+    }
+
+    csVariant* GetParameterValue(csStringID id) const
+    {
+
+      return nullptr;
+    }
+
+    bool SetParameterValue(csStringID id, const csVariant& value)
+    {
+      return false;
+    }
+
   private:
     void Precalc ();
 
@@ -267,17 +391,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     };
     bool precalcInvalid;
     csArray<PrecalcEntry> precalcList;
+
+    //- iModifiable
+    //...
   };
 
   //------------------------------------------------------------------------
 
   class ParticleEffectorVelocityField : public 
-    scfImplementation2<ParticleEffectorVelocityField,
+    scfImplementation3<ParticleEffectorVelocityField,
                        iParticleBuiltinEffectorVelocityField,
-                       scfFakeInterface<iParticleEffector> >
+                       scfFakeInterface<iParticleEffector>,
+                       iModifiable>
   {
   public:
-    ParticleEffectorVelocityField  ()
+    ParticleEffectorVelocityField  (iObjectRegistry* object_reg)
       : scfImplementationType (this),
       type (CS_PARTICLE_BUILTIN_SPIRAL)
     {
@@ -356,10 +484,37 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       vparams.DeleteIndex(index);
     }
 
+    //-- iModifiable
+    const csStringID GetID() const
+    {
+      return 42;
+    }
+
+    csPtr<iModifiableDescription> GetDescription() const
+    {
+      csBasicModifiableDescription* description = new csBasicModifiableDescription;
+
+      return description;
+    }
+
+    csVariant* GetParameterValue(csStringID id) const
+    {
+
+      return nullptr;
+    }
+
+    bool SetParameterValue(csStringID id, const csVariant& value)
+    {
+      return false;
+    }
+
   private:
     csParticleBuiltinEffectorVFType type;
     csArray<csVector3> vparams;
     csArray<float> fparams;
+
+    //-- iModifiable
+    //...
   };
 
   //------------------------------------------------------------------------
@@ -371,7 +526,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   {
   public:
     //-- ParticleEffectorLight
-    ParticleEffectorLight ();
+    ParticleEffectorLight (iObjectRegistry* object_reg);
     ~ParticleEffectorLight ();
 
     //-- iParticleEffector

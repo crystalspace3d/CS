@@ -39,6 +39,16 @@
   description->Push(new csBasicModifiableParameter(name, desc, type, id_##varName))   \
 
 /**
+ * Quick helper macro to allow classes who implement iModifiable to broadcas
+ * the required set event when SetParameterValue is called
+ */
+#define BROADCAST_SET_EVENT() \
+  csRef<iEventQueue> eq( csQueryRegistry<iEventQueue>( object_reg ) );  \
+csRef<iEventNameRegistry> nameReg( csQueryRegistry<iEventNameRegistry>( object_reg ) ); \
+csRef<iEvent> event( eq->CreateBroadcastEvent( nameReg->GetID("crystalspace.modifiable.param.set") ) );  \
+eq->GetEventOutlet()->Broadcast(event->GetName());  \
+
+/**
  * Implementation of some of the most common iModifiableParameter usage. 
  * Currently part of the particle editor space test code.
  */
@@ -142,35 +152,13 @@ private:
   csArray<iModifiableParameter*> parameters;
 };
 
-/**
- * Basic implementation of the iModifiableConstraint interface. Its specialized
- * sub-classes are recommended for use.
- */
-class csConstraint : public scfImplementation1<csConstraint, iModifiableConstraint>
-{
-public:
-  csConstraint(iModifiableConstraintType type)
-    : scfImplementationType (this),
-      type(type)
-  {
-  }
-
-  iModifiableConstraintType GetType() const
-  {
-    return type;
-  }
-
-private:
-  iModifiableConstraintType type;
-};
 
 /**
  * Implements an enum constraint for a CSVAR_LONG iModifiable field. Contains a list of
  * long values that are members of the respective enum, as well as their string labels,
  * for displaying in a combo box.
  */
-class csEnumConstraint :
-  public csConstraint
+class csEnumConstraint : public scfImplementation1<csEnumConstraint, iModifiableConstraintEnum>
 {
 public:
   /**
@@ -178,7 +166,7 @@ public:
    * populate the valid fields.
    */
   csEnumConstraint()
-    : csConstraint(MODIFIABLE_CONSTRAINT_ENUM)
+      : scfImplementation1(this)
   {
     labels = new csStringArray;
     values = new csArray<long>;
@@ -188,7 +176,7 @@ public:
    * \remark Takes ownership of the arrays.  
    */
   csEnumConstraint(csStringArray* labels, csArray<long>* values)
-    : csConstraint(MODIFIABLE_CONSTRAINT_ENUM)
+    : scfImplementation1(this)
   {
     CS_ASSERT_MSG ("Number of labels must match number of values.",
       labels->GetSize() == values->GetSize());
@@ -202,6 +190,7 @@ public:
     delete labels;
     delete values;
   }
+
 
   bool Validate(const csVariant& variant) const
   {
@@ -219,6 +208,12 @@ public:
   long GetValue (size_t index) const
   {
     return values->Get(index);
+  }
+
+
+  iModifiableConstraintType GetType() const
+  {
+    return MODIFIABLE_CONSTRAINT_ENUM;
   }
 
   //-- csEnumConstraint

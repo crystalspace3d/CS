@@ -35,18 +35,19 @@ public:
   bool SetParameterValue (csStringID id, const csVariant& value);
 
 private:
-  long              itemCount;
-  bool              awesome;
-  float             floatThingy;
-  csVector2         position;
-  csColor           color;
-  scfString         name;
-  scfString         job;
-  iObjectRegistry* object_reg;
+  long                itemCount;
+  bool                awesome;
+  float               floatThingy;
+  csVector2           position;
+  csColor             color;
+  scfString           name;
+  scfString           job;
+  csArray<float>  floatArray;
+  iObjectRegistry*    object_reg;
 
   //-- iModifiable
   csStringID id_testModifiable;
-  csStringID id_name, id_job, id_position, id_color, id_itemCount, id_awesome, id_floatThingy;
+  csStringID id_name, id_job, id_floatArray, id_position, id_color, id_itemCount, id_awesome, id_floatThingy;
 
 };
 

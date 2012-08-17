@@ -77,7 +77,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       acceleration (0.0f), force (0.0f), randomAcceleration (0.0f, 0.0f, 0.0f),
       do_randomAcceleration (false)
     {
-      GENERATE_ID_START;
+      GENERATE_ID_START();
         GENERATE_ID(acceleration);
         GENERATE_ID(force);
         GENERATE_ID(randomAcceleration);

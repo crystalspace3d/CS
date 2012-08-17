@@ -16,7 +16,7 @@
  * Assumes a scoped pointer to the object registry called object_reg. For a custom
  * named one, use GENERATE_ID_START_EXT
  */
-#define GENERATE_ID_START GENERATE_ID_START_REG(object_reg)
+#define GENERATE_ID_START() GENERATE_ID_START_REG(object_reg)
 
 /**
  * Sets up the generation of modifiable property IDs. Takes in a custom name for the
@@ -236,6 +236,115 @@ public:
 private:
   csStringArray* labels;
   csArray<long>* values;
+};
+
+/**
+ * Constraint that forces a variant to either stay under a certain value, over
+ * a certain value, or between two values.
+ */
+class csBoundedConstraint : public scfImplementation1<csBoundedConstraint, 
+                                                      iModifiableConstraintBounded>
+{
+public:
+  /// Initializes this constraint with both a min and a max value
+  csBoundedConstraint(csVariant& min, csVariant& max)
+    : scfImplementation1(this),
+      min(new csVariant(min)),
+      max(new csVariant(max))
+  {
+    CheckTypes();
+  }
+
+  /// Initializes the constraint to have just a maximum value
+  csBoundedConstraint(csVariant& max)
+    : scfImplementation1(this),
+      min(nullptr),
+      max(new csVariant(max))
+  {
+    CheckTypes();
+  }
+
+  ~csBoundedConstraint()
+  {
+    delete min;
+    delete max;
+  }
+
+  void SetMinimum(csVariant& min)
+  {
+    delete this->min;
+    this->min = new csVariant(min);
+    CheckTypes();
+  }
+
+  void SetMaximum(csVariant& max)
+  {
+    delete this->max;
+    this->max = new csVariant(max)
+    CheckTypes();
+  }
+
+  //-- iModifiableConstraint
+
+  iModifiableConstraintType GetType() const 
+  {
+    return MODIFIABLE_CONSTRAINT_BOUNDED;
+  }
+
+  bool Validate(const csVariant& variant) 
+  {
+    if(min != nullptr)
+      CS_ASSERT_MSG("Bounds must be of the same type as the variant", 
+        variant.GetType() == min->GetType());
+
+    if(max != nullptr)
+      CS_ASSERT_MSG("Bounds must be of the same type as the variant", 
+      variant.GetType() == max->GetType());
+  }
+
+  //-- iModifiableConstraintBounded
+
+  bool HasMinimum() const 
+  {
+    return min != nullptr;
+  }
+
+  bool HasMaximum() const 
+  {
+    return max != nullptr;
+  }
+
+  csVariant& GetMinimum() const 
+  {
+    return *min;
+  }
+
+  csVariant& GetMaximum() const
+  {
+    return *max;
+  }
+
+private:
+  csVariant *min, *max;
+
+  void CheckTypes() {
+    if(min != nullptr && max != nullptr)
+      CS_ASSERT_MSG("Bounds must be of the same type", min->GetType() == max->GetType());
+
+    csVariantType t;
+    if(min != nullptr) {
+      t = min->GetType();
+    } else if(max != nullptr) {
+      t = max->GetType();
+    } else {
+      CS_ASSERT_MSG("Both constraints can't be null!", false);
+      return;
+    }
+
+    CS_ASSERT_MSG("Invalid type for comparing...",
+      t == CSVAR_FLOAT || t == CSVAR_LONG || t == CSVAR_VECTOR2 
+      ||  t == CSVAR_VECTOR3 || t == CSVAR_VECTOR4 || t == CSVAR_FLOAT );
+  }
 };
 
 #endif

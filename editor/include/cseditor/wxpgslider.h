@@ -14,7 +14,7 @@
 #include "cseditor/wx/propgrid/editors.h"
 
 // the right csVariant
-#include "apps/varedittest/pluginconfig.h"
+// #include "apps/varedittest/pluginconfig.h"
 
 //----------------- wxPGSliderEditor ---------------------
 
@@ -47,7 +47,6 @@ public:
 
 private:
   int precision;
-  //wxSlider *ctrl;
 };
 
 #endif

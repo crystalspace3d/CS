@@ -209,13 +209,6 @@ iModifiable* ModifiableEditor::GetModifiable() const
   return activeModifiable;
 }
 
-void ModifiableEditor::NoModifiable()
-{
-  activeModifiable = nullptr;
-  pgMan->Clear();
-  pgMan->SetDescription(wxT("Error"), wxT("No valid object to be edited"));
-}
-
 void ModifiableEditor::Populate ()
 {
   // All pages are cleared from the page manager
@@ -320,9 +313,13 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
 
         // Generate a homebrewed slider
         wxFloatProperty* fp = new wxFloatProperty(translatedName, originalName, value);
-        //wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(), wxT("SliderEditor"));
-        //fp->SetEditor(rHandle);
+        wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(), wxT("SliderEditor"));
+        fp->SetEditor(rHandle);
         page->AppendIn(categoryID, fp);
+
+        // Hack to allow the property's controls to get created; doesn't grab focus,
+        // doesn't hurt anyone
+        pgMan->GetGrid()->SelectProperty(fp, false);
       }
       break;
 
@@ -391,6 +388,7 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
       }
       break;
 
+      /*
     case CSVAR_IBASE:
       {
         iBase* object = variant->GetIBase();
@@ -418,16 +416,22 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
         }
       }
       break;
-
+      //*/
     default:
       pgMan->SetDescription(wxT("Page Manager :"), wxT("Select a property to add a new value"));
 
       } // end switch
+      
+      // Doesn't help
+      //pgMan->RefreshGrid();
+
 
       if(page->GetProperty(originalName))
         page->SetPropertyHelpString(originalName, translatedDescription );
-      else
-        printf("Couldn't find property with name: %s\n", originalName);
+      else {
+        // Needed in order to print out the wide char type from GetData
+        wprintf(wxT("Couldn't find property with name: %s \n"), originalName.GetData());
+      }
 }
 
 //---------------------------------------------------
@@ -446,11 +450,10 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
   size_t index = property->GetIndexInParent ();
 
   csRef<iModifiableDescription> desc = activeModifiable->GetDescription();
-  //csStringID paramID = reinterpret_cast<csStringID>(property->GetClientData());
-  
+   
   // This FAILS with nested properties, such as in the case of arrays, or nested 
   // iModifiables
-  const iModifiableParameter* editedParameter = desc->GetParameter(index);
+  const iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
 
   csVariantType compareType = editedParameter->GetType();
   csVariant* variant( activeModifiable->GetParameterValue( editedParameter->GetID()) );
@@ -510,6 +513,7 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
     variant->SetVector2(csVector2(valueX,valueY));
     activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);				
   }
+  /*
   else if (compareType == CSVAR_MATRIX3)
   {
 
@@ -528,6 +532,7 @@ void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
     printf("Edited an array! ID=%d\n", editedParameter->GetID());
     //activeModifiable->SetParameterValue(, *variant);
   }
+  //*/
   else
   {
     pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));
@@ -583,7 +588,6 @@ void ModifiableEditor::OnPropertyGridChanging (wxPropertyGridEvent& event)
     }
     //*/
   }
-  csPrintf("Evaluating constraint of: %s\n", param->GetName());
 }
 
 void ModifiableEditor::OnPropertyGridChanged (wxPropertyGridEvent& event)

@@ -39,7 +39,7 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
 {
   // We need to generate unique IDs for all the properties needing to be made 
   // modifiable through our system.
-  GENERATE_ID_START;
+  GENERATE_ID_START();
   GENERATE_ID(name);
   GENERATE_ID(job);
   GENERATE_ID(color);
@@ -70,7 +70,8 @@ csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
   PUSH_PARAM(CSVAR_LONG, itemCount, "Item count", "How many items this guy has (unrelated to the array)."); 
   PUSH_PARAM(CSVAR_BOOL, awesome, "Awesome", "Am I awesome, or what?");
   PUSH_PARAM(CSVAR_FLOAT, floatThingy, "FloatThingy", "some float");
-  PUSH_PARAM(CSVAR_ARRAY, floatArray, "Array of floats", "testing arrays being editable in the propgrid");
+  // Removed until better tools are brought to deal with arrays of modifiable things
+  //PUSH_PARAM(CSVAR_ARRAY, floatArray, "Array of floats", "testing arrays being editable in the propgrid");
   PUSH_PARAM(CSVAR_COLOR, color, "Color", "my color");
   PUSH_PARAM(CSVAR_VECTOR2, position, "Position", "spatial position of the unit");
 

@@ -78,8 +78,6 @@ public:
   DECLARE_EVENT_TABLE();
 
 private:
-  /// Called to display a message that the current object cannot be edited
-  void NoModifiable();
   /// Populates the property grid with the editable traits of the active modifiable object
   void Populate ();
   /// Appends the element to the property grid, in its own category

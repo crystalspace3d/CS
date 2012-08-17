@@ -110,7 +110,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       initialLinearVelocity (0.0f), initialAngularVelocity (0.0f), 
       initialVelocityMag (0.0f), uniformVelocity (false)
     {
-      GENERATE_ID_START;   
+      GENERATE_ID_START();   
         GENERATE_ID(isEnabled);
         GENERATE_ID(startTime);
         GENERATE_ID(duration);

@@ -180,7 +180,7 @@
       else
       {
         // get offset for four-sample lookup (see http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html)
-        float2 offset = float2(frac(texCoord.xy * 0.5) &gt; 0.25)); // mod
+        float2 offset = float2(frac(texCoord.xy * 0.5) &gt; 0.25); // mod
         offset.y += offset.x; // y ^= x
 
         if(offset.y > 1.1)

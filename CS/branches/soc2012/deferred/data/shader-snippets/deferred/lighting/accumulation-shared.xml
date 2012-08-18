@@ -20,7 +20,7 @@
   <technique priority="200">
     <combiner plugin="crystalspace.graphics3d.shader.combiner.glcg" />
 
-    <alias name="use_buffer" weak="yes" file="/shader-snippets/deferred/use_gbuffer.xml" />
+    <alias name="use_buffer" weak="yes" file="/shader-snippets/deferred/lighting/use_buffer.xml" />
     <alias name="shadow" weak="yes" file="/shader-snippets/deferred/shadow_depth.xml" />
 
     <snippet id="position" file="/shader-snippets/position.xml" />

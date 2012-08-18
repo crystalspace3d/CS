@@ -276,7 +276,7 @@ private:
       // we're rendering to the screen, so we have flipped y during lookups.
       v = csVector4(0.5,-0.5,0.5,0.5);
     }
-    return false;
+    return true;
   }
 
   RMDeferred *rmanager;
@@ -324,7 +324,14 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   showGBuffer = false;
   drawLightVolumes = false;
 
+  // get shader type IDs
+  csStringID depthWriteID = stringSet->Request ("depthwrite");
+  csStringID deferredFullID = stringSet->Request ("deferred full");
+  csStringID deferredFillID = stringSet->Request ("deferred fill");
+  csStringID deferredUseID = stringSet->Request ("deferred use");
+
   // load render layers
+  bool deferredFull = true;
   bool layersValid = false;
   const char *layersFile = cfg->GetStr ("RenderManager.Deferred.Layers", nullptr);
   if (layersFile)
@@ -334,32 +341,51 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
 
     layersValid = CS::RenderManager::AddLayersFromFile (objRegistry, layersFile, renderLayer);
     
-    if (!layersValid) 
+    if (layersValid) 
     {
-      renderLayer.Clear();
+      // Locates the deferred shading layer.
+      deferredLayer = LocateLayer (renderLayer, deferredFullID);
+
+      // check whether we have a full deferred layer
+      if (deferredLayer != (size_t)-1)
+      {
+	// we have one - use full deffered shading
+	lightingLayer = (size_t)-1;
+      }
+      else
+      {
+	// no full deferred layer, locate deferred lighting layers
+        deferredLayer = LocateLayer (renderLayer, deferredFillID);
+	lightingLayer = LocateLayer (renderLayer, deferredUseID);
+
+	// check whether we got both
+	if (deferredLayer != (size_t)-1 && lightingLayer != (size_t)-1)
+	{
+	  // we'll use deferred lighting
+	  deferredFull = false;
+	}
+	else
+	{
+	  // couldn't locate any deferred layer - warn and use default full shading
+	  csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
+	    messageID, "The render layers file %s contains neither a %s nor both %s and %s layers. Using default %s layer.",
+	    CS::Quote::Single (layersFile),
+	    CS::Quote::Single ("deferred full"),
+	    CS::Quote::Single ("deferred fill"),
+	    CS::Quote::Single ("deferred use"),
+	    CS::Quote::Single ("deferred full"));
+
+	  deferredLayer = AddLayer (renderLayer, deferredFullID, "gbuffer_fill_full", "/shader/deferred/full/fill.xml");
+	  lightingLayer = (size_t)-1;
+	}
+      }
+
+      // Locates the zonly shading layer.
+      zonlyLayer = LocateLayer (renderLayer, depthWriteID);
     }
     else
     {
-      // Locates the deferred shading layer.
-      deferredLayer = LocateLayer (renderLayer, stringSet->Request("gbuffer fill"));
-      if (deferredLayer == (size_t)-1)
-      {
-        csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-          messageID, "The render layers file %s does not contain a %s layer.",
-	  CS::Quote::Single (layersFile),
-	  CS::Quote::Single ("gbuffer fill"));
-
-        AddDeferredLayer (renderLayer, deferredLayer);
-      }
-
-      // locate the final lighting layer if there's any
-      lightingLayer = LocateLayer (renderLayer, stringSet->Request("gbuffer use"));
-      csReport (objRegistry, CS_REPORTER_SEVERITY_NOTIFY,
-        messageID, "Using deferred %s.",
-	(lightingLayer == (size_t)-1) ? "shading" : "lighting");
-
-      // Locates the zonly shading layer.
-      zonlyLayer = LocateLayer (renderLayer, stringSet->Request("depthwrite"));
+      renderLayer.Clear ();
     }
   }
   
@@ -369,8 +395,9 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     csReport (objRegistry, CS_REPORTER_SEVERITY_NOTIFY, messageID,
       "Using default render layers");
 
-    AddZOnlyLayer (renderLayer, zonlyLayer);
-    AddDeferredLayer (renderLayer, deferredLayer);
+    zonlyLayer = AddLayer (renderLayer, depthWriteID, "z_only", "/shader/early_z/z_only.xml");
+    deferredLayer = AddLayer (renderLayer, deferredFullID, "gbuffer_fill_full", "/shader/deferred/full/fill.xml");
+    lightingLayer = (size_t)-1;
 
     if (!loader->LoadShader ("/shader/lighting/lighting_default.xml"))
     {
@@ -381,11 +408,15 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
     CS::RenderManager::AddDefaultBaseLayers (objRegistry, renderLayer);
   }
 
+  csReport (objRegistry, CS_REPORTER_SEVERITY_NOTIFY, messageID,
+    "Using deferred %s.", deferredFull ? "shading" : "lighting");
+
   // Create GBuffer
+  // @@@TODO: not really flexible without touching lighting shaders which aren't as flexible atm
   const char *gbufferFmt = cfg->GetStr ("RenderManager.Deferred.GBuffer.BufferFormat", "rgba16_f");
-  const char *accumFmt = cfg->GetStr ("RenderManager.Deferred.GBuffer.AccumBufferFormat", "rgb16_f");
-  int bufferCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.BufferCount", 1);
-  int accumCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.AccumBufferCount", 2);
+  const char *accumFmt = cfg->GetStr ("RenderManager.Deferred.GBuffer.AccumBufferFormat", deferredFull ? "rgba16_f" : "rgb16_f");
+  int bufferCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.BufferCount", deferredFull ? 5 : 1);
+  int accumCount = cfg->GetInt ("RenderManager.Deferred.GBuffer.AccumBufferCount", deferredFull ? 1 : 2);
 
   gbufferDescription.colorBufferCount = bufferCount;
   gbufferDescription.accumBufferCount = accumCount;
@@ -406,7 +437,10 @@ bool RMDeferred::Initialize(iObjectRegistry *registry)
   portalPersistent.Initialize (shaderManager, graphics3D, treePersistent.debugPersist);
   lightPersistent.shadowPersist.SetConfigPrefix ("RenderManager.Deferred");
   lightPersistent.Initialize (registry, treePersistent.debugPersist);
-  lightRenderPersistent.Initialize (registry, lightPersistent.shadowPersist, doShadows);
+  if(!lightRenderPersistent.Initialize (registry, lightPersistent.shadowPersist, doShadows, deferredFull))
+  {
+    return false;
+  }
 
   // initialize post-effects
   PostEffectsSupport::Initialize (registry, "RenderManager.Deferred");
@@ -572,49 +606,26 @@ bool RMDeferred::HandleTarget (RenderTreeType& renderTree,
 }
 
 //----------------------------------------------------------------------
-void RMDeferred::AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer)
+size_t RMDeferred::AddLayer(CS::RenderManager::MultipleRenderLayer& layers, csStringID type, const char* name, const char* file)
 {
   const char *messageID = "crystalspace.rendermanager.deferred";
 
   csRef<iLoader> loader = csQueryRegistry<iLoader> (objRegistry);
 
-  if (!loader->LoadShader ("/shader/deferred/fill_gbuffer.xml"))
+  if (!loader->LoadShader (file))
   {
     csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-      messageID, "Could not load fill_gbuffer shader");
+      messageID, "Could not load %s shader", name);
   }
 
-  iShader *shader = shaderManager->GetShader ("fill_gbuffer");
+  iShader *shader = shaderManager->GetShader (name);
 
   SingleRenderLayer baseLayer (shader, 0, 0);
-  baseLayer.AddShaderType (stringSet->Request("gbuffer fill"));
+  baseLayer.AddShaderType (type);
 
-  renderLayer.AddLayers (baseLayer);
+  layers.AddLayers (baseLayer);
 
-  addedLayer = renderLayer.GetLayerCount () - 1;
-}
-
-//----------------------------------------------------------------------
-void RMDeferred::AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer)
-{
-  const char *messageID = "crystalspace.rendermanager.deferred";
-
-  csRef<iLoader> loader = csQueryRegistry<iLoader> (objRegistry);
-
-  if (!loader->LoadShader ("/shader/early_z/z_only.xml"))
-  {
-    csReport (objRegistry, CS_REPORTER_SEVERITY_WARNING,
-      messageID, "Could not load z_only shader");
-  }
-
-  iShader *shader = shaderManager->GetShader ("z_only");
-
-  SingleRenderLayer baseLayer (shader, 0, 0);
-  baseLayer.AddShaderType (stringSet->Request("depthwrite"));
-
-  renderLayer.AddLayers (baseLayer);
-
-  addedLayer = renderLayer.GetLayerCount () - 1;
+  return layers.GetLayerCount () - 1;
 }
 
 //----------------------------------------------------------------------

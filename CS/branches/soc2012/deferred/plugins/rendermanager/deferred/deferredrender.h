@@ -336,13 +336,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// set tex scale for lookups.
 	lightRenderPersistent.scale->SetValue(context->texScale);
 
-	// for deferred shading the inaccurate gbuffer version is enough.
-	if(useDeferredShading)
-	{
-	  lightRender.OutputDepth();
-	}
 	// early z pass - could be disabled if occluvis is used - but how would we know?
-	else if(zonlyLayer != (size_t)-1)
+	if(!useDeferredShading && zonlyLayer != (size_t)-1)
         {
 	  RenderLayer<false>(zonlyLayer, ctxCount);
         }

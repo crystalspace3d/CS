@@ -226,24 +226,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       bool doShadows;
 
       // loads a shader and issues a warning if it fails
-      iShader* LoadShader(const char* path, const char* name)
+      iShader* LoadShader(const char* path, const char* name = nullptr)
       {
 	// shader we want to get
-	iShader* shader = shaderManager->GetShader(name);
+	iShader* shader = name ? shaderManager->GetShader(name) : nullptr;
 
 	// not present, yet
 	if(!shader)
 	{
 	  // try to load it
-	  if(!loader->LoadShader(path))
+	  shader = loader->LoadShader(path);
+	  if(!shader)
 	  {
 	    // failed - report error
-	    csReport(objReg, CS_REPORTER_SEVERITY_ERROR, msgID, "Failed to load %s shader", name);
-	  }
-	  // try to get it now
-	  else
-	  {
-	    shader = shaderManager->GetShader(name);
+	    csReport(objReg, CS_REPORTER_SEVERITY_ERROR, msgID, "Failed to load shader from %s", path);
 	  }
 	}
 
@@ -432,7 +428,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
        * Initialize persistent data, must be called once before using the
        * light renderer.
        */
-      void Initialize(iObjectRegistry* objRegistry, typename ShadowHandler::PersistentData& shadowPersistent, bool useShadows)
+      bool Initialize(iObjectRegistry* objRegistry, typename ShadowHandler::PersistentData& shadowPersistent, bool useShadows, bool deferredFull)
       {
 	// set our mesasge id
         msgID = "crystalspace.rendermanager.deferred.lightrender";
@@ -458,12 +454,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	clipID = stringSet->Request("clip");
 
 	// get shaders - the paths should really be configurable
-	pointShader = LoadShader("/shader/deferred/point_light.xml", "deferred_point_light");
-	spotShader = LoadShader("/shader/deferred/spot_light.xml", "deferred_spot_light");
-	directionalShader = LoadShader("/shader/deferred/directional_light.xml", "deferred_directional_light");
-	depthShader = LoadShader("/shader/deferred/depth.xml", "deferred_depth");
-	outputShader = LoadShader("/shader/deferred/output.xml", "deferred_output");
-	lightVolumeShader = LoadShader("/shader/deferred/dbg_light_volume.xml", "deferred_dbg_light_volume");
+	csString basePath(deferredFull ? "/shader/deferred/full/" : "/shader/deferred/lighting/");
+	// @@@TODO: make the shaders changeable via config
+	pointShader = LoadShader(basePath + "point_light.xml");
+	spotShader = LoadShader(basePath + "spot_light.xml");
+	directionalShader = LoadShader(basePath + "directional_light.xml");
+	depthShader = LoadShader(basePath + "depth.xml");
+	outputShader = deferredFull ? LoadShader("/shader/deferred/full/use_buffer.xml") : nullptr;
+	lightVolumeShader = LoadShader("/shader/deferred/dbg_light_volume.xml");
 	zOnlyShader = LoadShader("/shader/early_z/z_only.xml", "z_only");
 
 	// populate shader variables
@@ -536,7 +534,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// release plugins we don't need anymore
 	loader.Invalidate();
-	shaderManager.Invalidate();
+
+	return true;
       }
     };
 
@@ -718,10 +717,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       // push shader variables
       svStack.Clear();
+      shader->PushVariables(svStack);
       shaderMgr->PushVariables(svStack);
       lightSVContext->PushVariables(svStack);
       SetupLightShaderVars(light, svStack);
-      shader->PushVariables(svStack);
 
       // push shadow spread variable
       csShaderVariable* shadowSpreadSV = persistentData.shadowSpread;
@@ -844,8 +843,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       // get empty SV stack
       csShaderVariableStack svStack = shaderMgr->GetShaderVariableStack();
       svStack.Clear();
-      shaderMgr->PushVariables(svStack);
       shader->PushVariables(svStack);
+      shaderMgr->PushVariables(svStack);
 
       // draw quad
       DrawMesh(&persistentData.quadMesh, shader, svStack, zmode);

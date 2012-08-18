@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?> 
 <!--
   Copyright (C) 2012 by Matthieu Kraus
 
@@ -16,16 +16,20 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 -->
-<snippet type="compound">
-  <technique priority="200">
-    <combiner plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+<shader compiler="shaderweaver" name="deferred_point_light">
+  <alias name="lighting" file="/shader-snippets/deferred/point.xml" />
 
-    <snippet id="position" file="/shader-snippets/position.xml" />
-    <snippet id="use_buffer" filealias="use_buffer" />
-
-    <connection from="position" to="use_buffer" />
-
-    <output snippet="use_buffer" name="depth" to="depth" />
+  <technique priority="300">
+    <pass>
+      <combiner plugin="crystalspace.graphics3d.shader.combiner.glsl" />
+      <snippet id="shared" file="/shader-snippets/deferred/lighting/accumulation-shared.xml" />
+    </pass>
   </technique>
-</snippet>
 
+  <technique priority="200">
+    <pass>
+      <combiner plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+      <snippet id="shared" file="/shader-snippets/deferred/lighting/accumulation-shared.xml" />
+    </pass>
+  </technique>
+</shader>

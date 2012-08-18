@@ -72,7 +72,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
         // Setup the deferred layer(s).
         size_t layerOffset = deferredLayer * totalMeshes;
         shaderArray[mesh.contextLocalId + layerOffset] = nullptr;
-	if(lightingLayer >= 0)
+	if(lightingLayer != (size_t)-1)
 	{
 	  layerOffset = lightingLayer * totalMeshes;
 	  shaderArray[mesh.contextLocalId + layerOffset] = nullptr;

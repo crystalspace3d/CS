@@ -131,11 +131,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       return false;
     }
 
-    void AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer);
-    void AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, size_t &addedLayer);
-
-    size_t LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
-                    csStringID shaderType);
+    size_t AddLayer(CS::RenderManager::MultipleRenderLayer& layers, csStringID type, const char* name, const char* file);
+    size_t LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers, csStringID shaderType);
 
     void ShowGBuffer(RenderTreeType &tree, GBuffer* buffer);
 

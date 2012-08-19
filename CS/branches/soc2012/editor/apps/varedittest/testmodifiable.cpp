@@ -22,6 +22,7 @@
 #include <csutil/ref.h>
 #include <iutil/eventq.h>
 #include <csutil/cscolor.h>
+#include "iutil/object.h"
 
 // Macro magic to make csTestModifiable work
 //CS_IMPLEMENT_FOREIGN_DLL
@@ -35,6 +36,7 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
   floatThingy(123.55F),
   position(10, 12),
   color(0.5f, 0.2f, 0.2f),
+  vfsFile(""), vfsPath(""), vfsDir(""),
   scfImplementationType(this)
 {
   // We need to generate unique IDs for all the properties needing to be made 
@@ -49,6 +51,9 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
   GENERATE_ID(floatThingy);
   GENERATE_ID(floatArray);
   GENERATE_ID(testModifiable);
+  GENERATE_ID(vfsFile);
+  GENERATE_ID(vfsDir);
+  GENERATE_ID(vfsPath);
 
   floatArray.Push(40.0f);
   floatArray.Push(41.0f);
@@ -74,6 +79,8 @@ csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
   //PUSH_PARAM(CSVAR_ARRAY, floatArray, "Array of floats", "testing arrays being editable in the propgrid");
   PUSH_PARAM(CSVAR_COLOR, color, "Color", "my color");
   PUSH_PARAM(CSVAR_VECTOR2, position, "Position", "spatial position of the unit");
+  iModifiableConstraint *constraint = new csConstraintVfsFile;
+  PUSH_PARAM_CONSTRAINT(CSVAR_STRING, vfsFile, "VFS file", "A VFS file name", constraint);
 
   return csPtr<iModifiableDescription>(description);
 }
@@ -90,11 +97,17 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
   } else if(id == id_floatThingy) {
     return new csVariant(floatThingy);
   } else if(id == id_floatArray) {
-    return new csVariant(MakeVariantArray(floatArray));
+    //return new csVariant(MakeVariantArray(floatArray));
   } else if(id == id_position) {    
     return new csVariant(position);
   } else if(id == id_color) {
     return new csVariant(color);
+  } else if(id == id_vfsFile) {
+    return new csVariant(vfsFile);
+  } else if(id == id_vfsDir) {
+    return new csVariant(vfsDir);
+  } else if(id == id_vfsPath) {
+    return new csVariant(vfsPath);
   }
 
   return nullptr;
@@ -121,13 +134,22 @@ bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value
     floatThingy = value.GetFloat();
     return true;
   } else if(id == id_floatArray) {
-    floatArray = GetRegularArray<float>(value.GetArray());
+    //floatArray = GetRegularArray<float>(value.GetArray());
     return true;
   } else if(id == id_position) {
     position = value.GetVector2();
     return true;
   } else if(id == id_color) {
     color = value.GetColor();
+    return true;
+  } else if(id == id_vfsFile) {
+    vfsFile = value.GetString();
+    return true;
+  } else if(id == id_vfsDir) {
+    vfsDir = value.GetString();
+    return true;
+  } else if(id == id_vfsPath) {
+    vfsPath = value.GetString();
     return true;
   }
 
@@ -161,10 +183,15 @@ void PrintVariant (csVariant* variant)
       printf ("[variant type: vector4 value: %f ; %f ; %f ; %f]", variant->GetVector4 ().x,variant->GetVector4 ().y,variant->GetVector4 ().z,variant->GetVector4 ().w);
       break;
     case CSVAR_COLOR :
+      {
       csColor col = variant->GetColor();
       printf ("[variant type: color value: %f ; %f ; %f]", col[0], col[1], col[2]);
+      }
       break;
-
-      // TODO: rest of debug prints (if needed)
+    case CSVAR_IBASE:
+      csRef<iObject> asObj = scfQueryInterface<iObject>(variant->GetIBase());
+      printf ("[variant type: iBase pointer, name: %s]\n", 
+        asObj.IsValid() ? asObj->GetName() : "unknown");
+      break;
     }
 }

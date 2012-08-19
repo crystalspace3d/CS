@@ -8,7 +8,7 @@
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNUa
     Library General Public License for more details.
 
     You should have received a copy of the GNU Library General Public
@@ -31,7 +31,6 @@
 #include <csutil/cscolor.h>
 #include <csgeom/vector3.h>
 #include <wx/variant.h>
-
 
 //----------------- Custom properties for the property grid ---------------------
 
@@ -141,6 +140,55 @@ public:
 protected:
 };
 
+/// Helper method that extracts a csVariant from a wxPGProperty
+csVariant* wxToCsVariant(const csVariantType& type, const wxVariant& original)
+{
+  csVariant* variant = new csVariant;
+  if (type == CSVAR_STRING)
+  {
+    variant->SetString(original.GetString().mbc_str());
+  }
+  else if (type == CSVAR_LONG)
+  {
+    variant->SetLong(original.GetLong());    
+  }
+  else if (type == CSVAR_FLOAT)
+  {
+    variant->SetFloat (original.GetDouble ());
+  }
+  else if (type == CSVAR_BOOL)
+  {
+    variant->SetBool (original.GetBool ());
+  }
+  else if (type == CSVAR_COLOR)
+  {
+    wxColour col; col << original;
+    variant->SetColor ( csColor ((float)col.Red ()/255, (float)col.Green ()/255, (float)col.Blue ()/255) );
+  }
+  else if (type == CSVAR_VECTOR3)
+  {
+    wxVector3f v3f; v3f << original;
+    variant->SetVector3(csVector3(v3f.x, v3f.y, v3f.z));
+  }
+  else if (type == CSVAR_VECTOR4)
+  {
+    wxVector4f v4f; v4f << original;
+    variant->SetVector4(csVector4(v4f.x, v4f.y, v4f.z, v4f.w));
+  }
+  else if (type == CSVAR_VECTOR2)
+  {
+    wxVector2f v2f; v2f << original;
+    variant->SetVector2(csVector2(v2f.x, v2f.y));
+  }
+  else
+  {
+    CS_ASSERT_MSG("Failed to convert wxVariant to csVariant!!!", false);
+    return nullptr;
+  }
+
+  return variant;
+}
+
 using namespace CS::EditorApp;
 
 BEGIN_EVENT_TABLE(ModifiableEditor, wxPanel)
@@ -178,15 +226,7 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
 
   // Get the iTranslator, to attempt to fetch existing translations of
   // the parameter names and descriptions
-  translator = csQueryRegistry<iTranslator>(object_reg);
-
-  // Temporary
-  /*
-  wxPropertyGrid::RegisterAdditionalEditors();
-  wxIntProperty* prop = new wxIntProperty(wxT("LABLEEL"), wxT("NAME"), 42);
-  prop->SetEditor(wxPG_EDITOR(SpinCtrl));
-  pgMan->GetGrid()->Append(prop);
-  */
+  translator = csQueryRegistry<iTranslator>(object_reg);  
 }
 
 void ModifiableEditor::SetModifiable(iModifiable* modifiable) 
@@ -236,7 +276,7 @@ void ModifiableEditor::Append(iModifiable* element, csString& name) {
   {
     const iModifiableParameter* param = description->GetParameterByIndex(i);
     csVariant* variant = element->GetParameterValue(param->GetID());
-
+    CS_ASSERT_MSG("iModifiable object must return a value for each valid parameter id!", variant != nullptr);
     wxString originalName( param->GetName(), wxConvUTF8 );
     wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
     wxString description( param->GetDescription(), wxConvUTF8 );
@@ -271,7 +311,7 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
           && constraint->GetType() == MODIFIABLE_CONSTRAINT_ENUM)
         {
           // Generate a combo-box based on enum values
-          const csEnumConstraint* ec = dynamic_cast<const csEnumConstraint*>(constraint);
+          const csConstraintEnum* ec = dynamic_cast<const csConstraintEnum*>(constraint);
           csStringArray* csLabels = ec->GetLabels();
           wxArrayString labels;
           for(csStringArray::Iterator i = csLabels->GetIterator(); i.HasNext(); ) 
@@ -302,7 +342,6 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
           // Needed to actually refresh the grid and show the value
           pgMan->GetGrid ()->SetPropertyValue (intP, longValue);
         }
-
         
       }
       break;
@@ -376,18 +415,6 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
       }
       break;
 
-    case CSVAR_MATRIX3: 
-      {
-
-      }
-      break;
-
-    case CSVAR_TRANSFORM:
-      {
-
-      }
-      break;
-
       /*
     case CSVAR_IBASE:
       {
@@ -422,10 +449,6 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
 
       } // end switch
       
-      // Doesn't help
-      //pgMan->RefreshGrid();
-
-
       if(page->GetProperty(originalName))
         page->SetPropertyHelpString(originalName, translatedDescription );
       else {
@@ -443,150 +466,42 @@ void ModifiableEditor::OnSize(wxSizeEvent& event)
 
 void ModifiableEditor::OnGetNewValue (wxPGProperty* property)
 {
+  // nb: When this function is reached, the values are considered valid
   wxVariant newValue = property->GetValue ();
   if (newValue.IsNull () || activeModifiable == nullptr)
     return;
-  //*
+
   size_t index = property->GetIndexInParent ();
-
   csRef<iModifiableDescription> desc = activeModifiable->GetDescription();
-   
-  // This FAILS with nested properties, such as in the case of arrays, or nested 
-  // iModifiables
+  // This FAILS with nested properties, such as in the case of arrays,
+  // or nested iModifiables
   const iModifiableParameter* editedParameter = desc->GetParameterByIndex(index);
-
-  csVariantType compareType = editedParameter->GetType();
-  csVariant* variant( activeModifiable->GetParameterValue( editedParameter->GetID()) );
-  csVariant oldValue = *variant;
-  
-  if (compareType == CSVAR_STRING)
-  {
-    variant->SetString(newValue.GetString().mbc_str());
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-  }
-  else if (compareType == CSVAR_LONG)
-  {
-    variant->SetLong(newValue.GetLong());    
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-  }
-  else if (compareType == CSVAR_FLOAT)
-  {
-    variant->SetFloat (newValue.GetDouble ());
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-  }
-  else if (compareType == CSVAR_BOOL)
-  {
-    variant->SetBool (newValue.GetBool ());
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-  }
-  else if (compareType == CSVAR_COLOR)
-  {	
-    const wxString variantValue = page->GetPropertyValueAsString (property);
-    wxColour txcol (wxString::FromAscii("rgb") + variantValue);
-    variant->SetColor ( csColor ((float)txcol.Red ()/255, (float)txcol.Green ()/255, (float)txcol.Blue ()/255) );
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-  }
-  else if (compareType == CSVAR_VECTOR3)
-  {
-    float valueX = property->Item(0)->GetValue().GetDouble ();
-    float valueY = property->Item(1)->GetValue().GetDouble ();
-    float valueZ = property->Item(2)->GetValue().GetDouble ();
-    variant->SetVector3(csVector3(valueX,valueY,valueZ));
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-				
-  }
-  
-  else if (compareType == CSVAR_VECTOR4)
-  {
-
-    float valueX = property->Item(0)->GetValue().GetDouble ();
-    float valueY = property->Item(1)->GetValue().GetDouble ();
-    float valueZ = property->Item(2)->GetValue().GetDouble ();
-    float valueW = property->Item(3)->GetValue().GetDouble ();
-    variant->SetVector4(csVector4(valueX,valueY,valueZ,valueW));
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
-  }
-  else if (compareType == CSVAR_VECTOR2)
-  {
-    float valueX = property->Item(0)->GetValue().GetDouble ();
-    float valueY = property->Item(1)->GetValue().GetDouble ();
-    variant->SetVector2(csVector2(valueX,valueY));
-    activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);				
-  }
-  /*
-  else if (compareType == CSVAR_MATRIX3)
-  {
-
-  }
-  else if (compareType == CSVAR_TRANSFORM)
-  {
-
-  }
-  else if (compareType == CSVAR_IBASE)
-  {
-
-  }
-  else if (compareType == CSVAR_ARRAY)
-  {
-    // maybe just generate unique IDs for each array element?
-    printf("Edited an array! ID=%d\n", editedParameter->GetID());
-    //activeModifiable->SetParameterValue(, *variant);
-  }
-  //*/
-  else
-  {
-    pgMan->SetDescription (wxT ("Page Manager :"), wxT ("Message test"));
-  }
+  csVariant *variant = wxToCsVariant(editedParameter->GetType(), newValue);
+  activeModifiable->SetParameterValue(editedParameter->GetID(), *variant);
 
   delete variant;
-  //*/
 }
 
 void ModifiableEditor::OnPropertyGridChanging (wxPropertyGridEvent& event)
 {
   // Perform validation
-  // TODO: perform each one
+  wxVariant newValue = event.GetValue();
+  
   csRef<iModifiableDescription> description = activeModifiable->GetDescription();
   const iModifiableParameter* param = description->GetParameterByIndex(event.GetProperty()->GetIndexInParent());
   const iModifiableConstraint* constraint = param->GetConstraint();
 
   if(constraint != nullptr) {
-    // The better option, imho is to just rely on
-    // dynamic binding to do the work of that switch
-    // and simply call:
-    if(!constraint->Validate(activeModifiable->GetParameterValue(param->GetID())))
+    csVariant* newCsValue = wxToCsVariant(param->GetType(), newValue);
+    
+    if( ! constraint->Validate(newCsValue))
     {
+      delete newCsValue;
       event.Veto();
       return;
     }
 
-      /*
-    switch(constraint->GetType()) {
-    case MODIFIABLE_CONSTRAINT_BOUNDED:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_ENUM:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_VFS_FILE:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_VFS_DIR:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_VFS_PATH:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_TEXT_ENTRY:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_TEXT_BLOB:
-      break;
-
-    case MODIFIABLE_CONSTRAINT_BITMASK:
-      break;
-    }
-    //*/
+    delete newCsValue;
   }
 }
 

@@ -13,9 +13,6 @@
 #include "cseditor/wx/propgrid/advprops.h"
 #include "cseditor/wx/propgrid/editors.h"
 
-// the right csVariant
-// #include "apps/varedittest/pluginconfig.h"
-
 //----------------- wxPGSliderEditor ---------------------
 
 /**
@@ -27,13 +24,14 @@ class WXDLLIMPEXP_PG wxPGSliderEditor : public wxPGEditor
   WX_PG_DECLARE_EDITOR_CLASS(wxPGSliderEditor)
 #endif
 
+
 public:
   wxPGSliderEditor (int p = 10000)
     : precision(p)
   {
   }
 
-  ~wxPGSliderEditor ()
+  virtual ~wxPGSliderEditor ()
   {}
 
   // Macro for the CreateControls method stub

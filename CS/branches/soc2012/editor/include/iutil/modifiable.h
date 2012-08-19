@@ -28,18 +28,40 @@ enum iModifiableConstraintType
 
 //----------------- iModifiableConstraint ---------------------
 
+/**
+ * Useful for validating various iModifiable parameters.
+ * It's generally attached to an iModifiableProperty in an iModifiable object's 
+ * GetDescription() method.
+ *
+ * \see iModifiable
+ * \see PUSH_PARAM_CONSTRAINT for a helper macro
+ */
 struct iModifiableConstraint : public virtual iBase
 {
   SCF_INTERFACE(iModifiableConstraint, 1, 0, 0);
 
   virtual iModifiableConstraintType GetType() const = 0;
   
-  virtual bool Validate(const csVariant& variant) const = 0;
+  /**
+   * Takes in a const csVariant* that it validates, according to the rules of a specific
+   * constraint type. For instance, a long value could be limited by a bounded constraint
+   * so that it stays between certain limits.
+   *
+   * Other types, such as enum constraints, don't actually use this function, since they
+   * also have a helper role in creating a GUI that validates itself. For instance, the
+   * enum constraint generate combo boxes with the allowed values, so it's certain that
+   * any value the user might pick is valid.
+   */
+  virtual bool Validate(const csVariant* variant) const = 0;
 };
 
 
 //----------------- iModifiableConstraintBounded ---------------------
 
+/**
+ * Constraint that forces a variant to either stay under a certain value, over
+ * a certain value, or between two values. 
+ */
 struct iModifiableConstraintBounded : public virtual iModifiableConstraint
 {
   virtual bool HasMinimum () const = 0;

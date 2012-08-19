@@ -450,29 +450,5 @@ struct iPluginConfig : public virtual iBase
 };
 /** @} */
 
-/// Hideosly un-optimal way to take a regular csArray<stuff> and turn
-/// it into a csArray<csVariant>, assuming stuff can be contained in
-/// a variant.
-template<class T>
-csArray<csVariant> MakeVariantArray(const csArray<T>& original)
-{
-  csArray<csVariant> out;
-  for(auto i = original.GetIterator(); i.HasNext(); )
-    out.Push(csVariant(i.Next()));
-  return out;
-}
-
-template<class T>
-csArray<T> GetRegularArray(const csArray<csVariant>& original)
-{
-  csArray<T> out;
-  for(auto i = original.GetIterator(); i.HasNext(); ) {
-    csVariant var = i.Next();
-
-    if(var.GetType() == CSVAR_FLOAT)
-      out.Push(var.GetFloat());
-  }
-  return out;
-}
 
 #endif // __CS_IUTIL_PLUGINCONFIG_H__

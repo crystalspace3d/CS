@@ -15,6 +15,7 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
 #include "cssysdef.h"
 #include "testmodifiable.h"
 #include "csutil/event.h"
@@ -23,9 +24,6 @@
 #include <iutil/eventq.h>
 #include <csutil/cscolor.h>
 #include "iutil/object.h"
-
-// Macro magic to make csTestModifiable work
-//CS_IMPLEMENT_FOREIGN_DLL
 
 csTestModifiable :: csTestModifiable(const char* name, const char* job, long itemCount, iObjectRegistry* object_reg) :
   name(name),
@@ -62,30 +60,35 @@ csTestModifiable :: csTestModifiable(const char* name, const char* job, long ite
 
 csTestModifiable :: ~csTestModifiable() { }
 
-const csStringID csTestModifiable :: GetID() const {
+const csStringID csTestModifiable :: GetID() const
+{
   return id_testModifiable;
 }
 
-csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const {
-
+csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const 
+{
   csBasicModifiableDescription* description = new csBasicModifiableDescription();
-  
+  iModifiableConstraint *constraint;
+
   PUSH_PARAM(CSVAR_STRING, name, "Name", "the dude's name");
   PUSH_PARAM(CSVAR_STRING, job, "Job", "the dude's jawb");
   PUSH_PARAM(CSVAR_LONG, itemCount, "Item count", "How many items this guy has (unrelated to the array)."); 
   PUSH_PARAM(CSVAR_BOOL, awesome, "Awesome", "Am I awesome, or what?");
-  PUSH_PARAM(CSVAR_FLOAT, floatThingy, "FloatThingy", "some float");
+  constraint = new csConstraintBounded(csVariant(-100.0f), csVariant(500.0f));
+  PUSH_PARAM_CONSTRAINT(CSVAR_FLOAT, floatThingy, "FloatThingy", "some float", constraint);
   // Removed until better tools are brought to deal with arrays of modifiable things
   //PUSH_PARAM(CSVAR_ARRAY, floatArray, "Array of floats", "testing arrays being editable in the propgrid");
   PUSH_PARAM(CSVAR_COLOR, color, "Color", "my color");
   PUSH_PARAM(CSVAR_VECTOR2, position, "Position", "spatial position of the unit");
-  iModifiableConstraint *constraint = new csConstraintVfsFile;
+  
+    constraint = new csConstraintVfsFile;
   PUSH_PARAM_CONSTRAINT(CSVAR_STRING, vfsFile, "VFS file", "A VFS file name", constraint);
 
   return csPtr<iModifiableDescription>(description);
 }
 
-csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
+csVariant* csTestModifiable :: GetParameterValue(csStringID id) const
+{
   if(id == id_name) {
     return new csVariant(name);
   } else if(id == id_job) {
@@ -113,9 +116,9 @@ csVariant* csTestModifiable :: GetParameterValue(csStringID id) const {
   return nullptr;
 }
 
-bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value) {
-
-  // Broadcast a varriant set event
+bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value)
+{
+  // Broadcast a variant set event
   BROADCAST_SET_EVENT();
 
   if(id == id_name) {
@@ -156,7 +159,7 @@ bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value
   return false;
 }
 
-// Ancient debug function; might still be useful
+/// Prints out a variant's value; used in debugging.
 void PrintVariant (csVariant* variant)
 {
   switch (variant->GetType ())

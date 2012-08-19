@@ -10,10 +10,10 @@ wxPGWindowList wxPGSliderEditor::CreateControls( wxPropertyGrid*  propgrid,
                                                  const wxSize&    size ) const
 {
   double v_d = property->GetValue().GetDouble();
-  if ( v_d < 0 )
+  if ( v_d < min )
     v_d = 0;
-  else if ( v_d > 1 )
-    v_d = 1;
+  else if ( v_d > max )
+    v_d = max;
 
   wxSlider *ctrl = new wxSlider;
   /*
@@ -25,8 +25,8 @@ wxPGWindowList wxPGSliderEditor::CreateControls( wxPropertyGrid*  propgrid,
   ctrl->Create ( propgrid->GetPanel(),
                  wxPG_SUBID2,
                  (int)(v_d * precision),
-                 0,
-                 precision,
+                 (int)(min * precision),
+                 (int)(max * precision),
                  pos,
                  size,
                  wxSL_HORIZONTAL );
@@ -42,10 +42,10 @@ void wxPGSliderEditor::UpdateControl ( wxPGProperty* property, wxWindow* wnd ) c
     double val;
     if (wxPGVariantToDouble (property->DoGetValue(), &val))
     {
-      if ( val < 0 )
-        val = 0;
-      else if ( val > 1 )
-        val = 1;
+      if ( val < min )
+        val = min;
+      else if ( val > max )
+        val = max;
       ctrl->SetValue ( (int)(val * precision) );
 
       //static_cast<wxPGSliderProperty*>(property)->GetLabel()

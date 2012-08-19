@@ -10,7 +10,6 @@
 // csVariant and whatnot; long path required so the wrong one doesn't get picked up
 #include "apps/varedittest/pluginconfig.h"
 
-
 //----------------- iModifiableConstraintType ---------------------
 
 enum iModifiableConstraintType
@@ -24,7 +23,6 @@ enum iModifiableConstraintType
   MODIFIABLE_CONSTRAINT_TEXT_BLOB,
   MODIFIABLE_CONSTRAINT_BITMASK
 };
-
 
 //----------------- iModifiableConstraint ---------------------
 

@@ -46,6 +46,39 @@ configuration options instead:
 RenderManager.Deferred.Layers = /data/renderlayers/lighting_default_deferred_full.xml
 @end example
 
+@subsubheading Using Light Clipping Volumes
+
+In addition to the usual settings a light may have, the deferred render manager
+supports an additional one: light clipping volumes.
+
+These volumes allow you to further specify the influence via an arbitrary triangle
+mesh. To use them simply specify a trimesh (in light space) in the light's object
+model with id @samp{clip}.
+
+A simple example may look like this:
+@example
+<light name='Test'>
+  <center y='5.00' x='0' z='0'/>
+  <color blue='0.0' green='0.0' red='0.5'/>
+  <radius>10</radius>
+  <type>directional</type>
+  <move>
+    <matrix>
+    <roty>0</roty>
+    <rotz>0</rotz>
+    <rotx>-1.57</rotx>
+    </matrix>
+  </move>
+  <trimesh>
+    <id>clip</id>
+    <box>
+      <min x="-10" y="0" z="0" />
+      <max x="10" y="10" z="10" />
+    </box>
+  </trimesh>
+</light>
+@end example
+
 @subsubheading Filling the GBuffer
 
 Before lighting can be computed the deferred render manager will fill the

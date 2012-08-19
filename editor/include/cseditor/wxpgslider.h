@@ -26,8 +26,9 @@ class WXDLLIMPEXP_PG wxPGSliderEditor : public wxPGEditor
 
 
 public:
-  wxPGSliderEditor (int p = 10000)
-    : precision(p)
+  wxPGSliderEditor (float min = 0, float max = 100, int precision = 1)
+      : min(min), max(max),
+        precision(precision)
   {
   }
 
@@ -45,6 +46,7 @@ public:
 
 private:
   int precision;
+  float min, max;
 };
 
 #endif

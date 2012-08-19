@@ -299,7 +299,7 @@ public:
     return MODIFIABLE_CONSTRAINT_BOUNDED;
   }
 
-  bool Validate(const csVariant* variant) 
+  bool Validate(const csVariant* variant) const 
   {
     if(min != nullptr)
       CS_ASSERT_MSG("Bounds must be of the same type as the variant", 
@@ -432,7 +432,7 @@ private:
 
 /**
  * Attached to an iModifiable parameters, verifies that the value entered within
- * is always a VFS File, not a path or a directory.
+ * is always a VFS file, not a path or a directory.
  */
 class csConstraintVfsFile : public scfImplementation1<csConstraintVfsFile, iModifiableConstraint>
 {
@@ -441,8 +441,12 @@ public:
     : scfImplementation1(this)
   {
     // Should match anything that's got a special delimiter in it
-    // ($/, $@, $*, $^)
-    matcher = new csRegExpMatcher("\$([\*|/|@|\^])");
+    matcher = new csRegExpMatcher("[^[:alnum:]\\-_ ,~!@#%{}$]");
+  }
+
+  virtual ~csConstraintVfsFile() 
+  {
+    delete matcher;
   }
 
   iModifiableConstraintType GetType() const
@@ -453,14 +457,155 @@ public:
   bool Validate(const csVariant* variant) const
   {
     CS_ASSERT(variant->GetType() == CSVAR_STRING);
+    csRegExpMatchError result = matcher->Match(variant->GetString());
     // It's ok as long as not special delimiters are found
-    return matcher->Match(variant->GetString()) == csrxNoMatch;
+    return result == csrxNoMatch;
    }
 
 private:
   csRegExpMatcher* matcher;
 };
 
+/**
+ * Attached to an iModifiable parameters, verifies that the value entered within
+ * is always a VFS directory, relative or absolute.
+ */
+class csConstraintVfsDir : public scfImplementation1<csConstraintVfsDir, iModifiableConstraint>
+{
+public:
+  csConstraintVfsDir()
+    : scfImplementation1(this)
+  {
+    // Just like the file matcher, only allows colons and forward slashes
+    matcher = new csRegExpMatcher("[^[:alnum:]\\-_ ,~!@#%{}$/]");
+  }
 
+  virtual ~csConstraintVfsDir() 
+  {
+    delete matcher;
+  }
+
+  iModifiableConstraintType GetType() const
+  {
+    return MODIFIABLE_CONSTRAINT_VFS_DIR;
+  }
+
+  bool Validate(const csVariant* variant) const
+  {
+    CS_ASSERT(variant->GetType() == CSVAR_STRING);
+    return matcher->Match(variant->GetString()) == csrxNoMatch;
+  }
+
+private:
+  csRegExpMatcher* matcher;
+};
+
+
+/**
+ * Attached to an iModifiable parameters, verifies that the value entered within
+ * is always a full VFS path - a directory and a file, relative or absolute.
+ */
+class csConstraintVfsPath : public scfImplementation1<csConstraintVfsPath, iModifiableConstraint>
+{
+public:
+  csConstraintVfsPath()
+    : scfImplementation1(this)
+  {
+    // Just like the dir regex
+    matcher = new csRegExpMatcher("[^[:alnum:]\\-_ ,~!@#%{}$/]");
+  }
+
+  virtual ~csConstraintVfsPath() 
+  {
+    delete matcher;
+  }
+
+  iModifiableConstraintType GetType() const
+  {
+    return MODIFIABLE_CONSTRAINT_VFS_PATH;
+  }
+
+  bool Validate(const csVariant* variant) const
+  {
+    CS_ASSERT(variant->GetType() == CSVAR_STRING);
+    return matcher->Match(variant->GetString()) == csrxNoError;
+  }
+
+private:
+  csRegExpMatcher* matcher;
+};
+
+/**
+ * Can validate a text entry, using minimum/ maximum length and/or a regular expression.
+ */
+class csConstraintTextEntry : public scfImplementation1<csConstraintTextEntry, iModifiableConstraint>
+{
+public:
+  csConstraintTextEntry(long maxLength = -1, long minLength = -1, const char* regex = 0)
+    : scfImplementation1(this),
+      minLength(minLength),
+      maxLength(maxLength)
+  {
+    if(regex)
+      matcher = new csRegExpMatcher(regex);
+    else
+      matcher = nullptr;
+  }
+
+  virtual ~csConstraintTextEntry() 
+  {
+    delete matcher;
+  }
+
+  iModifiableConstraintType GetType() const
+  {
+    return MODIFIABLE_CONSTRAINT_TEXT_ENTRY;
+  }
+
+  bool Validate(const csVariant* variant) const
+  {
+    CS_ASSERT(variant->GetType() == CSVAR_STRING);
+    csString val = variant->GetString();
+
+    if(val.Length() < minLength || val.Length() > maxLength)
+      return false;
+
+    if(matcher != nullptr && matcher->Match(val) == csrxNoMatch)
+      return false;
+
+    return true;
+  }
+
+private:
+  csRegExpMatcher* matcher;
+  long minLength, maxLength;
+};
+
+/**
+ * Validates a CSVAR_LONG value, checking that its bits satisfy a given mask. When a bit
+ * that's not part of the mask is set, the validation fails.
+ */
+class csConstraintBitMask : public scfImplementation1<csConstraintBitMask, iModifiableConstraint>
+{
+  csConstraintBitMask(long mask)
+    : scfImplementation1(this),
+      mask(mask)
+  {
+  }
+
+  iModifiableConstraintType GetType() const
+  {
+    return MODIFIABLE_CONSTRAINT_BITMASK;
+  }
+
+  bool Validate(const csVariant* variant) const
+  {
+    CS_ASSERT_MSG("Can only apply bitmasks on integer-type values.", variant->GetType() == CSVAR_LONG);
+    return (variant->GetLong() & (~mask)) == 0;
+  }
+
+private:
+  long mask;
+};
 
 #endif

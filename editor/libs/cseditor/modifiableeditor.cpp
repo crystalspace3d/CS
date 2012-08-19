@@ -205,8 +205,7 @@ ModifiableEditor::ModifiableEditor( iObjectRegistry* object_reg, wxWindow* paren
   // Since the PG components are being dynamically loaded, this function never gets
   // to be run and initialize the wxpg resource module, causing some pretty nasty
   // errors (on Windows, at least)
-  // Also, this currently causes *a lot* of first-chance exceptions to get thrown
-  // when the app is closing
+
 #ifndef wxPG_USE_WXMODULE
   wxPGInitResourceModule();
 #endif
@@ -284,7 +283,7 @@ void ModifiableEditor::Append(iModifiable* element, csString& name) {
     AppendVariant(root, variant, param->GetConstraint(), originalName, translation, description);
 
     delete variant;
-  } // end loop through properties
+  }
   pgMan->Refresh();
 }
 
@@ -301,7 +300,6 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
         wxStringProperty* stringP = new wxStringProperty (translatedName, originalName);
         page->AppendIn(categoryID, stringP);
         stringP->SetValue (stringValue);
-
       }
       break;
 
@@ -352,7 +350,14 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
 
         // Generate a homebrewed slider
         wxFloatProperty* fp = new wxFloatProperty(translatedName, originalName, value);
-        wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(), wxT("SliderEditor"));
+        float min = 0, max = 100;
+        if(constraint != nullptr && constraint->GetType() == MODIFIABLE_CONSTRAINT_BOUNDED) {
+          // Set the slider limits
+          const csConstraintBounded* bc = dynamic_cast<const csConstraintBounded*>(constraint);
+          if(bc->HasMinimum()) min = bc->GetMinimum().GetFloat();
+          if(bc->HasMaximum()) max = bc->GetMaximum().GetFloat();
+        }
+        wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(min, max), wxT("SliderEditor"));
         fp->SetEditor(rHandle);
         page->AppendIn(categoryID, fp);
 

@@ -562,18 +562,11 @@ namespace lighter
     queuedPrims.layoutID = layoutID;
     queuedPrims.groupNum = groupNum;
     queuedPrims.uvsizes = uvsizes;
+    
     SectorAndPDBits s;
     s.pdBits = pdBits;
-    /* The originating sector is only relevant for PD-affected queues
-     * (since PD lights are stored in the sector PD bits can only be 
-     * compared for queues originating in the same sector, but when no
-     * bits are set, this doesn't matter much). 
-     * But PD-unaffected queues can be merged here already.
-     */
-    if (pdBits.AllBitsFalse())
-      s.sector = 0;
-    else
-      s.sector = sector;
+    s.sector = sector;
+
     QueuedPDPArray* q = pdQueues.GetElementPointer (s);
     if (q == 0)
     {

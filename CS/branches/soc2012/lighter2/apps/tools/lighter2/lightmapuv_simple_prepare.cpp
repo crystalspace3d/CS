@@ -76,11 +76,13 @@ namespace lighter
   int SimpleUVFactoryLayouter::SortPDLQueues (const PDLQueue& p1,
                                               const PDLQueue& p2)
   {
-    if (p1.sector != p2.sector)
+    // PDLQueue with no pdBits are pushed at the end of the array
+    // so if only p1 or p2 have all bit false we avoid the sector
+    // comparison
+    if ((p1.pdBits.AllBitsFalse() == p2.pdBits.AllBitsFalse() ) 
+      && (p1.sector != p2.sector))
     {
-      // Here I invert the result of the comparator because we want that
-      // PDLQueue with no sector are pushed at the end of the array
-      return !csComparator<Sector*, Sector*>::Compare (p1.sector, p2.sector);
+      return csComparator<Sector*, Sector*>::Compare (p1.sector, p2.sector);
     }
 
     size_t nb1 = p1.pdBits.NumBitsSet();
@@ -615,13 +617,16 @@ namespace lighter
       AllocResultHash results;
       AllocLightmapArray<> allocGLM (globalLightmaps);
       bool b = AllocAllPrims (ArraysOneUV (rect.Width(), rect.Height()), 
-      allocGLM, results, 0, allocDefault);
+        allocGLM, results, 0, allocTryNoGrow);
 
       if (!b)
       {
+        b = AllocAllPrims (ArraysOneUV (rect.Width(), rect.Height()), 
+          allocGLM, results, 0, allocDefault);
         CS_ASSERT(b);
       }
-      else
+      
+      if (b)
       {
         const AllocResult& result = *results.GetElementPointer (0);
         rect.xmin = int (result.positions[0].x);

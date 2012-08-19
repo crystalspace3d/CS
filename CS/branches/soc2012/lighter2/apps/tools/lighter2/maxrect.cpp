@@ -25,6 +25,12 @@ namespace lighter
 
 #ifdef TESTMAXRECTLIGHTER
 
+void MaxRectangles::FreeSubrect (SubRect* sr)
+{
+  if (sr == 0) return;
+  alloc.Free (sr);
+}
+
 MaxRectangles::MaxRectangles (const csRect& region)
   : region(region)
 {
@@ -79,13 +85,15 @@ void MaxRectangles::Reclaim (MaxRectangles::SubRect* subrect)
     freeRects.Push(subrect->splittedRect[i]);
   }
 
-  allocatedRects.DeleteIndex(subrect->allocIndex);
-  --notPrunedIndex;
+  
+  allocatedRects.Delete(subrect);
   minRectDirty = true;
-  delete subrect;
+  FreeSubrect(subrect);
 
+  // We added new rectangles which are highly succeptible
+  // to contain some other rectangle but as can be a lot
+  // of Reclaim call we delay the rectangle pruning
   needPrune = true;
-  //PruneFreeList();
 }
 
 csRect MaxRectangles::FindBestPosition(int width, int height,
@@ -203,10 +211,9 @@ bool MaxRectangles::Shrink (int newWidth, int newHeight)
 
     if (freeRects[i].IsEmpty())
     {
-      freeRects.DeleteIndex(i);
+      DeleteFreeRect(i);
       --i;
       --numRectanglesToProcess;
-      --notPrunedIndex;
     }
   }
   region.SetSize(newWidth,newHeight);
@@ -217,7 +224,7 @@ MaxRectangles::SubRect* MaxRectangles::Place(const csRect& rect)
 {
   size_t numRectanglesToProcess = freeRects.GetSize();
 
-  SubRect* resultRec = new SubRect();
+  SubRect* resultRec = alloc.Alloc();
   resultRec->rect = rect;
   resultRec->allocIndex = allocatedRects.Push(resultRec);
 
@@ -233,10 +240,9 @@ MaxRectangles::SubRect* MaxRectangles::Place(const csRect& rect)
     if (SplitFreeRect(freeRects[i], rect))
     {
       resultRec->splittedRect.Push(freeRects[i]);
-      freeRects.DeleteIndex(i);
+      DeleteFreeRect(i);
       --i;
       --numRectanglesToProcess;
-      --notPrunedIndex;
     }
   }
 
@@ -266,8 +272,26 @@ csRect MaxRectangles::GetMinimumRectangle ()
 bool MaxRectangles::PlaceInto (const MaxRectangles* rectangles, 
   MaxRectangles::SubRect* subRect)
 {
+  int offsetX = subRect->rect.xmin;
+  int offsetY = subRect->rect.xmin;
+
+  // First we remove our subRect
+  Reclaim(subRect);
+
+  // Now we place our rect
+  csArray<SubRect*>::ConstIterator allocRectIt = 
+    rectangles->allocatedRects.GetIterator();
+
+  while (allocRectIt.HasNext())
+  {
+    csRect newRect = allocRectIt.Next()->rect;
+    newRect.Move(offsetX,offsetY);
+    Place(newRect);
+  }
+
   return true;
 }
+
 
 static void FillImgRect (uint8* data, uint8 color, int imgW, int imgH, 
 			 const csRect& r)
@@ -350,24 +374,18 @@ void MaxRectangles::Dump (iObjectRegistry* object_reg, const char* tag)
   newpal = new csRGBpixel[256];
   memcpy (newpal, pal, sizeof (pal));
 
-  csImageMemory* img3 = 
-    new csImageMemory (w, h, (new uint8[w * h]),
-    true, CS_IMGFMT_PALETTED8, newpal);
-
-  uint8* data3 = (uint8*)img3->GetImageData ();
-  memset (data3, 0, w * h);
-
   int c = 0;
 
   csArray<csRect>::Iterator freeRectIt =  freeRects.GetIterator();
-  /*
+
   while(freeRectIt.HasNext())
   {
     csRect rect = freeRectIt.Next();
+    rect.xmax = csMin(w,rect.xmax);
+    rect.ymax = csMin(h,rect.ymax);
     FillImgRect (data, c + 1, w, h, rect);
-    IncImgRect (data3, w, h, rect);
     c = (c + 1) % 255;
-  }*/
+  }
   
   csArray<SubRect*>::Iterator allocatedRectIt =  allocatedRects.GetIterator();
   while(allocatedRectIt.HasNext())
@@ -376,8 +394,6 @@ void MaxRectangles::Dump (iObjectRegistry* object_reg, const char* tag)
     FillImgRect (data2, c + 1, w, h, rect);;
     c = (c + 1) % 255;
   }
-
-
 
   csString tagStr (tag);
   if (tagStr.IsEmpty()) tagStr.Format ("%p", this);
@@ -391,14 +407,14 @@ void MaxRectangles::Dump (iObjectRegistry* object_reg, const char* tag)
       if (vfs->WriteFile (outfn, (char*)buf->GetInt8 (), buf->GetSize ()))
       {
         csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
-	  "crystalspace.geom.subrects", "Successfully dumped to %s",
-	  outfn.GetData ());
+          "crystalspace.lighter2.maxrects", "Successfully dumped to %s",
+          outfn.GetData ());
       }
       else
       {
         csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
-	  "crystalspace.geom.subrects", "Error dumping to %s",
-	  outfn.GetData ());
+          "crystalspace.lighter2.maxrects", "Error dumping to %s",
+          outfn.GetData ());
       }
     }
     delete img;
@@ -410,8 +426,8 @@ void MaxRectangles::Dump (iObjectRegistry* object_reg, const char* tag)
       if (vfs->WriteFile (outfn, (char*)buf->GetInt8 (), buf->GetSize ()))
       {
         csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
-	  "crystalspace.lighter2.maxrects", "Successfully dumped to %s",
-	  outfn.GetData ());
+          "crystalspace.lighter2.maxrects", "Successfully dumped to %s",
+          outfn.GetData ());
       }
       else
       {
@@ -421,25 +437,6 @@ void MaxRectangles::Dump (iObjectRegistry* object_reg, const char* tag)
       }
     }
     delete img2;
-
-    buf = imgsaver->Save (img3, "image/png");
-    if (buf.IsValid())
-    {
-      outfn.Format ("/tmp/SubRectangles_dump_%s_ov.png", tagStr.GetData());
-      if (vfs->WriteFile (outfn, (char*)buf->GetInt8 (), buf->GetSize ()))
-      {
-        csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
-	        "crystalspace.lighter2.maxrects", "Successfully dumped to %s",
-	        outfn.GetData ());
-      }
-      else
-      {
-        csReport (object_reg, CS_REPORTER_SEVERITY_NOTIFY,
-	        "crystalspace.lighter2.maxrects", "Error dumping to %s",
-	        outfn.GetData ());
-      }
-    }
-    delete img3;
   }
 }
 
@@ -459,17 +456,16 @@ void MaxRectangles::PruneFreeList()
 	{
     if (freeRects[i].IsEmpty())
     {
-      freeRects.DeleteIndex(i);
+      DeleteFreeRect(i);
       --i;
-      --notPrunedIndex;
     }
     else
     {
       size_t j = i+1;
-      /*if ((notPrunedIndex > 0) && (notPrunedIndex > j))
+      if ((notPrunedIndex > 0) && (notPrunedIndex > j))
       {
         j = notPrunedIndex;
-      }*/
+      }
       bool collapsed = false;
       while ( (!collapsed) && (j < freeRects.GetSize()) )
 		  {
@@ -481,14 +477,12 @@ void MaxRectangles::PruneFreeList()
           if (intersection.Equal(freeRects[i]))
           {
             collapsed = true;
-            freeRects.DeleteIndex(i);
-            --notPrunedIndex;
+            DeleteFreeRect(i);
             --i;
           }
           else if (intersection.Equal(freeRects[j]))
           {
-            freeRects.DeleteIndex(j);
-            --notPrunedIndex;
+            DeleteFreeRect(j);
             --j;
           }
         }
@@ -498,6 +492,7 @@ void MaxRectangles::PruneFreeList()
     }
 	}
 
+  // We know that all remaining rectangles don't contain each other
   notPrunedIndex = freeRects.GetSize();
   needPrune = false;
 }
@@ -581,9 +576,11 @@ static inline void SetDimension (csRect& r, int side, int v)
 
 MaxRectangles::SubRect* MaxRectanglesCompact::Alloc (int w, int h, csRect& rect)
 {
+  // Try if rectangle fits already.
   MaxRectangles::SubRect* r = MaxRectangles::Alloc(w,h,rect);
 
-  if (r == 0)
+  //If it's doesn't and the rectangle can be enlarged
+  if ((r == 0)&&(region != maxArea))
   {
     const static int WIDTH = 0;
     const static int HEIGHT = 1;
@@ -597,23 +594,15 @@ MaxRectangles::SubRect* MaxRectanglesCompact::Alloc (int w, int h, csRect& rect)
       csRect newRect (region);
       // Enlarge one side
       int sideLength = ((side == WIDTH) ? w : h);
-      if (side == WIDTH)
-      {
-        int newWidth = csMin (NewSize (region.Width(), sideLength), 
-          maxArea.Width());
-        newRect.SetSize(newWidth,newRect.Height());
-      }
-      else
-      {
-        int newHeight = csMin (NewSize (region.Width(), sideLength), 
-          maxArea.Width());
-        newRect.SetSize(newRect.Width(),newHeight);
-      }
-
+      // Enlarge one side
+      SetDimension (newRect, side, 
+        csMin (NewSize (GetDimension (region, side), sideLength), 
+          GetDimension (maxArea, side)));
       // Ensure other side is at least as large as requested
-      if (GetDimension (newRect, side ^ 1) < sideLength)
+      int otherSideLength = ((side == 0) ? h : w);
+      if (GetDimension (newRect, side ^ 1) < otherSideLength)
       {
-        SetDimension (newRect, side ^ 1, NewSize (sideLength, 0));
+        SetDimension (newRect, side ^ 1, NewSize (otherSideLength, 0));
       }
 
       Grow (newRect.Width(), newRect.Height());

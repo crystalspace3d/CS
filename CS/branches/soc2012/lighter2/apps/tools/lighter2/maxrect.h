@@ -28,7 +28,7 @@
 namespace lighter
 {
 
-//#define TESTMAXRECTLIGHTER
+#define TESTMAXRECTLIGHTER
 
 #ifndef TESTMAXRECTLIGHTER
   typedef CS::SubRectanglesCompact MaxRectanglesCompact;
@@ -57,6 +57,9 @@ public:
     size_t allocIndex;
   protected :
     friend class MaxRectangles;
+    typedef csBlockAllocator<SubRect> SubRectAlloc;
+    friend class csBlockAllocator<SubRect>; // SubRectAlloc
+
     /// Return the area this subrectangle covers
     const csRect& GetRect() const { return rect; }
   };
@@ -75,6 +78,15 @@ protected:
   int notPrunedIndex;
 
 public:
+  inline SubRect* AllocSubrect ()
+  { 
+    SubRect* sr = alloc.Alloc(); 
+    return sr;
+  }
+  void FreeSubrect (SubRect* sr);
+
+  SubRect::SubRectAlloc alloc;
+
   /// Allocate a new empty region with the given size.
   MaxRectangles (const csRect& region);
   MaxRectangles (const MaxRectangles& other);
@@ -163,6 +175,13 @@ public:
   void Dump (const char* tag = 0);
 
 private :
+  void inline DeleteFreeRect(int index)
+  {
+    freeRects.DeleteIndex(index);
+    if (index < notPrunedIndex)
+      notPrunedIndex--;
+  }
+
   void PruneFreeList();
 
   bool SplitFreeRect(const csRect& freeRect,const csRect& allocatedRect);

@@ -20,9 +20,6 @@
 #include "cssysdef.h"
 #include "particleeditor.h"
 
-// Needed for implementing custom properties.
-// #include "apps/tools/editor/wx/propgrid/propdev.h"
-
 #include "csutil/ref.h"
 
 #include "cstool/initapp.h"
@@ -39,13 +36,6 @@
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
 #include "iutil/virtclk.h"
-#include "iengine/campos.h"
-#include "iengine/sector.h"
-#include "iengine/scenenode.h"
-#include "iengine/mesh.h"
-#include "iengine/movable.h"
-#include "iengine/engine.h"
-#include "iengine/camera.h"
 #include "imesh/object.h"
 #include "imesh/objmodel.h"
 #include "ivideo/graph3d.h"
@@ -118,7 +108,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     // Initializes the wxPanel part of the space
     Create(parent);
 
-    // TODO: method to query the active context; also call here!!!
     // Load PS plugins
     csRef<iPluginManager> pluginManager = csQueryRegistry<iPluginManager> (object_reg);
 
@@ -202,7 +191,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       wxDefaultPosition, wxDefaultSize, 0L, wxT("Secondary editor"));
 
     mainSizer->Add(secondaryEditor, 1, wxALL | wxEXPAND, borderWidth);
-
+    enabled = true;
     printf ("\nInitialized particle editing panel!\n");
 
     // Populate with the current active object 
@@ -230,7 +219,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     iObject* result = objectSelectionContext->GetActiveObject ();
     if (!result)
     {
-      //NoModifiable();
+      Empty(wxT("No object selected."));
       return;
     }
 
@@ -239,7 +228,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper>(result);
     if (!fac)
     {
-      //NoModifiable();
+      Empty(wxT("No mesh factory selected."));
       return;
     }
 
@@ -247,14 +236,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
       scfQueryInterface<iParticleSystemFactory>(fac->GetMeshObjectFactory()); 
     if (!partSys)
     {
-      //NoModifiable();
+      Empty(wxT("No particle system selected."));
       return;
     }
 
     csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory());  
     if (!modifiable)
     {
-      // NoModifiable();
+      Empty(wxT("Selected particle system is non-standard and doesn't implement iModifiable. It cannot be edited."));
       return;
     }
 
@@ -267,17 +256,27 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     UpdateEffectorList();
   }
 
+  void CSPartEditSpace::Empty(const wxString& message)
+  {
+    mainEditor->Clear();
+    secondaryEditor->Clear();
+    emitterList->Clear();
+    effectorList->Clear();
+
+    mainEditor->SetMessage(wxString(wxT("Notice:")), message);
+  }
+
   wxWindow* CSPartEditSpace::GetwxWindow()
   {
     return this;
   }
 
   bool CSPartEditSpace::GetEnabled() const {
-    return true;
+    return enabled;
   }
 
   void CSPartEditSpace::SetEnabled(bool enabled) {
-    // todo
+    this->enabled = enabled;
   }
 
   bool CSPartEditSpace::HandleEvent (iEvent& event)
@@ -304,6 +303,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     csRef<iParticleBuiltinEmitterBox> em = emitterFactory->CreateBox();
     factory->AddEmitter(em);
     UpdateEmitterList();
+
+    // Add the emitter to the actual previewed mesh
+    csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
+    iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
+    csRef<iParticleSystem> sys(scfQueryInterface<iParticleSystem>(mesh));
+    sys->AddEmitter(em);
   }
 
   void CSPartEditSpace::OnButtonRemoveEmitter( wxCommandEvent &event )
@@ -320,6 +325,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     csRef<iParticleBuiltinEffectorForce> eff = effectorFactory->CreateForce();
     factory->AddEffector(eff);
     UpdateEmitterList();
+
+    // Add the effector to the actual previewed mesh
+    csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
+    iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
+    csRef<iParticleSystem> sys(scfQueryInterface<iParticleSystem>(mesh));
+    sys->AddEffector(eff);
   }
 
   void CSPartEditSpace::OnButtonRemoveEffector( wxCommandEvent &event )

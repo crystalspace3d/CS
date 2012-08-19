@@ -16,7 +16,6 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #include "cssysdef.h"
 #include "csutil/scf.h"
 #include "translation.h"
@@ -32,6 +31,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
   SCF_IMPLEMENT_FACTORY (EditorTranslation)
 
   using namespace std;
+
+  const char* EditorTranslation::languageDir = "/data/editor/lang/";
+  const char* EditorTranslation::language     = "de_DE";
 
   EditorTranslation::EditorTranslation (iBase* parent)
     : scfImplementationType (this, parent)
@@ -72,16 +74,16 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
     csRef<iVFS> vfs = csQueryRegistry<iVFS>(object_reg);
 
-    csString langPath ("/data/editor/lang/");
-    csString langFile ("de_DE.xml");
+    csString langPath (languageDir);
+    csString langFile; langFile.Format("%s.xml", language);
 
     csRef<iDataBuffer> path(vfs->GetRealPath(langPath.GetData()));
     if (!path.IsValid())
     {
       csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",
-	"Translation file path %s is not active",
-	CS::Quote::Double(langPath.GetData()));
+	      "Translation file path %s is not active",
+	      CS::Quote::Double(langPath.GetData()));
       return false;
     }
 
@@ -110,8 +112,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     } else {
       csReport(object_reg, CS_REPORTER_SEVERITY_ERROR,
         "crystalspace.editor.component.translation",
-	"Could not open file: %s",
-	CS::Quote::Double(fullPath.GetData()));
+        "Could not open file: %s",
+        CS::Quote::Double(fullPath.GetData()));
       return false;
     }
 
@@ -133,7 +135,3 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)
-
-/**
-* 
- */

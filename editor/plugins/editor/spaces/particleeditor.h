@@ -19,25 +19,18 @@
 #ifndef __SPACE_PARTICLEEDITOR_H__
 #define __SPACE_PARTICLEEDITOR_H__
 
-//#include "cstool/collider.h"
 #include "csutil/csbaseeventh.h"
 #include "csutil/eventnames.h"
 #include "csutil/scf_implementation.h"
-//#include "csutil/weakref.h"
 #include "ieditor/editor.h"
 #include "ieditor/space.h"
 #include "iutil/event.h"
-//#include "iutil/eventh.h"
 #include "iutil/comp.h"
-//#include "ivaria/cameramanager.h"
 
 #ifndef WX_PRECOMP
   #include <wx/wx.h>
   #include <iostream>
 #endif
-
-// TODO: maybe relocate slider code
-// TODO: sort the fustercluck of includes
 
 #include <csutil/refarr.h>
 #include "csutil/ref.h"
@@ -101,6 +94,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
      */
     void Populate();
 
+    /**
+     * Called when the editor should be cleared, e.g. when the selected data isn't
+     * a particle system, with the message containing the reason.
+     */
+    void Empty(const wxString& message);
+
     // Various event ids
     iEventNameRegistry* nameRegistry;
     csStringID          addObject;
@@ -116,22 +115,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     void OnEffectorSelect(wxCommandEvent& event);
 
   private:
-    static const int                        borderWidth = 4; 
-
-    iObjectRegistry*                        object_reg;
-    csRef<iSpaceFactory>                    spaceFactory;
-    /// The PS factory currently being edited
-    csRef<iParticleSystemFactory>           factory;
-    csRef<iParticleBuiltinEmitterFactory>   emitterFactory;
-    csRef<iParticleBuiltinEffectorFactory>  effectorFactory;
-
+    static const int      borderWidth = 4; 
+    bool                  enabled;
     wxBoxSizer            *mainSizer, *middleSizer, *middleLSizer, *middleRSizer;
     wxListBox             *emitterList, *effectorList;
     csRef<iEditor>        editor;
     csRef<iEventQueue>    queue;
     csRef<iTranslator>    translator;
 
-    
+    iObjectRegistry*                        object_reg;
+    csRef<iSpaceFactory>                    spaceFactory;
+    /// The PS factory currently being edited
+    csRef<iParticleSystemFactory>           factory;
+    /// The corresponding emitter factory
+    csRef<iParticleBuiltinEmitterFactory>   emitterFactory;
+    /// The corresponding effector factory
+    csRef<iParticleBuiltinEffectorFactory>  effectorFactory;
 
     /// Used to edit the general PS propertiees
     ModifiableEditor*     mainEditor;

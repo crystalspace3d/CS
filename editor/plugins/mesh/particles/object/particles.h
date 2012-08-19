@@ -222,7 +222,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       description->Push(new csBasicModifiableParameter("Individual size", "", CSVAR_BOOL, id_individualSize));
       description->Push(new csBasicModifiableParameter("Common direction", "", CSVAR_VECTOR3, id_commonDirection));
       description->Push(new csBasicModifiableParameter("Particle size", "", CSVAR_VECTOR2, id_particleSize));
-      PUSH_PARAM(CSVAR_ARRAY, emitters, "Emitter list", "A list of the system's current emitters.");
+
       return description;
     }
 

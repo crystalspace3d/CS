@@ -40,7 +40,7 @@
   description->Push(new csBasicModifiableParameter(name, desc, type, id_##varName))   \
 
 /**
- * 
+ * Similar to PUSH_PARAM, only also allows a constraint to be set for that parameter's value.
  */
 #define PUSH_PARAM_CONSTRAINT(type, varName, name, desc, constraint)                              \
   description->Push(new csBasicModifiableParameter(name, desc, type, id_##varName, constraint))   \
@@ -52,12 +52,14 @@
 #define BROADCAST_SET_EVENT() \
   csRef<iEventQueue> eq( csQueryRegistry<iEventQueue>( object_reg ) );  \
 csRef<iEventNameRegistry> nameReg( csQueryRegistry<iEventNameRegistry>( object_reg ) ); \
-csRef<iEvent> event( eq->CreateBroadcastEvent( nameReg->GetID("crystalspace.modifiable.param.set") ) );  \
+csRef<iEvent> event( eq->CreateBroadcastEvent( \
+          nameReg->GetID("crystalspace.modifiable.param.set") ) \
+        );  \
 eq->GetEventOutlet()->Broadcast(event->GetName());  \
 
 /**
  * Implementation of some of the most common iModifiableParameter usage. 
- * Currently part of the particle editor space test code.
+ * Stores the parameter's name, description, type, ID and an optional constraint.
  */
 class csBasicModifiableParameter : public scfImplementation1<csBasicModifiableParameter, iModifiableParameter> 
 {
@@ -146,6 +148,10 @@ public:
     return nullptr;
   }
 
+  /**
+   * \see GetParameter for more info regarding the manipulation of the parameter's
+   * value.
+   */
   const iModifiableParameter* GetParameterByIndex(size_t index) const 
   {
     return parameters[index];
@@ -441,7 +447,7 @@ public:
     : scfImplementation1(this)
   {
     // Should match anything that's got a special delimiter in it
-    matcher = new csRegExpMatcher("[^[:alnum:]\\-_ ,~!@#%{}$]");
+    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%{}$-]");
   }
 
   virtual ~csConstraintVfsFile() 
@@ -477,7 +483,7 @@ public:
     : scfImplementation1(this)
   {
     // Just like the file matcher, only allows colons and forward slashes
-    matcher = new csRegExpMatcher("[^[:alnum:]\\-_ ,~!@#%{}$/]");
+    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%{}$/-]");
   }
 
   virtual ~csConstraintVfsDir() 
@@ -512,7 +518,7 @@ public:
     : scfImplementation1(this)
   {
     // Just like the dir regex
-    matcher = new csRegExpMatcher("[^[:alnum:]\\-_ ,~!@#%{}$/]");
+    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%{}$/-]");
   }
 
   virtual ~csConstraintVfsPath() 
@@ -528,7 +534,7 @@ public:
   bool Validate(const csVariant* variant) const
   {
     CS_ASSERT(variant->GetType() == CSVAR_STRING);
-    return matcher->Match(variant->GetString()) == csrxNoError;
+    return matcher->Match(variant->GetString()) == csrxNoMatch;
   }
 
 private:
@@ -578,7 +584,7 @@ public:
 
 private:
   csRegExpMatcher* matcher;
-  long minLength, maxLength;
+  unsigned long minLength, maxLength;
 };
 
 /**

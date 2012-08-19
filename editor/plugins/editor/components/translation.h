@@ -21,12 +21,15 @@
 
 #include "ivaria/translator.h"
 #include "ieditor/editor.h"
-// #include "csutil/scf_implementation.h"
 
 using namespace CS::EditorApp;
 
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
+  /**
+   * Adapter for the translator plugin that allows it to be loaded
+   * and used as a csEditor component.
+   */
   class EditorTranslation
     : public scfImplementation1<EditorTranslation, iEditorComponent>
   {
@@ -44,6 +47,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     iObjectRegistry* object_reg;
     iEditor* editor;
     csRef<iTranslator> translator;
+
+    static const char* languageDir;
+    static const char* language;
   };
 }
 CS_PLUGIN_NAMESPACE_END(CSEditor)

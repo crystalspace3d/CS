@@ -74,6 +74,10 @@ public:
   virtual iModifiable* GetModifiable    () const;
   /// Gets called by the space owning this component
   virtual void OnSize                   (wxSizeEvent& event);
+  /// Sets the property grid's message
+  void SetMessage                       (const wxString& title, const wxString& message);
+  // Clears all the data from the editor
+  void Clear                            ();
     
   DECLARE_EVENT_TABLE();
 
@@ -102,8 +106,6 @@ private:
   iModifiable*              activeModifiable;
   csString                  activeModifiableName;
 
-  // Needed for the property grid to display right
-  // wxPropertyGridManager*  m_pPropGridManager;
   wxPropertyGridPage*       page;
   wxPropertyGridManager*    pgMan;
 

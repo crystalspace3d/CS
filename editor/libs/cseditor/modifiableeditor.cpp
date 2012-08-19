@@ -360,10 +360,6 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
         wxPGEditor* rHandle = wxPropertyGrid::RegisterEditorClass(new wxPGSliderEditor(min, max), wxT("SliderEditor"));
         fp->SetEditor(rHandle);
         page->AppendIn(categoryID, fp);
-
-        // Hack to allow the property's controls to get created; doesn't grab focus,
-        // doesn't hurt anyone
-        pgMan->GetGrid()->SelectProperty(fp, false);
       }
       break;
 
@@ -515,6 +511,17 @@ void ModifiableEditor::OnPropertyGridChanged (wxPropertyGridEvent& event)
   wxPGProperty* property = event.GetProperty ();
   OnGetNewValue (property);
 }
+
+void ModifiableEditor::SetMessage( const wxString& title, const wxString& message )
+{
+  pgMan->SetDescription(title, message);
+}
+
+void ModifiableEditor::Clear()
+{
+  pgMan->Clear();
+}
+
 
 //_---------------------------------
 WX_PG_IMPLEMENT_VARIANT_DATA (wxVector3fVariantData, wxVector3f)

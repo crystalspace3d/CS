@@ -15,11 +15,12 @@ wxPGWindowList wxPGSliderEditor::CreateControls( wxPropertyGrid*  propgrid,
   else if ( v_d > 1 )
     v_d = 1;
 
-  wxSlider *ctrl = new wxSlider();
-
+  wxSlider *ctrl = new wxSlider;
+  /*
 #ifdef __WXMSW__
   ctrl->Hide();
 #endif
+  //*/
 
   ctrl->Create ( propgrid->GetPanel(),
                  wxPG_SUBID2,
@@ -93,15 +94,12 @@ void wxPGSliderEditor::SetValueToUnspecified ( wxPGProperty* property, wxWindow*
   }
 }
 
-/*
-void wxPGSliderEditor::DrawValue ( wxDC&           WXUNUSED(dc),
-                                   const wxRect&   WXUNUSED(rect),
+/**
+void wxPGSliderEditor::DrawValue ( wxDC&           dc,
+                                   const wxRect&   rect,
                                    wxPGProperty*   property,
-                                   const wxString& WXUNUSED(text) ) const
+                                   const wxString& text ) const
 {
-  if( ! property->IsVisible())
-    return;
 
-  if( ! ctrl->IsShown())
-    ctrl->Show();
-}//*/
+}
+//*/

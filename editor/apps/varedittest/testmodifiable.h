@@ -42,12 +42,15 @@ private:
   csColor             color;
   scfString           name;
   scfString           job;
-  csArray<float>  floatArray;
+  scfString           vfsFile;
+  scfString           vfsDir;
+  scfString           vfsPath;
+  csArray<float>      floatArray;
   iObjectRegistry*    object_reg;
 
   //-- iModifiable
   csStringID id_testModifiable;
-  csStringID id_name, id_job, id_floatArray, id_position, id_color, id_itemCount, id_awesome, id_floatThingy;
+  csStringID id_name, id_job, id_floatArray, id_position, id_color, id_itemCount, id_awesome, id_floatThingy, id_vfsFile, id_vfsDir, id_vfsPath;
 
 };
 

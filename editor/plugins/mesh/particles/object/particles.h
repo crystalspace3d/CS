@@ -169,7 +169,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     csPtr<iModifiableDescription> GetDescription () const {
       csBasicModifiableDescription* description = new csBasicModifiableDescription();
       csBasicModifiableParameter* param = new csBasicModifiableParameter("Particle render orientation", "", CSVAR_LONG, id_particleOrientation);
-      csEnumConstraint* constraint = new csEnumConstraint;
+      csConstraintEnum* constraint = new csConstraintEnum;
       constraint->PushValue(CS_PARTICLE_CAMERAFACE, 
         "Billboard always facing the camera");
       constraint->PushValue(CS_PARTICLE_CAMERAFACE_APPROX,
@@ -188,7 +188,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       description->Push(param);
 
       param = new csBasicModifiableParameter("Rotation mode", "", CSVAR_LONG, id_rotationMode);
-      constraint = new csEnumConstraint;
+      constraint = new csConstraintEnum;
       constraint->PushValue(CS_PARTICLE_ROTATE_NONE, "No rotation");
       constraint->PushValue(CS_PARTICLE_ROTATE_TEXCOORD, "Rotate texture coordinates");
       constraint->PushValue(CS_PARTICLE_ROTATE_VERTICES, "Rotate particle vertices in the billboard plane");
@@ -196,7 +196,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       description->Push(param);
 
       param = new csBasicModifiableParameter("Sort mode", "", CSVAR_LONG, id_sortMode);
-      constraint = new csEnumConstraint;
+      constraint = new csConstraintEnum;
       constraint->PushValue(CS_PARTICLE_SORT_NONE, "No sorting");
       constraint->PushValue(CS_PARTICLE_SORT_DISTANCE, "Sort by distance to the camera");
       constraint->PushValue(CS_PARTICLE_SORT_DOT, "Sort by the dot product of the normalized camera vector and the particle direction");
@@ -204,7 +204,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       description->Push(param);
 
       param = new csBasicModifiableParameter("Integration mode", "", CSVAR_LONG, id_integrationMode);
-      constraint = new csEnumConstraint;
+      constraint = new csConstraintEnum;
       constraint->PushValue(CS_PARTICLE_INTEGRATE_NONE, "No integration");
       constraint->PushValue(CS_PARTICLE_INTEGRATE_LINEAR, "Integrate linear velocity into linear position");
       constraint->PushValue(CS_PARTICLE_INTEGRATE_BOTH, "Integrate both linear and angular velocity into pose");
@@ -212,7 +212,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       description->Push(param);
 
       param = new csBasicModifiableParameter("Transformation mode", "", CSVAR_LONG, id_transformMode);
-      constraint = new csEnumConstraint;
+      constraint = new csConstraintEnum;
       constraint->PushValue(CS_PARTICLE_LOCAL_MODE, "Fully local mode - all positions and coordinates are relative to the particle system");
       constraint->PushValue(CS_PARTICLE_LOCAL_EMITTER, "Particle positions and effectors operate in world space, emitters in local mode");
       constraint->PushValue(CS_PARTICLE_WORLD_MODE, "All coordinates are in world space");

@@ -168,8 +168,9 @@ namespace lighter
           }
         }
       }
+    }
 
-      /*
+    /*
       lightIt = allPDLights.GetIterator();
       while (lightIt.HasNext())
       {
@@ -180,7 +181,6 @@ namespace lighter
           numPhotonsToEmit += getLightPhotonsNumber(light,sectorBBox)*1.5f;
         }
       }*/
-    }
 
     numPhotonsToEmit += allPortals.GetSize() * 1000;
 

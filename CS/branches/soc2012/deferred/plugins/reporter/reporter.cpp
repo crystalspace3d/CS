@@ -96,7 +96,7 @@ void csReporter::ActualReport (const csRefArray<iReporterListener>& listeners,
   for (i = 0 ; i < listeners.GetSize () ; i++)
   {
     iReporterListener* listener = listeners[i];
-    if (listener->Report (this, severity, msgId, buf))
+    if (listener->ReportWait (this, severity, msgId, buf)->WasSuccessful ())
     {
       add_msg = false;
       break;

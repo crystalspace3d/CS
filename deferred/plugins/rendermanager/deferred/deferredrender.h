@@ -149,6 +149,30 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       }
     }
 
+    // renders for visibility culling
+    void RenderVisibilityCulling()
+    {
+      // visculling only needs to be rendered once per sector.
+      csSet<iSector*> sectors;
+      for(size_t c = 0; c < contextStack.GetSize(); ++c)
+      {
+	ContextNodeType* ctx = contextStack[c];
+
+	// check whether this sector was already handled
+	if(!sectors.Contains(ctx->sector))
+	{
+	  // ensure it won't be handled again
+	  sectors.AddNoTest(ctx->sector);
+
+	  // set camera transform
+          graphics3D->SetWorldToCamera(ctx->cameraTransform.GetInverse());
+
+	  // render for visibility culling if required by culler
+	  ctx->sector->GetVisibilityCuller()->RenderViscull(rview, ctx->shadervars);
+	}
+      }
+    }
+
     void RenderContextStack()
     {
       // get number of contexts in this stack - we'll use this while rendering them
@@ -194,10 +218,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// we don't have a z-buffer, yet, use pass 1 modes
 	graphics3D->SetZMode(CS_ZBUF_MESH);
 
-	// @@@NOTE: should we do the viscull render here?
-	//          it's only used for shadow map creation
-	//          and cullers cannot handle multiple views
-        //          for the same sector, anyway
+	// Visibility Culling
+	RenderVisibilityCulling();
 
 	// render out all layers
 	for(size_t i = 0; i < layerCount; ++i)
@@ -311,27 +333,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	graphics3D->SetZMode(CS_ZBUF_MESH);
 
 	// Visibility Culling
-	{
-	  // visculling only needs to be rendered once per sector.
-	  csSet<iSector*> sectors;
-	  for(size_t c = 0; c < contextStack.GetSize(); ++c)
-	  {
-	    ContextNodeType* ctx = contextStack[c];
-
-	    // check whether this sector was already handled
-	    if(!sectors.Contains(ctx->sector))
-	    {
-	      // ensure it won't be handled again
-	      sectors.AddNoTest(ctx->sector);
-
-	      // set camera transform
-              graphics3D->SetWorldToCamera(ctx->cameraTransform.GetInverse());
-
-	      // render for visibility culling if required by culler
-	      ctx->sector->GetVisibilityCuller()->RenderViscull(rview, ctx->shadervars);
-	    }
-	  }
-	}
+	RenderVisibilityCulling();
 
 	// set tex scale for lookups.
 	lightRenderPersistent.scale->SetValue(context->texScale);

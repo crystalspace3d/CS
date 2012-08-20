@@ -205,10 +205,10 @@ public:
   void FindFiles (const char *suffix,
                   const char *mask,
                   FindFilesContext &context);
-  // Find a file and return the appropiate csFile object
-  iFile *Open (int mode,
-               const char *suffix,
-               const csVfsOptionList &options);
+  // Find a file and return the appropiate iFile object
+  csPtr<iFile> Open (int mode,
+                     const char *suffix,
+                     const csVfsOptionList &options);
   // Delete a file
   bool Delete (const char *suffix);
   // Does file exists?
@@ -368,10 +368,11 @@ bool VfsNode::MountFileSystem (const char **realPath,
     {
       // get filesystem
       iFileSystem *fs = fsList.Get (i);
-      if (!fs && *realPath)
+      if (!fs)
       {
         // invalid filesystem; continue to next element
-        ++realPath;
+        if (*realPath)
+          ++realPath;
         continue;
       }
       // get reliable path
@@ -391,7 +392,8 @@ bool VfsNode::MountFileSystem (const char **realPath,
       // flag to use for skipping
       bool skip = false;
       // check for existing entries first
-      for (size_t index = staticMounts; index < fileSystems.GetSize (); ++index)
+      for (size_t index = staticMounts;
+           index < fileSystems.GetSize (); ++index)
       {
         if (strcmp (realPaths.Get (index), rPath) == 0)
         {
@@ -424,6 +426,13 @@ bool VfsNode::MountFileSystem (const char **realPath,
     {
       // get filesystem
       iFileSystem *fs = fsList.Get (i);
+      // skip if filesystem invalid
+      if (!fs)
+      {
+        if (*realPath)
+          ++realPath;
+        continue;
+      }
       // get reliable path
       csString rPath;
       // if realPath points to valid string, use it and increment the pointer
@@ -481,7 +490,7 @@ bool VfsNode::UnmountFileSystem (const char *realPath)
     for (size_t i = staticMounts; i < realPaths.GetSize (); ++i)
     {
       const char *fsPath = realPaths.Get (i);
-      // TODO: fix potential issues
+      // @@@TODO: fix potential issues
       if (strcmp (fsPath, realPath) == 0)
       {
         // upgrade to write lock
@@ -532,7 +541,7 @@ bool VfsNode::UnmountFileSystem (const char **realPath)
       {
         // get path of existing entry for comparison
         const char *fsPath = realPaths.Get (i);
-        // TODO: fix potential issues
+        // @@@TODO: fix potential issues
         if (strcmp (fsPath, *realPath) == 0)
         {
           // upgrade to write lock
@@ -702,9 +711,9 @@ bool VfsNode::IsEmpty ()
   return fileSystems.IsEmpty () && children.IsEmpty ();
 }
 
-iFile* VfsNode::Open (int mode,
-                      const char *filename,
-                      const csVfsOptionList &options)
+csPtr<iFile> VfsNode::Open (int mode,
+                            const char *filename,
+                            const csVfsOptionList &options)
 {
   csRef<iFile> f;
 
@@ -717,7 +726,7 @@ iFile* VfsNode::Open (int mode,
     iFileSystem *fs = fileSystems.Get (i);
 
     f = fs->Open (filename, vfsPath, mode, options);
-    if (f->GetStatus () == VFS_STATUS_OK)
+    if (f.IsValid() && f->GetStatus () == VFS_STATUS_OK)
       break; // done
     else
     {
@@ -725,7 +734,7 @@ iFile* VfsNode::Open (int mode,
       f.Invalidate ();
     }
   }
-  return f;
+  return csPtr<iFile> (f);
 }
 
 csRef<iFileSystem> VfsNode::FindFile (const char *suffix, size_t rank)
@@ -874,7 +883,7 @@ void FindFilesContext::Insert (const char *path)
 
   // first push into the list
   list->Push (path);
-  // index of last inserted element
+  // get the index of last inserted item
   size_t index = list->GetSize () - 1;
   // note that inserted string is from scfStringArray, in order to make sure
   // we own the string
@@ -883,6 +892,10 @@ void FindFilesContext::Insert (const char *path)
 
 csPtr<iStringArray> FindFilesContext::GetResult ()
 {
+  // @@@@@@TODO: consider using binary tree
+  // sort before we return
+  list->Sort (true);
+
   iStringArray *result = list;
   // relinquish ownership
   list = nullptr;
@@ -1146,7 +1159,7 @@ bool csVFS::ReadConfig ()
 // Initialize static nodes
 void csVFS::InitStaticNodes ()
 {
-  // @@@TODO: implement static nodes
+  // @@@@@@TODO: implement static nodes
 }
 
 // Expand VFS variables
@@ -1296,7 +1309,6 @@ VfsNode *csVFS::CreateNodePath (const char *vfsPath) /* expanded vfs path */
     CS_ASSERT (pathEnd != path);
 
     // requested node does not exist; create one
-    // TODO: check for parameter definition
     node = new VfsNode (path, vfsPath, this, GetVerbosity ());
     if (prev)
     {
@@ -1309,7 +1321,7 @@ VfsNode *csVFS::CreateNodePath (const char *vfsPath) /* expanded vfs path */
       leaf = node;
 
     // insert into node table
-    nodeTable.Put (path, node);
+    nodeTable.Put (node->vfsPath, node);
 
     // move to the upper level
     --pathEnd;
@@ -1381,7 +1393,7 @@ csPtr<iFileSystem> csVFS::CreateArchiveFS (iFileSystem *parent,
     if (metadata.extensions.Find (extension) == csArrayItemNotFound)
       continue; // this handler does not handle given extension
 
-    // @@@TODO: Add header magic value checks if possible
+    // @@@@@@TODO: Add header magic value checks if possible
 
     // get archive handler
     csRef<iArchiveHandler> handler =
@@ -1514,8 +1526,6 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
   // was it successful?
   if (*protocol == '\0')
     strcpy (protocol, VFS_DEFAULT_PROTOCOL); // default protocol
-
-  // TODO: filesystem instantiation logic here
 
   // get list of filesystem classes for a particular protocol
   // to avoid threading issues, must work on a copy of original list
@@ -1845,8 +1855,6 @@ bool csVFS::Exists (const char *path)
   if (!path)
     return false;
 
-  // TODO: deal with concurrency issues
-
   VfsNode *node;
   const char *suffix;
   // expand path (i.e. normalize)
@@ -2007,10 +2015,10 @@ csPtr<iFile> csVFS::Open (const char *filename,
                           const csVfsOptionList &options)
 {
   if (!filename)
-    return 0;
+    return csPtr<iFile> (nullptr);
 
-  iFile *f = nullptr;
-  char *path = ExpandPathFast (filename, false); // expanded path
+  // get expanded path
+  ScopedFree<char> path = ExpandPathFast (filename, false);
 
   {
     const char *suffix;
@@ -2021,12 +2029,12 @@ csPtr<iFile> csVFS::Open (const char *filename,
     VfsNode *node = GetNode (path, &suffix);
 
     if (node)
-      f = node->Open (mode, suffix, options);
+    {
+      return node->Open (mode, suffix, options);
+    }
   }
 
-  cs_free (path);
-
-  return csPtr<iFile> (f);
+  return csPtr<iFile> (nullptr);
 }
 
 bool csVFS::Sync ()
@@ -2053,7 +2061,7 @@ bool csVFS::Sync ()
 // Move a file from old virtual path to new virtual path
 bool csVFS::MoveFile (const char *OldPath, const char *NewPath)
 {
-  // TODO: implement feature
+  // @@@TODO: implement feature
   // 1. if two virtual path is within same iFileSystem, use iFileSystem::Move()
   // 2. if copy between two different system can be done efficiently, (e.g.
   // between two native filesystem) take advantage of it (solution required)
@@ -2063,32 +2071,32 @@ bool csVFS::MoveFile (const char *OldPath, const char *NewPath)
   return false;
 }
 
-csPtr<iDataBuffer> csVFS::ReadFile (const char *FileName, bool nullterm)
+csPtr<iDataBuffer> csVFS::ReadFile (const char *filename, bool nullterm)
 {
-  csRef<iFile> F (Open (FileName, VFS_FILE_READ));
-  if (!F)
+  csRef<iFile> file (Open (filename, VFS_FILE_READ));
+  if (!file.IsValid ())
     return 0;
 
-  size_t Size = F->GetSize ();
-  csRef<iDataBuffer> data (F->GetAllData (nullterm));
-  if (data)
+  size_t size = file->GetSize ();
+  csRef<iDataBuffer> data (file->GetAllData (nullterm));
+  if (data.IsValid ())
   {
     return csPtr<iDataBuffer> (data);
   }
 
-  char *buff = (char *)cs_malloc (Size + 1);
+  char *buff = (char *)cs_malloc (size + 1);
   if (!buff)
     return 0;
 
-  // Make the file zero-terminated in the case we'll use it as an ASCIIZ string
-  buff [Size] = 0;
-  if (F->Read (buff, Size) != Size)
+  // Make the file zero-terminated in the case we'll use it as an ASCII string
+  buff [size] = 0;
+  if (file->Read (buff, size) != size)
   {
     cs_free (buff);
     return 0;
   }
 
-  return csPtr<iDataBuffer> (new CS::DataBuffer<> (buff, Size));
+  return csPtr<iDataBuffer> (new CS::DataBuffer<> (buff, size));
 }
 
 bool csVFS::WriteFile (const char *FileName, const char *Data, size_t Size)
@@ -2513,7 +2521,7 @@ bool csVFS::GetFileSize (const char *filename, size_t &oSize)
 
   node = GetNode (expandedPath, &suffix);
 
-  // TODO: implement error mechanism for large files
+  // @@@TODO: implement error mechanism for large files
   bool success = node ? node->GetFileSize (suffix, oSize) : false;
 
   cs_free (expandedPath);
@@ -2623,9 +2631,8 @@ csRef<iStringArray> csVFS::GetRealMountPaths (const char *vfsPath)
   // if node exists with empty suffix, this is a perfect match
   if (node && *suffix == '\0')
   {
-    // TODO: implement adding list of real paths here
-    //for (size_t i = 0; i< node->RPathV.GetSize (); i++)
-      //rmounts->Push (node->RPathV[i]);
+    for (size_t i = 0; i< node->realPaths.GetSize (); i++)
+      rmounts->Push (node->realPaths.Get (i));
   }
 
   // use csPtr trick; no need to call DecRef ()

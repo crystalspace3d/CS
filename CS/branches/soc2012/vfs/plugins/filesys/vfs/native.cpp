@@ -312,7 +312,7 @@ public:
 NativeFile::NativeFile (NativeFS *parent,
                         const char *virtualPath,
                         const char *realPath, int mode) :
-  scfImplementationType (this)
+  scfImplementationType (this), size (0)
 {
   // TODO: Add debug messages
 
@@ -376,7 +376,7 @@ NativeFile::NativeFile (NativeFS *parent,
   if (!handle)
   {
     // Somehow failed to open file
-    // TODO: error handling code
+    SetLastError (VFS_STATUS_FILENOTFOUND);
   }
   else
   {
@@ -496,11 +496,9 @@ size_t NativeFile::Read (char *data, size_t dataSize)
 
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
 
-  if (!handle)
-  {
-    // TODO: double check for handling this case
-    return 0;
-  }
+  // handle must not be null
+  CS_ASSERT (handle);
+
   // try reading...
   size_t bytesRead = fread (data, 1, dataSize, handle);
   if (bytesRead < dataSize)
@@ -523,11 +521,9 @@ size_t NativeFile::Write (const char *data, size_t dataSize)
 
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
 
-  if (!handle)
-  {
-    // TODO: double check for handling this case
-    return 0;
-  }
+  // handle must not be null
+  CS_ASSERT (handle);
+
   // try writing
   size_t bytesWritten = fwrite (data, 1, dataSize, handle);
   if (bytesWritten < dataSize)

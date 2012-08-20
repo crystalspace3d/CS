@@ -80,11 +80,7 @@ csArchive::csArchive (const char *filename)
   comment_length = 0;
   csArchive::filename = CS::StrDup (filename);
 
-  file = OpenBaseFile (VFS_FILE_READ);
-  if (file->GetStatus() != VFS_STATUS_OK)	/* Create new archive file */
-    file = OpenBaseFile (VFS_FILE_WRITE);
-  else
-    ReadDirectory ();
+  Initialize ();
 }
 
 csArchive::~csArchive ()
@@ -99,6 +95,15 @@ csArchive::~csArchive ()
     ArchiveEntry* e = lazy[i];
     delete e;
   }
+}
+
+void csArchive::Initialize ()
+{
+  file = OpenBaseFile (VFS_FILE_READ);
+  if (file->GetStatus() != VFS_STATUS_OK)	/* Create new archive file */
+    file = OpenBaseFile (VFS_FILE_WRITE);
+  else
+    ReadDirectory ();
 }
 
 csPtr<iFile> csArchive::OpenBaseFile (int mode)

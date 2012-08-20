@@ -145,7 +145,7 @@ class NativeFS : public scfImplementation1<NativeFS, iFileSystem>
   friend class NativeFSFactory;
 
   // Unexpanded, real-world mountpoint of this instance
-  char *mountRoot;
+  csString mountRoot;
   // Real-world mountpoint of this instance
   char *mountRootExpanded;
   // Last error status
@@ -200,6 +200,14 @@ public:
   virtual int GetStatus ();
   // Change root directory
   virtual bool ChRoot (const char *newRoot, bool mustExist = false);
+
+private:
+  // Given a full native path, see whether directory is file
+  bool NativeIsDir (const char *fullPath);
+  // Given a full native path, see whether file exists
+  bool NativeFileExists (const char *fullPath);
+  // Test whether root path is valid, and returns VFS_STATUS_XXX code
+  int TestRootValidity (const char *suffix = "");
 };
 
 // Factory interface for NativeFS
@@ -694,29 +702,64 @@ csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
      separator (e.g. slash, backslash) before null-terminator
  */
 NativeFS::NativeFS (const char *realPath) :
-  scfImplementationType (this)
+  scfImplementationType (this),
+  mountRoot (realPath)
 {
-  // Store mount root (real path) of this instance
-  size_t mountRootLen = strlen (realPath) + 1; // +1 for null-terminator
-  mountRoot = (char *)cs_malloc (mountRootLen);
-  memcpy (mountRoot, realPath, mountRootLen);
+  char lastChar = mountRoot[mountRoot.Length () - 1];
+  if (lastChar != CS_PATH_SEPARATOR && lastChar != VFS_PATH_SEPARATOR)
+    mountRoot << CS_PATH_SEPARATOR; // append trailing slash
+
   // platform-expand mount root
   mountRootExpanded = (char *)cs_malloc (CS_MAXPATHLEN + 1);
   // @@@FIXME: we just assume the length; this is due to bad API design...
   csExpandPlatformFilename (mountRoot, mountRootExpanded);
 
-  // @@@TODO: test validity of given path
-
-  // Set last error to VFS_STATUS_OK
-  lastError = VFS_STATUS_OK;
+  // test whether root is valid
+  lastError = TestRootValidity ();
 }
 
 // NativeFS destructor
 NativeFS::~NativeFS ()
 {
   // clean up resources
-  cs_free (mountRoot);
   cs_free (mountRootExpanded);
+}
+
+// Test whether root path is valid
+int NativeFS::TestRootValidity (const char *suffix)
+{
+  static const char ANY_PATH_SEPARATOR [] =
+    { CS_PATH_SEPARATOR, VFS_PATH_SEPARATOR, 0};
+
+  // all path components are supposed to be directories
+  int result = VFS_STATUS_OK;
+  csString partial (mountRootExpanded);
+  csVfsPathHelper::AppendPath (partial, suffix);
+  while (!partial.IsEmpty ())
+  {
+    // once we hit directory, no need to continue anymore
+    if (NativeIsDir (partial))
+      break;
+    else if (NativeFileExists (partial))
+    {
+      // file exists, but not directory
+      result = VFS_STATUS_DIRISFILE;
+      break;
+    }
+
+    // neither the case; see parent directory
+    // at this point, operation cannot succeed anyway
+    // set to VFS_STATUS_FILENOTFOUND as of now
+    result = VFS_STATUS_FILENOTFOUND;
+    // find and remove path separator
+    size_t pos = partial.FindLast (ANY_PATH_SEPARATOR);
+    if (pos == csArrayItemNotFound)
+    {
+      pos = 0;
+    }
+    partial.Truncate (pos);
+  }
+  return result;
 }
 
 /* Convert virtual path to real path
@@ -927,14 +970,17 @@ bool NativeFS::GetSize (const char *filename, uint64_t &oSize)
   return true;
 }
 
+// given a full native path, see whether file exists
+bool NativeFS::NativeFileExists (const char *fullPath)
+{
+  // use access () with F_OK to test file existence
+  return (access (fullPath, F_OK) == 0);
+}
+
 // Determines whether a file exists
 bool NativeFS::Exists (const char *filename)
 {
-  // find corresponding real path
-  csString path (ToRealPath (filename));
-
-  // use access () with F_OK to test file existence
-  return (access (path, F_OK) == 0);
+  return NativeFileExists (ToRealPath (filename));
 }
 
 bool NativeFS::Delete (const char *filename)
@@ -980,21 +1026,25 @@ bool NativeFS::Delete (const char *filename)
   return true;
 }
 
-// Query whether a given path is directory
-bool NativeFS::IsDir (const char *path)
+// given a full native path, see whether directory is file
+bool NativeFS::NativeIsDir (const char *fullPath)
 {
-  // first transform to native path
-  csString realPath (ToRealPath (path));
-
   struct stat info;
   // query information with stat
-  if (CS::Platform::Stat (realPath, &info) == 0)
+  if (CS::Platform::Stat (fullPath, &info) == 0)
   {
     // return true if directory bit is set
     if (info.st_mode & _S_IFDIR)
       return true;
   }
   return false;
+}
+
+// Query whether a given path is directory
+bool NativeFS::IsDir (const char *path)
+{
+  // first transform to native path
+  return NativeIsDir (ToRealPath (path));
 }
 
 // retrieve directory listing
@@ -1064,12 +1114,8 @@ bool NativeFS::ChRoot (const char *newRoot, bool mustExist/*= false*/)
   // -or- whether path exists and is directory
   if (!mustExist || IsDir (newRoot))
   {
-    csString newMountRoot = csVfsPathHelper::ComposePath (mountRoot, newRoot);
-    // delete old buffer
-    cs_free (mountRoot);
-    // set new root
-    mountRoot = (char *)cs_malloc (newMountRoot.Length () + 1);
-    strcpy (mountRoot, newMountRoot);
+    // update mount root
+    csVfsPathHelper::AppendPath (mountRoot, newRoot);
     // expand new path
     csExpandPlatformFilename (mountRoot, mountRootExpanded);
     return true;
@@ -1081,9 +1127,8 @@ bool NativeFS::ChRoot (const char *newRoot, bool mustExist/*= false*/)
   }
   else
   {
-    // given path doesn't exist at all.
-    // @@@FIXME: test entire directory root and use DIRISFILE if appropriate
-    SetLastError (VFS_STATUS_FILENOTFOUND);
+    // we need more information
+    SetLastError (TestRootValidity (newRoot));
   }
 
   return false;

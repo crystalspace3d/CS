@@ -73,6 +73,10 @@ public:
   virtual bool Flush ();
   // Get archive identifier
   void GetIdentifier (csString &oIdentifier);
+  // Get size of given file
+  bool GetSize (const char *path, uint64_t &oSize);
+  // Determine whether a file exists
+  bool Exists (const char *path);
   // Flush cache
   void FlushCache ();
   // Purge entire cache
@@ -142,6 +146,7 @@ public:
   virtual bool Flush ();
 
   /* Local public helpers */
+  void GetFullPath (csString &dest, const char *suffix);
   size_t ReadFile (const char *path, size_t offset, 
                    char *data, size_t dataSize);
   size_t WriteFile (const char *path, size_t offset,

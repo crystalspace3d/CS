@@ -155,6 +155,41 @@ bool ZipArchive::Flush ()
   return result;
 }
 
+// Get size of file
+bool ZipArchive::GetSize (const char *path, uint64_t &oSize)
+{
+  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  // look first in cache
+  size_t pos = cacheLookup.Get (path, csArrayItemNotFound);
+  if (pos != csArrayItemNotFound)
+  {
+    oSize = cacheSize[pos];
+    return true;
+  }
+
+  // not in cache... try from archive itself
+  void *entry = csArchive::FindName (path);
+  if (entry)
+  {
+    oSize = csArchive::GetFileSize (entry);
+    return true;
+  }
+
+  return false;
+}
+
+bool ZipArchive::Exists (const char *path)
+{
+  CS::Threading::RecursiveMutexScopedLock lock (mutex);
+  // look first in cache
+  size_t pos = cacheLookup.Get (path, csArrayItemNotFound);
+  if (pos != csArrayItemNotFound)
+    return true;
+
+  // not in cache... try from archive itself
+  return csArchive::FindName (path) != 0;
+}
+
 void ZipArchive::FlushCache ()
 {
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
@@ -506,8 +541,8 @@ bool csZipFS::SetPermission (const char *filename,
 
 void *csZipFS::GetEntry (const char *vfsPath)
 {
-  csString path (root);
-  csVfsPathHelper::AppendPath (path, vfsPath);
+  csString path;
+  GetFullPath (path, vfsPath);
   CS::Threading::RecursiveMutexScopedLock lock (archive->mutex);
   return archive->FindName (path);
 }
@@ -543,21 +578,18 @@ bool csZipFS::SetTime (const char *filename, const csFileTime &iTime)
 bool csZipFS::GetSize (const char *filename, uint64_t &oSize)
 {
   CS::Threading::RecursiveMutexScopedLock lock (archive->mutex);
-  // try finding given name from archive
-  void *handle = GetEntry (filename);
-  if (!handle)
-    return false;
+  // get full path
+  csString path;
+  GetFullPath (path, filename);
 
-  // get file size
-  oSize = archive->GetFileSize (handle);
-
-  return true;
+  return archive->GetSize (path, oSize);
 }
 
 bool csZipFS::Exists (const char *filename)
 {
-  // true if entry handle is nonzero
-  return GetEntry (filename) != 0;
+  csString path;
+  GetFullPath (path, filename);
+  return archive->Exists (path);
 }
 
 bool csZipFS::Delete (const char *filename)
@@ -656,6 +688,12 @@ bool csZipFS::ChRoot (const char *newRoot, bool mustExist/*= false*/)
   csVfsPathHelper::AppendPath (root, newRoot);
 
   return true;
+}
+
+void csZipFS::GetFullPath (csString &dest, const char *suffix)
+{
+  dest = root;
+  csVfsPathHelper::AppendPath (dest, suffix);
 }
 
 size_t csZipFS::ReadFile (const char *path, size_t offset, 

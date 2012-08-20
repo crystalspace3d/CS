@@ -175,7 +175,7 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
   else
   {
     // Give it mass (makes it dynamic)
-    if (physObj->GetCollider()->GetColliderType() == COLLIDER_CONCAVE_MESH && obj->GetAttachedMovable() && convexDecomposer)
+    if (physObj->GetCollider()->GetColliderType() == COLLIDER_CONCAVE_MESH && obj->GetAttachedSceneNode() && convexDecomposer)
     {
       // First decompose it
       csPrintf("Performing convex decomposition on object: \"%s\"...\n", obj->QueryObject()->GetName());
@@ -183,7 +183,7 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
       csRef<iColliderCompound> collider = Collision2Helper::PerformConvexDecomposition(
         physicalSystem,
         convexDecomposer,
-        physicalSystem->FindColdetTriangleMesh(obj->GetAttachedMovable()->GetSceneNode ()->QueryMesh ())
+        physicalSystem->FindColdetTriangleMesh(obj->GetAttachedSceneNode ()->QueryMesh ())
         );
       obj->SetCollider(collider);
 

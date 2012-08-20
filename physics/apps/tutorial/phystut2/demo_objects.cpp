@@ -36,7 +36,8 @@ csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csSt
   csRef<iMeshWrapper> mesh = MeshFactory->CreateMeshWrapper();
   mesh->QueryObject()->SetName(name.GetData());
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
-  body->SetAttachedMovable(mesh->GetMovable());
+
+  body->SetAttachedSceneNode(mesh->QuerySceneNode());
 
   // Add to world
   physDemo.GetCurrentSector()->AddCollisionObject(body);
@@ -131,7 +132,7 @@ void PhysDemo::CreateGhostCylinder()
 
   // look into: Find fitting location in an arbitrary level
   ghostObject->SetTransform (trans);
-  ghostObject->SetAttachedMovable (mesh->GetMovable());
+  ghostObject->SetAttachedSceneNode(mesh->QuerySceneNode());
 
   // It won't work for ghost and actor.
   ghostObject->QueryObject()->SetName("ghostObject");
@@ -200,7 +201,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   factory->SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
   
-  rb->SetAttachedMovable (mesh->GetMovable());
+  rb->SetAttachedSceneNode(mesh->QuerySceneNode());
   csOrthoTransform trans = tc;
   trans.SetOrigin (pos);
   rb->SetTransform (trans);
@@ -311,7 +312,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 1));
   rb->SetTransform (trans);
-  rb->SetAttachedMovable (mesh->GetMovable());
+  rb->SetAttachedSceneNode(mesh->QuerySceneNode());
 
   if (setVelocity)
   {
@@ -369,7 +370,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   rb->SetTransform (trans);
 
   // attach the mesh
-  rb->SetAttachedMovable (mesh->GetMovable());
+  rb->SetAttachedSceneNode(mesh->QuerySceneNode());
 
   // Add to world
   GetCurrentSector()->AddCollisionObject (rb);
@@ -433,7 +434,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   // set transform
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 2));
-  co->SetAttachedMovable (star->GetMovable());
+  co->SetAttachedSceneNode (star->QuerySceneNode());
   co->SetTransform (trans);
   
   GetCurrentSector()->AddCollisionObject (co);
@@ -487,7 +488,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   rb->SetTransform (trans);
   
   // Attach mesh
-  rb->SetAttachedMovable (mesh->GetMovable());
+  rb->SetAttachedSceneNode(mesh->QuerySceneNode());
   
   if (setVelocity)
   {
@@ -536,7 +537,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin() + tc.GetT2O() * csVector3 (0, 0, 2));
   rb->SetTransform (trans);
-  rb->SetAttachedMovable (mesh->GetMovable());
+  rb->SetAttachedSceneNode(mesh->QuerySceneNode());
 
   // Add to world
   GetCurrentSector()->AddCollisionObject (rb);
@@ -1146,7 +1147,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
     (GetObjectRegistry(), "cloth", csColor4 (1.0f, 0.0f, 0.0f, 1.0f));
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
-  body->SetAttachedMovable (mesh->GetMovable());
+  body->SetAttachedSceneNode(mesh->QuerySceneNode());
 
   body->RebuildObject();
   GetCurrentSector()->AddCollisionObject (body);
@@ -1211,7 +1212,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   iMaterialWrapper* mat = engine->GetMaterialList()->FindByName ("objtexture");
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
-  body->SetAttachedMovable (mesh->GetMovable());
+  body->SetAttachedSceneNode(mesh->QuerySceneNode());
   body->RebuildObject();
   
   csOrthoTransform trans;

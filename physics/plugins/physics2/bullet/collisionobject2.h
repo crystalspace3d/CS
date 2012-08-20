@@ -5,8 +5,11 @@
 #include "common2.h"
 #include "colliderprimitives.h"
 
+struct iSceneNode;
+
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
+class PortalTraversalData;
 
 //struct CS::Physics::iPhysicalBody;
 
@@ -31,7 +34,7 @@ protected:
   csRefArray<csBulletCollisionObject> contactObjects;
   csArray<CS::Physics::iJoint*> joints;
   CS::Collisions::CollisionGroup collGroup;
-  csWeakRef<iMovable> movable;      // must be a weak ref, because life-time does not coincide with owning mesh
+  csRef<iSceneNode> sceneNode;
   csWeakRef<iCamera> camera;
   csRef<CS::Collisions::iCollisionCallback> collCb;
 
@@ -39,8 +42,8 @@ protected:
 
   csBulletSector* sector;
   csBulletSystem* system;
-  csBulletCollisionObject* objectOrigin;
-  csBulletCollisionObject* objectCopy;
+
+  PortalTraversalData* portalData;
   
   btCollisionObject* btObject;
   
@@ -68,24 +71,10 @@ public:
 
   virtual CS::Collisions::CollisionObjectType GetObjectType () const = 0;
 
-  virtual void SetAttachedMovable (iMovable* newMovable) 
-  {
-    if (movable)
-    {
-      // remove old movable from sector
-      if (sector) sector->RemoveMovableFromSector(movable); 
-    }
-    this->movable = newMovable; 
-    if (newMovable) 
-    {
-      // add new movable to sector
-      newMovable->SetFullTransform(GetTransform()); 
-      newMovable->UpdateMove ();
-      if (sector) sector->AddMovableToSector(newMovable); 
-    }
-  }
+  virtual void SetAttachedSceneNode (iSceneNode* newSceneNode);
+  virtual iSceneNode* GetAttachedSceneNode () const { return sceneNode; }
 
-  virtual iMovable* GetAttachedMovable () { return movable; }
+  virtual iMovable* GetAttachedMovable () const;
 
   virtual void SetAttachedCamera (iCamera* camera) 
   { 
@@ -127,12 +116,6 @@ public:
   btCollisionObject* GetBulletCollisionPointer () {return btObject;}
   virtual bool RemoveBulletObject () = 0;
   virtual bool AddBulletObject () = 0;
-  void RemoveObjectCopy () 
-  {
-    csBulletSector* sec = objectCopy->sector;
-    sec->RemoveCollisionObject (objectCopy);
-    objectCopy = nullptr;
-  }
 
   bool TestOnGround();
 
@@ -142,9 +125,34 @@ public:
   virtual void SetMayBeDeactivated(bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
 
   /// Clone this object
+  virtual btCollisionObject* CreateBulletObject()
+  {
+    return nullptr;
+  }
+  
+  /// Clone this object
   virtual csPtr<CS::Collisions::iCollisionObject> CloneObject() 
   { 
     return csPtr<CS::Collisions::iCollisionObject>(nullptr); 
+  }
+  
+  /**
+   * Clone this object for use with portals.
+   * Might adjust some object properties necessary for an accurate portal simulation.
+   */
+  virtual csPtr<CS::Collisions::iCollisionObject> ClonePassivePortalObject() 
+  { 
+    return CloneObject();
+  }
+
+  /**
+   * Passive objects, such as portal clones, are not supposed to be tempered with
+   */
+  virtual bool IsPassive() const;
+
+  inline PortalTraversalData* GetPortalData() const
+  {
+    return portalData;
   }
 };
 }

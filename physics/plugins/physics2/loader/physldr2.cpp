@@ -349,7 +349,9 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
         {
           csRef<iMeshWrapper> m = ldr_context->FindMeshObject (child->GetContentsValue ());
           if (m)
-            object->SetAttachedMovable (m->GetMovable ());
+          {
+            object->SetAttachedSceneNode (m->QuerySceneNode());
+          }
           else
           {
             synldr->ReportError ("crystalspace.dynamics.loader",

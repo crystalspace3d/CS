@@ -70,12 +70,20 @@ public:
   virtual void SetDensity (float density) = 0;
 
   virtual void SetLinearVelocity (const csVector3& vel) = 0;
-  virtual csVector3 GetLinearVelocity (size_t index = 0) const = 0;
+  virtual csVector3 GetLinearVelocity () const = 0;
 
   virtual void SetAngularVelocity (const csVector3& vel) = 0;
   virtual csVector3 GetAngularVelocity () const = 0;
 
+  
+  /// Whether this object is affected by gravity
+  virtual bool GetGravityEnabled() const { return true; }
+  /// Whether this object is affected by gravity
+  virtual void SetGravityEnabled(bool enabled) {}
+
   virtual void AddForce (const csVector3& force) = 0;
+  
+  virtual csPtr<CS::Collisions::iCollisionObject> ClonePassivePortalObject();
 };
 
 }

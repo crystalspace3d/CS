@@ -35,7 +35,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       SetMass(props->GetMass());
     }
+
     SetFriction(props->GetFriction());
+    SetGravityEnabled(props->GetGravityEnabled());
   }
 
 csPhysicalBody::csPhysicalBody (csBulletSystem* phySys)
@@ -68,6 +70,20 @@ bool csPhysicalBody::IsEnabled ()
 {
  CS_ASSERT (btObject);
  return btObject->isActive ();
+}
+
+
+csPtr<CS::Collisions::iCollisionObject> csPhysicalBody::ClonePassivePortalObject() 
+{ 
+  csRef<iPhysicalBody> obj = scfQueryInterface<iPhysicalBody>(csRef<iCollisionObject>(CloneObject()));
+
+  if (obj)
+  {
+    // disable gravity for cloned objects
+    obj->SetGravityEnabled(false);
+  }
+
+  return csPtr<iCollisionObject>(obj);
 }
 
 }

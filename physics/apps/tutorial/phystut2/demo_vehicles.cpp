@@ -203,13 +203,13 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   // Set meshes (FIXME)
   csRef<iMeshWrapper> chassisMesh = CreateBoxMesh(ChassisSizeBottom, "misty", "chassis");
   CS_ASSERT(chassisMesh);
-  vehicle->GetChassis()->SetAttachedMovable(chassisMesh->GetMovable());
+  vehicle->GetChassis()->SetAttachedSceneNode(chassisMesh->QuerySceneNode());
   for (size_t i = 0; i < vehicle->GetWheels().GetSize(); ++i)
   {
     csRef<iMeshWrapper> wheelMesh = CreateCylinderYMesh(WheelWidth, WheelRadius);
     CS_ASSERT(wheelMesh);
     iVehicleWheel* wheel = vehicle->GetWheels()[i];
-    wheel->SetMovable(wheelMesh->GetMovable());
+    wheel->SetSceneNode(wheelMesh->QuerySceneNode());
   }   
 
   // Must add to world, because else meshes will be deleted upon return

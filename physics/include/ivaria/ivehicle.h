@@ -59,10 +59,10 @@ namespace CS
     {
       SCF_INTERFACE (CS::Physics::iVehicleWheel, 1, 0, 0);
 
-      /// Movables can move
-      virtual iMovable* GetMovable() const = 0;
-      /// Movables can move
-      virtual void SetMovable(iMovable* m) = 0;
+      /// SceneNode that represents this wheel
+      virtual iSceneNode* GetSceneNode() const = 0;
+      /// SceneNode that represents this wheel
+      virtual void SetSceneNode(iSceneNode* node) = 0;
 
       /// Collider of the wheel
       virtual CS::Collisions::iCollider* GetCollider() const = 0;

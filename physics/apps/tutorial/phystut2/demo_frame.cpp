@@ -26,7 +26,7 @@ void PhysDemo::PrintHelp()
   commandLineHelper.AddCommandLineOption
     ("soft", "Enable the soft bodies", csVariant (true));
   commandLineHelper.AddCommandLineOption
-    ("mapfile", csString().Format ("The path to the map file to be loaded"), csVariant(""));
+    ("mapfile", csString().Format ("The path to the map file to be loaded (try: )"), csVariant(""));
   commandLineHelper.AddCommandLineOption
     ("convexdecompose", csString().Format ("Whether to perform convex decomposition on all render meshes"), csVariant(false));
 
@@ -34,7 +34,7 @@ void PhysDemo::PrintHelp()
   commandLineHelper.PrintApplicationHelp
     (GetObjectRegistry(), "phystut2",
     "phystut2 <OPTIONS>",
-    "Physics tutorial 2 for Crystal Space.");
+    "Physics tutorial 2 for Crystal Space. ");
 }
 
 void PhysDemo::Frame()

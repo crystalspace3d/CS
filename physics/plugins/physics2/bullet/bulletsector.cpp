@@ -192,7 +192,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
 
 #ifdef _DEBUG
-    printf("Adding object \"%s\" (0x%lx)\n", object->QueryObject()->GetName(), obj->btObject);
+    printf("Adding object \"%s\" (0x%lx) to sector: 0x%lx\n", object->QueryObject()->GetName(), obj->btObject, this);
 #endif
 
     switch (obj->GetObjectType ())
@@ -228,7 +228,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       break;
     }
 
-    AddMovableToSector (object->GetAttachedMovable());
+    AddSceneNodeToSector (object->GetAttachedSceneNode());
 
     // add all objects to the collisionObjects list
     collisionObjects.Push (obj);
@@ -244,7 +244,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (removed)
     {
       collisionObjects.Delete (collObject);
-      RemoveMovableFromSector (object->GetAttachedMovable());
+      RemoveSceneNodeFromSector (object->GetAttachedSceneNode());
 
       if (collObject->IsPhysicalObject())
       {
@@ -255,7 +255,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         }
         else
         {
-          softBodies.Delete(dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ()));
+          csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ());
+          softBodies.Delete(btBody);
+          RemoveUpdatable(btBody);
         }
       }
     }
@@ -317,14 +319,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     {
       if (portals[i]->portal == portal)
       {
-        for (size_t j = 0; j < portals[i]->objects.GetSize (); j++)
-        {
-          if (portals[i]->objects[j]->objectCopy)
-          {
-            portals[i]->targetSector->RemoveCollisionObject (portals[i]->objects[j]->objectCopy);
-          }
-        }
-        bulletWorld->removeCollisionObject (portals[i]->ghostPortal);
+        portals[i]->RemoveFromSector();
         portals.DeleteIndexFast (i);
         return;
       }
@@ -365,16 +360,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       for (size_t i = 0; i < collisionObjects.GetSize (); i++)
       {
         iCollisionObject* obj = collisionObjects[i];
-        if (obj->GetAttachedMovable())
-        {
-          iMeshWrapper* mesh = obj->GetAttachedMovable()->GetSceneNode ()->QueryMesh ();
-          iLight* light = obj->GetAttachedMovable()->GetSceneNode ()->QueryLight ();
-
-          if (mesh)
-            sector->GetMeshes ()->Add (mesh);
-          if (light)
-            sector->GetLights ()->Add (light);
-        }
+        AddSceneNodeToSector(obj->GetAttachedSceneNode());
       }
     }
     else
@@ -514,7 +500,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csArray<CS::Collisions::CollisionData>& collisions)
   {
 
-    if (!object)
+    if (!object || object->IsPassive())
       return false;
 
     size_t length = collisions.GetSize ();
@@ -563,33 +549,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       }
     }
 
-    if (collObject->objectCopy)
+    if (collObject->GetPortalData() && collObject->GetPortalData()->OtherObject)
     {
+      // Object is traversing a portal and thus has a clone that is in symbiosis with itself
+      csBulletCollisionObject* portalClone = collObject->GetPortalData()->OtherObject;
       csArray<CS::Collisions::CollisionData> copyData;
-      collObject->objectCopy->sector->CollisionTest (collObject->objectCopy, copyData);
+      portalClone->sector->CollisionTest (portalClone, copyData);
       for (size_t i = 0; i < copyData.GetSize (); i++)
       {
         CS::Collisions::CollisionData data;
-        if (copyData[i].objectA == collObject->objectCopy->QueryCollisionObject ())
+        if (copyData[i].objectA == portalClone->QueryCollisionObject ())
         {
           data.objectA = object;
           data.objectB = copyData[i].objectB;
-          csVector3 vec = collObject->objectCopy->GetTransform ().Other2This (copyData[i].positionWorldOnA);
+          csVector3 vec = portalClone->GetTransform ().Other2This (copyData[i].positionWorldOnA);
           data.positionWorldOnA = collObject->GetTransform ().This2Other (vec);
           // What's the position of the other object? Still in the other side of the portal?
           data.positionWorldOnB = copyData[i].positionWorldOnB;
-          vec = collObject->objectCopy->GetTransform ().Other2ThisRelative (copyData[i].normalWorldOnB);
+          vec = portalClone->GetTransform ().Other2ThisRelative (copyData[i].normalWorldOnB);
           data.normalWorldOnB = collObject->GetTransform ().This2OtherRelative (vec);
         }
         else
         {
           data.objectB = object;
           data.objectA = copyData[i].objectA;
-          csVector3 vec = collObject->objectCopy->GetTransform ().Other2This (copyData[i].positionWorldOnB);
+          csVector3 vec = portalClone->GetTransform ().Other2This (copyData[i].positionWorldOnB);
           data.positionWorldOnB = collObject->GetTransform ().This2Other (vec);
           // What's the position of the other object? Still in the other side of the portal?
           data.positionWorldOnA = copyData[i].positionWorldOnA;
-          vec = collObject->objectCopy->GetTransform ().Other2ThisRelative (copyData[i].normalWorldOnB);
+          vec = portalClone->GetTransform ().Other2ThisRelative (copyData[i].normalWorldOnB);
           data.normalWorldOnB = collObject->GetTransform ().This2OtherRelative (vec);
         }
         data.penetration = copyData[i].penetration;
@@ -726,11 +714,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::Step (float duration)
   {
-    // Update the soft body anchors
-    for (csWeakRefArray<csBulletSoftBody>::Iterator it = anchoredSoftBodies.GetIterator (); it.HasNext (); )
+    // Call updatable steps
+    for (size_t i = 0; i < updatables.GetSize (); i++)
     {
-      csBulletSoftBody* body = static_cast<csBulletSoftBody*> (it.Next ());
-      body->UpdateAnchorPositions ();
+      updatables[i]->PreStep(duration);
     }
 
     // Update traversing objects before simulation
@@ -747,7 +734,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     for (size_t i = 0; i < updatables.GetSize (); i++)
     {
-      updatables[i]->DoStep(duration);
+      updatables[i]->PostStep(duration);
     }
   }
 
@@ -798,21 +785,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   {
     csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*>(body));
     softBodies.Push (btBody);
+    AddUpdatable(btBody);
+
     btBody->sector = this;
     btBody->AddBulletObject ();
 
-    iMovable* movable = body->GetAttachedMovable ();
-    if (movable)
+    iSceneNode* sceneNode = body->GetAttachedSceneNode ();
+    if (sceneNode)
     {
-      iMeshWrapper* mesh = movable->GetSceneNode ()->QueryMesh ();
+      iMeshWrapper* mesh = sceneNode->QueryMesh ();
       if (!mesh)
         return;
+
       csRef<iGeneralMeshState> meshState =
         scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
 
       // Why is this happening here?
       csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
         scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
+
       if (!animationControl->GetSoftBody ())
         animationControl->SetSoftBody (body);
     }
@@ -1016,31 +1007,31 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletSector::AddMovableToSector (iMovable* movable)
+  void csBulletSector::AddSceneNodeToSector (iSceneNode* sceneNode)
   {
-    if (movable && sector)
+    if (sceneNode && sector)
     {
-      iMeshWrapper* mesh = movable->GetSceneNode ()->QueryMesh ();
-      iLight* light = movable->GetSceneNode ()->QueryLight ();
+      iMeshWrapper* mesh = sceneNode->QueryMesh ();
+      iLight* light = sceneNode->QueryLight ();
 
-      if (sector)
+      if (mesh && size_t(sector->GetMeshes()->Find(mesh)) == csArrayItemNotFound)
       {
-        if (mesh && size_t(sector->GetMeshes()->Find(mesh)) == csArrayItemNotFound)
-        {
-          sector->GetMeshes ()->Add (mesh);
-        }
-        if (light && size_t(sector->GetLights()->Find(light)) == csArrayItemNotFound)
-          sector->GetLights ()->Add (light);
+        sector->GetMeshes ()->Add (mesh);
+      }
+
+      if (light && size_t(sector->GetLights()->Find(light)) == csArrayItemNotFound)
+      {
+        sector->GetLights ()->Add (light);
       }
     }
   }
 
-  void csBulletSector::RemoveMovableFromSector (iMovable* movable)
+  void csBulletSector::RemoveSceneNodeFromSector (iSceneNode* sceneNode)
   {
-    if (movable && sector)
+    if (sceneNode && sector)
     {
-      iMeshWrapper* mesh = movable->GetSceneNode ()->QueryMesh ();
-      iLight* light = movable->GetSceneNode ()->QueryLight ();
+      iMeshWrapper* mesh = sceneNode->QueryMesh ();
+      iLight* light = sceneNode->QueryLight ();
       if (mesh)
         sector->GetMeshes ()->Remove (mesh);
       if (light)
@@ -1097,87 +1088,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletSector::SetInformationToCopy (csBulletCollisionObject* obj, 
-    csBulletCollisionObject* cpy, 
-    const csOrthoTransform& warpTrans)
-  {
-    if (!obj || !cpy )
-      return;
-
-    csOrthoTransform trans = obj->GetTransform () * warpTrans;
-
-    //btTransform btTrans = CSToBullet (trans, sys->getInternalScale ());
-
-    if (obj->IsPhysicalObject())
-    {
-      CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
-      if (pb->QueryRigidBody())
-      {
-        csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
-        csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
-
-        if (rb->GetState () == CS::Physics::STATE_DYNAMIC)
-        {
-          btQuaternion rotate;
-          CSToBullet (warpTrans.GetT2O()).getRotation (rotate);
-          btCopy->btBody->setLinearVelocity (quatRotate (rotate, rb->btBody->getLinearVelocity ()));
-          btCopy->btBody->setAngularVelocity (quatRotate (rotate, rb->btBody->getAngularVelocity ()));
-
-        }
-        btCopy->SetTransform (trans);
-      }
-      else
-      {
-        //TODO Soft Body
-      }
-    }
-    else 
-    {
-      cpy->SetTransform (trans);
-    }
-  }
-
-  void csBulletSector::GetInformationFromCopy (csBulletCollisionObject* obj, 
-    csBulletCollisionObject* cpy)
-  {
-    // TODO Warp the velocity.
-    if (obj->IsPhysicalObject())
-    {
-      CS::Physics::iPhysicalBody* pb = obj->QueryPhysicalBody ();
-      if (pb->QueryRigidBody())
-      {
-        csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
-        csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
-        if (rb->GetState () == CS::Physics::STATE_DYNAMIC)
-        {
-          btQuaternion qua = cpy->portalWarp;
-
-          rb->btBody->internalGetDeltaLinearVelocity () = quatRotate (qua, btCopy->btBody->internalGetDeltaLinearVelocity ());
-          rb->btBody->internalGetDeltaAngularVelocity () = quatRotate (qua, btCopy->btBody->internalGetDeltaAngularVelocity ());
-          rb->btBody->internalGetPushVelocity ()= quatRotate (qua, btCopy->btBody->internalGetPushVelocity ());
-          rb->btBody->internalGetTurnVelocity ()= quatRotate (qua, btCopy->btBody->internalGetTurnVelocity ());
-          rb->btBody->internalWritebackVelocity ();
-        }
-        else if (rb->GetState () == CS::Physics::STATE_KINEMATIC)
-        {
-          //Nothing to do?
-        }
-      }
-      else
-      {
-        //TODO Soft Body
-      }
-    }
-    else
-    {
-      //btPairCachingGhostObject* ghostCopy = btPairCachingGhostObject::upcast (cpy);
-      //btPairCachingGhostObject* ghostObject = btPairCachingGhostObject::upcast (obj->btObject);
-
-      // Need to think about the implementation of actor.
-    }
-  }
-  
-
   /**
    * Will cause the step function to be called on this updatable every step
    */
@@ -1193,6 +1103,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
     if (wrapper && wrapper->GetBulletAction())
     {
+      // It was an internal action that also defines a bullet action
       bulletWorld->addAction(wrapper->GetBulletAction());
     }
 

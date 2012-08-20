@@ -7,6 +7,8 @@
 #include "BulletDynamics/Vehicle/btRaycastVehicle.h"
 #include "BulletDynamics/Dynamics/btActionInterface.h"
 
+struct iSceneNode;
+
 /**
  * Vehicle TODO:
  * - Add sockets for seats to make sure that passenger transforms are relative to vehicle
@@ -33,7 +35,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     friend class BulletVehicleWheelFactory;
 
     csBulletSystem* sys;
-    csRef<iMovable> movable;
+    csRef<iSceneNode> sceneNode;
     btWheelInfo& btWheel;
     bool isDriven, isAffectedByBrake;
 
@@ -41,10 +43,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     BulletVehicleWheel(csBulletSystem* sys, btWheelInfo& btWheel);
     virtual ~BulletVehicleWheel();
 
-    /// Movables can move
-    virtual iMovable* GetMovable() const { return movable; }
-    /// Movables can move
-    virtual void SetMovable(iMovable* m) { movable = m; }
+    /// SceneNode that represents this wheel
+    virtual iSceneNode* GetSceneNode() const { return sceneNode; }
+    /// SceneNode that represents this wheel
+    virtual void SetSceneNode(iSceneNode* m) { sceneNode = m; }
 
     /// Collider of the wheel
     virtual CS::Collisions::iCollider* GetCollider() const { return nullptr; }
@@ -337,7 +339,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     /// Current speed in km/h
     virtual csScalar GetSpeedKMH() const { return btVehicle->getCurrentSpeedKmHour(); }
 
-    virtual void DoStep(csScalar dt);
+    virtual void PreStep(csScalar dt) {}
+    virtual void PostStep(csScalar dt);
 
     /// Called when updatable is added to the given sector
     virtual void OnAdded(CS::Physics::iPhysicalSector* sector);

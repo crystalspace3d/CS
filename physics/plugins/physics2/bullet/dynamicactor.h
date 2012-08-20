@@ -130,6 +130,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Override SetTransform
     virtual void SetTransform(const csOrthoTransform& trans);
+    
+    /// Whether this object can be affected by gravity
+    virtual bool GetGravityEnabled() const { return csBulletRigidBody::GetGravityEnabled(); }
+    /// Whether this object can be affected by gravity
+    virtual void SetGravityEnabled(bool enabled) { csBulletRigidBody::SetGravityEnabled(enabled); }
+
 
 
     // Kinematic stuff

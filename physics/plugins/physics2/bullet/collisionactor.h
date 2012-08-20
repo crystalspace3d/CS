@@ -35,23 +35,12 @@ class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisio
   btKinematicCharacterController* controller;
   float airControlFactor;
   float walkSpeed;
+  bool gravityEnabled;
 
 public:
   void CreateCollisionActor(CS::Collisions::iCollisionActorFactory* props);
 
 public:
-  
-  bool DoesGravityApply() const { return GetGravity() != 0; }
-  
-  /// Whether the actor is not on ground and gravity applies
-  virtual bool IsFreeFalling() const
-  { 
-    // kinematic character controller does not reveal its linear velocity
-    return 
-      (!IsOnGround()) &&                // not touching the ground
-      DoesGravityApply();               // and gravity applies
-  }
-
   csBulletCollisionActor (csBulletSystem* sys);
   virtual ~csBulletCollisionActor ();
 
@@ -116,6 +105,22 @@ public:
 
   virtual float GetMaxSlope () const;
   virtual void SetMaxSlope (float slopeRadians);
+
+  /// Whether this object can be affected by gravity
+  virtual bool GetGravityEnabled() const { return gravityEnabled; }
+  /// Whether this object can be affected by gravity
+  virtual void SetGravityEnabled(bool enabled) { gravityEnabled = enabled; }
+
+  bool DoesGravityApply() const { return GetGravityEnabled() && GetGravity() != 0; }
+  
+  /// Whether the actor is not on ground and gravity applies
+  virtual bool IsFreeFalling() const
+  { 
+    // kinematic character controller does not reveal its linear velocity
+    return 
+      (!IsOnGround()) &&                // not touching the ground
+      DoesGravityApply();               // and gravity applies
+  }
 
   btPairCachingGhostObject* GetBulletGhostObject()
   {

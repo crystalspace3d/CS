@@ -15,4 +15,8 @@
       </class>
     </classes>
   </scf>
+  <filesystem>
+    <class>crystalspace.filesys.native</class>
+    <protocol>file</protocol>
+  </filesystem>
 </plugin>

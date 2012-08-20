@@ -51,6 +51,11 @@ static char const metainfo_cseditorcomponents[] =
 "        <implementation>SceneManager</implementation>"
 "        <description>Scene and camera management</description>"
 "      </class>"
+"      <class>"
+"        <name>crystalspace.editor.component.translation</name>"
+"        <implementation>EditorTranslation</implementation>"
+"        <description>Provides translations for various other editor components</description>"
+"      </class>"
 "    </classes>"
 "  </scf>"
 "</plugin>"
@@ -79,6 +84,10 @@ static char const metainfo_cseditorcomponents[] =
   #define SceneManager_FACTORY_REGISTER_DEFINED 
     SCF_DEFINE_FACTORY_FUNC_REGISTRATION(SceneManager) 
   #endif
+  #ifndef EditorTranslation_FACTORY_REGISTER_DEFINED 
+  #define EditorTranslation_FACTORY_REGISTER_DEFINED 
+    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(EditorTranslation) 
+  #endif
 
 class cseditorcomponents
 {
@@ -106,6 +115,10 @@ SCF_REGISTER_STATIC_LIBRARY(cseditorcomponents,metainfo_cseditorcomponents)
   #ifndef SceneManager_FACTORY_REGISTERED 
   #define SceneManager_FACTORY_REGISTERED 
     SceneManager_StaticInit SceneManager_static_init__; 
+  #endif
+  #ifndef EditorTranslation_FACTORY_REGISTERED 
+  #define EditorTranslation_FACTORY_REGISTERED 
+    EditorTranslation_StaticInit EditorTranslation_static_init__; 
   #endif
 public:
  cseditorcomponents();

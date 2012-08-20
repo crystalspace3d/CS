@@ -44,6 +44,9 @@ public:
   virtual void Save (iDocumentNode* node) const;
   virtual bool Load (iDocumentNode* node);
   
+  //-- iEventHandler
+  bool HandleEvent (iEvent &event);
+
 private:
   bool ReportError (const char* description, ...) const
   {
@@ -66,9 +69,6 @@ private:
     va_end (arg);
     return false;
   }
-
-  //-- iEventHandler
-  bool HandleEvent (iEvent &event);
 
 private:
   iObjectRegistry* object_reg;

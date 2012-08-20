@@ -573,10 +573,10 @@ public:
     CS_ASSERT(variant->GetType() == CSVAR_STRING);
     csString val = variant->GetString();
 
-    if(val.Length() < minLength || val.Length() > maxLength)
+    if(minLength >= 0 && (val.Length() < minLength || val.Length() > maxLength))
       return false;
 
-    if(matcher != nullptr && matcher->Match(val) == csrxNoMatch)
+    if((maxLength >= 0 && (matcher != nullptr && matcher->Match(val) == csrxNoMatch))
       return false;
 
     return true;
@@ -584,7 +584,7 @@ public:
 
 private:
   csRegExpMatcher* matcher;
-  unsigned long minLength, maxLength;
+  long minLength, maxLength;
 };
 
 /**

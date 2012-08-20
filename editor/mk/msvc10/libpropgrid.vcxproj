@@ -231,7 +231,7 @@
       <ProgramDataBaseFileName>..\..\out\release10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10\build\libpropgrid\</ObjectFileName>
@@ -265,7 +265,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -279,7 +279,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <ProgramDataBaseFileName>..\..\out\release10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10\build\libpropgrid\</ObjectFileName>
@@ -313,7 +313,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -326,7 +326,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -358,7 +358,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -371,7 +371,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -403,7 +403,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -416,7 +416,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -448,7 +448,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -461,7 +461,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -493,7 +493,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -506,7 +506,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -538,7 +538,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -551,7 +551,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -583,7 +583,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -596,7 +596,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -628,7 +628,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -641,7 +641,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\libpropgrid\Win32\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\libpropgrid\</ObjectFileName>
@@ -673,7 +673,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -687,7 +687,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10-x64\build\libpropgrid\</ObjectFileName>
@@ -721,7 +721,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -735,7 +735,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10-x64\build\libpropgrid\</ObjectFileName>
@@ -769,7 +769,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -782,7 +782,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -814,7 +814,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -827,7 +827,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -859,7 +859,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -872,7 +872,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -904,7 +904,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -917,7 +917,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -949,7 +949,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -962,7 +962,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -994,7 +994,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1007,7 +1007,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -1039,7 +1039,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1052,7 +1052,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -1084,7 +1084,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -1097,7 +1097,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libpropgrid\x64\propgrid.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libpropgrid\libpropgrid.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\libpropgrid\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\libpropgrid\</ObjectFileName>
@@ -1129,55 +1129,21 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\btgraphtest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\btgraphtest</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\advprops.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\editors.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\extras.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\manager.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\odcombo.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\propgrid.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\props.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wx\propgrid\xh_propgrid.cpp" />
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\advprops.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_advprops.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\editors.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_editors.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\extras.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_extras.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\manager.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_manager.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\odcombo.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_odcombo.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\propgrid.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_propgrid.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\props.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_props.cpp.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\xh_propgrid.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)apps_btgraphtest_wx_propgrid_xh_propgrid.cpp.obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\advprops.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\editors.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\extras.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\manager.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\odcombo.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\propgrid.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\props.cpp" />
+    <ClCompile Include="..\..\apps\btgraphtest\wx\propgrid\xh_propgrid.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\advprops.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\editors.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\extras.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\manager.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\odcombo.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\pg_dox_mainpage.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\propdev.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\propgrid.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\props.h" />
-    <ClInclude Include="..\..\apps\varedittest\wx\propgrid\xh_propgrid.h" />
     <ClInclude Include="..\..\apps\btgraphtest\wx\propgrid\advprops.h" />
     <ClInclude Include="..\..\apps\btgraphtest\wx\propgrid\editors.h" />
     <ClInclude Include="..\..\apps\btgraphtest\wx\propgrid\extras.h" />

@@ -243,7 +243,7 @@
       <ProgramDataBaseFileName>..\..\out\release10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10\build\appvaredittest\</ObjectFileName>
@@ -279,7 +279,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -296,7 +296,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <ProgramDataBaseFileName>..\..\out\release10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10\build\appvaredittest\</ObjectFileName>
@@ -332,7 +332,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -348,7 +348,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -382,7 +382,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -398,7 +398,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -432,7 +432,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -448,7 +448,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -482,7 +482,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -498,7 +498,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -532,7 +532,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -548,7 +548,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -582,7 +582,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -598,7 +598,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -632,7 +632,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -648,7 +648,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -682,7 +682,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -698,7 +698,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\debug10\build\appvaredittest\Win32\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10\build\appvaredittest\</ObjectFileName>
@@ -732,7 +732,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -749,7 +749,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10-x64\build\appvaredittest\</ObjectFileName>
@@ -785,7 +785,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -802,7 +802,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\release10-x64\build\appvaredittest\</ObjectFileName>
@@ -838,7 +838,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -854,7 +854,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -888,7 +888,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -904,7 +904,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -938,7 +938,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -954,7 +954,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -988,7 +988,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -1004,7 +1004,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -1038,7 +1038,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -1054,7 +1054,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -1088,7 +1088,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -1104,7 +1104,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -1138,7 +1138,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -1154,7 +1154,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -1188,7 +1188,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -1204,7 +1204,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appvaredittest\x64\varedittest.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appvaredittest\appvaredittest.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\debug10-x64\build\appvaredittest\</AssemblerListingLocation>
       <ObjectFileName>..\..\out\debug10-x64\build\appvaredittest\</ObjectFileName>
@@ -1238,7 +1238,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\apps\varedittest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\..\apps\varedittest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Manifest>
@@ -1249,23 +1249,20 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\apps\varedittest\testmodifiable.cpp" />
     <ClCompile Include="..\..\apps\varedittest\vareditapp.cpp" />
     <ClCompile Include="..\..\apps\varedittest\vareditframe.cpp" />
-    <ClCompile Include="..\..\apps\varedittest\wxpgslider.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\apps\varedittest\modifiableimpl.h" />
     <ClInclude Include="..\..\apps\varedittest\pluginconfig.h" />
     <ClInclude Include="..\..\apps\varedittest\pump.h" />
     <ClInclude Include="..\..\apps\varedittest\testmodifiable.h" />
     <ClInclude Include="..\..\apps\varedittest\vareditapp.h" />
     <ClInclude Include="..\..\apps\varedittest\vareditframe.h" />
-    <ClInclude Include="..\..\apps\varedittest\wxpgslider.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\appvaredittest.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="libpropgrid.vcxproj">
-      <Project>{D8C59DB7-C610-DEB9-C81D-6E14959A2251}</Project>
+    <ProjectReference Include="libcrystalspace_gui.vcxproj">
+      <Project>{FA91393C-515B-D658-CDE3-12B1E346CB81}</Project>
     </ProjectReference>
     <ProjectReference Include="libcrystalspace.vcxproj">
       <Project>{94434FE9-3277-7608-522B-0BEBB7690B41}</Project>

@@ -13,38 +13,3 @@
 #pragma comment(linker, "/merge:.CSmetai=.CSmeta")
 #endif
 
-namespace csStaticPluginInit
-{
-static char const metainfo_visualdebug[] =
-"<?xml version=\"1.0\"?>"
-"<!-- profiler.csplugin -->"
-"<plugin>"
-"  <scf>"
-"    <classes>"
-"      <class>"
-"        <name>crystalspace.utilities.visualdebugger</name>"
-"        <implementation>VisualDebugger</implementation>"
-"        <description>Visual debug tools</description>"
-"      </class>"
-"    </classes>"
-"  </scf>"
-"</plugin>"
-;
-  #ifndef VisualDebugger_FACTORY_REGISTER_DEFINED 
-  #define VisualDebugger_FACTORY_REGISTER_DEFINED 
-    SCF_DEFINE_FACTORY_FUNC_REGISTRATION(VisualDebugger) 
-  #endif
-
-class visualdebug
-{
-SCF_REGISTER_STATIC_LIBRARY(visualdebug,metainfo_visualdebug)
-  #ifndef VisualDebugger_FACTORY_REGISTERED 
-  #define VisualDebugger_FACTORY_REGISTERED 
-    VisualDebugger_StaticInit VisualDebugger_static_init__; 
-  #endif
-public:
- visualdebug();
-};
-visualdebug::visualdebug() {}
-
-}

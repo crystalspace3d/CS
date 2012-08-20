@@ -169,8 +169,8 @@ public:
     }
     // construct full path from archive root
     // (cache is shared among filesystems sharing single archive)
-    csString fullPath (root);
-    csVfsPathHelper::AppendPath (fullPath, path);
+    csString fullPath;
+    GetFullPath (fullPath, path);
     // acquire lock on archive
     CS::Threading::RecursiveMutexScopedLock lock (archive->mutex);
     // perform cache lookup
@@ -185,7 +185,7 @@ public:
     // cache was not found; construct it
     csRef<iDataBuffer> buffer;
     size_t size = 0;
-    if (GetEntry (path) == nullptr)
+    if (archive->FindName (fullPath) == nullptr)
     {
       if (fileMustExist)
         return buffer; // noexistent file; halt operation
@@ -198,7 +198,7 @@ public:
     }
     else
     {
-      csRef<iDataBuffer> buffer = archive->Read (fullPath, alloc);
+      buffer = archive->Read (fullPath, alloc);
       size = buffer->GetSize ();
     }
 

@@ -57,7 +57,7 @@
                         <!-- The wave phases -->
                         <variablemap variable="phases" destination="phases" />
 
-                        <variablemap variable="o2w transform" destination="o2w" />
+                        <variablemap variable="object2world transform" destination="o2w" />
 						
 						<variablemap variable="reflection coord xform" destination="reflectXform" />
 						
@@ -76,13 +76,13 @@
       <texture name="tex normal" destination="TexNormal" />
 	  <texture name="tex plane reflect" destination="TexReflect" />
 	  <texture name="tex plane refract" destination="TexRefract" />
+      <texture name="foam dist" destination="foamDist" />
       <fp plugin="glcg" name="Water pixels">
                 <cgfp>
                         <variablemap variable="position" destination="lightPos" />
                         <variablemap variable="color" destination="lightCol" />
                         <variablemap variable="shine" destination="shininess" />
                         <variablemap variable="murkiness" destination="waterAlpha" />
-						<variablemap variable="foam dist" destination="foamDist" />
                         <program file="/shader/water/water.cgfp"/>
                 </cgfp>
       </fp>

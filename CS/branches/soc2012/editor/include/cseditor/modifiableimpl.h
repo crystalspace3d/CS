@@ -128,8 +128,7 @@ class csBasicModifiableDescription : public scfImplementation1<csBasicModifiable
 {
 public:
   csBasicModifiableDescription() :
-      scfImplementationType (this),
-      parameters(csArray<iModifiableParameter*>()) {}
+      scfImplementationType (this) {}
 
   size_t GetParameterCount() const { return parameters.GetSize(); }
 
@@ -179,20 +178,18 @@ public:
    * populate the valid fields.
    */
   csConstraintEnum()
-      : scfImplementation1(this)
+      : scfImplementationType (this)
   {
-    labels = new csStringArray;
-    values = new csArray<long>;
   }  
 
   /**
    * \remark Takes ownership of the arrays.  
    */
-  csConstraintEnum(csStringArray* labels, csArray<long>* values)
-    : scfImplementation1(this)
+  csConstraintEnum(const csStringArray& labels, const csArray<long>& values)
+    : scfImplementationType (this)
   {
     CS_ASSERT_MSG ("Number of labels must match number of values.",
-      labels->GetSize() == values->GetSize());
+      labels.GetSize() == values.GetSize());
 
     this->labels = labels;
     this->values = values;
@@ -200,10 +197,7 @@ public:
 
   ~csConstraintEnum()
   {
-    delete labels;
-    delete values;
   }
-
 
   bool Validate(const csVariant* variant) const
   {
@@ -215,14 +209,13 @@ public:
   //-- iModifiableConstraintEnum
   size_t GetValueCount () const 
   {
-    return labels->GetSize();
+    return labels.GetSize();
   }
 
   long GetValue (size_t index) const
   {
-    return values->Get(index);
+    return values.Get(index);
   }
-
 
   iModifiableConstraintType GetType() const
   {
@@ -232,23 +225,18 @@ public:
   //-- csConstraintEnum
   void PushValue(long value, const char* label)
   {
-    values->Push(value);
-    labels->Push(label);
+    values.Push(value);
+    labels.Push(label);
   }
 
-  csStringArray* GetLabels() const
+  const char* GetLabel(size_t index) const
   {
-    return labels;
-  }
-
-  csArray<long>* GetValues() const
-  {
-    return values;
+    return labels[index];
   }
 
 private:
-  csStringArray* labels;
-  csArray<long>* values;
+  csStringArray labels;
+  csArray<long> values;
 };
 
 /**
@@ -261,8 +249,8 @@ class csConstraintBounded : public scfImplementation1<csConstraintBounded,
 {
 public:
   /// Initializes this constraint with both a min and a max value
-  csConstraintBounded(csVariant& min, csVariant& max)
-    : scfImplementation1(this),
+  csConstraintBounded(const csVariant& min, const csVariant& max)
+    : scfImplementationType(this),
       min(new csVariant(min)),
       max(new csVariant(max))
   {
@@ -270,8 +258,8 @@ public:
   }
 
   /// Initializes the constraint to have just a maximum value
-  csConstraintBounded(csVariant& max)
-    : scfImplementation1(this),
+  csConstraintBounded(const csVariant& max)
+    : scfImplementationType(this),
       min(nullptr),
       max(new csVariant(max))
   {
@@ -444,7 +432,7 @@ class csConstraintVfsFile : public scfImplementation1<csConstraintVfsFile, iModi
 {
 public:
   csConstraintVfsFile() 
-    : scfImplementation1(this)
+    : scfImplementationType(this)
   {
     // Should match anything that's got a special delimiter in it
     matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$-]");
@@ -480,7 +468,7 @@ class csConstraintVfsDir : public scfImplementation1<csConstraintVfsDir, iModifi
 {
 public:
   csConstraintVfsDir()
-    : scfImplementation1(this)
+    : scfImplementationType(this)
   {
     // Just like the file matcher, only allows colons and forward slashes
     matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$/-]");
@@ -515,7 +503,7 @@ class csConstraintVfsPath : public scfImplementation1<csConstraintVfsPath, iModi
 {
 public:
   csConstraintVfsPath()
-    : scfImplementation1(this)
+    : scfImplementationType(this)
   {
     // Just like the dir regex
     matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$/-]");
@@ -548,7 +536,7 @@ class csConstraintTextEntry : public scfImplementation1<csConstraintTextEntry, i
 {
 public:
   csConstraintTextEntry(long maxLength = -1, long minLength = -1, const char* regex = 0)
-    : scfImplementation1(this),
+    : scfImplementationType(this),
       minLength(minLength),
       maxLength(maxLength)
   {
@@ -594,7 +582,7 @@ private:
 class csConstraintBitMask : public scfImplementation1<csConstraintBitMask, iModifiableConstraint>
 {
   csConstraintBitMask(long mask)
-    : scfImplementation1(this),
+    : scfImplementationType(this),
       mask(mask)
   {
   }

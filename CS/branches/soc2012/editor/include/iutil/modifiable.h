@@ -76,6 +76,7 @@ struct iModifiableConstraintEnum : public virtual iModifiableConstraint
 {
   virtual size_t GetValueCount () const = 0;
   virtual long GetValue (size_t index) const = 0;
+  virtual const char* GetLabel (size_t index) const = 0;
 };
 
 

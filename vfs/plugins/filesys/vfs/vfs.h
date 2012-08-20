@@ -47,9 +47,6 @@ struct HeapRefCounted :
 
 typedef CS::Memory::AllocatorHeap<csRef<HeapRefCounted> > VfsHeap;
 
-// Set of metadata for archive handler
-struct ArchiveHandlerMetadata;
-
 /**
  * The Virtual Filesystem Class is intended to be the only way for Crystal
  * Space engine to access the files. This gives unified control over the
@@ -82,11 +79,6 @@ private:
   mutable CS::Threading::ReadWriteMutex nodeMutex;
   mutable CS::Threading::ReadWriteMutex factoryMutex;
 
-  // A table of VFS nodes
-  csHash<VfsNode *, const char *> nodeTable;
-  // Pointer to root node
-  VfsNode * const root;
-
   // Set of data to store in thread-local storage
   struct VfsTls
   {
@@ -98,6 +90,41 @@ private:
     
     VfsTls();
   };
+
+  // Set of metadata for archive handler
+  struct ArchiveHandlerMetadata
+  {
+    csString className;
+    csStringArray extensions;
+
+    ArchiveHandlerMetadata () { }
+    ArchiveHandlerMetadata (const char *handlerName) :
+      className (handlerName)
+    {
+    }
+
+    bool operator== (const ArchiveHandlerMetadata &another)
+    {
+      if (this == &another)
+        return true;
+
+      return className.Compare (another.className);
+    }
+
+    bool operator!= (const ArchiveHandlerMetadata &another)
+    {
+      return !(*this == another);
+    }
+  };
+
+  // A table of VFS nodes
+  csHash<VfsNode *, const char *> nodeTable;
+  // Pointer to root node
+  VfsNode * const root;
+  // List of factories
+  csStringArray factoryList;
+  // List of archive handlers
+  csArray<ArchiveHandlerMetadata> archiveHandlerList;
 
   // Thread-local values
   CS::Threading::ThreadLocal<VfsTls> tls;
@@ -256,9 +283,20 @@ private:
   bool AddProtocolHandler (const char *className,
                            const char *protocol);
 
-  /// Register
-  bool AddArchiveHandler (const char *className,
-                          const ArchiveHandlerMetadata &metadata);
+  /// Register archive handler
+  bool AddArchiveHandler (const ArchiveHandlerMetadata &metadata);
+
+  /// Get list of factory classes for given protocol
+  void GetFactoryClasses (csStringArray &oList, const char *protocol);
+
+  /**
+   * Create archive filesystem from given parent filesystem.
+   * Acquire read lock before calling this function.
+   */
+  csPtr<iFileSystem> CreateArchiveFS (iFileSystem *parent,
+                                      const char *parentPath,
+                                      const char *archiveName,
+                                      const char *suffix);
 
   /// Same as ExpandPath() but with less overhead
   char *ExpandPathFast (const char *path, bool isDir = false);

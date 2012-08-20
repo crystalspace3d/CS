@@ -250,7 +250,7 @@ namespace CS
 #define VFS_POS_END		2
 /** @} */
 
-/// List of extra options to be supplied to VFS operations
+/// List of extra options to be supplied for VFS operations
 typedef csHash<csVariant,csString> csVfsOptionList;
 
 /**
@@ -351,7 +351,7 @@ struct iFile : public virtual iBase
  */
 struct iFileSystem : public virtual iBase
 {
-  SCF_INTERFACE(iFileSystem, 1, 0, 2);
+  SCF_INTERFACE(iFileSystem, 1, 0, 3);
 
   /**
    * Opens a file within current file system. 
@@ -369,6 +369,14 @@ struct iFileSystem : public virtual iBase
                              int mode,
                              const csVfsOptionList &options
                                          = csVfsOptionList ()) = 0;
+
+  /**
+   * Change root directory of current filesystem.
+   * \param newRoot Path of new root directory relative to current root, in VFS format
+   *   without any variables
+   * \param mustExist If true, operation will fail if given new root directory does not exist
+   */
+  virtual bool ChRoot (const char *newRoot, bool mustExist = false) = 0;
 
   /**
    * Moves a file within current file system. 
@@ -492,10 +500,8 @@ struct iFileSystemFactory : public virtual iBase
    * Otherwise, returns 0 (nullptr).
    * \param realPath Real path without protocol specifier
    * \param oStatus reference of variable to receive VFS_STATUS status code
-   * \remarks In order to prevent memory leak, you must assign the pointer to
-   *    csPtr<> then assign it to csRef<>.
    */
-  virtual iFileSystem *Create (const char *realPath, int &oStatus) = 0;
+  virtual csPtr<iFileSystem> Create (const char *realPath, int &oStatus) = 0;
 };
 
 /**
@@ -510,13 +516,10 @@ struct iArchiveHandler : public virtual iBase
    * iFileSystem instance if supported.
    * \param parentFS    parent iFileSystem containing requested archive file
    * \param archivePath path of archive file within parent filesystem
-   * \param suffix      path of directory root within the archive
-   * \remarks In order to prevent memory leak, you must assign the pointer to
-   *    csPtr<> then assign it to csRef<>.
    */
-  virtual iFileSystem *GetFileSystem (iFileSystem *parentFS,
-                                      const char *archivePath,
-                                      const char *suffix) = 0;  
+  virtual csPtr<iFileSystem> GetFileSystem (iFileSystem *parentFS,
+                                            const char *parentFSPath,
+                                            const char *archivePath) = 0;
 };
 
 /**

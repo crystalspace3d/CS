@@ -45,8 +45,11 @@ struct csVfsPathHelper
   {
     const size_t len = base.Length (); // length of path
 
-    // if the base path already doesn't end with VFS_PATH_SEPARATOR, add one.
-    if (len > 0 && base[len - 1] != VFS_PATH_SEPARATOR)
+    // if the base path already doesn't end with VFS_PATH_SEPARATOR,
+    // and suffix doesn't start with VFS_PATH_SEPARATOR,
+    // add one.
+    if (len > 0 && base[len - 1] != VFS_PATH_SEPARATOR
+      && (suffix && *suffix != VFS_PATH_SEPARATOR))
       base << VFS_PATH_SEPARATOR;
 
     // add the suffix part

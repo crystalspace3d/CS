@@ -36,15 +36,11 @@
 
 #include "vfs.h"
 #include "csgeom/math.h"
-#include "csutil/archive.h"
 #include "csutil/cmdline.h"
 #include "csutil/csstring.h"
 #include "csutil/databuf.h"
-#include "csutil/memfile.h"
-#include "csutil/mmapio.h"
 #include "csutil/refarr.h"
 #include "csutil/parray.h"
-#include "csutil/parasiticdatabuffer.h"
 #include "csutil/platformfile.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/scfstringarray.h"
@@ -61,27 +57,30 @@
 #include "iutil/objreg.h"
 #include "iutil/verbositymanager.h"
 #include "iutil/document.h"
+#include "iutil/plugin.h"
 
 #define NEW_CONFIG_SCANNING
 
+// helper to convert macro into string
+#define __VFS_TO_STRING(macro)      #macro
+// Default VFS protocol (file)
+#define VFS_DEFAULT_PROTOCOL         "file"
+// CS path separator ('/' or '\'), in string format
+#define CS_PATH_SEPARATOR_STRING     __VFS_TO_STRING (CS_PATH_SEPARATOR)
+// VFS path separator ('/'), in string format
+#define VFS_PATH_SEPARATOR_STRING    __VFS_TO_STRING (VFS_PATH_SEPARATOR)
+// Both path separators in string format (either '\/' or '//')
+#define ANY_PATH_SEPARATOR_STRING    CS_PATH_SEPARATOR_STRING \
+                                     VFS_PATH_SEPARATOR_STRING
+// VFS root path
+#define VFS_ROOT_PATH                VFS_PATH_SEPARATOR_STRING
+// whitespace characters (subject to trimming) in VFS
+#define CS_VFSSPACE                  " \t"
+// threshold in # of filesystems to use hashtable in mount/unmount process
+#define USE_HASHTABLE_THRESHOLD      32
 // anonymous namespace; contains helpers local to this file
 namespace
 {
-  // CS path separator ('/' or '\'), in string format
-  const char CS_PATH_SEPARATOR_STRING  [] = { CS_PATH_SEPARATOR,  '\0' };
-  // VFS path separator ('/'), in string format
-  const char VFS_PATH_SEPARATOR_STRING [] = { VFS_PATH_SEPARATOR, '\0' };
-  // Both path separators in string format (either '\/' or '//')
-  const char ANY_PATH_SEPARATOR_STRING [] = { CS_PATH_SEPARATOR,
-                                              VFS_PATH_SEPARATOR, '\0' };
-  // VFS root path
-  const char *VFS_ROOT_PATH = VFS_PATH_SEPARATOR_STRING;
-  // whitespace characters (subject to trimming) in VFS
-  const char *CS_VFSSPACE = " \t";
-
-  // threshold in # of filesystems to use hashtable in mount/unmount process
-  const size_t USE_HASHTABLE_THRESHOLD = 32;
-
   // Split a list of multiple paths delimited by VFS_PATH_DIVIDER.
   // pathList must be already expanded with ExpandVars().
   // the callee is responsible for freeing the returned pointer via cs_free().
@@ -102,7 +101,7 @@ namespace
 
 
 
-CS_PLUGIN_NAMESPACE_BEGIN(VFS)
+CS_PLUGIN_NAMESPACE_BEGIN (VFS)
 {
 
 typedef csStringFast<CS_MAXPATHLEN> PathString;
@@ -221,12 +220,6 @@ public:
   // Take ownership of the list. Once this function is called, any
   // subsequent calls to any function will fail
   csPtr<iStringArray> GetResult ();
-};
-
-// private structure to hold archive handler metadata
-struct ArchiveHandlerMetadata
-{
-  csStringArray extensions;
 };
 
 // ------------------------------------------------------------- VfsNode --- //
@@ -893,15 +886,29 @@ csVFS::~csVFS ()
 
 bool csVFS::AddProtocolHandler (const char *className, const char *protocol)
 {
-  // @@@TODO: implement logic
-  return false;
+  // Store with the following format:
+  // protocol:className
+  csString factoryEntry (protocol);
+  factoryEntry << ":" << className;
+
+  // Acquire lock
+  CS::Threading::ScopedWriteLock lock (factoryMutex);
+  // Insert
+  factoryList.Push (factoryEntry);
+  return true;
 }
 
-bool csVFS::AddArchiveHandler (const char *className,
-                               const ArchiveHandlerMetadata &metadata)
+bool csVFS::AddArchiveHandler (const ArchiveHandlerMetadata &metadata)
 {
-  // @@@TODO: implement logic
-  return false;
+  // Acquire lock
+  CS::Threading::ScopedWriteLock lock (factoryMutex);
+  // prevent duplicate entries
+  if (archiveHandlerList.Find (metadata) != csArrayItemNotFound)
+  {
+    return false;
+  }
+  archiveHandlerList.Push (metadata);
+  return true;
 }
 
 void csVFS::RegisterPlugin (const char *className)
@@ -957,7 +964,7 @@ void csVFS::RegisterPlugin (const char *className)
           strcmp (className, classNode->GetContentsValue ()) != 0)
         continue; // name mismatch; we don't want to process this...
 
-      ArchiveHandlerMetadata metadata;
+      ArchiveHandlerMetadata metadata (className);
 
       // read extension entries
       csRef<iDocumentNodeIterator> extensions =
@@ -969,7 +976,7 @@ void csVFS::RegisterPlugin (const char *className)
       }
 
       // get any relevant information
-      AddArchiveHandler (className, metadata);
+      AddArchiveHandler (metadata);
     }
   }
 }
@@ -1267,10 +1274,142 @@ VfsNode *csVFS::CreateNodePath (const char *vfsPath) /* expanded vfs path */
   return node;
 }
 
-iFileSystem *CreateArchiveFS (iFileSystem *parent)
+// Get list of factory classes of given protocol
+void csVFS::GetFactoryClasses (csStringArray &oList, const char *protocol)
 {
-  return nullptr;
+  // prepare search string: 'protocol:'
+  csString search (protocol);
+  search << ":";
+  // class name offset
+  size_t offset = search.Length ();
+  // acquire lock
+  CS::Threading::ScopedReadLock lock (factoryMutex);
+  // generate corresponding list from factory list
+  for (size_t i = 0; i < factoryList.GetSize (); ++i)
+  {
+    csString factoryEntry (factoryList.Get (i));
+
+    if (factoryEntry.StartsWith (search))
+    {
+      // only get entries of given protocol
+      // class name starts at offset pLen
+      oList.Push (((const char *)factoryEntry) + offset);
+    }
+  }
 }
+
+csPtr<iFileSystem> csVFS::CreateArchiveFS (iFileSystem *parent,
+                                           const char *parentPath,
+                                           const char *archiveFile,
+                                           const char *suffix)
+{
+  csRef<iFileSystem> fs;
+  size_t index = archiveHandlerList.GetSize ();
+
+  while (index-- > 0)
+  {
+    // get metadata
+    ArchiveHandlerMetadata metadata = archiveHandlerList.Get (index);
+    // should we use this handler?
+
+    // find extension first
+    const char *extension = strrchr (archiveFile, '.');
+    if (extension)
+      ++extension; // if non-null, increment it to get pure extension
+    else
+      extension = ""; // no extension found
+
+    if (metadata.extensions.Find (extension) == csArrayItemNotFound)
+      continue; // this handler does not handle given extension
+
+    // @@@TODO: Add header magic value checks if possible
+
+    // get archive handler
+    csRef<iArchiveHandler> handler =
+      csLoadPluginCheck<iArchiveHandler> (object_reg, metadata.className);
+
+    // try getting filesystem
+    fs = handler->GetFileSystem (parent, parentPath, archiveFile);
+
+    if (!fs.IsValid ())
+      continue; // proceed to next handler
+
+    // try chroot
+    bool success = fs->ChRoot (suffix, true);
+
+    // chroot failed... check status
+    if (!success && fs->GetStatus () == VFS_STATUS_DIRISFILE)
+    {
+      // directory is file...
+      // this implies potential nested archive
+      // continue until we find base portion of path
+      csString partial (suffix);
+
+      while (!success)
+      {
+        // if given path is root, we can't really do anything
+        if (strcmp (partial, VFS_ROOT_PATH) == 0)
+          break;
+
+        // adjust suffix
+        size_t lastChar = partial.Length () - 1;
+
+        if (((partial[lastChar] == VFS_PATH_SEPARATOR)
+           || partial[lastChar] == CS_PATH_SEPARATOR)
+            && lastChar > 0)
+        {
+          // it ends with trailing slash.. make sure this doesn't count
+          --lastChar;
+        }
+
+        size_t pos = partial.FindLast (ANY_PATH_SEPARATOR_STRING, lastChar);
+        if (pos == (size_t)-1)
+          pos = 0; // not found; truncate the whole string
+        else
+          ++pos; // point to next char
+        partial.Truncate (pos);
+
+        // try change root again
+        success = fs->ChRoot (partial, true);
+        if (success)
+        {
+          // at this point, filesystem has been set up
+          // get archive name (without slashes)
+          csString archiveName (suffix + pos);
+          size_t archiveNameEnd =
+            archiveName.Find (ANY_PATH_SEPARATOR_STRING);
+          archiveName.Truncate (archiveNameEnd);
+          // perform recursive call to get nested filesystem
+          csRef<iFileSystem> parentNew = fs;
+          csString parentPathNew (parentPath);
+          csVfsPathHelper::AppendPath (parentPathNew, partial);
+          fs = CreateArchiveFS (parentNew,
+                                parentPathNew,
+                                archiveName,
+                                suffix + (pos + archiveNameEnd));
+          success = fs.IsValid ();
+          break; // done whatsoever; quit the loop
+        }
+        // chroot failed... check for reason
+        else if (fs->GetStatus () == VFS_STATUS_DIRISFILE)
+          continue; // there is still hope
+        else
+          break; // no point to continue; quit this loop
+      } // !while
+    } // !if
+
+    if (!success)
+    {
+      // failed for some reason
+      // continue to next handler
+      fs.Invalidate ();
+      continue;
+    }
+  } // !while
+
+  return csPtr<iFileSystem> (fs);
+}
+
 
 csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
 {
@@ -1302,8 +1441,10 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
         purePath = pEnd + 1;
         // thus (purePath - realPath) - pDelimiterLen is length of protocol
         size_t pLen = ((size_t)(purePath - realPath)) - pDelimiterLen;
-        memcpy (protocol, realPath, pLen);  // copy contents
-        protocol [pLen] = '\0'; // null-terminate
+        // copy contents
+        memcpy (protocol, realPath, pLen);
+        // null-terminate
+        protocol [pLen] = '\0';
         break;
       }
     }
@@ -1313,24 +1454,25 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
 
   // was it successful?
   if (*protocol == '\0')
-    strcpy (protocol, "file"); // default
+    strcpy (protocol, VFS_DEFAULT_PROTOCOL); // default protocol
 
   // TODO: filesystem instantiation logic here
 
   // get list of filesystem classes for a particular protocol
   // to avoid threading issues, must work on a copy of original list
-  scfStringArray fsClasses /*= GetFSClasses ()*/;
+  csStringArray fsClasses;
+  GetFactoryClasses (fsClasses, protocol);
 
-  iFileSystem *fs = nullptr;
+  csRef<iFileSystem> fs;
 
-  while (!fs && !fsClasses.IsEmpty ())
+  while (!fs.IsValid () && !fsClasses.IsEmpty ())
   {
     // get last entry of the list
     CS::Utility::ScopedDelete<char> fsClass (fsClasses.Pop ());
 
-    // get factory
+    // get factory from object registry (loading if needed)
     csRef<iFileSystemFactory> factory =
-          scfCreateInstance<iFileSystemFactory> (fsClass);
+          csLoadPluginCheck<iFileSystemFactory> (object_reg, fsClass);
 
     // failed to get factory
     if (!factory)
@@ -1341,7 +1483,7 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
     fs = factory->Create (purePath, status);
 
     // if it failed and got VFS_STATUS_DIRISFILE, switch to archive discovery
-    if (!fs && status == VFS_STATUS_DIRISFILE)
+    if (!fs.IsValid () && status == VFS_STATUS_DIRISFILE)
     {
       csString partial (purePath);
 
@@ -1365,9 +1507,9 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
           ++pos; // point to next char
         partial.Truncate (pos);
         // try again
-        fs = factory->Create (purePath, status);
+        fs = factory->Create (partial, status);
         // if failed to get the filesystem, continue
-        if (!fs)
+        if (!fs.IsValid ())
           continue;
 
         // succeeded; current situation is the following
@@ -1381,18 +1523,13 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
         archiveName.Truncate (archiveNameEnd);
         // get suffix after archive name portion
         const char *suffix = purePath + (pos + archiveNameEnd);
-
-        iFileSystem *parent = fs;
-        fs = nullptr;
-
-        while (!fs)
+        // store parent fs
+        csRef<iFileSystem> parent = fs;
         {
-          // get archive handler, trying every single one
-          csRef<iArchiveHandler> archive;
-          // @@@TODO: complete iArchiveHandler finishing mechanism
-
-          fs = archive->GetFileSystem (parent, archiveName, suffix);
-        } // !while
+          // acquire read lock, so we can safely access archive handlers
+          CS::Threading::ScopedReadLock lock (factoryMutex);
+          fs = CreateArchiveFS (parent, partial, archiveName, suffix);
+        }
       } // !if
     } // !while
   } // !if
@@ -1912,21 +2049,16 @@ bool csVFS::DeleteFile (const char *filename)
   if (!filename)
     return false;
 
-/*
-  VfsNode *node;
-  char suffix [VFS_MAX_PATH_LEN + 1];
-  if (!PreparePath (FileName, false, node, suffix, sizeof (suffix)))
-    return false;
-*/
   // expand vfs path
   char *xPath = ExpandPathFast (filename, false);
   const char *suffix = nullptr;
+  // acquire read lock on nodes
+  CS::Threading::ScopedReadLock lock (nodeMutex);
   // get node
   VfsNode *node = GetNode (xPath, &suffix);
 
   bool result = node->Delete (suffix);
 
-  //ArchiveCache->CheckUp ();
   return result;
 }
 

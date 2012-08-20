@@ -71,7 +71,7 @@ float4 main (vert2frag IN,
     const float distVar = 150;
  
     float facing = 1.0 - max( dot(eye_vector, N ) ,0);
-    float fresnelWeight = max (R + (1.0 - R) * pow( facing ,3.0) , N);
+    float fresnelWeight = max (R + (1.0 - R) * pow( facing ,3.0) , 0.0);
     fresnelWeight = min (( fresnelWeight + max(IN.Pos.z / distVar , fresnelWeight ))*0.5 , 1);
  
     reflColor *=  fresnelWeight;
@@ -97,7 +97,7 @@ float4 main (vert2frag IN,
 	foam = foam * 0.5 * distanceFoamcolor.x;
 	foam.x *= 40.0f;
 	
-    color.xyz = light + reflColor.xyz + refrColor.xyz + foam;
+    color.xyz = light + reflColor.xyz + refrColor.xyz + foam.xyz;
 	//color.xyz = light + foam;
 	//color = clamp((color + foam ) , 0 , 1 ) ;
 	//color = tex2D(TexNormal,IN.NormalTC);

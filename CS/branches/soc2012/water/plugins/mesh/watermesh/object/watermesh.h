@@ -406,7 +406,7 @@ public:
   float GetMurkiness();
   
   void SetWaterType(waterMeshType waterType);
-  
+
   void SetAmplitudes(float amp1, float amp2, float amp3);  
   void SetFrequencies(float freq1, float freq2, float freq3);  
   void SetPhases(float phase1, float phase2, float phase3);  

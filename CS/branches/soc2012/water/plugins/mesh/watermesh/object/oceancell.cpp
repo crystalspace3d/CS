@@ -17,7 +17,7 @@
 */
 
 #include "oceancell.h"
-#include <csutil/sysfunc.h> // provides csPrintf();
+
 
 using namespace CS::Plugins::WaterMesh;
 
@@ -44,6 +44,9 @@ csOceanCell::~csOceanCell()
 }
 
 
+// This method creates Vertices of ocean node 
+// Nvidia's ocean demo gives more details on how it's actually created. 
+// This page also explains it :- http://www.crystalspace3d.org/blog/naman22
 void csOceanCell::SetupVertices()
 {
 	csDirtyAccessArray<csVector3> verts[16];
@@ -71,7 +74,7 @@ void csOceanCell::SetupVertices()
 		   }
         }
 		
-		// The inner mesh
+		// The Inner mesh
         for(uint j = 1; j <  maxjd-1  ; ++j)
         {
             for(uint i = 1; i < maxid-1 ; ++i)
@@ -94,7 +97,7 @@ void csOceanCell::SetupVertices()
 		{
 			if(k/8)
 			{
-				// High res
+				// High res boundary
 				if(i%2)
 				{
 					tris[k].Push(csTriangle ((int)(j * maxi + i),
@@ -119,7 +122,7 @@ void csOceanCell::SetupVertices()
 			}
 			else
 			{
-				// Low res
+				// Low res boundary
 				if(i%2)
 				{
 					tris[k].Push(csTriangle ((int)(j * maxi + i),
@@ -148,7 +151,7 @@ void csOceanCell::SetupVertices()
 		{
 			if((k/4)%2)
 			{
-				// High boundaries
+				// High res boundary
 				if (j%2)
 				{
 					tris[k].Push(csTriangle ((int)(j * maxi + i), 
@@ -174,7 +177,7 @@ void csOceanCell::SetupVertices()
 			else
 			{
 
-				// Low boundaries
+				// Low res boundary
 				if (j%2)
 				{
 					tris[k].Push(csTriangle ((int)(j * maxi + i), 
@@ -201,7 +204,7 @@ void csOceanCell::SetupVertices()
 		{	
 			if((k/2)%2)
 			{
-				// High res
+				// High res boundary
 				if(i%2)
 				{
 					tris[k].Push(csTriangle ((int)(j * maxi + i - 1),
@@ -227,7 +230,7 @@ void csOceanCell::SetupVertices()
 			}
 			else
 			{
-				// Low res
+				// Low res boundary
 				if(i%2)
 				{
 					tris[k].Push(csTriangle ((int)(j * maxi + i - 1),
@@ -254,7 +257,7 @@ void csOceanCell::SetupVertices()
 		{
 			if(k%2)
 			{
-				// High res
+				// High res boundary
 				if (j%2)
 				{
 					tris[k].Push(csTriangle ((int)( (j-1) * maxi + i ), 
@@ -279,7 +282,7 @@ void csOceanCell::SetupVertices()
 			}
 			else
 			{
-				// Low res
+				// Low res boundary
 				if (j%2)
 				{
 					tris[k].Push(csTriangle ((int)( (j-1) * maxi + i ), 

@@ -8,7 +8,7 @@
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNUa
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
 
     You should have received a copy of the GNU Library General Public
@@ -18,7 +18,6 @@
 
 #include "cssysdef.h"
 #include "iutil/objreg.h"
-#include "cseditor/modifiableimpl.h"
 #include "cseditor/modifiableeditor.h"
 
 #include "imesh/particles.h"
@@ -278,9 +277,9 @@ void ModifiableEditor::Append(iModifiable* element, csString& name) {
     CS_ASSERT_MSG("iModifiable object must return a value for each valid parameter id!", variant != nullptr);
     wxString originalName( param->GetName(), wxConvUTF8 );
     wxString translation( translator->GetMsg(param->GetName()), wxConvUTF8 );
-    wxString description( param->GetDescription(), wxConvUTF8 );
+    wxString desc( param->GetDescription(), wxConvUTF8 );
 
-    AppendVariant(root, variant, param->GetConstraint(), originalName, translation, description);
+    AppendVariant(root, variant, param->GetConstraint(), originalName, translation, desc);
 
     delete variant;
   }
@@ -309,20 +308,15 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
           && constraint->GetType() == MODIFIABLE_CONSTRAINT_ENUM)
         {
           // Generate a combo-box based on enum values
-          const csConstraintEnum* ec = dynamic_cast<const csConstraintEnum*>(constraint);
-          csStringArray* csLabels = ec->GetLabels();
-          wxArrayString labels;
-          for(csStringArray::Iterator i = csLabels->GetIterator(); i.HasNext(); ) 
-          {
-            labels.Add( wxString( i.Next(), wxConvUTF8) );
-          }
+          const iModifiableConstraintEnum* ec = dynamic_cast<const iModifiableConstraintEnum*>(constraint);
 
-          csArray<long>* csValues = ec->GetValues();
           wxArrayInt values;
-          for(csArray<long>::Iterator i = csValues->GetIterator(); i.HasNext(); )
-          {
-            values.Add(i.Next());
-          }
+          wxArrayString labels;
+	  for (size_t i = 0; i < ec->GetValueCount (); i++)
+	  {
+            values.Add (ec->GetValue (i));
+            labels.Add (wxString(ec->GetLabel (i), wxConvUTF8) );
+	  }
 
           wxEnumProperty* enumP = new wxEnumProperty( translatedName,
             originalName,
@@ -353,7 +347,7 @@ void ModifiableEditor::AppendVariant(wxPGPropArg categoryID, csVariant* variant,
         float min = 0, max = 100;
         if(constraint != nullptr && constraint->GetType() == MODIFIABLE_CONSTRAINT_BOUNDED) {
           // Set the slider limits
-          const csConstraintBounded* bc = dynamic_cast<const csConstraintBounded*>(constraint);
+          const iModifiableConstraintBounded* bc = dynamic_cast<const iModifiableConstraintBounded*>(constraint);
           if(bc->HasMinimum()) min = bc->GetMinimum().GetFloat();
           if(bc->HasMaximum()) max = bc->GetMaximum().GetFloat();
         }

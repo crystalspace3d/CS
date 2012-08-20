@@ -88,7 +88,6 @@ OperatorState SelectOperator::Invoke (iContext* context, iEvent* event)
 				       100000.0f, cameraContext->GetCamera ());
     if (result.mesh)
     {
-      printf ("SelectOperator::Invoke select\n");
       csRef<iKeyboardDriver> kbd =
 	csQueryRegistry<iKeyboardDriver> (object_reg);
       csRef<iAction> action;
@@ -120,10 +119,22 @@ bool SelectObjectAction::Do (iContext* context)
   {
     csRef<iContextObjectSelection> objectSelectionContext =
       scfQueryInterface<iContextObjectSelection> (context);
-    if (!multiple) objectSelectionContext->ClearSelectedObjects ();
-    objectSelectionContext->AddSelectedObject (object);
-    printf ("SelectObjectAction::Do AddSelectedObject %s\n",
-	    multiple ? "multi" : "single");
+
+    if (!multiple)
+    {
+      selection = objectSelectionContext->GetSelectedObjects ();
+      objectSelectionContext->ClearSelectedObjects ();
+      objectSelectionContext->AddSelectedObject (object);
+    }
+
+    else
+    {
+      if (objectSelectionContext->ContainsSelectedObject (object))
+	objectSelectionContext->RemoveSelectedObject (object);
+      else
+	objectSelectionContext->AddSelectedObject (object);
+    }
+
     return true; 
   }
   return false; 
@@ -135,8 +146,18 @@ bool SelectObjectAction::Undo (iContext* context)
   {
     csRef<iContextObjectSelection> objectSelectionContext =
       scfQueryInterface<iContextObjectSelection> (context);
-    objectSelectionContext->RemoveSelectedObject (object);
-    printf ("SelectObjectAction::Undo RemoveSelectedObject\n");
+
+    if (!multiple)
+      objectSelectionContext->SetSelectedObjects (selection);
+
+    else
+    {
+      if (objectSelectionContext->ContainsSelectedObject (object))
+	objectSelectionContext->RemoveSelectedObject (object);
+      else
+	objectSelectionContext->AddSelectedObject (object);
+    }
+
     return true; 
   }
   return false; 

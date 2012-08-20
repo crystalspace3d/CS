@@ -124,6 +124,8 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
     csEventNameRegistry::GetRegistry (object_reg);
   eventSetCollection =
     registry->GetID ("crystalspace.editor.context.fileloader.setcollection");
+  eventSetSelectedObjects =
+    registry->GetID ("crystalspace.editor.context.selection.setselectedobjects");
   eventAddSelectedObject =
     registry->GetID ("crystalspace.editor.context.selection.addselectedobject");
   eventRemoveSelectedObject =
@@ -133,6 +135,7 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
 
   csEventID events[] = {
     eventSetCollection,
+    eventSetSelectedObjects,
     eventAddSelectedObject,
     eventRemoveSelectedObject,
     eventClearSelectedObjects,
@@ -166,7 +169,9 @@ bool SceneTreeCtrl::HandleEvent (iEvent &event)
 
   else if (!selecting)
   {
-    if (event.Name == eventAddSelectedObject)
+    if (event.Name == eventSetSelectedObjects)
+      OnSetSelectedObjects ();
+    else if (event.Name == eventAddSelectedObject)
       OnAddSelectedObject (event);
     else if (event.Name == eventRemoveSelectedObject)
       OnRemoveSelectedObject (event);
@@ -408,6 +413,28 @@ void SceneTreeCtrl::OnSelChanged (wxTreeEvent& event)
     if (!object) continue;
 
     objectSelectionContext->AddSelectedObject (object);
+  }
+
+  selecting = false;
+}
+
+void SceneTreeCtrl::OnSetSelectedObjects ()
+{
+  csRef<iContextObjectSelection> objectSelectionContext =
+    scfQueryInterface<iContextObjectSelection> (editor->GetContext ());
+
+  selecting = true;
+
+  UnselectAll ();
+  for (csWeakRefArray<iObject>::ConstIterator it =
+	 objectSelectionContext->GetSelectedObjects ().GetIterator ();
+       it.HasNext (); )
+  {
+    iObject* object = it.Next ();
+    if (!object) continue;
+
+    wxTreeItemId* id = objects.GetElementPointer (object);
+    if (id && id->IsOk ()) SelectItem (*id);
   }
 
   selecting = false;

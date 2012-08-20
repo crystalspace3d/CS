@@ -52,14 +52,13 @@ public:
   //-- iContextObjectSelection
   virtual void SetActiveObject (iObject* object);
   virtual iObject* GetActiveObject () const;
-  virtual const csWeakRefArray<iObject>& GetSelectedObjects () const;
-/*
   virtual void SetSelectedObjects
     (const csWeakRefArray<iObject>& objects);
-*/
+  virtual const csWeakRefArray<iObject>& GetSelectedObjects () const;
   virtual void AddSelectedObject (iObject*);
   virtual void RemoveSelectedObject (iObject*);
   virtual void ClearSelectedObjects ();
+  virtual bool ContainsSelectedObject (iObject* object) const;
 
   //-- iContextCamera
   virtual void SetCamera (iCamera*);
@@ -98,6 +97,7 @@ private:
   csWeakRefArray<iObject> selection;
 
   csEventID eventSetActiveObject;
+  csEventID eventSetSelectedObjects;
   csEventID eventAddSelectedObject;
   csEventID eventRemoveSelectedObject;
   csEventID eventClearSelectedObjects;

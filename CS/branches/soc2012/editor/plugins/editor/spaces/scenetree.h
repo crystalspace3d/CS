@@ -117,6 +117,7 @@ private:
   void OnItemActivated (wxTreeEvent& event);
   void OnSelChanged (wxTreeEvent& event);
 
+  void OnSetSelectedObjects ();
   void OnAddSelectedObject (iEvent& event);
   void OnRemoveSelectedObject (iEvent& event);
   void OnClearSelectedObjects ();
@@ -134,6 +135,7 @@ private:
   csHash<wxTreeItemId, iObject*> objects;
 
   csEventID eventSetCollection;
+  csEventID eventSetSelectedObjects;
   csEventID eventAddSelectedObject;
   csEventID eventRemoveSelectedObject;
   csEventID eventClearSelectedObjects;

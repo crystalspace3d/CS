@@ -48,6 +48,8 @@ Context::Context (iObjectRegistry* obj_reg)
     csQueryRegistry<iEventNameRegistry> (object_reg);
   eventSetActiveObject =
     registry->GetID ("crystalspace.editor.context.selection.setactiveobject");
+  eventSetSelectedObjects =
+    registry->GetID ("crystalspace.editor.context.selection.setselectedobjects");
   eventAddSelectedObject =
     registry->GetID ("crystalspace.editor.context.selection.addselectedobject");
   eventRemoveSelectedObject =
@@ -135,9 +137,21 @@ iObject* Context::GetActiveObject () const
   return active;
 }
 
+void Context::SetSelectedObjects
+    (const csWeakRefArray<iObject>& objects)
+{
+  selection = objects;
+  PostEvent (eventSetSelectedObjects);
+}
+
+const csWeakRefArray<iObject>& Context::GetSelectedObjects () const
+{
+  return selection; 
+}
+
 void Context::AddSelectedObject (iObject* object)
 {
-  if (!object || selection.Find (object) != csArrayItemNotFound)
+  if (!object || ContainsSelectedObject (object))
     return;
   selection.Push (object);
 
@@ -150,7 +164,7 @@ void Context::AddSelectedObject (iObject* object)
 
 void Context::RemoveSelectedObject (iObject* object)
 {
-  if (!object || selection.Find (object) == csArrayItemNotFound)
+  if (!object || !ContainsSelectedObject (object))
     return;
   selection.Delete (object);
 
@@ -167,16 +181,12 @@ void Context::ClearSelectedObjects ()
   PostEvent (eventClearSelectedObjects);
 }
 
-/*
-void Context::SetSelectedObjects
-    (const csWeakRefArray<iObject>& objects)
+bool Context::ContainsSelectedObject (iObject* object) const
 {
-  selection = objects;
-}
-*/
-const csWeakRefArray<iObject>& Context::GetSelectedObjects () const
-{
-  return selection; 
+  for (csWeakRefArray<iObject>::ConstIterator it = selection.GetIterator (); it.HasNext (); )
+    if (it.Next () == object)
+      return true;
+  return false;
 }
 
 void Context::SetCamera (iCamera* cam)

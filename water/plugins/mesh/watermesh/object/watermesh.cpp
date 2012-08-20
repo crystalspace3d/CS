@@ -257,17 +257,22 @@ void csWaterMeshObject::SetupObject ()
 		} 
 
         csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
-		csDirtyAccessArray<csRGBpixel> colorarray;
 
-		for (int i = 511 ; i > 0 ; i--)
-		{
-			for ( int j = 0 ; j < 512 ; j++)
-			{
-				float distanceFoam = csSquaredDist::PointPoint(csVector3(j,waterHeight,i), foampointsTemp.Get(0) ) ;
+        const int foammap_w = 512, foammap_h = 512;
+        csRef<csImageMemory> image;
+        image.AttachNew (new csImageMemory (foammap_w, foammap_h, CS_IMGFMT_TRUECOLOR));
 
-				for (int k = 1 ; k < (int)foampointsTemp.GetSize() ; k++)
-				{
-					float distanceFoamT = csSquaredDist::PointPoint(csVector3(j,waterHeight,i), foampointsTemp.Get(k) ) ;
+        csRGBpixel* colorArray = reinterpret_cast<csRGBpixel*> (image->GetImagePtr ());
+
+		for (int y = 0 ; y < foammap_h ; y++)
+ 		{
+			for ( int x = 0 ; x < foammap_w ; x++)
+ 			{
+				float distanceFoam = csSquaredDist::PointPoint(csVector3(x,waterHeight,y), foampointsTemp.Get(0) ) ;
+ 
+ 				for (int k = 1 ; k < foampointsTemp.GetSize() ; k++)
+ 				{
+					float distanceFoamT = csSquaredDist::PointPoint(csVector3(x,waterHeight,y), foampointsTemp.Get(k) ) ;
 					if(distanceFoamT < distanceFoam)
 					{
 						distanceFoam = distanceFoamT;
@@ -284,7 +289,7 @@ void csWaterMeshObject::SetupObject ()
 				{
 					distanceFoam = 0;
 				}
-				colorarray.Push(csRGBpixel((int)distanceFoam,0,0));
+                                colorArray[x+(foammap_h-1-y)*foammap_w].Set ((int)distanceFoam, 0, 0);
 			}
 		}
 
@@ -320,12 +325,8 @@ void csWaterMeshObject::SetupObject ()
 			foam_points->AddVariableToArray(foampoint);
 		}
 
-		csRef<iImage> image;
-		image.AttachNew (new csImageMemory (512,512, CS_IMGFMT_TRUECOLOR));
-
 		csRef<iTextureHandle> foamTextMap;
 		foamTextMap = g3d->GetTextureManager()->RegisterTexture(image, CS_TEXTURE_2D );
-		foamTextMap->Blit(0,0,512,512,(unsigned char*)colorarray.GetArray(),iTextureHandle::RGBA8888);
 
 		csShaderVariable *foam_dist = variableContext->GetVariableAdd(svStrings->Request("foam dist"));
 		foam_dist->SetType(csShaderVariable::TEXTURE);

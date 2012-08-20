@@ -73,7 +73,6 @@
 // anonymous namespace; contains helpers local to this file
 namespace
 {
-  
   // CS path separator ('/' or '\'), in string format
   const char CS_PATH_SEPARATOR_STRING []
     = { VFS_PATH_SEPARATOR, 0 };
@@ -83,6 +82,49 @@ namespace
   // Both path separators in string format (either '\/' or '//')
   const char ANY_PATH_SEPARATOR_STRING[]
     = { CS_PATH_SEPARATOR, VFS_PATH_SEPARATOR, 0 };
+
+  // Scoped automatic cs_free helper
+  template <typename T>
+  class ScopedFree
+  {
+    T *ptr;
+
+  public:
+    ScopedFree (T *ptr) : ptr (ptr) { }
+
+    ~ScopedFree ()
+    {
+      cs_free (ptr);
+    }
+
+    // Free pointer
+    void Invalidate ()
+    {
+      cs_free (ptr);
+      ptr = nullptr;
+    }
+
+    bool IsValid () const
+    {
+      return ptr != nullptr;
+    }
+
+    operator T * () const
+    {
+      return ptr;
+    }
+
+    T &operator * () const
+    {
+      return *ptr;
+    }
+
+    T *operator-> () const
+    {
+      return ptr;
+    }
+  };
+
 
   // Split a list of multiple paths delimited by VFS_PATH_DIVIDER.
   // pathList must be already expanded with ExpandVars().
@@ -100,6 +142,7 @@ namespace
   char *AllocNormalizedPath (const char *s);
   bool LoadVfsConfig (csConfigFile& cfg, const char *dir,
                       csStringSet& seen, bool verbose);
+
 } // end of anonymous namespace
 
 
@@ -229,7 +272,7 @@ public:
 
 VfsNode::VfsNode (const char *iPath, const char *iConfigKey,
 		  csVFS* vfs, unsigned int verbosity)
- : staticMounts (0), vfs (vfs)
+ : parent (nullptr), staticMounts (0), vfs (vfs)
 {
   vfsPath = CS::StrDup (iPath);
   configKey = CS::StrDup (iConfigKey);
@@ -826,7 +869,7 @@ void FindFilesContext::Insert (const char *path)
   if (!list)
     return;
 
-  if (table.Get (path, (size_t)-1) == (size_t)-1)
+  if (table.Get (path, (size_t)-1) != (size_t)-1)
     return; // already exists
 
   // first push into the list
@@ -922,7 +965,7 @@ bool csVFS::AddArchiveHandler (const ArchiveHandlerMetadata &metadata)
 
 void csVFS::RegisterPlugin (const char *className)
 {
-  CS_ASSERT (name); // name must not be NULL
+  CS_ASSERT (className); // name must not be NULL
 
   // get metadata to access required information
   csRef<iDocument> metadata = iSCF::SCF->GetPluginMetadata (className);
@@ -1255,8 +1298,13 @@ VfsNode *csVFS::CreateNodePath (const char *vfsPath) /* expanded vfs path */
     // requested node does not exist; create one
     // TODO: check for parameter definition
     node = new VfsNode (path, vfsPath, this, GetVerbosity ());
-    if (prev) // insert into the children list
+    if (prev)
+    {
+      // insert into the children list
       node->children.Push (prev);
+      // set parent
+      prev->parent = node;
+    }
     else // first iteration; this is the leaf node
       leaf = node;
 
@@ -1556,21 +1604,22 @@ bool csVFS::AddLink (const char *virtualPath, const char *realPath)
   csString expandedRealPath = ExpandVars (realPath);
 
   // expand variables and split paths
-  const char **rpList = SplitRealPath (expandedRealPath);
+  ScopedFree<const char *> rpList = SplitRealPath (expandedRealPath);
+  const char **current = rpList;
 
-  if (!rpList) // path splitting failed
+  if (!rpList.IsValid ()) // path splitting failed
     return false;
 
   // try instantiating iFileSystems
   csRefArray<iFileSystem> fsList; // list of filesystem pointers
 
-  while (*rpList)
+  while (*current)
   {
     // instantiate filesystem
-    csRef<iFileSystem> fs = CreateFileSystem (*rpList);
+    csRef<iFileSystem> fs = CreateFileSystem (*current);
     // insert into list
     fsList.Push (fs);
-    ++rpList;
+    ++current;
   }  
 
   bool result; // result of function call
@@ -1592,7 +1641,6 @@ bool csVFS::AddLink (const char *virtualPath, const char *realPath)
   }
 
   // free allocated memory
-  cs_free (rpList);
   cs_free (expandedPath);
 
   return result;
@@ -1683,11 +1731,11 @@ VfsNode *csVFS::GetNode (const char *path, const char **suffix)
 
   while (basePath != basePathEnd)
   {
-    if (*basePathEnd == VFS_PATH_SEPARATOR)
+    if (*(basePathEnd-1) == VFS_PATH_SEPARATOR)
     {
       // hit VFS_PATH_SEPARATOR...
       // null-terminate right after the separator
-      *(basePathEnd + 1) = '\0';
+      *basePathEnd = '\0';
 
       // try retrieving pointer
       VfsNode *entry = nodeTable.Get (basePath, nullptr);
@@ -1700,10 +1748,8 @@ VfsNode *csVFS::GetNode (const char *path, const char **suffix)
           // suffix information has been requested.
           // calculate required offset from beginning of 'path'
           // to get desired suffix portion of path.
-          // Since basePathEnd points to a path separator,
-          // 1 has to be added;
           // then suffix is obtained by (path + suffixOffset)
-          size_t suffixOffset = (basePathEnd - basePath) + 1;
+          size_t suffixOffset = basePathEnd - basePath;
           *suffix = path + suffixOffset;
         }
         // exit the loop.
@@ -2091,9 +2137,10 @@ bool csVFS::Mount (const char *virtualPath, const char *realPath)
   // expand real path
   csString rpExpanded = ExpandVars (realPath);
   // split real paths
-  const char **rpList = SplitRealPath (rpExpanded);
+  ScopedFree<const char *> rpList = SplitRealPath (rpExpanded);
+  const char **current = rpList;
 
-  if (!rpList) // path splitting failed
+  if (!rpList.IsValid ()) // path splitting failed
     return false;
 
   // expand vfs path (i.e. normalize)
@@ -2102,13 +2149,13 @@ bool csVFS::Mount (const char *virtualPath, const char *realPath)
   // try instantiating iFileSystems
   csRefArray<iFileSystem> fsList; // list of filesystem pointers
 
-  while (*rpList)
+  while (*current)
   {
     // instantiate filesystem
-    csRef<iFileSystem> fs = CreateFileSystem (*rpList);
+    csRef<iFileSystem> fs = CreateFileSystem (*current);
     // insert into list
     fsList.Push (fs);
-    ++rpList;
+    ++current;
   }  
 
   bool result; // result of function call
@@ -2146,7 +2193,6 @@ bool csVFS::Mount (const char *virtualPath, const char *realPath)
   }
 
   cs_free (pathExpanded);
-  cs_free (rpList);
 
   return result;
 }

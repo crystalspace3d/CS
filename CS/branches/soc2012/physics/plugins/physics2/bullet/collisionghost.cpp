@@ -5,6 +5,8 @@
 #include "cssysdef.h"
 #include "collisionghost.h"
 
+#include "portal.h"
+
 
 using namespace CS::Collisions;
 
@@ -42,6 +44,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     // set transform
     btTransform transform = btObject->getWorldTransform();
+    iMovable* movable = GetAttachedMovable();
     if (movable)
     {
       movable->SetFullTransform (BulletToCS(transform, system->getInverseInternalScale ()));
@@ -74,21 +77,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   bool csBulletGhostCollisionObject::RemoveBulletObject ()
   {
-    if (insideWorld)
+    sector->bulletWorld->removeCollisionObject (btObject);
+    insideWorld = false;
+
+    if (portalData && portalData->Portal)
     {
-      sector->bulletWorld->removeCollisionObject (btObject);
-      insideWorld = false;
-
-      if (objectCopy)
-        objectCopy->sector->RemoveCollisionObject (objectCopy);
-      if (objectOrigin)
-        objectOrigin->objectCopy = nullptr;
-
-      objectCopy = nullptr;
-      objectOrigin = nullptr;
-      return true;
+      // Remove from portal
+      portalData->Portal->RemoveTraversingObject(this);
     }
-    return false;
+    return true;
   }
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

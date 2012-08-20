@@ -43,7 +43,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   }
 
   csBulletCollisionActor::csBulletCollisionActor(csBulletSystem* sys) : scfImplementationType (this, sys),
-    controller(nullptr), airControlFactor(0)
+    controller(nullptr), airControlFactor(0), gravityEnabled(false)
   {
   }
 
@@ -128,9 +128,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       camera->GetTransform().SetOrigin(pos);
     }
+    iMovable* movable = GetAttachedMovable();
     if (movable)
     {
       movable->SetFullPosition(pos);
+      movable->UpdateMove();
     }
   }
   

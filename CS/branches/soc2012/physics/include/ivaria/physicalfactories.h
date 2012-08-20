@@ -86,21 +86,25 @@ namespace Physics
     /// Get the PhysicalObjectType of the object whose data is stored in this properties object
     virtual PhysicalObjectType GetPhysicalObjectType() const = 0;
 
-    /// Get the density of all objects that will be constructed with these properties
+    /// Get the density of all objects that will be constructed by this factory
     virtual float GetDensity() const = 0;
-    /// Set the density of all objects that will be constructed with these properties
+    /// Set the density of all objects that will be constructed by this factory
     virtual void SetDensity(float value) = 0;
     
-    /// Get the mass of all objects that will be constructed with these properties
+    /// Get the mass of all objects that will be constructed by this factory
     virtual float GetMass() const = 0;
-    /// Set the mass of all objects that will be constructed with these properties
+    /// Set the mass of all objects that will be constructed by this factory
     virtual void SetMass(float value) = 0;
 
-    /// Set the friction of all objects that will be constructed with these properties
+    /// Set the friction of all objects that will be constructed by this factory
     virtual void SetFriction(float value) = 0;
-
-    /// Get the friction of all objects that will be constructed with these properties
+    /// Get the friction of all objects that will be constructed by this factory
     virtual float GetFriction() const = 0;
+    
+    /// Whether this object is affected by gravity
+    virtual bool GetGravityEnabled() const = 0;
+    /// Whether this object is affected by gravity
+    virtual void SetGravityEnabled(bool enabled) = 0;
   };
 
   // TODO: There are a lot more configurable parameters - See btRigidBodyConstructionInfo:

@@ -55,7 +55,6 @@ protected:
   CS::Physics::RigidBodyState physicalState;
   short anchorCount;
   csRef<CS::Physics::iKinematicCallback> kinematicCb;
-  bool tempAddedColliders;    // we want to get rid of this as soon as possible
 
 protected:
   virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
@@ -108,7 +107,7 @@ public:
 
   virtual void AddForce (const csVector3& force);
 
-  virtual csVector3 GetLinearVelocity (size_t index = 0) const;
+  virtual csVector3 GetLinearVelocity () const;
   virtual void SetLinearVelocity (const csVector3& vel);
   
   virtual bool IsDynamic() const { return GetState() == CS::Physics::STATE_DYNAMIC; }
@@ -155,9 +154,18 @@ public:
   virtual void SetAngularFactor(const csVector3& f);
 
   /// Clone this rigidbody
+  virtual btCollisionObject* CreateBulletObject();
   virtual csPtr<CS::Collisions::iCollisionObject> CloneObject();
 
-  // Some convinience methods
+  /// Whether this object can be affected by gravity
+  virtual bool GetGravityEnabled() const;
+  /// Whether this object can be affected by gravity
+  virtual void SetGravityEnabled(bool enabled);
+
+  
+  // Some convinience methods:
+
+  /// Whether gravity is currently affecting this object
   bool DoesGravityApply() const;
   
   bool IsMovingUpward() const;

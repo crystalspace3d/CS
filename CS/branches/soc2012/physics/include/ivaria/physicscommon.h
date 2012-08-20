@@ -50,9 +50,13 @@ namespace CS
       SCF_INTERFACE (CS::Physics::iUpdatable, 1, 0, 0);
 
       /**
-       * Do something every step, given "dt" seconds have passed since the beginning of the last step.
+       * Method is called before every step, given "dt" seconds have passed since the beginning of the last step.
        */
-      virtual void DoStep(csScalar dt) = 0;
+      virtual void PreStep(csScalar dt) = 0;
+      /**
+       * Method is called after every step, given "dt" seconds have passed since the beginning of the last step.
+       */
+      virtual void PostStep(csScalar dt) = 0;
 
       /// The collision object associated with this updatable (if any)
       virtual CS::Collisions::iCollisionObject* GetCollisionObject() = 0;

@@ -4,10 +4,12 @@
 
 #include "cssysdef.h"
 #include "iengine/movable.h"
+#include "iengine/scenenode.h"
 #include "collisionobject2.h"
 #include "colliderprimitives.h"
 #include "collisionterrain.h"
 
+#include "portal.h"
 
 using namespace CS::Collisions;
 
@@ -30,8 +32,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletCollisionObject::csBulletCollisionObject (csBulletSystem* sys)
     : scfImplementationType (this), portalWarp (btQuaternion::getIdentity ()), sector (nullptr),
-    system (sys), objectOrigin (nullptr), objectCopy (nullptr), btObject (nullptr),
-    insideWorld (false)
+    system (sys), btObject (nullptr),
+    insideWorld (false), portalData(nullptr)
   {
   }
 
@@ -39,6 +41,41 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (btObject)
       delete btObject;
+
+    if (portalData)
+    {
+      // must not still be traversing
+      CS_ASSERT(!portalData->Portal);
+      delete portalData;
+    }
+  }
+  
+  void csBulletCollisionObject::SetAttachedSceneNode (iSceneNode* newSceneNode) 
+  {
+    if (sceneNode == newSceneNode) return;
+
+    if (sceneNode)
+    {
+      // remove old SceneNode from sector
+      if (sector) sector->RemoveSceneNodeFromSector(sceneNode); 
+    }
+    sceneNode = newSceneNode; 
+    if (sceneNode) 
+    {
+      // add new movable to sector
+      sceneNode->QueryMesh()->GetMovable()->SetFullTransform(GetTransform()); 
+      sceneNode->QueryMesh()->GetMovable()->UpdateMove ();
+      if (sector)
+      {
+        sector->AddSceneNodeToSector(sceneNode); 
+      }
+    }
+  }
+  
+  iMovable* csBulletCollisionObject::GetAttachedMovable () const
+  {
+    if (!sceneNode) return nullptr;
+    return sceneNode->QueryMesh()->GetMovable();
   }
 
   void csBulletCollisionObject::SetCollider (CS::Collisions::iCollider* newCollider)
@@ -57,6 +94,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     btTransform btTrans = CSToBullet (trans, system->getInternalScale ());
 
+    iMovable* movable = GetAttachedMovable();
     if (movable)
     {
       movable->SetFullTransform (trans);
@@ -127,6 +165,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   size_t csBulletCollisionObject::GetContactObjectsCount ()
   {
+    if (IsPassive()) return 0;
+
     size_t result = 0;
     if (IsPhysicalObject())
     {
@@ -141,14 +181,19 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         return 0;
     } 
 
-    if (objectCopy)
-      result += objectCopy->GetContactObjectsCount ();
+    if (portalData && portalData->OtherObject)
+    {
+      result += portalData->OtherObject->GetContactObjectsCount ();
+    }
 
     return result;
   }
 
   CS::Collisions::iCollisionObject* csBulletCollisionObject::GetContactObject (size_t index)
   {
+    if (IsPassive()) return nullptr;
+
+    // TODO: Fix this method and split it up into the corresponding sub-classes
     if (IsPhysicalObject())
     {
       if (index < contactObjects.GetSize () && index >= 0)
@@ -157,11 +202,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       }
       else
       {
-        // TODO: Highly inconsistent
-        if (objectCopy)
+        if (portalData && portalData->OtherObject)
         {
           index -= contactObjects.GetSize ();
-          return objectCopy->GetContactObject (index);
+          return portalData->OtherObject->GetContactObject (index);
         }
         else
         {
@@ -184,11 +228,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         }
         else
         {
-          // TODO: Highly inconsistent
-          if (objectCopy)
+          if (portalData && portalData->OtherObject)
           {
             index -= ghost->getNumOverlappingObjects ();
-            return objectCopy->GetContactObject (index);
+            return portalData->OtherObject->GetContactObject (index);
           }
           else
             return nullptr;
@@ -201,6 +244,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletCollisionObject::SetRotation (const csMatrix3& rot)
   {
+    iMovable* movable = GetAttachedMovable();
     if (movable)
       movable->GetTransform().SetT2O(rot);
     if (camera)
@@ -215,6 +259,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletCollisionObject::Rotate (const csVector3& v, float angle)
   {
+    iMovable* movable = GetAttachedMovable();
     if (movable)
       movable->GetTransform().RotateThis (v, angle);
     if (camera)
@@ -259,6 +304,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       }
     }
     return false;
+  }
+
+  
+  bool csBulletCollisionObject::IsPassive() const
+  {
+    return portalData != nullptr && !portalData->IsOriginal;
   }
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

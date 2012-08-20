@@ -150,12 +150,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   protected:
     csScalar density, mass;
     csScalar friction;
+    bool gravityEnabled;
 
   public:
     BulletPhysicalObjectFactory(CS::Collisions::iCollider* collider = nullptr, const csString& name = "") : 
         scfImplementationType (this, collider, name),
         density(0), mass(0),     // static objects
-        friction(10)
+        friction(10), gravityEnabled(true)
     {}
 
     /// Get the density of all objects that will be constructed with this factory
@@ -170,9 +171,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Set the friction of all objects that will be constructed with this factory
     virtual void SetFriction(csScalar value) { friction = value; }
-
     /// Get the friction of all objects that will be constructed with this factory
     virtual float GetFriction() const { return friction; }
+    
+    
+    /// Whether this object is affected by gravity
+    virtual bool GetGravityEnabled() const { return gravityEnabled; }
+    /// Whether this object is affected by gravity
+    virtual void SetGravityEnabled(bool enabled) { gravityEnabled = enabled; }
   };
 
   // TODO: There are a lot more configurable parameters - See btRigidBodyConstructionInfo:

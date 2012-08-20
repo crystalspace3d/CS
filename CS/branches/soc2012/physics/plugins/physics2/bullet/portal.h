@@ -12,23 +12,66 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 class CollisionPortal;
 class PortalTraversalData;
 
+
+struct PhysObjSynchronizer
+{
+  
+};
+
+class RigidBodySynchronizer : public PhysObjSynchronizer
+{
+  //csOrthoTransform oldTransform;
+
+public:
+  RigidBodySynchronizer() {}
+
+  void Synchronize(csBulletRigidBody* obj, csBulletRigidBody* cloneObj);
+};
+
+class SoftBodySynchronizer : public PhysObjSynchronizer
+{
+  csArray<btVector3> oldCloneVels;
+
+public:
+  SoftBodySynchronizer() {}
+
+  void SetupSynchronizer(csBulletSoftBody* cloneObj);
+
+  void Synchronize(csBulletSoftBody* obj, csBulletSoftBody* cloneObj);
+};
+
 /**
  * Represents all the data required by portals to manage traversal of physical objects
  */
 class PortalTraversalData
 {
 public:
-  /// Whether this is the data of a copy or the original
-  bool Copy;
+  /// Whether this belongs to the original object (or the cloned object)
+  bool IsOriginal;
+
+  /// The portal being traversed (same for original and copy)
+  CollisionPortal* Portal;
 
   /// The traversing object
   csWeakRef<csBulletCollisionObject> Object;
-
-  /// The portal being traversed
-  csWeakRef<CollisionPortal> Portal;
   
-  /// The other guy
-  PortalTraversalData* OtherData;
+  /// The cloned object
+  csWeakRef<csBulletCollisionObject> OtherObject;
+  
+  /// Helper that aids the traversal of the object
+  PhysObjSynchronizer* Synchronizer;
+
+public:
+  PortalTraversalData(bool isOriginal, CollisionPortal* portal, csBulletCollisionObject* obj) : 
+      IsOriginal(isOriginal), Portal(portal), Object(obj), Synchronizer(nullptr)
+  {
+  }
+
+  virtual ~PortalTraversalData()
+  {
+    if (Synchronizer)
+      delete Synchronizer;
+  }
 };
 
 /**
@@ -75,16 +118,22 @@ public:
 
   bool CanTraverse(csBulletCollisionObject* obj);
 
-  void AddObject (csRef<csBulletCollisionObject> object)
-    { objects.Push (object); }
+  inline bool IsTraversingThisPortal(csBulletCollisionObject* obj) { return obj->portalData && obj->portalData->Portal == this; }
 
   void UpdateCollisionsPreStep (csBulletSector* sector);
   void UpdateCollisionsPostStep (csBulletSector* sector) {}
 
-  void SetInformationToCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy,
-    const csOrthoTransform& warpTrans);
+  bool IsOnOtherSide(csBulletCollisionObject* obj);
+  void Traverse(csBulletCollisionObject* obj);
 
-  void GetInformationFromCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy, float duration);
+  /// Synchronize the two symbiotic objects and correct position, velocity and force
+  void Synchronize(csBulletCollisionObject* obj, csBulletCollisionObject* cloneObj);
+
+  /// Removes this portal from its sector
+  void RemoveFromSector();
+
+  /// Removes the given object from the context of this portal
+  void RemoveTraversingObject(csBulletCollisionObject* obj);
 };
 
 }

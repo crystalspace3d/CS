@@ -389,7 +389,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         factory->SetFriction(csScalar(.1));
 
         factory->SetAirControlFactor(actorAirControl);
-        factory->SetStepHeight(csScalar(0.5));
+        factory->SetStepHeight(csScalar(0.2));
 
         dynamicActor = factory->CreateDynamicActor();
       }

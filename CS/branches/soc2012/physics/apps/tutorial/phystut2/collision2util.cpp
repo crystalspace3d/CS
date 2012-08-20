@@ -87,7 +87,7 @@ void Collision2Helper::InitializeCollisionObjects (
 
       // This is very odd: Multiple portals with the same mesh transform?
       // TODO: Mesh transform can/should be retreived from the iPortal object - Don't need to pass it as an argument
-      //colSect->AddPortal (portal, mesh->GetMovable ()->GetFullTransform ());
+      colSect->AddPortal (portal, mesh->GetMovable ()->GetFullTransform ());
     }
   }
 
@@ -153,13 +153,9 @@ void Collision2Helper::InitializeCollisionObjects (
 
   if (collObj)
   {
-    // set movable stuff
-    iMovable* movable = mesh->GetMovable();
-    if (movable)
-    {
-      collObj->SetTransform(movable->GetFullTransform());
-      collObj->SetAttachedMovable(movable);
-    }
+    // set scenenode
+    collObj->SetTransform(mesh->GetMovable()->GetFullTransform());
+    collObj->SetAttachedSceneNode(mesh->QuerySceneNode());
 
     // set name
     collObj->QueryObject()->SetName(mesh->QueryObject()->GetName());

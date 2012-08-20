@@ -156,7 +156,7 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual void AddForce (const csVector3& force) = 0;
   
   /// Get the linear velocity (translational velocity component).
-  virtual csVector3 GetLinearVelocity (size_t index = 0) const = 0;
+  virtual csVector3 GetLinearVelocity () const = 0;
   /// Set the linear velocity (translational velocity component).
   virtual void SetLinearVelocity (const csVector3& vel) = 0;
 
@@ -174,6 +174,12 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
 
   /// Get the friction of this body.
   virtual float GetFriction () const = 0;
+
+  
+  /// Whether this object is affected by gravity
+  virtual void SetGravityEnabled(bool enabled) = 0;
+  /// Whether this object is affected by gravity
+  virtual bool GetGravityEnabled() const = 0;
 };
 
 /**
@@ -401,10 +407,6 @@ struct iSoftBody : public virtual iPhysicalBody
   /// Get the rigidity of this body.
   virtual float GetRigidity () = 0;
 
-  /// Set the linear velocity of the given vertex of the body.
-  virtual void SetLinearVelocity (const csVector3& velocity,
-      size_t vertexIndex) = 0;
-
   /**
    * Set the wind velocity of the whole body.
    */
@@ -527,6 +529,14 @@ virtual const csVector3 GetWindVelocity () const = 0;
 
   /// Generate cluster for the soft body.
   virtual void GenerateCluster (int iter) = 0;
+
+  /// Count of all nodes
+  virtual size_t GetNodeCount() const = 0;
+
+  /// The linear velocity of the given node
+  virtual csVector3 GetLinearVelocity (size_t nodeIndex) const = 0;
+  /// The linear velocity of the given node
+  virtual void SetLinearVelocity (size_t nodeIndex, const csVector3& vel) = 0;
 };
 
 /**
@@ -799,7 +809,7 @@ struct iJoint : public virtual iBase
  * A callback to be implemented when you are using kinematic bodies. If no
  * callback are provided then the dynamic system will use a default one which
  * will update the transform of the body from the position of the attached
- * movable (see iCollisionObject::SetAttachedMovable()).
+ * movable (see iCollisionObject::SetAttachedSceneNode()).
  * \sa CS::Physics::iRigidBody::SetKinematicCallback()
  */
 struct iKinematicCallback : public virtual iBase

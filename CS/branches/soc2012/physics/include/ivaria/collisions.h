@@ -38,6 +38,7 @@ struct iTerrainSystem;
 struct iSector;
 struct iMeshWrapper;
 struct iMovable;
+struct iSceneNode;
 struct iPortal;
 struct iCamera;
 struct iView;
@@ -187,14 +188,13 @@ struct iCollisionObject : public virtual iBase
   /// Return the type of the collision object.
   virtual CollisionObjectType GetObjectType () const = 0;
 
-  /**
-   * Set the movable attached to this collision object. Its position will be updated
-   * automatically when this object is moved.
-   */
-  virtual void SetAttachedMovable (iMovable* movable) = 0;
+  /// Set the SceneNode attached to this CO. Its transform will always coincide with the object's transform
+  virtual void SetAttachedSceneNode (iSceneNode* sceneNode) = 0;
+  /// Get the SceneNode attached to this CO. Its transform will always coincide with the object's transform
+  virtual iSceneNode* GetAttachedSceneNode () const = 0;
 
   /// Get the movable attached to this collision object.
-  virtual iMovable* GetAttachedMovable () = 0;
+  virtual iMovable* GetAttachedMovable () const = 0;
 
   /**
    * Set the camera attached to this collision object. Its position will be updated
@@ -276,7 +276,12 @@ struct iCollisionObject : public virtual iBase
 
   /// Creates a new object that has all the properties of this one, except for transformation and movable and camera
   virtual csPtr<iCollisionObject> CloneObject() = 0;
-
+  
+  /**
+   * Passive objects, such as portal clones, are not supposed to be tempered with 
+   * and should not be acted upon by game logic
+   */
+  virtual bool IsPassive() const = 0;
 };
 
 /**
@@ -373,6 +378,11 @@ struct iActor : public virtual iBase
   virtual float GetAirControlFactor () const = 0;
   /// Determines how much the actor can control movement when free falling
   virtual void SetAirControlFactor (float f) = 0;
+
+  /// Whether this object is subject to the constant gravitational forces of its sector
+  virtual bool GetGravityEnabled() const = 0;
+  /// Whether this object is subject to the constant gravitational forces of its sector
+  virtual void SetGravityEnabled(bool g) = 0;
 };
 
 /**

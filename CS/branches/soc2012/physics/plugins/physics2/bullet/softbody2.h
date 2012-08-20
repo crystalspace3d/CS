@@ -28,10 +28,11 @@ class btSoftBody;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
-class csBulletSoftBody : public scfImplementationExt1<
+class csBulletSoftBody : public scfImplementationExt2<
   csBulletSoftBody, 
   csPhysicalBody,
-  CS::Physics::iSoftBody>
+  CS::Physics::iSoftBody,
+  CS::Physics::iUpdatable>
 {
   friend class csBulletRigidBody;
   friend class csBulletJoint;
@@ -62,6 +63,7 @@ private:
   btSoftBody* btBody;
   short anchorCount;
   csArray<AnimatedAnchor> animatedAnchors;
+  bool gravityEnabled;
 
 public:
   void CreateSoftBodyObject(CS::Physics::iSoftBodyFactory* props);
@@ -72,9 +74,6 @@ public:
 
   //iCollisionObject
   virtual iObject* QueryObject (void) { return (iObject*) this; }
-
-  virtual void SetAttachedMovable (iMovable* movable) {csBulletCollisionObject::SetAttachedMovable (movable);}
-  virtual iMovable* GetAttachedMovable () {return csBulletCollisionObject::GetAttachedMovable ();}
 
   virtual void SetAttachedCamera (iCamera* camera) {csBulletCollisionObject::SetAttachedCamera (camera);}
   virtual iCamera* GetAttachedCamera () {return csBulletCollisionObject::GetAttachedCamera ();}
@@ -141,7 +140,7 @@ public:
   virtual void SetLinearVelocity (const csVector3& vel);
   
   virtual csVector3 GetLinearVelocity (size_t vertexIndex) const;
-  virtual void SetLinearVelocity (const csVector3& velocity, size_t vertexIndex);
+  virtual void SetLinearVelocity (size_t vertexIndex, const csVector3& velocity);
 
   virtual void SetWindVelocity (const csVector3& velocity);
   virtual const csVector3 GetWindVelocity () const;
@@ -202,8 +201,33 @@ public:
 
   virtual void GenerateCluster (int iter);
 
-  void UpdateAnchorPositions ();
+  
+  // Nodes
+  virtual size_t GetNodeCount() const;
+
+  /// Whether this object is affected by gravity
+  virtual bool GetGravityEnabled() const { return gravityEnabled; }
+  /// Whether this object is affected by gravity
+  virtual void SetGravityEnabled(bool enabled) { gravityEnabled = enabled; }
+
+
+
+  // iUpdatable
+  /// Update the softbody before a simulation step
+  virtual void PreStep (csScalar dt);
   void UpdateAnchorInternalTick (btScalar timeStep);
+  
+  /// Update the softbody after a simulation step
+  virtual void PostStep (csScalar dt) {}
+
+  /// We don't want the AddUpdatable method to add this object again when adding it as an updatable
+  virtual CS::Collisions::iCollisionObject* GetCollisionObject() { return nullptr; }
+
+  /// Called when updatable is added to the given sector
+  virtual void OnAdded(CS::Physics::iPhysicalSector* sector) {}
+
+  /// Called when updatable is removed from the given sector
+  virtual void OnRemoved(CS::Physics::iPhysicalSector* sector) {} 
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

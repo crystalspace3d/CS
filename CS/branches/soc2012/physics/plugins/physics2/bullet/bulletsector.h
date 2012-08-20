@@ -127,10 +127,6 @@ class csBulletSector : public scfVirtImplementationExt2<
   void CheckCollisions();
   void UpdateCollisionPortalsPreStep ();
   void UpdateCollisionPortalsPostStep ();
-  void SetInformationToCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy,
-    const csOrthoTransform& warpTrans);
-  void GetInformationFromCopy (csBulletCollisionObject* obj, csBulletCollisionObject* cpy);
-  
 
   void AddCollisionActor (CS::Collisions::iCollisionActor* actor);
 
@@ -237,9 +233,9 @@ public:
 
   void UpdateSoftBodies (float timeStep);
 
-  void AddMovableToSector (iMovable* movable);
+  void AddSceneNodeToSector (iSceneNode* sceneNode);
 
-  void RemoveMovableFromSector (iMovable* movable);
+  void RemoveSceneNodeFromSector (iSceneNode* sceneNode);
 
   inline csScalar GetWorldTimeStep() const { return worldTimeStep; }
 

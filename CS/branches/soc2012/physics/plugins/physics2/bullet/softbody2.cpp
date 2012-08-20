@@ -40,10 +40,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 void csBulletSoftBody::CreateSoftBodyObject(CS::Physics::iSoftBodyFactory* props)
 {
   CreatePhysicalBodyObject(props);
+
+  // TODO: All the soft-body related stuff
 }
 
 csBulletSoftBody::csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body)
-  :scfImplementationType (this, phySys), btBody (body), anchorCount (0)
+  :scfImplementationType (this, phySys), btBody (body), anchorCount (0), gravityEnabled(true)
 {
   btObject = body;
   btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
@@ -158,7 +160,8 @@ void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
   CS_ASSERT(btObject);
 
   btTransform btTrans = CSToBullet (trans, system->getInternalScale ());
-
+  
+  iMovable* movable = GetAttachedMovable();
   if (movable)
   {
     movable->SetFullTransform (trans);
@@ -356,11 +359,10 @@ void csBulletSoftBody::SetRigidity (float rigidity)
   btBody->m_materials[0]->m_kLST = rigidity;
 }
 
-void csBulletSoftBody::SetLinearVelocity (const csVector3& velocity, size_t vertexIndex)
+void csBulletSoftBody::SetLinearVelocity (size_t vertexIndex, const csVector3& velocity)
 {
   CS_ASSERT (vertexIndex < (size_t) btBody->m_nodes.size ());
-  btBody->addVelocity (CSToBullet (velocity, system->getInternalScale ())
-    - btBody->m_nodes[int (vertexIndex)].m_v, int (vertexIndex));
+  btBody->addVelocity (CSToBullet (velocity, system->getInternalScale ()) - btBody->m_nodes[int (vertexIndex)].m_v, int (vertexIndex));
 }
 
 void csBulletSoftBody::SetWindVelocity (const csVector3& velocity)
@@ -658,9 +660,28 @@ void csBulletSoftBody::GenerateCluster (int iter)
     btBody->generateClusters(iter);
 }
 
-void csBulletSoftBody::UpdateAnchorPositions ()
+size_t csBulletSoftBody::GetNodeCount() const 
+{ 
+  return size_t(btBody->m_nodes.size ()); 
+}
+
+void csBulletSoftBody::PreStep (csScalar dt)
 {
   CS_ASSERT (btBody);
+
+  // Counter gravity effects (that will be applied during simulation)
+  if (!gravityEnabled)
+  {
+    if (sector->GetGravity().SquaredNorm() > 0)
+    {
+      // apply the exact opposite of gravity (since it cannot simply be disabled or set)
+      // this is how gravity is applied in btSoftBody.cpp
+      btVector3 minusGravity = -(btBody->m_cfg.timescale * sector->GetWorldTimeStep()) * btBody->m_worldInfo->m_gravity;
+      btBody->addVelocity(minusGravity);
+    }
+  }
+
+  // Update anchor positions
   for (csArray<AnimatedAnchor>::Iterator it = animatedAnchors.GetIterator (); it.HasNext (); )
   {
     AnimatedAnchor& anchor = it.Next ();

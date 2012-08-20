@@ -3,6 +3,7 @@
 #include "vehicle.h"
 
 #include "csutil/hash.h"
+#include "iengine/scenenode.h"
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -209,11 +210,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  void BulletVehicle::DoStep(csScalar dt)
+  void BulletVehicle::PostStep(csScalar dt)
   {
     // update chassis movable to prevent jittering
-    chassis->GetAttachedMovable()->SetFullTransform(chassis->GetTransform());
-    chassis->GetAttachedMovable()->UpdateMove();
+    iMovable* movable = chassis->GetAttachedMovable();
+    movable->SetFullTransform(chassis->GetTransform());
+    movable->UpdateMove();
 
     // post-process wheels:
     for (size_t i = 0; i < wheels.GetSize(); ++i)
@@ -228,8 +230,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       wheel->btWheel.m_brake = 0;
       
       // update transformation
-      wheels[i]->GetMovable()->SetFullTransform(BulletToCS(wheel->btWheel.m_worldTransform, sys->getInverseInternalScale()));
-      wheels[i]->GetMovable()->UpdateMove ();
+      if (wheels[i]->GetSceneNode())
+      {
+        wheels[i]->GetSceneNode()->QueryMesh()->GetMovable()->SetFullTransform(BulletToCS(wheel->btWheel.m_worldTransform, sys->getInverseInternalScale()));
+        wheels[i]->GetSceneNode()->QueryMesh()->GetMovable()->UpdateMove ();
+      }
     }
   }
   
@@ -244,7 +249,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       iVehicleWheel* iwheel = wheels[i];
       csBulletSector* sector = dynamic_cast<csBulletSector*>(isector);
-      sector->AddMovableToSector(iwheel->GetMovable());
+      sector->AddSceneNodeToSector(iwheel->GetSceneNode());
     }
   }
   
@@ -259,7 +264,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       iVehicleWheel* iwheel = wheels[i];
       csBulletSector* sector = dynamic_cast<csBulletSector*>(isector);
-      sector->RemoveMovableFromSector(iwheel->GetMovable());
+      sector->RemoveSceneNodeFromSector(iwheel->GetSceneNode());
     }
   }
 }

@@ -92,6 +92,23 @@ class Hierarchy:
       func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
     if mat != None and mat.zbuf_mode != 'zuse':
       func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
+
+    # Shadow properties
+    noshadowreceive = noshadowcast = limitedshadowcast = False
+    for child in self.object.children:
+      if child.type == 'MESH' and child.parent_type != 'BONE':
+        if child.data.no_shadow_receive:
+          noshadowreceive = True
+        if child.data.no_shadow_cast:
+          noshadowcast = True
+        if child.data.limited_shadow_cast:
+          limitedshadowcast = True
+    if noshadowreceive:
+      func(' '*depth + '  <noshadowreceive />')
+    if noshadowcast:
+      func(' '*depth + '  <noshadowcast />')
+    if limitedshadowcast:
+      func(' '*depth + '  <limitedshadowcast />')
       
 
   def AsCSLib(self, path='', animesh=False, **kwargs):
@@ -247,9 +264,7 @@ class Hierarchy:
     """
 
     # Recover submeshes from kwargs
-    subMeshess = []
-    if 'subMeshess' in kwargs:
-      subMeshess = kwargs['subMeshess']
+    subMeshess = kwargs.get('subMeshess', [])
 
     # Export the animesh factory
     func(" "*depth + "  <params>")
@@ -325,18 +340,23 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
     func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
   if mat != None and mat.zbuf_mode != 'zuse':
     func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
+  if self.data.no_shadow_receive:
+    func(' '*depth + '  <noshadowreceive />')
+  if self.data.no_shadow_cast:
+    func(' '*depth + '  <noshadowcast />')
+  if self.data.limited_shadow_cast:
+    func(' '*depth + '  <limitedshadowcast />')
   func(' '*depth + '  <params>')
 
   # Recover submeshes from kwargs
-  if 'subMeshes' in kwargs:
-    subMeshes = kwargs['subMeshes']
+  subMeshes = kwargs.get('subMeshes', [])
 
   # Take the first found material as default object material
   if mat != None:
     func(" "*depth + "    <material>%s</material>"%(mat.uname))
   else:
     func(" "*depth + "    <material>%s</material>"%(self.uv_texture if self.uv_texture!=None else 'None'))
-  if not mat.HasDiffuseTexture() and mat.uv_texture != 'None':
+  if mat != None and not mat.HasDiffuseTexture() and mat.uv_texture != 'None':
     func(' '*depth + '    <shadervar type="texture" name="tex diffuse">%s</shadervar>'%(mat.uv_texture))
 
   # Export mesh's render buffers
@@ -350,11 +370,17 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
     for sub in subMeshes:
       sub.AsCS(func, depth+4, False)
 
+  if 'meshData' in kwargs:
+    meshData = kwargs['meshData']
+    # We know there is only one mesh in the data.
+    if meshData[0].data.use_auto_smooth:
+      func(" "*depth + "    <autonormals/>")
+
   func(' '*depth + '  </params>')
 
   # Don't close 'meshfact' flag if another mesh object is defined as 
   # an imbricated genmesh factory of this factory
-  if not ('dontClose' in kwargs and kwargs['dontClose']):
+  if not kwargs.get('dontClose', False):
     func(' '*depth + '</meshfact>')
 
 bpy.types.Object.AsCSGenmeshLib = AsCSGenmeshLib
@@ -431,6 +457,8 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
     func(' '*depth +'  <color red="%f" green="%f" blue="%f" />'% tuple(self.data.color))
     func(' '*depth +'  <radius brightness="%f">%f</radius>'%(self.data.energy, self.data.distance))
     func(' '*depth +'  <attenuation>linear</attenuation>')
+    if self.data.no_shadows:
+      func(' '*depth +'  <noshadows />')
     func(' '*depth +'</light>')
 
   elif self.type == 'EMPTY':

@@ -62,17 +62,8 @@
 
 #define NEW_CONFIG_SCANNING
 
-// helper to convert macro into string
-#define __VFS_TO_STRING(macro)      #macro
 // Default VFS protocol (file)
 #define VFS_DEFAULT_PROTOCOL         "file"
-// CS path separator ('/' or '\'), in string format
-#define CS_PATH_SEPARATOR_STRING     __VFS_TO_STRING (CS_PATH_SEPARATOR)
-// VFS path separator ('/'), in string format
-#define VFS_PATH_SEPARATOR_STRING    __VFS_TO_STRING (VFS_PATH_SEPARATOR)
-// Both path separators in string format (either '\/' or '//')
-#define ANY_PATH_SEPARATOR_STRING    CS_PATH_SEPARATOR_STRING \
-                                     VFS_PATH_SEPARATOR_STRING
 // VFS root path
 #define VFS_ROOT_PATH                VFS_PATH_SEPARATOR_STRING
 // whitespace characters (subject to trimming) in VFS
@@ -82,6 +73,17 @@
 // anonymous namespace; contains helpers local to this file
 namespace
 {
+  
+  // CS path separator ('/' or '\'), in string format
+  const char CS_PATH_SEPARATOR_STRING []
+    = { VFS_PATH_SEPARATOR, 0 };
+  // VFS path separator ('/'), in string format
+  const char VFS_PATH_SEPARATOR_STRING[]
+    = { VFS_PATH_SEPARATOR, 0 };
+  // Both path separators in string format (either '\/' or '//')
+  const char ANY_PATH_SEPARATOR_STRING[]
+    = { CS_PATH_SEPARATOR, VFS_PATH_SEPARATOR, 0 };
+
   // Split a list of multiple paths delimited by VFS_PATH_DIVIDER.
   // pathList must be already expanded with ExpandVars().
   // the callee is responsible for freeing the returned pointer via cs_free().

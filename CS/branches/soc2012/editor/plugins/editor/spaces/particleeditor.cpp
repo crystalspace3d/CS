@@ -382,7 +382,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     emitterList->Clear();
     for(size_t i = 0; i < factory->GetEmitterCount(); i++) {
       iParticleEmitter* em = factory->GetEmitter(i);
-      emitterList->Append(wxString::Format(wxT("Emitter #%d"), i), (void*)em);
+      emitterList->Append(wxString::Format(wxT("Emitter #%u"), i), (void*)em);
     }
   }
 
@@ -391,7 +391,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     effectorList->Clear();
     for(size_t i = 0; i < factory->GetEffectorCount(); i++) {
       iParticleEffector* em = factory->GetEffector(i);
-      effectorList->Append(wxString::Format(wxT("Effector #%d"), i), (void*)em);
+      effectorList->Append(wxString::Format(wxT("Effector #%u"), i), (void*)em);
     }
   }
 }

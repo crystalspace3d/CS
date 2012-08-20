@@ -1449,7 +1449,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csutil\xmltiny.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\libs\..\include\cseditor\modifiableimpl.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\aabbtree.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\box.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\bsptree.h" />

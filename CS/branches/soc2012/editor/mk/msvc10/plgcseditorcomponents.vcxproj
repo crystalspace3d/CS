@@ -1217,20 +1217,22 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
+    <ClCompile Include="..\..\plugins\editor\components\2dinfo.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\cs3dengine.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\exit.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\logger.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\maploader.cpp" />
     <ClCompile Include="..\..\plugins\editor\components\scenemanager.cpp" />
-    <ClCompile Include="..\..\plugins\editor\components\vfsfiledialog.cpp" />
+    <ClCompile Include="..\..\plugins\editor\components\translation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\plugins\editor\components\2dinfo.h" />
     <ClInclude Include="..\..\plugins\editor\components\cs3dengine.h" />
     <ClInclude Include="..\..\plugins\editor\components\exit.h" />
     <ClInclude Include="..\..\plugins\editor\components\logger.h" />
     <ClInclude Include="..\..\plugins\editor\components\maploader.h" />
     <ClInclude Include="..\..\plugins\editor\components\scenemanager.h" />
-    <ClInclude Include="..\..\plugins\editor\components\vfsfiledialog.h" />
+    <ClInclude Include="..\..\plugins\editor\components\translation.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\plgcseditorcomponents.rc" />
@@ -1239,6 +1241,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <None Include="..\..\plugins\editor\components\cseditorcomponents.csplugin" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="libcrystalspace_gui.vcxproj">
+      <Project>{FA91393C-515B-D658-CDE3-12B1E346CB81}</Project>
+    </ProjectReference>
     <ProjectReference Include="libcrystalspace.vcxproj">
       <Project>{94434FE9-3277-7608-522B-0BEBB7690B41}</Project>
     </ProjectReference>

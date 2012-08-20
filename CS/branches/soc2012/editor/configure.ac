@@ -403,6 +403,11 @@ CS_COMPILER_IGNORE_NON_VIRTUAL_DTOR([C++],
     [CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS.WARNING.NO_NON_VIRTUAL_DTOR],
         [$cs_cv_prog_cxx_ignore_non_virtual_dtor])])
 
+CS_COMPILER_IGNORE_CONST_STRINGS([C++],
+    [cs_cv_prog_cxx_ignore_const_strings],
+    [CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS.WARNING.NO_CONST_STRINGS],
+        [$cs_cv_prog_cxx_ignore_const_strings])])
+
 
 
 #------------------------------------------------------------------------------
@@ -2258,16 +2263,22 @@ AC_CHECK_TYPE([intmax_t], [CS_HEADER_PROPERTY([CS_HAVE_INTMAX_T])], [],
 # Check if the PRIx99 printf()-formatting adjunct macros are available.
 #------------------------------------------------------------------------------
 AC_CHECK_HEADERS([inttypes.h])
-CS_CHECK_BUILD([for PRIx99 macros], [cs_cv_c_format_macros],
-    [AC_LANG_PROGRAM(
-        [[#include <stddef.h>
-	#define __STDC_FORMAT_MACROS
-	#if HAVE_INTTYPES_H
-        #include <inttypes.h>
-	#endif
-	]],
-        [char const* s = "widget %" PRIu32 " toggled";])],
-    [], [], [CS_HEADER_PROPERTY([CS_HAVE_C_FORMAT_MACROS])])
+AC_DEFUN([CS_CHECK_PRIx99],
+    [CS_CHECK_BUILD([for PRIx99 m4_ifval([$1],[$1-bit ],[])macros],
+	[cs_cv_c_format$1_macros],
+	[AC_LANG_PROGRAM(
+	    [[#include <stddef.h>
+	    #define __STDC_FORMAT_MACROS
+	    #if HAVE_INTTYPES_H
+	    #include <inttypes.h>
+	    #endif
+	    ]],
+	    [char const* s = "widget %" PRIu[]m4_default([$1],[32]);])],
+	[], [], [CS_HEADER_PROPERTY([CS_HAVE_C_FORMAT$1_MACROS])])])
+
+CS_CHECK_PRIx99
+AS_IF([test $cs_cv_c_format_macros = yes],
+  [CS_CHECK_PRIx99([64])])
 
 
 

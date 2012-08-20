@@ -447,7 +447,7 @@ public:
     : scfImplementation1(this)
   {
     // Should match anything that's got a special delimiter in it
-    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%{}$-]");
+    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$-]");
   }
 
   virtual ~csConstraintVfsFile() 
@@ -483,7 +483,7 @@ public:
     : scfImplementation1(this)
   {
     // Just like the file matcher, only allows colons and forward slashes
-    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%{}$/-]");
+    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$/-]");
   }
 
   virtual ~csConstraintVfsDir() 
@@ -518,7 +518,7 @@ public:
     : scfImplementation1(this)
   {
     // Just like the dir regex
-    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%{}$/-]");
+    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$/-]");
   }
 
   virtual ~csConstraintVfsPath() 
@@ -576,7 +576,7 @@ public:
     if(minLength >= 0 && (val.Length() < minLength || val.Length() > maxLength))
       return false;
 
-    if((maxLength >= 0 && (matcher != nullptr && matcher->Match(val) == csrxNoMatch))
+    if(maxLength >= 0 && (matcher != nullptr && matcher->Match(val) == csrxNoMatch))
       return false;
 
     return true;

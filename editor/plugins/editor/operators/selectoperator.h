@@ -69,6 +69,7 @@ private:
   iObjectRegistry* object_reg;
   csWeakRef<iObject> object;
   bool multiple;
+  csWeakRefArray<iObject> selection;
 };
 
 }

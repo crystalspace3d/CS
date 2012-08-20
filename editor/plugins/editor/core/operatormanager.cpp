@@ -56,7 +56,6 @@ bool OperatorManager::HandleEvent (iEvent& ev)
     csRef<iContext> context = csQueryRegistry<iContext> (object_reg);
     if (modalOperator->Modal (context, &ev) != OperatorRunningModal)
     {
-      printf ("OperatorManager::HandleEvent MODAL finished\n");
       modalOperator.Invalidate ();
     }
     else
@@ -125,13 +124,11 @@ csPtr<iOperator> OperatorManager::CreateOperator (const char* identifier)
 
 iOperator* OperatorManager::Execute (iOperator* op)
 {
-  printf ("OperatorManager::Execute %s\n", op->GetIdentifier ());
   iContext* context = editor->GetContext ();
   if (op->Poll (context))
   {
     if (op->Execute (context) == OperatorRunningModal)
     {
-      printf ("OperatorManager::Execute MODAL %s\n", op->GetIdentifier ());
       modalOperator = op;
     }
   }
@@ -145,7 +142,6 @@ iOperator* OperatorManager::Execute (iOperator* op)
 
 iOperator* OperatorManager::Invoke (iOperator* op, iEvent* ev)
 {
-  printf ("OperatorManager::Invoke %s %s %s\n",  op->GetIdentifier (), op->GetLabel (), op->GetDescription ());
   iContext* context = editor->GetContext ();
   if (op->Poll (context))
   {

@@ -917,7 +917,12 @@ void csVFS::RegisterPlugin (const char *className)
 
   // get metadata to access required information
   csRef<iDocument> metadata = iSCF::SCF->GetPluginMetadata (className);
-  csRef<iDocumentNode> rootNode = metadata->GetRoot ();
+  if (!metadata.IsValid ()) // invalid plugin
+    return;
+
+  csRef<iDocumentNode> rootNode = metadata->GetRoot ()->GetNode ("plugin");
+  if (!rootNode.IsValid ()) // no <plugin> node => invalid .csplugin
+    return;
 
   // filesystem factory information
   csRef<iDocumentNodeIterator> factoryNodes = rootNode->GetNodes ("filesystem");
@@ -984,6 +989,24 @@ void csVFS::RegisterPlugin (const char *className)
 bool csVFS::Initialize (iObjectRegistry* r)
 {
   object_reg = r;
+
+  // 1st thing to do:
+  // prepare plugin list; will be initialized lazily
+  // get filesystem factories and archive handlers
+  csRef<iStringArray> pluginList =
+    iSCF::SCF->QueryClassList ("crystalspace.filesys.");
+
+  while (!pluginList->IsEmpty ())
+  {
+    // @@@FIXME: is this ordering what we really want to use?
+    // pop entry
+    char *pluginName = pluginList->Pop ();
+    // Check metadata to see whether they could be used
+    RegisterPlugin (pluginName);
+    // cleanup
+    delete [] pluginName;
+  }
+
 #ifdef NEW_CONFIG_SCANNING
   static const char *vfsSubdirs[] = {
     "etc/" CS_PACKAGE_NAME,
@@ -1054,28 +1077,7 @@ bool csVFS::Initialize (iObjectRegistry* r)
   LoadVfsConfig (config, basedir, seen, verbose_scan);
 #endif
 
-  if (ReadConfig ())
-  {
-    // prepare plugin list; will be initialized lazily
-    // get filesystem factories and archive handlers
-    csRef<iStringArray> pluginList =
-      iSCF::SCF->QueryClassList ("crystalspace.filesys.");
-
-    while (!pluginList->IsEmpty ())
-    {
-      // @@@FIXME: is this ordering what we really want to use?
-      // pop entry
-      char *pluginName = pluginList->Pop ();
-      // Check metadata to see whether they could be used
-      RegisterPlugin (pluginName);
-      // cleanup
-      delete [] pluginName;
-    }
-
-    return true;
-  }
-
-  return false;
+  return ReadConfig ();
 }
 
 bool csVFS::ReadConfig ()

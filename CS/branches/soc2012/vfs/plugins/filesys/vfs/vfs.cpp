@@ -295,11 +295,17 @@ void VfsNode::RemountFileSystem (size_t index)
   CS_ASSERT (index < staticMounts);
 
   // store new entries from index
-  fileSystems.Push (fileSystems.Get (index));
-  realPaths.Push (realPaths.Get (index));
-  // remove old entry
-  fileSystems.DeleteIndex (index);
-  realPaths.DeleteIndex (index);
+  csRef<iFileSystem> tempFS = fileSystems.Get (index);
+  csString tempPath = realPaths.Get (index);
+
+  size_t newIndex = fileSystems.Push (tempFS);
+  realPaths.Push (tempPath);
+  if (newIndex != index)
+  {
+    // remove old entry
+    fileSystems.DeleteIndex (index);
+    realPaths.DeleteIndex (index);
+  }
 }
 
 bool VfsNode::MountFileSystem (const char *realPath, iFileSystem *fs)

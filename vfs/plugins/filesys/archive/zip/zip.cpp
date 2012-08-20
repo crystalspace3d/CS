@@ -482,7 +482,7 @@ csZipFS::csZipFS (iBase *plugin,
                   const char *archivePath,
                   const char *suffix) :
   scfImplementationType (this, plugin),
-  archive (csPtr<ZipArchive> (archive)),
+  archive (archive),
   archivePath (archivePath),
   root (suffix),
   lastError (VFS_STATUS_OK)

@@ -1477,7 +1477,7 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
   while (!fs.IsValid () && !fsClasses.IsEmpty ())
   {
     // get last entry of the list
-    CS::Utility::ScopedDelete<char> fsClass (fsClasses.Pop ());
+    CS::Utility::ScopedDelete<char, true> fsClass (fsClasses.Pop ());
 
     // get factory from object registry (loading if needed)
     csRef<iFileSystemFactory> factory =

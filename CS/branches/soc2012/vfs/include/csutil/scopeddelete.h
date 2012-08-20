@@ -32,13 +32,15 @@ namespace Utility
   /**
    * Helper class to <tt>delete</tt> a pointer when exiting a scope.
    * \a T is the type pointed to.
+   * \a IsArray true if memory was allocated with new [] operator;
+   *   false if new was used.
    */
-  template<class T>
-  class ScopedDelete : public ScopedPointer<T>
+  template<class T, bool IsArray = false>
+  class ScopedDelete : public ScopedPointer<T, IsArray>
   {
   public:
     /// Construct from given pointer
-    ScopedDelete (T* ptr) : ScopedPointer<T> (ptr) {}
+    ScopedDelete (T* ptr) : ScopedPointer<T, IsArray> (ptr) {}
   };
 
 } // namespace Utility

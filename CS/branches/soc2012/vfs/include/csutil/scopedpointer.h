@@ -32,8 +32,10 @@ namespace Utility
   /**
    * Smart pointer that deletes the contained pointer when the scope is exited.
    * \tparam T is the type pointed to.
+   * \tparam IsArray true if pointer was allocated with new [] operator;
+   *   false if new was used.
    */
-  template<class T>
+  template<class T, bool IsArray = false>
   class ScopedPointer : private NonCopyable
   {
     T* ptr;
@@ -44,7 +46,7 @@ namespace Utility
      */
     ScopedPointer (T* ptr = nullptr) : ptr (ptr) {}
     /// Destruct. Deletes the given pointer!
-    ~ScopedPointer() { delete ptr; }
+    ~ScopedPointer() { if (IsArray) delete [] ptr; else delete ptr; }
 
     /**
      * Replace the contained pointer with another.
@@ -52,7 +54,10 @@ namespace Utility
      */
     void Reset (T* ptr = nullptr)
     {
-      delete this->ptr;
+      if (IsArray)
+        delete [] this->ptr;
+      else
+        delete this->ptr;
       this->ptr = ptr;
     }
     /// Invalidate (delete) the contained pointer
@@ -73,7 +78,6 @@ namespace Utility
     { return *ptr; }
   
   };
-
 } // namespace Utility
 } // namespace CS
 

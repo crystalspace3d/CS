@@ -307,7 +307,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     // Add the emitter to the actual previewed mesh
     csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
     iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
-    csRef<iParticleSystem> sys(scfQueryInterface<iParticleSystem>(mesh));
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
     sys->AddEmitter(em);
   }
 
@@ -317,6 +317,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
     factory->RemoveEmitter(event.GetSelection());
     UpdateEmitterList();
+
+    // Remove the emitter from the actual previewed mesh
+    csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
+    iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
+    sys->RemoveEmitter(event.GetSelection());
   }
 
   void CSPartEditSpace::OnButtonAddEffector( wxCommandEvent &event )
@@ -324,12 +330,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     // TODO: context menu to pick
     csRef<iParticleBuiltinEffectorForce> eff = effectorFactory->CreateForce();
     factory->AddEffector(eff);
-    UpdateEmitterList();
+    UpdateEffectorList();
 
     // Add the effector to the actual previewed mesh
     csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
     iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
-    csRef<iParticleSystem> sys(scfQueryInterface<iParticleSystem>(mesh));
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
     sys->AddEffector(eff);
   }
 
@@ -339,6 +345,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
     factory->RemoveEffector(event.GetSelection());
     UpdateEffectorList();
+
+    // Remove the effector from the actual previewed mesh
+    csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
+    iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
+    sys->RemoveEffector(event.GetSelection());
   }
 
   void CSPartEditSpace::OnEmitterSelect( wxCommandEvent& event )

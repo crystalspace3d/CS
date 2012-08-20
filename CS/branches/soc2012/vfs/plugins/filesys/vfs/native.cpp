@@ -46,6 +46,7 @@
 #include "csutil/scfstringarray.h"
 #include "cstool/vfspartialview.h"
 #include "cstool/vfsfilebase.h"
+#include "cstool/vfspathhelper.h"
 
 // VC++ defines _S_IFDIR instead of S_IFDIR
 // Define _S_IFDIR for other platform
@@ -197,6 +198,8 @@ public:
   virtual csString GetRootRealPath ();
   // Query and reset last error status
   virtual int GetStatus ();
+  // Change root directory
+  virtual bool ChRoot (const char *newRoot, bool mustExist = false);
 };
 
 // Factory interface for NativeFS
@@ -206,7 +209,7 @@ class NativeFSFactory : public scfImplementation2<NativeFSFactory,
 {
 public:
   // Create filesystem instance
-  virtual iFileSystem *Create (const char *realPath, int &oStatus);
+  virtual csPtr<iFileSystem> Create (const char *realPath, int &oStatus);
   // constructor
   NativeFSFactory (iBase *iParent);
   // destructor
@@ -295,56 +298,7 @@ public:
    */
   virtual const char *GetName () { return "#NativeFile::View"; }
 };
-/*
-// View for NativeFile
-class NativeFile::View : public scfImplementation1<View, iFile>
-{
-  friend class NativeFile;
 
-  // parent NativeFile
-  csRef<NativeFile> parent;
-  // zero-based offset of parent NativeFile
-  uint64_t offset;
-  // length of this view
-  uint64_t size;
-  // zero-based position of this view
-  uint64_t pos;
-  // last error status of this view
-  int lastError;
-
-  virtual const char *GetName () { return "#NativeFile::View"; }
-  // Constructor
-  View (NativeFile *parent, uint64_t offset, uint64_t size);
-public:
-  // Destructor
-  virtual ~View ();
-  // Query filename
-  virtual const char *GetName () { return "#NativeFile::View"; }
-  // Query file size
-  virtual uint64_t GetSize () { return size; }
-  // Query and reset last error status
-  virtual int GetStatus ();
-  // Read Length bytes into the buffer at which Data points.
-  virtual size_t Read (char *data, size_t length);
-  // Write Length bytes from the buffer at which Data points.
-  virtual size_t Write (const char *data, size_t length);
-  // Flush strem
-  virtual void Flush ();
-  // Check whether pointer is at End of File
-  virtual bool AtEOF ();
-  // Query file pointer (absolute position)
-  virtual uint64_t GetPos ();
-  // Set file pointer (relative position; absolute by default)
-  virtual bool SetPos (off64_t newPos, int relativeTo = VFS_POS_ABSOLUTE);
-  // Get all data into a single buffer.
-  virtual csPtr<iDataBuffer> GetAllData (bool nullTerminated = false);
-  // Get all data into a single buffer with custom allocator.
-  virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
-  // Get subset of file as iFile
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0);
-};
-*/
 // --- NativeFile ---------------------------------------------------------- //
 /* NativeFile Constructor
  - takes parent      (pointer to filesystem which invoked the constructor)
@@ -743,7 +697,8 @@ csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
  - Remarks: realPath is assumed to be non-null and end with trailing path
      separator (e.g. slash, backslash) before null-terminator
  */
-NativeFS::NativeFS (const char *realPath) : scfImplementationType (this)
+NativeFS::NativeFS (const char *realPath) :
+  scfImplementationType (this)
 {
   // Store mount root (real path) of this instance
   size_t mountRootLen = strlen (realPath) + 1; // +1 for null-terminator
@@ -753,6 +708,8 @@ NativeFS::NativeFS (const char *realPath) : scfImplementationType (this)
   mountRootExpanded = (char *)cs_malloc (CS_MAXPATHLEN + 1);
   // @@@FIXME: we just assume the length; this is due to bad API design...
   csExpandPlatformFilename (mountRoot, mountRootExpanded);
+
+  // @@@TODO: test validity of given path
 
   // Set last error to VFS_STATUS_OK
   lastError = VFS_STATUS_OK;
@@ -824,17 +781,11 @@ csPtr<iFile> NativeFS::Open (const char *path,
   // setup required parameters;
   csString realPath (ToRealPath (path));
   csString vfsPath (pathPrefix);
-
-  // append VFS path separator if needed
-  if ((vfsPath[vfsPath.Length ()-1] != VFS_PATH_SEPARATOR)
-      && (path[0] != VFS_PATH_SEPARATOR))
-    vfsPath << VFS_PATH_SEPARATOR;
-
-  // append rest of the path to the base
-  vfsPath << path;
+  csVfsPathHelper::AppendPath (vfsPath, path);
 
   // try creating an instance
-  iFile *file = new NativeFile (this, vfsPath, realPath, mode);
+  iFile *file =
+    new NativeFile (this, vfsPath, realPath, mode);
 
   // did it go well?
   switch (lastError = file->GetStatus ())
@@ -1110,17 +1061,56 @@ int NativeFS::GetStatus ()
   return status;
 }
 
+// Change root directory
+bool NativeFS::ChRoot (const char *newRoot, bool mustExist/*= false*/)
+{
+  // check whether mustExist flag is false (force override)
+  // -or- whether path exists and is directory
+  if (!mustExist || IsDir (newRoot))
+  {
+    csString newMountRoot = csVfsPathHelper::ComposePath (mountRoot, newRoot);
+    // delete old buffer
+    cs_free (mountRoot);
+    // set new root
+    mountRoot = (char *)cs_malloc (newMountRoot.Length () + 1);
+    strcpy (mountRoot, newMountRoot);
+    // expand new path
+    csExpandPlatformFilename (mountRoot, mountRootExpanded);
+    return true;
+  }
+  else if (Exists (newRoot))
+  {
+    // given path is non-directory
+    SetLastError (VFS_STATUS_DIRISFILE);
+  }
+  else
+  {
+    // given path doesn't exist at all.
+    // @@@FIXME: test entire directory root and use DIRISFILE if appropriate
+    SetLastError (VFS_STATUS_FILENOTFOUND);
+  }
+
+  return false;
+}
+
 // --- NativeFSFactory ----------------------------------------------------- //
 
 SCF_IMPLEMENT_FACTORY (NativeFSFactory)
 
 // Factory interface for NativeFS
-iFileSystem *NativeFSFactory::Create (const char *realPath, int &oStatus)
+csPtr<iFileSystem> NativeFSFactory::Create (const char *realPath, int &oStatus)
 {
   iFileSystem *fs = new NativeFS (realPath);
-  // success
-  oStatus = VFS_STATUS_OK;
-  return fs;
+  // success?
+  int result = fs->GetStatus ();
+  oStatus = result;
+  if (result != VFS_STATUS_OK)
+  {
+    // invalidate in case of failure
+    delete fs;
+    fs = nullptr;
+  }
+  return csPtr<iFileSystem> (fs);
 }
 
 // constructor

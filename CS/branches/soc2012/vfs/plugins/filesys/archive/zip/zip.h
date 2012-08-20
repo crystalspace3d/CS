@@ -23,14 +23,63 @@
 #include "csutil/scf_implementation.h"
 #include "csutil/threading/rwmutex.h"
 #include "cstool/vfsfilebase.h"
+#include "csutil/databuf.h"
 #include "iutil/vfs.h"
 #include "iutil/comp.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (VFS_ARCHIVE_ZIP)
 {
-
-class ZipArchive;
+// forward declarations
+class ArchiveCache;
+class csZipFS;
 class csZipFSHandler;
+// constants
+const size_t DEFAULT_BUFFER_SIZE = 1024; // 1 KBytes
+const int    CACHE_OK            = 0; // no updates, no reference
+const int    CACHE_UPDATED       = 1; // cache has been updated
+const int    CACHE_PACK_ON_WRITE = 4; // compress on write
+
+// Custom csArchive that uses iFileSystem-based file handling
+class ZipArchive : public csArchive, public CS::Utility::AtomicRefCount
+{
+  friend class ArchiveCache;
+  friend class csZipFS;
+
+private:
+  iFileSystem *parent;
+  csString identifier;
+
+  // cache lookup table
+  csHash<size_t, csString> cacheLookup;
+  // actual data cache; required to allow partial read/write
+  csRefArray<iDataBuffer> cache;
+  // flag showing cache status
+  csArray<int> cacheFlags;
+  // valid size of individual cached files
+  csArray<size_t> cacheSize;
+  
+  // mutex for thread-safe access
+  CS::Threading::RecursiveMutex mutex;
+
+  // overridden to support nested archives
+  virtual csPtr<iFile> OpenBaseFile (int mode);
+
+  // constructor
+  ZipArchive (const char *identifier,
+              const char *path,
+              iFileSystem *parentFS = nullptr);
+public:
+  // Flush
+  virtual bool Flush ();
+  // Get archive identifier
+  void GetIdentifier (csString &oIdentifier);
+  // Flush cache
+  void FlushCache ();
+  // Purge entire cache
+  void PurgeCache ();
+  // Purge individual entry in cache
+  void PurgeCache (const csString &path);
+};
 
 // Zip acrhive filesystem class for VFS
 class csZipFS : public scfImplementation1<csZipFS, iFileSystem>
@@ -38,20 +87,22 @@ class csZipFS : public scfImplementation1<csZipFS, iFileSystem>
   // let factory access the constructor
   friend class csZipFSHandler;
 
-  // mutex for thread-safe access
-  CS::Threading::RecursiveMutex mutex;
-
   // underlying archive of current filesystem
   csRef<ZipArchive> archive;
+  // full path of current archive
+  csString archivePath;
   // root path of filesystem, relative to archive root
   csString root;
   // last error status
   int lastError;
 
   // constructor
-  csZipFS (ZipArchive *archive, const char *rootPath);
+  csZipFS (ZipArchive *archive,
+           const char *archivePath,
+           const char *rootPath);
 
 public:
+  /* iFileSystem methods */
   // destructor
   virtual ~csZipFS ();
 
@@ -86,7 +137,72 @@ public:
 
   virtual bool IsDir (const char *path);
 
+  virtual bool ChRoot (const char *newRoot, bool mustExist = false);
+
   virtual bool Flush ();
+
+  /* Local public helpers */
+  size_t ReadFile (const char *path, size_t offset, 
+                   char *data, size_t dataSize);
+  size_t WriteFile (const char *path, size_t offset,
+                    const char *data, size_t dataSize);
+  // returns whole content of file (buffered), with null-terminator
+  template <class Allocator>
+  csRef<iDataBuffer> GetFileContents (const char *path,
+                                      bool fileMustExist,
+                                      size_t &oSize,
+                                      Allocator &alloc)
+  {
+    // template function implemented on header
+    if (path [strlen (path) - 1] == '/')
+    {
+      // this won't work with folders
+      return csRef<iDataBuffer> ();
+    }
+    // construct full path from archive root
+    // (cache is shared among filesystems sharing single archive)
+    csString fullPath (root);
+    csVfsPathHelper::AppendPath (fullPath, path);
+    // acquire lock on archive
+    CS::Threading::RecursiveMutexScopedLock lock (archive->mutex);
+    // perform cache lookup
+    size_t index = archive->cacheLookup.Get (fullPath,
+                                             csArrayItemNotFound);
+    if (index != csArrayItemNotFound)
+    {
+      // cache found; return it
+      oSize = archive->cacheSize.Get (index);
+      return csRef<iDataBuffer> (archive->cache.Get (index));
+    }
+    // cache was not found; construct it
+    csRef<iDataBuffer> buffer;
+    size_t size = 0;
+    if (GetEntry (path) == nullptr)
+    {
+      if (fileMustExist)
+        return buffer; // noexistent file; halt operation
+
+      // create nonexistent file
+      buffer = csPtr<iDataBuffer> (
+        new CS::DataBuffer<Allocator> (DEFAULT_BUFFER_SIZE, alloc));
+      // zero-fill, in order to mimic POSIX fseek/fread behavior
+      memset (**buffer, 0, DEFAULT_BUFFER_SIZE);
+    }
+    else
+    {
+      csRef<iDataBuffer> buffer = archive->Read (fullPath, alloc);
+      size = buffer->GetSize ();
+    }
+
+    // insert into structure
+    index = archive->cache.Push (buffer);
+    archive->cacheFlags[index] = CACHE_OK; // cache is fresh
+    archive->cacheSize[index] = size;
+    archive->cacheLookup.Put (fullPath, index);
+    // return by reference
+    oSize = size;
+    return buffer;
+  }
 
 private:
   // Convenience method; try getting archive entry handle of given vfs path
@@ -104,9 +220,17 @@ class csZipArchiveFile :
 
   // parent archive FS of this file
   csRef<csZipFS> archive;
-
+  // Full path of this file
+  csString fullPath;
+  // path of this file, relative to root of parent FS
+  const char *path;
+  // File pointer
+  size_t pos;
+  // File opening mode
+  int mode;
   // constructor
-  csZipArchiveFile (csZipFS *parent);
+  csZipArchiveFile (csZipFS *parent, const char *path,
+                    const char *pathPrefix, int mode);
 
 public:
   // destructor
@@ -152,11 +276,11 @@ public:
   virtual bool Initialize (iObjectRegistry *objRegistry);
 
   // iFileSystemFactory methods
-  virtual iFileSystem *Create (const char *realPath, int &oStatus);
+  virtual csPtr<iFileSystem> Create (const char *realPath, int &oStatus);
   // iArchiveHandler methods
-  virtual iFileSystem *GetFileSystem (iFileSystem *parentFS,
-                                      const char *archivePath,
-                                      const char *suffix);
+  virtual csPtr<iFileSystem> GetFileSystem (iFileSystem *parentFS,
+                                            const char *parentFSPath,
+                                            const char *archivePath);
 };
 
 }

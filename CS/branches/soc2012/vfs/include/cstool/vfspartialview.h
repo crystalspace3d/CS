@@ -80,9 +80,16 @@ public:
   virtual uint64_t GetSize () { return size; }
   // Query and reset last error status
   virtual int GetStatus ();
-  // Read Length bytes into the buffer at which Data points.
+  /**
+   * Read Length bytes into the buffer at which data points.
+   * \param data     Pointer to buffer
+   * \param length   Number of bytes to read; must be less than or
+   *               equal to the size of buffer
+   * \remarks Subclasses of csVfsFileBase must protect iFile::Read ()
+   *   and iFile::Write () with recursive lock
+   */
   virtual size_t Read (char *data, size_t length);
-  // Write Length bytes from the buffer at which Data points.
+  // Write to file: unsupported
   virtual size_t Write (const char *data, size_t length);
   // Flush stream
   virtual void Flush ();

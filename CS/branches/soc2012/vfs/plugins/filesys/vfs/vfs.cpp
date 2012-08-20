@@ -323,6 +323,12 @@ bool VfsNode::MountFileSystem (const char **realPath,
     {
       // get filesystem
       iFileSystem *fs = fsList.Get (i);
+      if (!fs && *realPath)
+      {
+        // invalid filesystem; continue to next element
+        ++realPath;
+        continue;
+      }
       // get reliable path
       csString rPath;
       // if realPath points to valid string, use it and increment the pointer

@@ -103,7 +103,7 @@ private:
     {
     }
 
-    bool operator== (const ArchiveHandlerMetadata &another)
+    bool operator== (const ArchiveHandlerMetadata &another) const
     {
       if (this == &another)
         return true;
@@ -111,9 +111,9 @@ private:
       return className.Compare (another.className);
     }
 
-    bool operator!= (const ArchiveHandlerMetadata &another)
+    bool operator!= (const ArchiveHandlerMetadata &another) const
     {
-      return !(*this == another);
+      return !(this->operator== (another));
     }
   };
 

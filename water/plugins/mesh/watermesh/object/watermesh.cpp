@@ -178,7 +178,6 @@ void csWaterMeshObject::SetupVertexBuffer()
 
 void csWaterMeshObject::SetupObject ()
 {
- // csPrintf ("SetupObject now called.");
 
   if (!initialized || vertsChanged)
   {
@@ -226,10 +225,8 @@ void csWaterMeshObject::SetupObject ()
 		
 		csRef<iTerrainSystem> terrain = scfQueryInterface<iTerrainSystem> (terrainWrapper->GetMeshObject ());
 		size_t cellIndexMax = terrain->GetCellCount();
-		//csPrintf("This is cell count %d",cellIndexMax);
 
 		csVector3 terrainPos = terrainMovable->GetPosition();
-		//csPrintf("\nposition of terrain %f  %f\n",terrainPos.x, terrainPos.z);
 
 		for (size_t i = 0; i < cellIndexMax ; i++)
 		{
@@ -250,12 +247,10 @@ void csWaterMeshObject::SetupObject ()
 				{
 				    float height = cellval.data[y * pitchval + x];
 
-					//csPrintf("\nHH %d %d  -> %f %fHH",x,y,height,waterHeight);
 					if (waterHeight-0.1 < (height) && (height) < waterHeight+0.1)
 					{
 						int Ty = gridHeight - y; 
 						foampointsTemp.Push(csVector3(cellPos.x + cellSize.x*x/(float)(gridWidth - 1),waterHeight, cellPos.y + cellSize.z*Ty/(float)(gridHeight - 1)));
-						//csPrintf("\nCell points %d %d ",x,Ty);
 					}
 				}
 			}			 
@@ -270,7 +265,7 @@ void csWaterMeshObject::SetupObject ()
 			{
 				float distanceFoam = csSquaredDist::PointPoint(csVector3(j,waterHeight,i), foampointsTemp.Get(0) ) ;
 
-				for (int k = 1 ; k < foampointsTemp.GetSize() ; k++)
+				for (int k = 1 ; k < (int)foampointsTemp.GetSize() ; k++)
 				{
 					float distanceFoamT = csSquaredDist::PointPoint(csVector3(j,waterHeight,i), foampointsTemp.Get(k) ) ;
 					if(distanceFoamT < distanceFoam)
@@ -290,29 +285,25 @@ void csWaterMeshObject::SetupObject ()
 					distanceFoam = 0;
 				}
 				colorarray.Push(csRGBpixel((int)distanceFoam,0,0));
-				//csPrintf("\n %d %d THe distance %f ",i,j, distanceFoam);
 			}
 		}
 
 		int foamPointsgap = foampointsTemp.GetSize()/1000;   
 		foamPointsgap++;
 
-		//csPrintf("\n %d %d ",foampointsTemp.GetSize(),foamPointsgap);
 
 		// Dropping raw foam points to 1000 
 		for (int i = 0 ; i < 1000; i++)
 		{
 			csVector3 TempPoint;
 
-			if (foampointsTemp.GetSize() > i*foamPointsgap )
+			if ((int)foampointsTemp.GetSize() > i*foamPointsgap )
 				TempPoint = foampointsTemp.Get( i*foamPointsgap );   // Get with gaps
 			else
 				TempPoint = csVector3(0,waterHeight+1000,0); // set all extra points to at a place where no decal is formed
 
 			foampoints.Push(TempPoint);
 
-		/*	colorarray.Push(csRGBpixel(TempPoint.x,TempPoint.y,TempPoint.z));*/
-			//csPrintf("\nADD %d %f %f ",i,TempPoint.x,TempPoint.z);
 		}
 
 		// Get shader to store foam points 
@@ -323,7 +314,6 @@ void csWaterMeshObject::SetupObject ()
 		// Put all points to shaders
 		while((int)foampoints.GetSize())
 		{
-			//csPrintf("adding points");
 			csRef<csShaderVariable> foampoint;
 			foampoint.AttachNew(new csShaderVariable);
 			foampoint->SetValue(foampoints.Pop());
@@ -621,53 +611,8 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 
 	  uint k = 0;
 
-	  if (nextCell.boundary[0])
-		if (nextCell.boundary[1])
-			if (nextCell.boundary[2])
-				if (nextCell.boundary[3])
-					k=0;
-				else
-					k=1;
-			else
-				if (nextCell.boundary[3])
-					k=2;
-				else
-					k=3;
-		else
-			if (nextCell.boundary[2])
-				if (nextCell.boundary[3])
-					k=4;
-				else
-					k=5;
-			else
-				if (nextCell.boundary[3])
-					k=6;
-				else
-					k=7;
-	  else
-		  if (nextCell.boundary[1])
-			  if (nextCell.boundary[2])
-				  if (nextCell.boundary[3])
-					  k=8;
-				  else
-					  k=9;
-			  else
-				  if (nextCell.boundary[3])
-					  k=10;
-				  else
-					  k=11;
-		  else
-			  if (nextCell.boundary[2])
-				  if (nextCell.boundary[3])
-					  k=12;
-				  else
-					  k=13;
-			  else
-				  if (nextCell.boundary[3])
-					  k=14;
-				  else
-					  k=15;
-
+	  k = (nextCell.boundary[0] ? 0 : 8) | (nextCell.boundary[1] ? 0 : 4) | 
+		  (nextCell.boundary[2] ? 0 : 2) | (nextCell.boundary[3] ? 0 : 1);
 
 	  trans.Identity();
       trans.Translate(csVector3(nextCell.pos.x, 0.0, nextCell.pos.y));
@@ -1072,15 +1017,7 @@ void csWaterMeshObjectFactory::SetupFactory ()
       float offx, offz;
       offx = offz = 0.0;
      
-	  /*   code has no significance 
-	  if(type == WATER_TYPE_OCEAN)
-      {
-        offx = (wid * gran) / 2;
-        offz = (len * gran) / 2;
-      }
-	  */
-    
-      for(uint j = 0; j < len * gran; j++)
+	  for(uint j = 0; j < len * gran; j++)
       {
         for(uint i = 0; i < wid * gran; i++)
         {
@@ -1108,12 +1045,12 @@ void csWaterMeshObjectFactory::SetupFactory ()
       numTris = (int)tris.GetSize();
     }
 
-/*
+	/*
 	  for(uint i = 0; i < children.GetSize(); i++)
 	  {
 		  children[i]->vertsChanged = true;
 	  }
-*/
+	*/
     
     Invalidate();
 

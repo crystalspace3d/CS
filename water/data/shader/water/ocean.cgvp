@@ -114,9 +114,9 @@ vert2frag main (app2vert IN,
 	float3 refrScale = float3 (refractXform.xy, 0.5);
 	float3 refrXlate = float3 (refractXform.zw, -0.5) * reflrefrTC.w;
 		
-	OUT.PosRefl.xy = reflrefrTC.xy * reflScale + reflXlate;
+	OUT.PosRefl.xy = reflrefrTC.xy * reflScale.xy + reflXlate.xy;
 	OUT.PosRefl.wz = reflrefrTC.wz;
-	OUT.PosRefr.xy = reflrefrTC.xy * refrScale + refrXlate;
+	OUT.PosRefr.xy = reflrefrTC.xy * refrScale.xy + refrXlate.xy;
 	OUT.PosRefr.wz = reflrefrTC.wz;
 
 	OUT.NormalTC = IN.TexCoord;

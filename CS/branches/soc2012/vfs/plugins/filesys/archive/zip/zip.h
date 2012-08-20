@@ -46,7 +46,7 @@ class ZipArchive : public csArchive, public CS::Utility::AtomicRefCount
   friend class csZipFS;
 
 private:
-  iFileSystem *parent;
+  csRef<iFileSystem> parent;
   csString identifier;
 
   // cache lookup table
@@ -63,6 +63,8 @@ private:
 
   // overridden to support nested archives
   virtual csPtr<iFile> OpenBaseFile (int mode);
+  // overridden as an ugly workaround
+  virtual void Initialize () { /* do nothing */ }
 
   // constructor
   ZipArchive (const char *identifier,
@@ -101,9 +103,10 @@ class csZipFS : public scfImplementation1<csZipFS, iFileSystem>
   int lastError;
 
   // constructor
-  csZipFS (ZipArchive *archive,
+  csZipFS (iBase *plugin, // parent plugin object
+           ZipArchive *archive,
            const char *archivePath,
-           const char *rootPath);
+           const char *rootPath = "");
 
 public:
   /* iFileSystem methods */
@@ -201,8 +204,8 @@ public:
 
     // insert into structure
     index = archive->cache.Push (buffer);
-    archive->cacheFlags[index] = CACHE_OK; // cache is fresh
-    archive->cacheSize[index] = size;
+    archive->cacheFlags.Put (index, CACHE_OK); // cache is fresh
+    archive->cacheSize.Put (index, size);
     archive->cacheLookup.Put (fullPath, index);
     // return by reference
     oSize = size;

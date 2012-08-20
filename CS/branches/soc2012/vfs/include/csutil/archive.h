@@ -139,6 +139,14 @@ protected:
   /// Open underlying file handle. Override this to change behavior.
   virtual csPtr<iFile> OpenBaseFile (int mode);
 
+  /**
+    * Open file and initialize internal structure.
+    * If OpenBaseFile() is not ready when constructor is called,
+    * override this with empty stub and call csArchive::Initialize() when
+    * it is ready.
+    */
+  virtual void Initialize ();
+
 public:
   /// Open the archive.
   csArchive (const char *filename);

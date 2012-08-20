@@ -333,7 +333,7 @@ bool VfsNode::MountFileSystem (const char *realPath, iFileSystem *fs)
       // duplicate entry found; reuse that filesystem
       // (new fs instance will be automatically discarded)
       RemountFileSystem (i);
-      mutex.WriteUnlock ();
+      mutex.WriteUnlockAndUpgradeLock ();
       return true;
     }
   }
@@ -342,7 +342,7 @@ bool VfsNode::MountFileSystem (const char *realPath, iFileSystem *fs)
   mutex.UpgradeUnlockAndWriteLock ();
   realPaths.Push (realPath);
   fileSystems.Push (fs);
-  mutex.WriteUnlock ();
+  mutex.WriteUnlockAndUpgradeLock ();
 
   return true;
 }
@@ -498,7 +498,7 @@ bool VfsNode::UnmountFileSystem (const char *realPath)
         // unmount filesystem
         fileSystems.DeleteIndex (i);
         // unlock
-        mutex.WriteUnlock ();
+        mutex.WriteUnlockAndUpgradeLock ();
         return true;
       }
     }
@@ -585,7 +585,7 @@ bool VfsNode::UnmountFileSystem (const char **realPath)
       }
       ++realPath;
     } // !while
-    mutex.WriteUnlock ();
+    mutex.WriteUnlockAndUpgradeLock ();
   } // !else
 
   // requested filesystem entry was not found
@@ -1405,8 +1405,8 @@ csPtr<iFileSystem> csVFS::CreateArchiveFS (iFileSystem *parent,
     if (!fs.IsValid ())
       continue; // proceed to next handler
 
-    // try chroot
-    bool success = fs->ChRoot (suffix, true);
+    // try chroot if necessary
+    bool success = (*suffix) ? fs->ChRoot (suffix, true) : true;
 
     // chroot failed... check status
     if (!success && fs->GetStatus () == VFS_STATUS_DIRISFILE)
@@ -1449,7 +1449,10 @@ csPtr<iFileSystem> csVFS::CreateArchiveFS (iFileSystem *parent,
           csString archiveName (suffix + pos);
           size_t archiveNameEnd =
             archiveName.Find (ANY_PATH_SEPARATOR_STRING);
-          archiveName.Truncate (archiveNameEnd);
+          if (archiveNameEnd == csArrayItemNotFound)
+            archiveNameEnd = archiveName.Length (); // fallback
+          else
+            archiveName.Truncate (archiveNameEnd);
           // perform recursive call to get nested filesystem
           csRef<iFileSystem> parentNew = fs;
           csString parentPathNew (parentPath);
@@ -1556,8 +1559,11 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
     {
       csString partial (purePath);
 
-      while (!partial.IsEmpty ())
+      while (!fs.IsValid () && !partial.IsEmpty ())
       {
+        // if we hit root path, there nothing much left to do
+        if (strcmp (partial, VFS_ROOT_PATH) == 0)
+          break;
         // move to parent directory
         size_t lastChar = partial.Length () - 1;
 
@@ -1589,7 +1595,10 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
         // get archive name (without slashes)
         csString archiveName (purePath + pos);
         size_t archiveNameEnd = archiveName.Find (ANY_PATH_SEPARATOR_STRING);
-        archiveName.Truncate (archiveNameEnd);
+        if (archiveNameEnd == csArrayItemNotFound)
+          archiveNameEnd = archiveName.Length (); // fallback
+        else
+          archiveName.Truncate (archiveNameEnd);
         // get suffix after archive name portion
         const char *suffix = purePath + (pos + archiveNameEnd);
         // store parent fs
@@ -1599,9 +1608,9 @@ csPtr<iFileSystem> csVFS::CreateFileSystem (const char *realPath)
           CS::Threading::ScopedReadLock lock (factoryMutex);
           fs = CreateArchiveFS (parent, partial, archiveName, suffix);
         }
-      } // !if
-    } // !while
-  } // !if
+      } // !while
+    } // !if
+  } // !while
 
   return csPtr<iFileSystem> (fs);
 }
@@ -2257,7 +2266,7 @@ bool csVFS::Unmount (const char *virtualPath, const char *realPath)
         // 3. free memory
         delete node;
         // unlock
-        nodeMutex.WriteUnlock ();
+        nodeMutex.WriteUnlockAndUpgradeLock ();
       }
     }
   }

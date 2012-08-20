@@ -111,7 +111,7 @@ public:
       archives.Push (archive);
     }
     // unlock
-    mutex.WriteUnlock ();
+    mutex.WriteUnlockAndUpgradeLock ();
     return csPtr<ZipArchive> (archive);
   }
 
@@ -119,7 +119,7 @@ public:
   static int CompareKey (ZipArchive * const &archive,
                          const char * const &key)
   {
-    return archive->identifier.Compare (key);
+    return strcmp (archive->identifier, key);
   }
 };
 
@@ -130,11 +130,14 @@ ZipArchive::ZipArchive (const char *identifier,
                         iFileSystem *parentFS/*= nullptr*/)
  : csArchive (path), parent (parentFS), identifier (identifier)
 {
+  // at this point, OpenBaseFile can actually work
+  // continue with initialization
+  csArchive::Initialize ();
 }
 
 csPtr<iFile> ZipArchive::OpenBaseFile (int mode)
 {
-  if (!parent)
+  if (!parent.IsValid ())
     return csArchive::OpenBaseFile (mode); // fallback to old mode
   // open file handle from parent fs
   return csPtr<iFile> (parent->Open (GetName (), "", mode, false));
@@ -149,8 +152,8 @@ bool ZipArchive::Flush ()
   // archive-level flush
   bool result = csArchive::Flush ();
 
-  if (parent) // flush parent filesystem
-    result &= parent->Flush ();
+  if (parent.IsValid ()) // flush parent filesystem
+    result = result && parent->Flush ();
 
   return result;
 }
@@ -474,10 +477,11 @@ csPtr<iFile> csZipArchiveFile::GetPartialView (uint64_t offset,
 
 // --- csZipFS------- ---------------------------------------------------- //
 
-csZipFS::csZipFS (ZipArchive *archive,
+csZipFS::csZipFS (iBase *plugin,
+                  ZipArchive *archive,
                   const char *archivePath,
                   const char *suffix) :
-  scfImplementationType (this),
+  scfImplementationType (this, plugin),
   archive (csPtr<ZipArchive> (archive)),
   archivePath (archivePath),
   root (suffix),
@@ -610,10 +614,14 @@ csPtr<iStringArray> csZipFS::List (const char *path)
   void *handle;
 
   csString basePath (root);
-  csVfsPathHelper::AppendPath (basePath, path);
-  if (basePath[basePath.Length () - 1] != VFS_PATH_SEPARATOR)
+
+  if (*path)
+    csVfsPathHelper::AppendPath (basePath, path);
+
+  if (!basePath.IsEmpty ()
+    && basePath[basePath.Length () - 1] != VFS_PATH_SEPARATOR)
   {
-    csVfsPathHelper::AppendPath (basePath, "");
+    basePath << VFS_PATH_SEPARATOR;
   }
 
   iStringArray *list = new scfStringArray;
@@ -639,7 +647,7 @@ csPtr<iStringArray> csZipFS::List (const char *path)
     size_t pos = filename.FindFirst ('/', basePath.Length ());
     if (pos == (size_t)-1 || pos == filename.Length () - 1)
     {
-      // insert it without base path portion
+      // put name without base path portion
       list->Push ((const char *)filename + basePath.Length ());
     }
   }
@@ -664,13 +672,14 @@ bool csZipFS::IsDir (const char *path)
   // normalize path so it ends with slash
   // (directory names always end with slash in zip archive)
   csString pathNormalized (path);
-  if (path[strlen (path) - 1] == '/')
+  if (pathNormalized.IsEmpty ()
+    || path[pathNormalized.Length () - 1] != '/')
   {
-    csVfsPathHelper::AppendPath (pathNormalized, "");
+    pathNormalized << '/';
   }
 
   // try getting entry handle
-  if (GetEntry (path) != 0) // if entry exists
+  if (GetEntry (pathNormalized) != 0) // if entry exists
     return true;
 
   return false;
@@ -805,10 +814,9 @@ csZipFSHandler::csZipFSHandler (iBase *parent) :
 
 csZipFSHandler::~csZipFSHandler ()
 {
-  // perform any cleanup
-  ArchiveCache *temp = archiveCache;
+  ArchiveCache *cache = archiveCache;
   archiveCache = nullptr;
-  delete temp;
+  delete cache;
 }
 
 bool csZipFSHandler::Initialize (iObjectRegistry *objRegistry)
@@ -839,7 +847,7 @@ csPtr<iFileSystem> csZipFSHandler::Create (const char *realPath, int &oStatus)
 
   csRef<ZipArchive> archive =
     archiveCache->GetArchive (identifier, realPath);
-  iFileSystem *fs = new csZipFS (archive, realPath, "/");
+  iFileSystem *fs = new csZipFS (this, archive, realPath);
 
   if (!fs) // reason of failure: unknown...
     oStatus = VFS_STATUS_OTHER;
@@ -869,7 +877,7 @@ csPtr<iFileSystem> csZipFSHandler::GetFileSystem (iFileSystem *parentFS,
   csRef<ZipArchive> archive = archiveCache->GetArchive (identifier,
                                                         archivePath,
                                                         parentFS);
-  iFileSystem *fs = new csZipFS (archive, identifier, "/");
+  iFileSystem *fs = new csZipFS (this, archive, identifier);
 
   if (fs && fs->GetStatus () != VFS_STATUS_OK)
   {

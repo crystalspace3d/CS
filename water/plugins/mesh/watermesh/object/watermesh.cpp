@@ -214,7 +214,7 @@ void csWaterMeshObject::SetupObject ()
 	csVector3 coord = logparent->GetMovable()->GetPosition();
 	waterHeight = coord.y;
 
-	// Generats foam points
+	// Generates foam points
 	csRef<iMeshWrapper> terrainWrapper = engine->FindMeshObject ("Terrain");
 	csPrintf("Testing code ");
 	if (terrainWrapper)
@@ -256,8 +256,6 @@ void csWaterMeshObject::SetupObject ()
 			}			 
 		} 
 
-        csDirtyAccessArray<csVector3> foampoints;  // Get all the collision points
-
         const int foammap_w = 512, foammap_h = 512;
         csRef<csImageMemory> image;
         image.AttachNew (new csImageMemory (foammap_w, foammap_h, CS_IMGFMT_TRUECOLOR));
@@ -270,7 +268,7 @@ void csWaterMeshObject::SetupObject ()
  			{
 				float distanceFoam = csSquaredDist::PointPoint(csVector3(x,waterHeight,y), foampointsTemp.Get(0) ) ;
  
- 				for (int k = 1 ; k < foampointsTemp.GetSize() ; k++)
+ 				for (int k = 1 ; k < (int)foampointsTemp.GetSize() ; k++)
  				{
 					float distanceFoamT = csSquaredDist::PointPoint(csVector3(x,waterHeight,y), foampointsTemp.Get(k) ) ;
 					if(distanceFoamT < distanceFoam)
@@ -289,42 +287,11 @@ void csWaterMeshObject::SetupObject ()
 				{
 					distanceFoam = 0;
 				}
-                                colorArray[x+(foammap_h-1-y)*foammap_w].Set ((int)distanceFoam, 0, 0);
+                              
+				colorArray[x+(foammap_h-1-y)*foammap_w].Set ((int)distanceFoam, 0, 0);
 			}
 		}
-
-		int foamPointsgap = foampointsTemp.GetSize()/1000;   
-		foamPointsgap++;
-
-
-		// Dropping raw foam points to 1000 
-		for (int i = 0 ; i < 1000; i++)
-		{
-			csVector3 TempPoint;
-
-			if ((int)foampointsTemp.GetSize() > i*foamPointsgap )
-				TempPoint = foampointsTemp.Get( i*foamPointsgap );   // Get with gaps
-			else
-				TempPoint = csVector3(0,waterHeight+1000,0); // set all extra points to at a place where no decal is formed
-
-			foampoints.Push(TempPoint);
-
-		}
-
-		// Get shader to store foam points 
-		csShaderVariable *foam_points = variableContext->GetVariableAdd(svStrings->Request("foam points"));
-		foam_points->SetType(csShaderVariable::ARRAY);
-		foam_points->SetArraySize(0);
-
-		// Put all points to shaders
-		while((int)foampoints.GetSize())
-		{
-			csRef<csShaderVariable> foampoint;
-			foampoint.AttachNew(new csShaderVariable);
-			foampoint->SetValue(foampoints.Pop());
-			foam_points->AddVariableToArray(foampoint);
-		}
-
+	
 		csRef<iTextureHandle> foamTextMap;
 		foamTextMap = g3d->GetTextureManager()->RegisterTexture(image, CS_TEXTURE_2D );
 
@@ -649,12 +616,12 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 	  }
       
       renderMeshes[i]->variablecontext = newVarCtxt;
-      renderMeshes[i]->object2world = o2world * trans;
+     // renderMeshes[i]->object2world = o2world * trans;
       
-      //update mesh-specific shader variable
-      o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
+      //update mesh-specific shader variable  // Provided by engine using "object2world transform"
+    /*o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));
       o2wtVar->SetType(csShaderVariable::MATRIX);
-      o2wtVar->SetValue(renderMeshes[i]->object2world);
+      o2wtVar->SetValue(renderMeshes[i]->object2world); */
     
       i++;
     }
@@ -688,10 +655,10 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 
     renderMeshes[0]->object2world = o2world * trans;
 
-    //update shader variable
-    o2wtVar = variableContext->GetVariableAdd(svStrings->Request("o2w transform"));
+    //update shader variable  // Provided by engine using "object2world transform"
+  /*o2wtVar = variableContext->GetVariableAdd(svStrings->Request("o2w transform"));
     o2wtVar->SetType(csShaderVariable::MATRIX);
-    o2wtVar->SetValue(renderMeshes[0]->object2world);
+    o2wtVar->SetValue(renderMeshes[0]->object2world);  */
   }
   n = (int)renderMeshes.GetSize();
 

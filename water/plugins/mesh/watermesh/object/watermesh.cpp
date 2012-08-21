@@ -544,7 +544,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
   csDirtyAccessArray<csRenderMesh*>& renderMeshes =
     meshesHolder.GetUnusedData (meshesCreated, currentFrame);
 
-  csShaderVariable *o2wtVar;
+  //csShaderVariable *o2wtVar;
 
   if(factory->isOcean())
   {
@@ -616,7 +616,7 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
 	  }
       
       renderMeshes[i]->variablecontext = newVarCtxt;
-     // renderMeshes[i]->object2world = o2world * trans;
+      renderMeshes[i]->object2world = o2world * trans;
       
       //update mesh-specific shader variable  // Provided by engine using "object2world transform"
     /*o2wtVar = renderMeshes[i]->variablecontext->GetVariableAdd(svStrings->Request("o2w transform"));

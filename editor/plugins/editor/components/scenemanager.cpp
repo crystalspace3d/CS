@@ -80,7 +80,7 @@ bool SceneManager::Initialize (iEditor* editor)
   RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
 
   // Register a mouse listener to the global event queue
-  mouseListener.AttachNew (new SceneManager::MouseListener (this));
+  eventListener.AttachNew (new SceneManager::EventListener (this));
 
   return true;
 }
@@ -428,24 +428,44 @@ void SceneManager::PositionCamera (iCamera* camera, csBox3& bbox)
 
 // -------------------------------------------------------------------------------------
 
-SceneManager::MouseListener::MouseListener (SceneManager* manager)
+SceneManager::EventListener::EventListener (SceneManager* manager)
   : scfImplementationType (this), manager (manager)
 {
   csRef<iEventQueue> eventQueue =
     csQueryRegistry<iEventQueue> (manager->object_reg);
-  eventQueue->RegisterListener (this, csevMouseEvent (manager->object_reg));
+
+  csEventID events[] = {
+    csevMouseDown (manager->object_reg, 0),
+    csevKeyboardEvent (manager->object_reg),
+    CS_EVENTLIST_END
+  };
+
+  eventQueue->RegisterListener (this, events);
 }
 
-bool SceneManager::MouseListener::HandleEvent (iEvent &event)
+bool SceneManager::EventListener::HandleEvent (iEvent &event)
 {
   iEventNameRegistry* nameRegistry = csEventNameRegistry::GetRegistry (manager->object_reg);
+
   if (event.Name == csevMouseDown (nameRegistry, 0)
       && csMouseEventHelper::GetButton (&event) == 0)
   {
     iOperatorManager* operatorManager = manager->editor->GetOperatorManager ();
     csRef<iOperator> op = operatorManager->CreateOperator ("crystalspace.editor.operator.select");
-    operatorManager->Invoke(op, &event);
+    operatorManager->Invoke (op, &event);
     return true;
+  }
+
+  if (CS_IS_KEYBOARD_EVENT (manager->object_reg, event)) 
+  {
+    if (csKeyEventHelper::GetEventType (&event) == csKeyEventTypeDown
+	&& csKeyEventHelper::GetCookedCode (&event) == 'g')
+    {
+      iOperatorManager* operatorManager = manager->editor->GetOperatorManager ();
+      csRef<iOperator> op = operatorManager->CreateOperator ("crystalspace.editor.operator.move");
+      operatorManager->Invoke (op, &event);
+      return true;
+    }
   }
 
   return false;

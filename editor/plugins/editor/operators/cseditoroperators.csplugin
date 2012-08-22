@@ -9,12 +9,12 @@
         <label>Select</label>
         <description>Select something</description>
       </class>
-      <!--class>
+      <class>
         <name>crystalspace.editor.operator.move</name>
         <implementation>MoveOperator</implementation>
-        <label>Move an object</label>
-        <description>Move an object operator</description>
-      </class-->
+        <label>Move objects</label>
+        <description>Move objects</description>
+      </class>
     </classes>
   </scf>
 </plugin>

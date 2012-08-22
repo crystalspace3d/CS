@@ -79,7 +79,6 @@ private:
   csRef<iMenuItem> openItem;
   csRef<iMenuItem> reloadItem;
   csRef<iMenuItem> saveItem;
-  csRef<iMenuItem> separator;
 
   struct ResourceData
   {

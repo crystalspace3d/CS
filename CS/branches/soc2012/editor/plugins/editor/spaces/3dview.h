@@ -38,8 +38,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 
 class CS3DSpace
   : public wxEvtHandler,
-    public scfImplementation1<CS3DSpace, iSpace>,
-    public csBaseEventHandler
+    public scfImplementation1<CS3DSpace, iSpace>
 {
 public:
   CS3DSpace (iBase* parent);
@@ -53,9 +52,6 @@ public:
   virtual void SetEnabled (bool enabled);
   virtual bool GetEnabled () const;
   virtual void Update ();
-
-  //-- iEventHandler
-  bool HandleEvent (iEvent &event);
 
 private:
   virtual void OnFrameBegin ();
@@ -75,8 +71,6 @@ private:
   
   csRef<iGraphics3D> g3d;
   csRef<iView> view;
-
-  csEventID eventSetCollection;
 
   class FrameBegin3DDraw : public scfImplementation1<FrameBegin3DDraw, iEventHandler>
   {

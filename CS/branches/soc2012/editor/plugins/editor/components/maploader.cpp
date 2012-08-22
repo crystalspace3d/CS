@@ -41,7 +41,6 @@ SCF_IMPLEMENT_FACTORY (MapLoader)
 MapLoader::MapLoader (iBase* parent)
   : scfImplementationType (this, parent), loadingResource (nullptr)
 {
-
 }
 
 MapLoader::~MapLoader()
@@ -75,11 +74,11 @@ bool MapLoader::Initialize (iEditor* editor)
 
   // Setup the loading menus
   fileMenu = editor->GetMenuManager ()->GetSubMenu ("&File");
-  openItem = fileMenu->AppendItem ("&Open file", "file.open");
-  reloadItem = fileMenu->AppendItem ("&Reload file", "file.reload");
-  saveItem = fileMenu->AppendItem ("&Save file", "file.save");
-  separator = fileMenu->AppendSeparator ();
+  openItem = fileMenu->AppendItem ("&Open file\tCTRL-O", "file.open");
+  reloadItem = fileMenu->AppendItem ("&Reload file\tCTRL-R", "file.reload");
+  saveItem = fileMenu->AppendItem ("&Save file\tCTRL-S", "file.save");
 
+  saveItem->GetwxMenuItem ()->Enable (false);
   reloadItem->GetwxMenuItem ()->Enable (false);
 
   csEventID events[] = { openItem->GetEventID (),

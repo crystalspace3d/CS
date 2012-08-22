@@ -95,14 +95,6 @@ bool CS3DSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
     scfQueryInterface<iContextCamera> (editor->GetContext ());
   cameraContext->SetCamera (view->GetCamera ());
 
-  // Register this event handler to the editor events
-  iEventNameRegistry* registry =
-    csEventNameRegistry::GetRegistry (object_reg);
-  eventSetCollection = 
-    registry->GetID ("crystalspace.editor.context.fileloader.setcollection");
-  RegisterQueue (editor->GetContext ()->GetEventQueue (),
-		 eventSetCollection);
-
   // Register frame listeners to the global event queue
   frameBegin3DDraw = new CS3DSpace::FrameBegin3DDraw (this);
   framePrinter = new CS3DSpace::FramePrinter (this);
@@ -132,21 +124,6 @@ void CS3DSpace::SetEnabled (bool enabled)
 bool CS3DSpace::GetEnabled () const
 {
   return enabled;
-}
-
-bool CS3DSpace::HandleEvent (iEvent& event)
-{
-  if (event.Name == eventSetCollection)
-  {
-    // Put back the focus on the window
-    csRef<iWxWindow> wxwin =
-      scfQueryInterface<iWxWindow> (g3d->GetDriver2D ());
-    wxwin->GetWindow ()->SetFocus ();
-
-    return false;
-  }
-
-  return false;
 }
 
 void CS3DSpace::OnFrameBegin ()

@@ -109,8 +109,8 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
 			      wxWindow *parent, const wxWindowID id,
 			      const wxPoint& pos, const wxSize& size)
   : wxTreeCtrl (parent, id, pos, size,
-		wxTR_MULTIPLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_EDIT_LABELS
-		| wxTR_HAS_BUTTONS | wxTR_HIDE_ROOT | wxTR_NO_LINES | wxTR_FULL_ROW_HIGHLIGHT),
+		wxTR_MULTIPLE | wxTR_EXTENDED | wxTR_FULL_ROW_HIGHLIGHT// | wxTR_EDIT_LABELS
+		| wxTR_HIDE_ROOT | wxTR_NO_LINES),
     editor (editor), selecting (false)
 {
   imageList = new wxImageList (16, 16);
@@ -313,8 +313,9 @@ void SceneTreeCtrl::UpdateTree ()
       AppendObject (object, CAMERA_POSITION);
       continue;
     }
-    
-    AppendObject (object, UNKNOWN);
+
+    // Hide unknown objects
+    //AppendObject (object, UNKNOWN);
   }
 
   // Post-process the categories

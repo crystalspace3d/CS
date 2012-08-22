@@ -277,12 +277,8 @@ void Editor::Init ()
   // Create the main splitter window
   Window* window = perspectiveManager->CreateWindow (perspective);
 
-  wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
-  box->Add (window, 1, wxEXPAND | wxALL, 0);
-  SetSizer (box);
-
   // Reset the window size
-  SetSize (wxSize (1024, 768));
+  //SetSize (wxSize (1024, 768));
   PositionStatusBar ();
 
   ReportStatus ("Ready");

@@ -94,7 +94,14 @@ void PerspectiveManager::RenamePerspective (const char* oldName, const char* new
 Window* PerspectiveManager::CreateWindow (iPerspective* perspective)
 {
   Window* window = new Window (object_reg, editor, editor);
+
+  wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
+  box->Add (window, 1, wxEXPAND | wxALL, 0);
+  editor->GetwxFrame ()->SetSizer (box);
+  box->Layout ();
+
   ((Perspective*) perspective)->SetupWindow (window);
+
   return window;
 }
 

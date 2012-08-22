@@ -38,11 +38,13 @@ OperatorManager::OperatorManager (iObjectRegistry* obj_reg, Editor* editor)
   nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
   if (!nameRegistry) return;
 
-  editor->GetContext ()->GetEventQueue ()->RegisterListener (this);
+  csRef<iEventQueue> eventQueue = csQueryRegistry<iEventQueue> (object_reg);
+  if (!eventQueue) return;
+
+  eventQueue->RegisterListener (this);
 
   // Register for the input events, for Handle ().
-  editor->GetContext ()->GetEventQueue ()->RegisterListener
-    (this, nameRegistry->GetID ("crystalspace.input"));
+  eventQueue->RegisterListener (this, nameRegistry->GetID ("crystalspace.input"));
 }
 
 OperatorManager::~OperatorManager ()
@@ -53,8 +55,7 @@ bool OperatorManager::HandleEvent (iEvent& ev)
 {
   if (modalOperator)
   {
-    csRef<iContext> context = csQueryRegistry<iContext> (object_reg);
-    if (modalOperator->Modal (context, &ev) != OperatorRunningModal)
+    if (modalOperator->Modal (editor->GetContext (), &ev) != OperatorRunningModal)
     {
       modalOperator.Invalidate ();
     }

@@ -79,10 +79,6 @@ float4 main (vert2frag IN,
 	
 	float4 foam = tex2D(TexFoam,IN.NormalTC);
 	
-	/*IN.dist = clamp(IN.dist,0,10);
-	IN.dist = 10 - IN.dist;
-	IN.dist /= 10; */
-	
 	float2 Inposition = IN.o2wPos; 
 	float4 distanceFoamcolor = float4(0.0,0.0,0.0,0.0);
 	
@@ -94,13 +90,8 @@ float4 main (vert2frag IN,
 	}
 	
 	foam = foam * 0.5 * distanceFoamcolor.x;
-	foam.x *= 40.0f;
 	
     color.xyz = light + reflColor.xyz + refrColor.xyz + foam.xyz;
-	//color.xyz = light + foam;
-	//color = clamp((color + foam ) , 0 , 1 ) ;
-	//color = tex2D(TexNormal,IN.NormalTC);
-	//color = tex2D(TexFoam,IN.NormalTC);
 	color.a = 1.0;
 	return color;
 }

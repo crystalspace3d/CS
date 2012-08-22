@@ -287,9 +287,7 @@ private:
   // The actual data.
   //Near patch and local water
   csDirtyAccessArray<csVector3> verts;
-  csDirtyAccessArray<csVector3> norms;
   csDirtyAccessArray<csVector2> texs;
-  csDirtyAccessArray<csColor>  cols;
   csDirtyAccessArray<csTriangle> tris;
   
   //Ocean cells

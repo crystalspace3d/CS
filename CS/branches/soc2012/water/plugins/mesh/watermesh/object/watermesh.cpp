@@ -196,11 +196,9 @@ void csWaterMeshObject::SetupObject ()
     else if(vertsChanged)
     {
       verts.DeleteAll();
-      norms.DeleteAll();
       for(uint i = 0; i < factory->verts.GetSize(); i++)
       {
         verts.Push(factory->verts[i]);
-        norms.Push(factory->norms[i]);
       }
 
       SetupVertexBuffer ();
@@ -768,45 +766,6 @@ void csWaterMeshObject::PreGetBuffer (csRenderBufferHolder *holder,
 {
   if(factory->isOcean())
   return;
-  
-  if (buffer == CS_BUFFER_COLOR)
-  {
-    if (mesh_colors_dirty_flag)
-    {
-      if (!color_buffer)
-      {
-        color_buffer = csRenderBuffer::CreateRenderBuffer (
-          factory->numVerts, CS_BUF_STATIC,
-          CS_BUFCOMP_FLOAT, 3);
-      }
-      mesh_colors_dirty_flag = false;
-      const csColor* factory_colors = factory->cols.GetArray();
-      int i;
-      csColor* colors = new csColor[factory->numVerts];
-      for (i = 0 ; i < factory->numVerts ; i++)
-        colors[i] = factory_colors[i]+color;
-      // Copy the data into the render buffer
-      // since we don't keep a local copy of the color buffer here.
-      color_buffer->CopyInto (colors, factory->numVerts);
-      delete [] colors;
-    }
-    holder->SetRenderBuffer (CS_BUFFER_COLOR, color_buffer);
-  } 
-  else if (buffer == CS_BUFFER_NORMAL)
-  {
-    if (vertsChanged)
-    {
-      if (!normal_buffer)
-      {
-        normal_buffer = csRenderBuffer::CreateRenderBuffer (
-          factory->numVerts, CS_BUF_STATIC,
-          CS_BUFCOMP_FLOAT, 3);
-      }
-      // Don't copy the data, have the buffer store a pointer instead.
-      normal_buffer->SetData (norms.GetArray());
-    }
-    holder->SetRenderBuffer (CS_BUFFER_NORMAL, normal_buffer);
-  }
 }
 
 //----------------------------------------------------------------------
@@ -930,7 +889,7 @@ void csWaterMeshObjectFactory::SetObjectBoundingBox (const csBox3& bbox)
 void csWaterMeshObjectFactory::SetWaterType(waterMeshType waterType)
 {
   type = waterType;
-  if(type == WATER_TYPE_OCEAN)
+  //if(type == WATER_TYPE_OCEAN)
   {
     wid = OCEAN_NP_WID;
     len = OCEAN_NP_LEN;
@@ -977,8 +936,6 @@ void csWaterMeshObjectFactory::SetupFactory ()
     else //TODO: Move this stuff into a single ocean cell w/o ocean attributes
     {
       verts.DeleteAll();
-      norms.DeleteAll();
-      cols.DeleteAll();
       texs.DeleteAll();
       tris.DeleteAll();
 
@@ -990,8 +947,6 @@ void csWaterMeshObjectFactory::SetupFactory ()
         for(uint i = 0; i < wid * gran; i++)
         {
           verts.Push(csVector3 ((i / gran) - offx, 0, (j / gran) - offz));
-          norms.Push(csVector3 (0, 1, 0));
-          cols.Push(csColor (0.17f, 0.27f, 0.26f));
           texs.Push(csVector2((i / gran) / (1.5 * detail), (j / gran) / (1.5 * detail)));
         }
       }
@@ -1011,14 +966,12 @@ void csWaterMeshObjectFactory::SetupFactory ()
 
       numVerts = (int)verts.GetSize();
       numTris = (int)tris.GetSize();
-    }
 
-	/*
 	  for(uint i = 0; i < children.GetSize(); i++)
 	  {
 		  children[i]->vertsChanged = true;
 	  }
-	*/
+    }
     
     Invalidate();
 

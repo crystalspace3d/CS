@@ -67,6 +67,9 @@
 
                         <program file="/shader/water/ocean.cgvp"/>
                         <?else ?>
+						<variablemap variable="object2world transform" destination="o2w" />
+						<variablemap variable="reflection coord xform" destination="reflectXform" />
+						<variablemap variable="refraction coord xform" destination="refractXform" />
                         <program file="/shader/water/water.cgvp"/>
                         <?endif ?>
                 </cgvp>

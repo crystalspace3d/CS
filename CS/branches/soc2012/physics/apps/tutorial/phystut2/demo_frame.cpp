@@ -367,15 +367,15 @@ void PhysDemo::UpdateHUD()
   switch (actorMode)
   {
   case ActorModeDynamic:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: Dynamic"));
+    hudManager->GetStateDescriptions()->Push (csString ("Actor mode: Dynamic"));
     break;
 
   case ActorModeNoclip:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: Free"));
+    hudManager->GetStateDescriptions()->Push (csString ("Actor mode: No Clip"));
     break;
 
   case ActorModeKinematic:
-    hudManager->GetStateDescriptions()->Push (csString ("Camera mode: Kinematic"));
+    hudManager->GetStateDescriptions()->Push (csString ("Actor mode: Kinematic"));
     break;
 
   default:

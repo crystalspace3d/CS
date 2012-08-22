@@ -22,20 +22,23 @@
 #include "collisionghost.h"
 //#include "kinematicactorcontroller.h"
 
+
+// TODO: btKinematicCharacterController is terrible - We need to get rid of it at some point
+// It has no virtual ctor but tons of protected members, and many of them 
 class btKinematicCharacterController;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-
  /**
   * TODO: IsMovingUp
   */
 class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletGhostCollisionObject,  CS::Collisions::iCollisionActor>
 {
   btKinematicCharacterController* controller;
-  float airControlFactor;
-  float walkSpeed;
+  csScalar airControlFactor;
+  csScalar walkSpeed;
   bool gravityEnabled;
+  csScalar stepHeight;
 
 public:
   void CreateCollisionActor(CS::Collisions::iCollisionActorFactory* props);
@@ -86,15 +89,8 @@ public:
   virtual void SetJumpSpeed (float jumpSpeed);
   
   /// Get the max vertical threshold that this actor can step over
-  virtual float GetStepHeight () const 
-  { 
-    // not currently supported
-    return 0; 
-  }
-  virtual void SetStepHeight (float stepHeight)
-  {
-    //this->stepHeight = stepHeight * system->getInternalScale ();
-  }
+  virtual float GetStepHeight () const { return stepHeight; }
+  virtual void SetStepHeight (float stepHeight);
 
   /// Get the walk speed
   virtual float GetWalkSpeed () const { return walkSpeed; }

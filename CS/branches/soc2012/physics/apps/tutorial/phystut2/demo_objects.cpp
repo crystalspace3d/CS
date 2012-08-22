@@ -1284,7 +1284,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
       boxPos += (.5f * (1 + vSpacingFactor) * boxLen) * UpVector;
       for (int i = 0; i < stackHeight; ++i)
       {
-        SpawnRigidBody(stackBoxMeshPair, boxPos, "box", 5, 30, false);
+        SpawnRigidBody(stackBoxMeshPair, boxPos, "box", DefaultFriction, DefaultDensity, false);
         boxPos += ((1 + vSpacingFactor) * boxLen) * UpVector;
       }
       ++n;

@@ -413,7 +413,8 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(parent);*/
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(collider);
         factory->SetAirControlFactor(actorAirControl);
-        factory->SetJumpSpeed(moveSpeed * csScalar(.3));
+        factory->SetJumpSpeed(moveSpeed);
+        factory->SetStepHeight(csScalar(0.2));
 
         kinematicActor = factory->CreateCollisionActor();
       }
@@ -448,6 +449,15 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
   {
     // The camera is free now -> Requires actor object to already be created & set
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("None"));
+    if (player.GetObject()->QueryPhysicalBody())
+    {
+      iPhysicalBody* physActor = player.GetObject()->QueryPhysicalBody();
+      physActor->SetLinearVelocity(0);
+      if (physActor->QueryRigidBody())
+      {
+        physActor->QueryRigidBody()->SetAngularVelocity(0);
+      }
+    }
     SetGravity(0);
   }
 }

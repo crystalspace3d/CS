@@ -219,7 +219,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     csVector3 endBeam = camera->GetTransform().This2Other (v3d);
 
     CS::Collisions::HitBeamResult hitResult =
-      GetCurrentSector()->HitBeam (startBeam, endBeam);
+      GetCurrentSector()->HitBeamPortal (startBeam, endBeam);
     if (hitResult.hasHit && IsDynamic(hitResult.object))
     {
       // Remove the body and the mesh from the simulation, and put them in the clipboard
@@ -397,13 +397,15 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     HitBeamResult hitResult;
     if (PickCursorObject(hitResult) && IsDynamic(hitResult.object))
     {
+      csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
+
       // Add a force at the point clicked
       csVector3 force = hitResult.isect - GetActorPos();
       force.Normalize();
-      force *= 20.f;
 
-      csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
+      force *= 20.f;
       force *= physicalBody->GetMass();
+
       if (physicalBody->QueryRigidBody())
       {
         csOrthoTransform trans = physicalBody->GetTransform();

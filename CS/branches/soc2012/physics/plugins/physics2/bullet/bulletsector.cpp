@@ -396,6 +396,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         collObject = nullptr;
         result.hasHit = false;
         hitPortal = btGhostObject::upcast (rayCallback.m_collisionObject);
+        if (hitPortal)
+        {
+          // this might be of interest to the caller
+          result.object = collObject;
+          result.isect = BulletToCS (rayCallback.m_hitPointWorld,
+            sys->getInverseInternalScale ());
+          result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
+            sys->getInverseInternalScale ());
+        }
       }
       else if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
       {

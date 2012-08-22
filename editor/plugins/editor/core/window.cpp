@@ -19,7 +19,9 @@
 #include "cssysdef.h"
 #include "csutil/objreg.h"
 #include "csutil/scf.h"
+#include "csutil/stringquote.h"
 #include "ieditor/editor.h"
+#include "ivaria/reporter.h"
 
 #include "spacemanager.h"
 #include "window.h"
@@ -38,29 +40,21 @@ BEGIN_EVENT_TABLE (Window, wxSplitterWindow)
   EVT_SIZE (Window::OnSize)
 END_EVENT_TABLE ()
 
-Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
+Window::Window (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent,
 		bool hor)
   : wxSplitterWindow (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 		      wxSP_3D | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN), 
-  object_reg (obj_reg), editor (editor), horizontal (hor)
+  object_reg (object_reg), editor (editor), horizontal (hor)
 {
   ViewControl* control = new ViewControl (object_reg, editor, this);
   Initialize (control);
-
-  // Redraw the space
-  if (control->space)
-  {
-    SpaceManager* mgr =
-      static_cast<SpaceManager*> (editor->GetSpaceManager ());
-    mgr->ReDraw (control->space);
-  }
 }
 
-Window::Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent,
+Window::Window (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent,
 		ViewControl* control, bool hor)
   : wxSplitterWindow (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
 		      wxSP_3D | wxSP_LIVE_UPDATE | wxCLIP_CHILDREN), 
-  object_reg (obj_reg), editor (editor), horizontal (hor)
+  object_reg (object_reg), editor (editor), horizontal (hor)
 {
   control->Reparent (this);
   Initialize (control);
@@ -81,6 +75,14 @@ bool Window::Split ()
   else SplitVertically (w1, w2);
 
   return true;
+}
+
+void Window::Realize (const char* pluginName)
+{
+  if (IsSplit ()) return;
+
+  ViewControl* control = (ViewControl*) GetWindow1 ();
+  control->Realize (pluginName);
 }
 
 void Window::OnDClick (wxSplitterEvent& event)
@@ -113,8 +115,8 @@ BEGIN_EVENT_TABLE (ViewControl, wxPanel)
   EVT_SIZE (ViewControl::OnSize)
 END_EVENT_TABLE ()
 
-ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent)
-: wxPanel (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize), object_reg (obj_reg),
+ViewControl::ViewControl (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent)
+: wxPanel (parent, wxID_ANY, wxDefaultPosition, wxDefaultSize), object_reg (object_reg),
   editor (editor)
 {
   box = new wxBoxSizer (wxVERTICAL);
@@ -124,12 +126,9 @@ ViewControl::ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* p
   wxToolBar* tb = new wxToolBar (menuBar, wxID_ANY);
       
   // Create the space combo box
-  SpaceComboBox* m_combobox = new SpaceComboBox (obj_reg, editor, tb, this);
-  tb->AddControl (m_combobox);
+  comboBox = new SpaceComboBox (object_reg, editor, tb, this);
+  tb->AddControl (comboBox);
 
-  if (space && space->GetwxWindow ())
-    box->Add (space->GetwxWindow (), 1, wxEXPAND | wxALL, 0);
-      
   tb->Realize ();
   bar->Add (tb, 0, /*wxEXPAND |*/ wxALIGN_LEFT, 0);
 
@@ -163,12 +162,92 @@ ViewControl::~ViewControl ()
 {
 }
 
+void ViewControl::Realize (const char* pluginName)
+{
+  iSpaceManager* imgr = editor->GetSpaceManager ();
+  SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
+
+  // Look for any space provided
+  if (pluginName)
+  {
+    size_t index = 0;
+    iSpaceFactory* factory = nullptr;
+    for (csRefArray<SpaceFactory>::ConstIterator it =
+	   mgr->GetSpaceFactories ().GetIterator (); it.HasNext (); index++)
+    {
+      iSpaceFactory* n = it.Next ();
+      SpaceFactory* f = static_cast<SpaceFactory*> (n);
+      if (strcmp (f->GetIdentifier (), pluginName) == 0)
+      {
+	factory = f;
+	break;
+      }
+    }
+
+    if (!factory)
+    {
+      csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
+		"crystalspace.editor.core.window",
+		"Unvalid space factory %s in the definition of the perspective",
+		CS::Quote::Single (pluginName));
+      return;
+    }
+
+    if ((factory->GetMultipleAllowed () || factory->GetEnabledCount () == 0))
+    {
+      CreateSpace (factory, index);
+      return;
+    }
+  }
+
+  // Otherwise search for the least represented space
+  size_t i = 0;
+  size_t smallest = 1000;
+  size_t smallestIndex = 0;
+  iSpaceFactory* smallestFactory = nullptr;
+
+  for (csRefArray<SpaceFactory>::ConstIterator it =
+	 mgr->GetSpaceFactories ().GetIterator (); it.HasNext (); )
+  {
+    iSpaceFactory* f = it.Next ();
+
+    // Check for the least represented space
+    if (smallest > f->GetEnabledCount ()
+	&& (f->GetMultipleAllowed () || f->GetEnabledCount () == 0))
+    {
+      smallest = f->GetEnabledCount ();
+      smallestIndex = i;
+      smallestFactory = f;
+    }
+
+    i++;
+  }
+
+  // Create the space
+  if (smallestFactory) CreateSpace (smallestFactory, smallestIndex);
+}
+
+void ViewControl::CreateSpace (iSpaceFactory* factory, size_t index)
+{
+  iSpaceManager* imgr = editor->GetSpaceManager ();
+  SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
+
+  space = factory->CreateInstance (this);
+  spaces.Put (index, space);
+  comboBox->SetSelectedIndex (index);
+
+  box->Insert (0, space->GetwxWindow (), 1, wxEXPAND, 0);
+  mgr->ReDraw (space);
+  box->Layout ();
+}
+
 void ViewControl::OnClicked (wxCommandEvent& event)
 {
   if (event.GetId () == 1)
   {
     Window* window = (Window*) this->GetParent ();
     window->Split ();
+    ((Window*) window->GetWindow2 ())->Realize ();
 
     // Disable temporarily the current space. This is needed for the 3D view
     // because its OpenGL canvas can get temporarily invalid.
@@ -178,7 +257,8 @@ void ViewControl::OnClicked (wxCommandEvent& event)
   else
   {
     wxFrame* frame = new wxFrame (this, wxID_ANY, wxT ("3D View"), wxDefaultPosition, GetSize ());
-    new Window (object_reg, editor, frame);
+    Window* window = new Window (object_reg, editor, frame);
+    window->Realize ();
     frame->Show (true);
   }
 }
@@ -192,10 +272,10 @@ void ViewControl::OnSize (wxSizeEvent& event)
 // ----------------------------------------------------------------------------
 
 SpaceComboBox::SpaceComboBox
-  (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl)
+  (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl)
   : wxBitmapComboBox (parent, wxID_ANY, wxEmptyString,wxDefaultPosition,
 		      wxSize (50, 20),0, NULL, wxCB_READONLY),
-    object_reg (obj_reg), editor (editor), control (ctrl), lastIndex ((size_t) ~0)
+    object_reg (object_reg), editor (editor), control (ctrl), lastIndex ((size_t) ~0)
 {
   // Build the list of menu entries for all spaces
   iSpaceManager* imgr = editor->GetSpaceManager ();
@@ -203,41 +283,12 @@ SpaceComboBox::SpaceComboBox
   csRefArray<SpaceFactory>::ConstIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();
 
-  if (spaces.HasNext ())
+  while (spaces.HasNext ())
   {
-    size_t i = 0;
-    size_t smallest = 1000;
-    size_t smallestIndex = 0;
-    iSpaceFactory* smallestFactory = nullptr;
-
-    while (spaces.HasNext ())
-    {
-      // Add the menu entry for this space
-      iSpaceFactory* f = spaces.Next ();
-      wxString label (f->GetLabel (), wxConvUTF8);
-      Append (label, f->GetIcon ());
-
-      // Check for the less represented space
-      if (smallest > f->GetEnabledCount ()
-	  && (f->GetMultipleAllowed () || f->GetEnabledCount () == 0))
-      {
-	smallest = f->GetEnabledCount ();
-	smallestIndex = i;
-	smallestFactory = f;
-      }
-
-      i++;
-    }
-
-    // Create the space
-    if (smallestFactory)
-    {
-      ctrl->space = smallestFactory->CreateInstance (control);
-      ctrl->spaces.Put (smallestIndex, ctrl->space);
-
-      SetSelection (smallestIndex);
-      lastIndex = smallestIndex;
-    }
+    // Add the menu entry for this space
+    iSpaceFactory* f = spaces.Next ();
+    wxString label (f->GetLabel (), wxConvUTF8);
+    Append (label, f->GetIcon ());
   }
 
   // Listen to the OnSelected event
@@ -247,6 +298,12 @@ SpaceComboBox::SpaceComboBox
 
 SpaceComboBox::~SpaceComboBox ()
 {
+}
+
+void SpaceComboBox::SetSelectedIndex (size_t index)
+{
+  lastIndex = index;
+  SetSelection (index);
 }
 
 void SpaceComboBox::OnSelected (wxCommandEvent& event)
@@ -272,11 +329,14 @@ void SpaceComboBox::OnSelected (wxCommandEvent& event)
       // Create an instance of the selected space
       if (f->GetMultipleAllowed () || f->GetEnabledCount () == 0)
       {
-	// Invalidate the previous space
-        control->layout.Invalidate ();
-        control->box->Detach (control->space->GetwxWindow ());
-	control->space->SetEnabled (false);
-	control->space->GetwxWindow ()->Hide ();
+	// Invalidate the previous space if any
+	if (lastIndex != (size_t) ~0)
+	{
+	  control->layout.Invalidate ();
+	  control->box->Detach (control->space->GetwxWindow ());
+	  control->space->SetEnabled (false);
+	  control->space->GetwxWindow ()->Hide ();
+	}
 
 	// Get or create the selected space
 	if (control->spaces.Contains (i))

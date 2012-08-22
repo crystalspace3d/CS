@@ -30,6 +30,7 @@
 #include <wx/menu.h>
 
 #include "ieditor/layout.h"
+#include "ieditor/space.h"
 
 using namespace CS::EditorApp;
 
@@ -38,15 +39,19 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
 class ViewControl;
 class BitmapComboBox;
+class SpaceComboBox;
 
 class Window : public wxSplitterWindow
 {
 public:
-  Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, bool horizontal = false);
-  Window (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* control, bool horizontal = false);
+  Window (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent,
+	  bool horizontal = false);
+  Window (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent,
+	  ViewControl* control, bool horizontal = false);
   virtual ~Window ();
   
   bool Split();
+  void Realize (const char* pluginName = nullptr);
 
 private:
   void OnDClick(wxSplitterEvent& event);
@@ -68,12 +73,15 @@ private:
 class ViewControl : public wxPanel
 {
 public:
-  ViewControl (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent);
+  ViewControl (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent);
   virtual ~ViewControl ();
   wxWindow* GetRegion () { return toolbar; }
   void SetLayout (iLayout* l) { layout = l; }
+  void Realize (const char* pluginName);
 
 private:
+  void CreateSpace (iSpaceFactory* factory, size_t index);
+
   void OnClicked (wxCommandEvent& event);
   void OnSize (wxSizeEvent& ev);
 
@@ -87,6 +95,7 @@ private:
 
   wxBoxSizer* box;
   wxWindow* toolbar;
+  SpaceComboBox* comboBox;
   csRef<iLayout> layout;
 
   friend class SpaceComboBox;
@@ -96,8 +105,10 @@ private:
 class SpaceComboBox : public wxBitmapComboBox
 {
 public:
-  SpaceComboBox (iObjectRegistry* obj_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl);
+  SpaceComboBox (iObjectRegistry* object_reg, iEditor* editor, wxWindow* parent, ViewControl* ctrl);
   virtual ~SpaceComboBox ();
+
+  void SetSelectedIndex (size_t index);
 
 private:
  void OnSelected (wxCommandEvent& event);

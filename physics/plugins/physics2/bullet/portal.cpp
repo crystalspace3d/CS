@@ -7,8 +7,12 @@
 
 #include "ivaria/collisions.h"
 
+#include "csutil/custom_new_disable.h"
+
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
+
+#include "csutil/custom_new_enable.h"
 
 //#include "common2.h"
 #include "portal.h"
@@ -134,6 +138,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (targetSector != sourceSector)
     {
       // Move the body to new sector
+      csRef<csBulletCollisionObject> safeRef(obj);  // This line demonstrates why passing native pointers fails.
       sourceSector->RemoveCollisionObject (obj);
       targetSector->AddCollisionObject (obj);
     }
@@ -165,14 +170,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         //CS_ASSERT(!"targetSector not set in portal");
       }
     }
-
+    
     // Iterate over all currently intersecting objects and update collision data
-    for (int i = 0; i < ghostPortal->getNumOverlappingObjects (); i++)
+    for (int i = 0; i < ghostPortal->getNumOverlappingObjects (); ++i)
     {
       btCollisionObject* btObj = ghostPortal->getOverlappingObject (i);
       iCollisionObject* iObj = static_cast<iCollisionObject*> (btObj->getUserPointer ());
       csBulletCollisionObject* obj = dynamic_cast<csBulletCollisionObject*> (iObj);
-      
+
       // Check if object can traverse
       if (!obj ||                         // not a valid object
         obj->GetSector() != sector ||     // object not updated yet
@@ -184,8 +189,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       // If object is already past the mid-point of the portal, it must be ported immediately
       if (IsOnOtherSide(obj)) 
       {
-        csPrintf(">>>> Obj traversed portal 0x%lx: 0x%lx\n", this, obj);
         Traverse(obj);
+#ifdef _DEBUG
+        csPrintf(">>>> Obj traversed portal 0x%lx: 0x%lx\n", this, obj);
+#endif
         continue;
       }
 
@@ -208,7 +215,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
 
       // Start with data verification and consistency:
-
       PortalTraversalData* data = obj->portalData;
 
       size_t objIndex = objects.Find(obj);
@@ -249,13 +255,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       // At this point, data is all setup correctly
       if (isNew)
       {
+#ifdef _DEBUG
         csPrintf(">>>> Obj setup at portal 0x%lx: 0x%lx\n", this, obj);
+#endif
 
         // Add mesh to other sector
         iSceneNode* node = obj->GetAttachedSceneNode();
         if (node)
         {
-          targetSector->GetSector()->GetMeshes ()->Add(node->QueryMesh());
+          node->GetMovable()->GetSectors()->Add(targetSector->GetSector());
+          node->GetMovable()->UpdateMove();
         }
 
         // Setup clone object for first-time use:
@@ -278,6 +287,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         collGroup.mask &= ~CollisionGroupMaskValueStatic;
         cloneObj->SetCollisionGroup(collGroup);
 
+        // Add clone
         targetSector->AddCollisionObject(cloneObj);
 
         // Setup synchronizer
@@ -302,8 +312,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       }
       else
       {
-        //csPrintf(">>>> Obj sync at portal 0x%lx: 0x%lx\n", this, obj);
-        // The object should not have been removed (or moved or tempered with in any way, other than by the solver)
+        // NOTE: The object should not have been removed, moved or tempered with in any way other than by the solver
         CS_ASSERT(cloneObj->GetSector() == targetSector);
 
         // Synchronize the two objects
@@ -473,7 +482,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             iSector* sec = node->GetMovable()->GetSectors()->Get(int(i));
             if (sec != obj->GetSector()->GetSector())
             {
-              sec->GetMeshes ()->Remove(node->QueryMesh());
+              //sec->GetMeshes ()->Remove(node->QueryMesh());
+              node->GetMovable()->GetSectors()->Remove(sec);
+              node->GetMovable()->UpdateMove();
             }
             else
             {

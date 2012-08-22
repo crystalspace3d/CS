@@ -34,9 +34,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     btPairCachingGhostObject* go = GetPairCachingGhostObject();
     btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
-    controller = new btKinematicCharacterController(go, convShape, 0.04f, UpAxis);
+    controller = new btKinematicCharacterController(go, convShape, stepHeight = props->GetStepHeight(), UpAxis);
     
-    SetStepHeight(props->GetStepHeight());
     SetWalkSpeed(props->GetWalkSpeed());
     SetJumpSpeed(props->GetJumpSpeed());
     SetAirControlFactor(props->GetAirControlFactor());
@@ -76,6 +75,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return true;
     }
     return false;
+  }
+  
+  void csBulletCollisionActor::SetStepHeight (float newHeight)
+  {
+    // need to re-create the controller
+    btPairCachingGhostObject* go = GetPairCachingGhostObject();
+    btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
+    delete controller;
+    controller = new btKinematicCharacterController(go, convShape, stepHeight = newHeight, UpAxis);
   }
 
   void csBulletCollisionActor::Walk(csVector3 vel)

@@ -21,7 +21,7 @@ struct iCameraPosition;
 // Some global variables
 
 
-static const csScalar DefaultDensity(500);
+static const csScalar DefaultDensity(300);
 static const csScalar DefaultFriction(.5);
 static const csScalar DefaultElasticity(0.1f);
 

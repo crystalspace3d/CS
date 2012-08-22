@@ -87,7 +87,7 @@ csBulletSystem::csBulletSystem (iBase* iParent)
 
   CS::Collisions::CollisionGroup portalGroup ("Portal");
   portalGroup.value = CollisionGroupMaskValuePortal;
-  portalGroup.mask = allFilter ^ CollisionGroupMaskValueStatic;     // all but static
+  portalGroup.mask = allFilter;     // all
   collGroups.Push (portalGroup);
 
   CS::Collisions::CollisionGroup copyGroup ("PortalCopy");

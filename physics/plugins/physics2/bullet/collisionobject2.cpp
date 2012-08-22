@@ -138,6 +138,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       btObject->getBroadphaseHandle ()->m_collisionFilterGroup = group.value;
       btObject->getBroadphaseHandle ()->m_collisionFilterMask = group.mask;
+
+      // re-add object
+      RemoveBulletObject();
+      AddBulletObject();
     }
   }
 

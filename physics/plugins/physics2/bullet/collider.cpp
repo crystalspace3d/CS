@@ -21,14 +21,17 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "imesh/objmodel.h"
 
 // Bullet includes
+
+#include "csutil/custom_new_disable.h"
+
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
+
+#include "csutil/custom_new_enable.h"
 
 #include "colliderprimitives.h"
 #include "collisionobject2.h"
 #include "bulletsystem.h"
-
-#include "csutil/custom_new_enable.h"
 
 using namespace CS::Collisions;
 

@@ -29,14 +29,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
 ActionManager::ActionManager (iObjectRegistry* obj_reg, iEditor* editor)
-  : scfImplementationType (this), object_reg (obj_reg), editor (editor)
+  : scfImplementationType (this), object_reg (obj_reg), editor (editor), maximumStackSize (100)
 {
   csRef<iEventNameRegistry> registry = csQueryRegistry<iEventNameRegistry>
     (editor->GetContext ()->GetObjectRegistry ());
-  csEventID eventID = registry->GetID ("crystalspace.editor.action.actiondone");
-
-  iEventQueue* queue = editor->GetContext ()->GetEventQueue ();
-  event = queue->CreateEvent (eventID);
+  eventID = registry->GetID ("crystalspace.editor.action.actiondone");
 }
 
 ActionManager::~ActionManager ()
@@ -50,6 +47,10 @@ bool ActionManager::Do (iAction* action)
   
   redoStack.Empty ();
   undoStack.Push (action);
+
+  // Limit the size of the 'Undo' stack
+  if (undoStack.GetSize () > maximumStackSize)
+    undoStack.DeleteIndex (0);
 
   NotifyListeners (action);
   
@@ -103,11 +104,21 @@ const iAction* ActionManager::PeekRedo () const
   return redoStack.Get (redoStack.GetSize () - 1);
 }
 
+void ActionManager::SetMaximumStackSize (size_t size)
+{
+  maximumStackSize = size;
+}
+
+size_t ActionManager::GetMaximumStackSize () const
+{
+  return  maximumStackSize;
+}
+
 void ActionManager::NotifyListeners (iAction* action)
 {
-  event->Add ("description", action->GetDescription ());
-
   iEventQueue* queue = editor->GetContext ()->GetEventQueue ();
+  csRef<iEvent> event = queue->CreateEvent (eventID);
+  event->Add ("action", action);
   queue->Post (event);
   queue->Process ();
 }

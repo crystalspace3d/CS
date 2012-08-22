@@ -46,6 +46,9 @@ public:
   virtual const iAction* PeekUndo () const;
   virtual const iAction* PeekRedo () const;
 
+  virtual void SetMaximumStackSize (size_t size);
+  virtual size_t GetMaximumStackSize () const;
+
 private:
   void NotifyListeners (iAction* action);
   
@@ -53,8 +56,9 @@ private:
   iEditor* editor;
 
   csRefArray<iAction> undoStack, redoStack;
+  size_t maximumStackSize;
 
-  csRef<iEvent> event;
+  csEventID eventID;
 };
 
 }

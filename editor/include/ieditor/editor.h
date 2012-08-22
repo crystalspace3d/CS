@@ -19,15 +19,10 @@
 #ifndef __IEDITOR_EDITOR_H__
 #define __IEDITOR_EDITOR_H__
 
-//#include "csutil/array.h"
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
 
-//#include <wx/string.h>
-
-class wxBitmap;
 class wxFrame;
-class wxWindow;
 
 struct iDocumentNode;
 struct iProgressMeter;
@@ -40,6 +35,7 @@ struct iContext;
 struct iEditor;
 struct iMenuManager;
 struct iOperatorManager;
+struct iPerspectiveManager;
 struct iSpaceManager;
 
 // TODO namespace CS::Editor::Core
@@ -67,11 +63,16 @@ struct iEditor : public virtual iBase
 
   virtual iContext* GetContext () const = 0;
 
-  virtual wxFrame* GetwxFrame () = 0;
-
+  virtual wxFrame* GetwxFrame () = 0; // const?
+/*
+  virtual size_t CreatewxFrame (const char* title) const = 0;
+  virtual wxFrame* GetwxFrame (size_t index = 0) const = 0;
+  virtual size_t GetwxFrameCount () const = 0;
+*/
   virtual iActionManager* GetActionManager () const = 0;
   virtual iMenuManager* GetMenuManager () const = 0;
   virtual iOperatorManager* GetOperatorManager () const = 0;
+  virtual iPerspectiveManager* GetPerspectiveManager () const = 0;
   virtual iSpaceManager* GetSpaceManager () const = 0;
   // TODO: icon/image manager
 

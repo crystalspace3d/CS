@@ -19,13 +19,14 @@
 #ifndef __EDITOR_H__
 #define __EDITOR_H__
 
+#include "csutil/csstring.h"
 #include "ieditor/editor.h"
 #include "iutil/comp.h"
 
-#include <wx/bitmap.h>
 #include <wx/frame.h>
 #include <wx/timer.h>
 
+struct iEventQueue;
 struct iVirtualClock;
 
 using namespace CS::EditorApp;
@@ -37,6 +38,7 @@ class ActionManager;
 class Editor;
 class MenuManager;
 class OperatorManager;
+class PerspectiveManager;
 class SpaceManager;
 class StatusBar;
 
@@ -103,6 +105,7 @@ public:
   virtual iActionManager* GetActionManager () const;
   virtual iMenuManager* GetMenuManager () const;
   virtual iOperatorManager* GetOperatorManager () const;
+  virtual iPerspectiveManager* GetPerspectiveManager () const;
   virtual iSpaceManager* GetSpaceManager () const;
 
   virtual csPtr<iProgressMeter> CreateProgressMeter () const;
@@ -117,9 +120,6 @@ public:
   void Init ();
   void Update ();
 
-protected:
-  void OnQuit (wxCommandEvent& event);
-
 public:
   csString name;
   EditorManager* manager;
@@ -127,6 +127,7 @@ public:
   csRef<ActionManager> actionManager;
   csRef<MenuManager> menuManager;
   csRef<OperatorManager> operatorManager;
+  csRef<PerspectiveManager> perspectiveManager;
   csRef<SpaceManager> spaceManager;
   StatusBar* statusBar;
 };

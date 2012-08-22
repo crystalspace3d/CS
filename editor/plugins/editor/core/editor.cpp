@@ -26,6 +26,7 @@
 #include "editor.h"
 #include "menubar.h"
 #include "operatormanager.h"
+#include "perspective.h"
 #include "spacemanager.h"
 #include "statusbar.h"
 #include "window.h"
@@ -176,12 +177,13 @@ Editor::Editor (EditorManager* manager, const char* name, const char* title,
   : scfImplementationType (this),
   wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition,
 	   wxSize (1024, 768)),
-  name (name), manager (manager), context (context)
+    name (name), manager (manager), context (context), statusBar (nullptr)
 {
   // Create the main objects and managers
   actionManager.AttachNew (new ActionManager (manager->object_reg, this));
   menuManager.AttachNew (new MenuManager (this));
   operatorManager.AttachNew (new OperatorManager (manager->object_reg, this));
+  perspectiveManager.AttachNew (new PerspectiveManager (manager->object_reg, this));
   spaceManager.AttachNew (new SpaceManager (this));
 
   // Create the status bar
@@ -213,14 +215,14 @@ iEditorManager* Editor::GetManager () const
   return manager;
 }
 
-iSpaceManager* Editor::GetSpaceManager () const
-{
-  return spaceManager;
-}
-
 iActionManager* Editor::GetActionManager () const
 {
   return actionManager;
+}
+
+iMenuManager* Editor::GetMenuManager () const
+{
+  return menuManager;
 }
 
 iOperatorManager* Editor::GetOperatorManager () const
@@ -228,9 +230,14 @@ iOperatorManager* Editor::GetOperatorManager () const
   return operatorManager;
 }
 
-iMenuManager* Editor::GetMenuManager () const
+iPerspectiveManager* Editor::GetPerspectiveManager () const
 {
-  return menuManager;
+  return perspectiveManager;
+}
+
+iSpaceManager* Editor::GetSpaceManager () const
+{
+  return spaceManager;
 }
 
 csPtr<iProgressMeter> Editor::CreateProgressMeter () const
@@ -263,21 +270,20 @@ bool Editor::Load (iDocumentNode* node)
 
 void Editor::Init ()
 {
+  // Setup the current perspective or create a default one
+  iPerspective* perspective = perspectiveManager->GetCurrentPerspective ();
+  if (!perspective) perspective = perspectiveManager->CreatePerspective ("Default");
+
   // Create the main splitter window
-  Window* m_splitter = new Window (manager->object_reg, this, this);
-  
+  Window* window = perspectiveManager->CreateWindow (perspective);
+
   wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
-  box->Add (m_splitter, 1, wxEXPAND | wxALL, 0);
+  box->Add (window, 1, wxEXPAND | wxALL, 0);
   SetSizer (box);
-  //box->SetSizeHints (this);
 
   // Reset the window size
   SetSize (wxSize (1024, 768));
   PositionStatusBar ();
-
-  // Opens a few default panels
-  // To be removed once perspectives are implemented
-  
 
   ReportStatus ("Ready");
 }

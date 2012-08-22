@@ -87,6 +87,16 @@ struct iActionManager : public virtual iBase
 
   /// Get the last redone action or 0 if none.
   virtual const iAction* PeekRedo () const = 0;
+
+  /**
+   * Set the maximum size for the stack of actions that can be undone. A value of 0 means
+   * that there are no limit to the stack (are you really sure to want to do that?). The
+   * default value is 100.
+   */
+  virtual void SetMaximumStackSize (size_t size) = 0;
+
+  /// Get the maximum size for the stack of actions that can be undone.
+  virtual size_t GetMaximumStackSize () const = 0;
 };
 
 } // namespace EditorApp

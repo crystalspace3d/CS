@@ -92,10 +92,10 @@ private:
 
   bool internalChange;
 
-  class MouseListener : public scfImplementation1<MouseListener, iEventHandler>
+  class EventListener : public scfImplementation1<EventListener, iEventHandler>
   {
   public:
-    MouseListener (SceneManager* manager);
+    EventListener (SceneManager* manager);
 
     //-- iEventHandler
     bool HandleEvent (iEvent &event);
@@ -124,7 +124,7 @@ private:
 
     CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS;
   };
-  csRef<MouseListener> mouseListener;
+  csRef<EventListener> eventListener;
 };
 
 }

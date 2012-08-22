@@ -144,6 +144,7 @@ bool EditorApplication::OnInit (void)
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.logger")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.translation")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
+  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.undoredo")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
   if (!spaceManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;

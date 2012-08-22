@@ -43,7 +43,7 @@ bool Exit::Initialize (iEditor* editor)
   // Setup the 'Quit' menu
   fileMenu = editor->GetMenuManager ()->GetSubMenu ("&File");
   separator = fileMenu->AppendSeparator ();
-  quitItem = fileMenu->AppendItem ("&Quit", "quit");
+  quitItem = fileMenu->AppendItem ("&Quit\tCTRL-Q", "quit");
 
   csEventID events[] = { quitItem->GetEventID (), CS_EVENTLIST_END };
   RegisterQueue (editor->GetContext ()->GetEventQueue (), events);

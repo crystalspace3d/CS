@@ -1273,7 +1273,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\apps\tutorial\phystut2\items.h" />
     <ClInclude Include="..\..\apps\tutorial\phystut2\physdemo.h" />
     <ClInclude Include="..\..\apps\tutorial\phystut2\agent.h" />
-    <ClInclude Include="..\..\apps\tutorial\phystut2\ivehicle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

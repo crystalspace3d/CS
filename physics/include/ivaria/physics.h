@@ -1,4 +1,5 @@
 /*
+    Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
     This library is free software; you can redistribute it and/or

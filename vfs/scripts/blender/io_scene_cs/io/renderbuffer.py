@@ -106,23 +106,15 @@ class ColorBuffer(RenderBuffer):
 
 class RenderBuffers:
   def __init__(self, **kwargs):
-    self.meshData = []
-    if 'meshData' in kwargs:
-      self.meshData = kwargs['meshData']
+    self.meshData = kwargs.get('meshData', [])
     self.mappingBuffers = []
     if 'mappingBuffers' in kwargs:
       self.mappingBuffers = kwargs['mappingBuffers']
     else:
       print("ERROR: mapping buffers are not defined to build the render buffers")
-    self.mappingVertices = []
-    if 'mappingVertices' in kwargs:
-      self.mappingVertices = kwargs['mappingVertices']
-    self.mappingNormals = []
-    if 'mappingNormals' in kwargs:
-      self.mappingNormals = kwargs['mappingNormals']
-    self.scales = []
-    if 'scales' in kwargs:
-      self.scales = kwargs['scales']
+    self.mappingVertices = kwargs.get('mappingVertices', [])
+    self.mappingNormals = kwargs.get('mappingNormals', [])
+    self.scales = kwargs.get('scales', [])
 
     self.positionBuffer = PositionBuffer(None, **kwargs)
     self.normalBuffer = NormalBuffer(None, **kwargs)
@@ -139,8 +131,8 @@ class RenderBuffers:
       doubleSided = B2CS.properties.enableDoublesided and ob.data.show_double_sided
 
       # Get the active UV texture and vertex colors
-      tface = ob.data.uv_textures.active.data if ob.data.uv_textures.active else None
-      cface = ob.data.vertex_colors.active.data if ob.data.vertex_colors.active else None
+      tface = ob.data.all_uv_textures.active.data if ob.data.all_uv_textures.active else None
+      cface = ob.data.all_vertex_colors.active.data if ob.data.all_vertex_colors.active else None
 
       # Get object's scale
       if self.scales:

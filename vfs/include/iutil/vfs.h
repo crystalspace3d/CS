@@ -35,14 +35,6 @@
 #include "iutil/pluginconfig.h"
 #include <time.h>
 
-//#ifndef CS_OFF64_T_DEFINED
-//#ifdef CS_64B_OFF_T
-//typedef off_t off64_t;
-//#else
-//typedef int64_t off64_t;
-//#endif
-//#endif
-
 namespace CS
 {
   namespace Memory
@@ -785,7 +777,7 @@ struct iVFS : public virtual iBase
 
   // if 64-bit, size_t is equivalent to uint64_t.
   // deprecated overload is only available for non 64-bit systems.
-#ifndef CS_SIZE_T_64BIT
+#if (CS_PROCESSOR_SIZE != 64)
   /**
    * Query file size (without opening it).
    * \return True if the query succeeded, else false.

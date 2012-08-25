@@ -160,7 +160,7 @@ int csSndSysBasicEventRecorder::ProcessEventQueue()
   {
     if (m_Active && m_pLogFile)
     {
-      LogString.Format("[%012" CS_PRIu64 "] [%s] [%s] %s\n", pEntry->Time, GetEventLevelString(pEntry->Level),
+      LogString.Format("[%012" PRIu64 "] [%s] [%s] %s\n", pEntry->Time, GetEventLevelString(pEntry->Level),
                        GetEventCategoryString(pEntry->Category), pEntry->Message.GetData());
       m_pLogFile->Write(LogString.GetData(), LogString.Length());
     }
@@ -170,18 +170,6 @@ int csSndSysBasicEventRecorder::ProcessEventQueue()
 
   m_pLogFile->Flush();
   return EventCount;
-}
-
-void csSndSysBasicEventRecorder::RecordEvent(SndSysEventCategory Category, SndSysEventLevel Level, const char* Description, ...)
-{
-  if (!m_Active)
-    return;
-
-  va_list arg;
-  va_start (arg, Description);
-  RecordEventV(Category, Level, Description, arg);
-  va_end (arg);
-
 }
 
 void csSndSysBasicEventRecorder::RecordEventV(SndSysEventCategory Category, SndSysEventLevel Level, const char* Description, va_list arg)

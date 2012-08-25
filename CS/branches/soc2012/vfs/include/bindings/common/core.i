@@ -90,6 +90,18 @@
 #endif
 */
 
+/*
+ * SWIG can not yet handle nested classes gracefully, and warns when it
+ * encounters them. Each SCF interface invokes SCF_INTERFACE() which results in
+ * a nested InterfaceTraits class, hence SWIG emits a significant number of
+ * such warnings. Since, in this case, these warnings are just noise (that is,
+ * they are fundamental to SCF and will not be removed), suppress the
+ * diagnostic. Additionally, several CS utility classes employ nested classes,
+ * and SWIG (annoyingly) warns about them as well, even if they have been
+ * %ignored.
+ */
+#pragma SWIG nowarn=325
+
 %include "csconfig.h"
 %include "cstypes.h"
 
@@ -174,6 +186,7 @@
 #include "csgeom.h"
 #include "cstool/initapp.h"
 #include "csutil.h"
+#include "csutil/deprecated_warn_off.h"
 %}
 
 %include "bindings/common/allinterfaces.i"
@@ -478,6 +491,7 @@ TYPEMAP_OUT_csWrapPtr
 %ignore csSafeCopyArrayMemoryAllocator;
 %ignore csSafeCopyArray;
 %ignore csArray::Capacity;
+%ignore csArray::ConstIterator;
 %ignore csArray::DefaultCompare;
 %ignore csArray::Delete;
 %ignore csArray::DeleteFast;
@@ -491,9 +505,10 @@ TYPEMAP_OUT_csWrapPtr
 %ignore csArray::InitRegion;
 %ignore csArray::InsertSorted;
 %ignore csArray::Iterator;
-%ignore csArray::ReverseIterator;
 %ignore csArray::Length;
 %ignore csArray::PushSmart;
+%ignore csArray::ReverseConstIterator;
+%ignore csArray::ReverseIterator;
 %ignore csArray::Section;
 %ignore csArray::SetCapacity;
 %ignore csArray::SetLength;
@@ -537,13 +552,13 @@ csArrayCapacityLinear<csArrayThresholdVariable >;
 #%ignore csDirtyAccessArray::Length;
 %include "csutil/dirtyaccessarray.h"
 // Provide some useful default instantiations
-%template (Vector2Array) csArray<csVector2>;
+%template (Vector2Array) csArray<csVector2,csArrayElementHandler<csVector2>,CS::Memory::AllocatorMalloc,csArrayCapacityFixedGrow<16> >;
 %template (Vector2DirtyAccessArray) csDirtyAccessArray<csVector2>;
-%template (Vector3Array) csArray<csVector3>;
+%template (Vector3Array) csArray<csVector3,csArrayElementHandler<csVector3>,CS::Memory::AllocatorMalloc,csArrayCapacityFixedGrow<16> >;
 %template (Vector3DirtyAccessArray) csDirtyAccessArray<csVector3>;
-%template (Vector4Array) csArray<csVector4>;
+%template (Vector4Array) csArray<csVector4,csArrayElementHandler<csVector4>,CS::Memory::AllocatorMalloc,csArrayCapacityFixedGrow<16> >;
 %template (Vector4DirtyAccessArray) csDirtyAccessArray<csVector4>;
-%template (UIntArray) csArray<unsigned int>;
+%template (UIntArray) csArray<unsigned int,csArrayElementHandler<unsigned int>,CS::Memory::AllocatorMalloc,csArrayCapacityFixedGrow<16> >;
 %template (UIntDirtyAccessArray) csDirtyAccessArray<unsigned int>;
 
 %ignore scfInitialize;
@@ -572,6 +587,8 @@ void SetCoreSCFPointer(iSCF *scf_pointer)
 %ignore operator/ (const csColor &, float);
 %ignore operator+ (const csColor &, const csColor &);
 %ignore operator- (const csColor &, const csColor &);
+%ignore csColor::operator[];
+%ignore csColor4::operator[];
 %include "csutil/cscolor.h"
 
 %include "csutil/cmdhelp.h"
@@ -665,6 +682,7 @@ SET_HELPER(csStringID)
 %include "iutil/comp.h"
 %include "iutil/cache.h"
 %ignore CS::Deprecated::ASSIGN_FILETIME;
+%ignore csFileTime::operator struct tm;
 %include "iutil/vfs.h"
 %include "iutil/dbghelp.h"
 %include "iutil/object.h"
@@ -754,6 +772,7 @@ template <class T, class K = unsigned int,
     CS::Container::HashElement<T, K> > > class csHash;
 
 %include "csutil/hash.h"
+%include "csutil/hashcomputer.h"
 %include "iutil/eventnames.h"
 %include "csutil/eventnames.h"
 %include "iutil/eventh.h"
@@ -927,19 +946,19 @@ csEventID _csevQuit (iObjectRegistry *);
 /* Canvas */
 #define _csevCanvasClose(reg, g2d) csevCanvasClose(reg, g2d)
 #undef csevCanvasClose
-csEventID csevCanvasClose(iObjectRegistry*, iGraphics2D*);
+csEventID csevCanvasClose(iObjectRegistry*, iGraphicsCanvas*);
 #define _csevCanvasExposed(reg, g2d) csevCanvasExposed(reg, g2d)
 #undef csevCanvasExposed
-csEventID csevCanvasExposed(iObjectRegistry*, iGraphics2D*);
+csEventID csevCanvasExposed(iObjectRegistry*, iGraphicsCanvas*);
 #define _csevCanvasExposed(reg, g2d) csevCanvasExposed(reg, g2d)
 #undef csevCanvasExposed
-csEventID csevCanvasExposed(iObjectRegistry*, iGraphics2D*);
+csEventID csevCanvasExposed(iObjectRegistry*, iGraphicsCanvas*);
 #define _csevCanvasHidden(reg, g2d) csevCanvasHidden(reg, g2d)
 #undef csevCanvasHidden
-csEventID csevCanvasHidden(iObjectRegistry*, iGraphics2D*);
+csEventID csevCanvasHidden(iObjectRegistry*, iGraphicsCanvas*);
 #define _csevCanvasResize(reg, g2d) csevCanvasResize(reg, g2d)
 #undef csevCanvasResize
-csEventID csevCanvasResize(iObjectRegistry*, iGraphics2D*);
+csEventID csevCanvasResize(iObjectRegistry*, iGraphicsCanvas*);
 #define _csevFocusChanged(reg) csevFocusChanged(reg)
 #undef csevFocusChanged
 csEventID csevFocusChanged(iObjectRegistry*);
@@ -989,7 +1008,18 @@ csEventID _csevMouseMove (iObjectRegistry *,uint x);
 #undef csevJoystickEvent
 csEventID _csevJoystickEvent (iObjectRegistry *);
 
+%include "iutil/eventhandlers.h"
+%include "csutil/frameeventsignpost.h"
+%template(scfEventHandler) scfFakeInterface<iEventHandler>;
+%template(scfEventHandlerRegistery) scfImplementation1<csEventHandlerRegistry,iEventHandlerRegistry>;
+%template(scfFrameSignpost_Logic3D) scfImplementation2<FrameSignpost_Logic3D,iFrameEventSignpost,scfFakeInterface<iEventHandler> >;
+%template(scfFrameSignpost_3D2D) scfImplementation2<FrameSignpost_3D2D,iFrameEventSignpost,scfFakeInterface<iEventHandler> >;
+%template(scfFrameSignpost_2DConsole) scfImplementation2<FrameSignpost_2DConsole,iFrameEventSignpost,scfFakeInterface<iEventHandler> >;
+%template(scfFrameSignpost_ConsoleDebug) scfImplementation2<FrameSignpost_ConsoleDebug,iFrameEventSignpost,scfFakeInterface<iEventHandler> >;
+%template(scfFrameSignpost_DebugFrame) scfImplementation2<FrameSignpost_DebugFrame,iFrameEventSignpost,scfFakeInterface<iEventHandler> >;
 %include "csutil/eventhandlers.h"
+%template(scfFrameBegin3DDraw) scfImplementation1<FrameBegin3DDraw,iEventHandler>;
+%template(scfFramePrinter) scfImplementation1<FramePrinter,iEventHandler>;
 %include "csutil/common_handlers.h"
 
 // csutil/cscolor.h

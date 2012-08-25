@@ -2521,7 +2521,7 @@ bool csVFS::SetFilePermission (const char *filename,
   return success;
 }
 
-#ifndef CS_SIZE_T_64BIT
+#if (CS_PROCESSOR_SIZE != 64)
 bool csVFS::GetFileSize (const char *filename, size_t &oSize)
 {
   if (!filename)

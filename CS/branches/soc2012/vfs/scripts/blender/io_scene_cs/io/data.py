@@ -11,10 +11,6 @@ from io_scene_cs.utilities import B2CS
 from io_scene_cs.utilities import StringProperty
 
 
-# Property defining an UV texture's name for a mesh ('None' if not defined)
-StringProperty(['Mesh'], attr="uv_texture", name="UV texture", default='None')
-
-
 def GetMaterial(self, index):
   if index < len(self.materials):
     return self.materials[index]
@@ -22,6 +18,13 @@ def GetMaterial(self, index):
 
 bpy.types.Mesh.GetMaterial = GetMaterial
 
+def GetFirstMaterial(self):
+  for i,mat in enumerate(self.materials):
+    if self.materials[i] != None:
+      return self.materials[i]
+  return None
+
+bpy.types.Mesh.GetFirstMaterial = GetFirstMaterial
 
 def GetSubMeshesRaw(self, name, indexV, indexGroups, mappingBuffer = []):
   """ Compute the CS submeshes of this Blender mesh by remapping
@@ -39,9 +42,9 @@ def GetSubMeshesRaw(self, name, indexV, indexGroups, mappingBuffer = []):
   # Starting index of the cs vertices composing this submesh
   firstIndex = indexV
   # Active UV texture
-  tface = self.uv_textures.active.data if self.uv_textures.active else None
+  tface = self.all_uv_textures.active.data if self.all_uv_textures.active else None
   # For each face composing this mesh
-  for index, face in enumerate(self.faces):
+  for index, face in enumerate(self.all_faces):
     im = tface[index].image if tface else None
     # Identify the submesh by the mesh name, material and texture
     triplet = (name, self.GetMaterial(face.material_index), im)
@@ -109,13 +112,15 @@ def GetSubMeshesRaw(self, name, indexV, indexGroups, mappingBuffer = []):
 bpy.types.Mesh.GetSubMeshesRaw = GetSubMeshesRaw
 
 
-def GetSubMeshes(self, name = '', mappingBuffer = [], numVertices = 0):
+def GetSubMeshes(self, name = '', mappingBuffer = None, numVertices = 0):
   """ Create the CS submeshes of this Blender mesh
       param name: name of the mesh
       param mappingBuffer: mapping buffer defining a CS vertex for each
             face vertex of the Blender mesh
       param numVertices: number of CS vertices previously defined      
   """
+  if mappingBuffer is None:
+      mappingBuffer = []
   indexV = numVertices
   indexGroups = {}
   indexV, indexGroups = self.GetSubMeshesRaw(name, indexV, indexGroups, mappingBuffer)
@@ -142,10 +147,10 @@ def GetCSMappingBuffers (self):
   """
 
   # Determine the UV texture: we only use the active UV texture or the first one
-  if self.uv_textures.active:
-    tface = self.uv_textures.active.data
-  elif len(self.uv_textures) != 0:
-    tface = self.uv_textures[0].data
+  if self.all_uv_textures.active:
+    tface = self.all_uv_textures.active.data
+  elif len(self.all_uv_textures) != 0:
+    tface = self.all_uv_textures[0].data
   else:
     print("WARNING: mesh",self.name,"has no UV texture")
     tface = None
@@ -160,7 +165,7 @@ def GetCSMappingBuffers (self):
     mapBuf.append([])
 
   # For all faces of the mesh
-  for indexF, face in enumerate(self.faces):
+  for indexF, face in enumerate(self.all_faces):
     faceNormal = face.normal
     faceVerts = set(face.vertices)
 
@@ -178,7 +183,7 @@ def GetCSMappingBuffers (self):
         forceSmooth = True
         smooth = True
       if not smooth and face.use_smooth and self.use_auto_smooth:
-        for indexf, f in enumerate(self.faces):
+        for indexf, f in enumerate(self.all_faces):
           if face!=f and f.use_smooth and len(faceVerts.intersection(set(f.vertices)))!=0:
             # All set-smoothed faces with angles less than the specified 
             # auto-smooth angle have 'smooth' normals, i.e. use vertex normals
@@ -212,7 +217,7 @@ def GetCSMappingBuffers (self):
                 # Not a smooth mesh
                 vertexFound = False
                 for mappedI, mappedV in enumerate(mapBuf[face.vertices[i]]):
-                  if faceNormal == self.faces[mappedV['face']].normal:
+                  if faceNormal == self.all_faces[mappedV['face']].normal:
                     # Blender vertex is defined in CS with the same face normal
                     # => add a reference to the corresponding CS vertex
                     vertexFound = True
@@ -235,7 +240,7 @@ def GetCSMappingBuffers (self):
           for mappedI, mappedV in enumerate(mapBuf[face.vertices[i]]):
             if (abs(uv[0] - tface[mappedV['face']].uv[mappedV['vertex']][0]) < epsilon) and \
                (abs(uv[1] - tface[mappedV['face']].uv[mappedV['vertex']][1]) < epsilon) and \
-               (smooth or (faceNormal == self.faces[mappedV['face']].normal)):
+               (smooth or (faceNormal == self.all_faces[mappedV['face']].normal)):
               # Blender vertex is defined in CS with the same (u,v) coordinates
               # and the same face normal
               # => add a reference to the corresponding CS vertex
@@ -426,12 +431,8 @@ def GetBoneInfluences (self, **kwargs):
       param kwargs: mapping buffers of this armature
   """
   # Recover mapping buffers from kwargs
-  meshData = []
-  if 'meshData' in kwargs:
-    meshData = kwargs['meshData']
-  mappingBuffers = []
-  if 'mappingVertices' in kwargs:
-    mappingVertices = kwargs['mappingVertices']
+  meshData = kwargs.get('meshData', [])
+  mappingVertices = kwargs.get('mappingVertices', [])
 
   # Get bone influences per vertex (max 4)
   boneNames = GetBoneNames(self.bones)

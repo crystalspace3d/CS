@@ -5,15 +5,10 @@
 @cindex MacOS/X
 
 @emph{Written by Eric Sunshine, @email{sunshine@@sunshineco.com}.  Copyright
-@copyright{} 1999, 2000, 2001, 2002, 2003, 2004 by Eric Sunshine.  Last updated
-18 September 2004.}
+@copyright{} 1999-2012 by Eric Sunshine.  Last updated 15 July 2012.}
 
-Crystal Space was ported to MacOS/X by Eric Sunshine.  If you have questions or
-comments about this port, please contact Eric Sunshine at
-@email{sunshine@@sunshineco.com}.  Matt Reda added OpenGL, CoreGraphics, and
-CoreAudio drivers to the MacOS/X port.  If you have questions or comments about
-these drivers, please contact Matt Reda at @email{mreda@@mac.com} or Eric
-Sunshine.
+Crystal Space was ported to MacOS/X by Eric Sunshine.  Matt Reda added OpenGL,
+CoreGraphics, and CoreAudio drivers to the MacOS/X port.
 
 This section contains configuration, compilation, installation, and usage
 instructions for the MacOS/X port of Crystal Space.  The MacOS/X port of
@@ -46,51 +41,21 @@ manipulation (@pxref{External Libraries}).  The libraries @samp{libpng} and
 @samp{libjpeg}, which are present on many Unix installations, are absent from
 MacOS/X.  The optional @samp{libmng} is less common.
 
-One way to procure these libraries is to install them with Fink, which is a
-tool for installing pre-built Unix and Unix-like tools and resources on
-MacOS/X.
+Various package managers exist to simplify the task of installing command-line
+tools and development libraries, such as @samp{libpng} and @samp{libjpeg}.
+Choose one of the package managers below and follow its documentation to
+install prerequisites libraries.
 
-@noindent
-@uref{http://fink.sourceforge.net/}
+@itemize @bullet
+@item @uref{http://www.macports.org,MacPorts}
+@item @uref{http://www.finkproject.org,Fink}
+@item @uref{http://mxcl.github.com/homebrew/,Homebrew}
+@end itemize
 
 Alternately, the libraries can be built manually.  You can download the
 required external library source code packages from their canonical download
-sites (@pxref{External Libraries}).
-
-If you have permission to do so, it is best to install the @sc{jpeg}, @sc{png},
-and @sc{mng} libraries in standard locations by following the installation
-instructions for each package (for example @samp{make install}).  In some
-cases, these libraries may already be present on your computer if you installed
-them separately (via Fink, for instance) or if they were installed by default.
-(For example, @sc{zlib}, which is also required by Crystal Space, is already
-pre-installed on MacOS/X.)
-
-If you do not have permission to install these libraries, you can still build
-Crystal Space by unpacking each external library into the @file{CS/libs}
-directory and building them there.  For example:
-
-@example
-cd CS/libs
-gnutar xfz libpng*.tar.gz
-gnutar xfz jpegsrc*.tar.gz
-gnutar xfz libmng*.tar.gz
-@end example
-
-@noindent
-The libraries can be built as follows:
-
-@example
-cd CS/libs/libpng*
-make -f scripts/makefile.macosx libpng.a
-
-cd ../*jpeg*
-sh ./configure
-make libjpeg.a
-
-cd ../libmng*
-sh ./configure
-make libmng.a
-@end example
+sites (@pxref{External Libraries}). Follow the included documentation to build
+and install each library.
 
 @node MacOS/X Resources, MacOS/X Building, MacOS/X Libraries, MacOS/X
 @subsubsection Resources
@@ -107,10 +72,10 @@ placed within the @file{CS/data} directory.  As with other Crystal Space
 resources, map files are actually compressed archives which are used directly
 by the engine, thus you should not unpack these archives.
 
-The most commonly used map file is @file{flarge} since it demonstrates many of
+The most commonly used map file is @file{castle} since it demonstrates many of
 the special features of the engine rather than focusing on merely one or two
 areas.  This map is typically distributed as part of the Crystal Space package
-and can be found in the @file{CS/data/flarge} directory.  You can download
+and can be found in the @file{CS/data/castle} directory.  You can download
 additional example map files from the @file{maps} subdirectory of each release
 of Crystal Space at the download site:
 
@@ -151,11 +116,11 @@ Crystal Space can be built from the command-line (Terminal.app) using either
 @file{make} or Jam (@pxref{GettingJam}).  Both tools work equally well.  In the
 examples below, wherever @samp{make -k} is used, you can instead substitute
 @file{jam} if you so desire.  @emph{Note}: Apple ships a very old and
-highly modified version of Jam with MacOS/X which is unsuitable for building
-Crystal Space.  If this is the only Jam which you have installed, then just
-build Crystal Space using @file{make}.  Alternately, you may download and
-install a more recent version of Jam (@pxref{GettingJam}). Jam might also be
-available via Fink (though it was not at the time of this writing).
+highly modified version of Jam with older versions of MacOS/X which is
+unsuitable for building Crystal Space.  If this is the only Jam which you have
+installed, then just build Crystal Space using @file{make}.  Alternately, you
+may download and install a more recent version of Jam (@pxref{GettingJam}) or
+install it via one of the package managers.
 
 The Crystal Space project consists of a number of components and example
 programs.  The following commands are all issued from within the top level
@@ -339,7 +304,7 @@ several of the example programs and map files.
 
 You need to have one or more @dfn{map} files in order to run WalkTest.  These
 are the files which contain the maps and rooms which you can explore with
-WalkTest.  The most commonly used example map file is @file{flarge}.
+WalkTest.  The most commonly used example map file is @file{castle}.
 
 You may need adjust the ambient lighting which the engine applies when it
 lights the maps.  This may be necessary if you find that the scenes appears too
@@ -364,24 +329,24 @@ To specify options when running programs, you must invoke the programs from the
 command-line, however the need to specify command-line options is rare, so this
 should not prove much of an inconvenience.
 
-To run WalkTest with a particular map (for instance, @file{flarge}), type:
+To run WalkTest with a particular map (for instance, @file{castle}), type:
 
 @example
-./walktest.app/Contents/MacOS/walktest flarge
+./walktest.app/Contents/MacOS/walktest castle
 @end example
 
-Once invoked, you will be able to explore the map file (@file{flarge}) by using
+Once invoked, you will be able to explore the map file (@file{castle}) by using
 the navigation controls (@pxref{Walktest Movement}).  To explore a different
-map, substitute its name in place of @samp{flarge}.
+map, substitute its name in place of @samp{castle}.
 
-If you would like to explore a map other than @samp{flarge} without having to
+If you would like to explore a map other than @samp{castle} without having to
 type it on the command-line, you can add the following setting to the MacOS/X
 defaults database.  This will allow you to explore different maps even when
 launching WalkTest from the Finder.  For example, to explore a map named
-@samp{castle}, set the following default value:
+@samp{partsys}, set the following default value:
 
 @example
-defaults write CrystalSpace.Walktest Walktest.Settings.WorldFile castle
+defaults write CrystalSpace.Walktest Walktest.Settings.WorldFile partsys
 @end example
 
 Other interesting applications, such as csDemo, also come with
@@ -397,7 +362,7 @@ instruct the applications to use @dfn{full-screen} mode with the @samp{--fs}
 command-line option.  For example:
 
 @example
-./walktest.app/Contents/MacOS/walktest --fs flarge
+./walktest.app/Contents/MacOS/walktest --fs castle
 @end example
 
 Alternately, if you prefer to launch programs from the Finder, you can install

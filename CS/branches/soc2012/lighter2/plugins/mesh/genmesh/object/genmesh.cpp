@@ -816,9 +816,12 @@ iRenderBuffer* csGenmeshMeshObject::GetRenderBuffer (const char* name)
 {
   CS::ShaderVarStringID bufID = factory->GetSVStrings()->Request (name);
   iRenderBuffer* buf = userBuffers.GetRenderBuffer (bufID);
-  if (buf != 0) return 0;
+  if (buf == 0)
+  {
+     buf = factory->GetRenderBuffer (name);
+  }
 
-  return factory->GetRenderBuffer (name);
+  return buf;
 }
 
 iRenderBuffer* csGenmeshMeshObject::GetRenderBuffer (csRenderBufferName name)
@@ -826,9 +829,12 @@ iRenderBuffer* csGenmeshMeshObject::GetRenderBuffer (csRenderBufferName name)
   const char* nameStr = csRenderBuffer::GetDescrFromBufferName (name);
   CS::ShaderVarStringID bufID = factory->GetSVStrings()->Request (nameStr);
   iRenderBuffer* buf = userBuffers.GetRenderBuffer (bufID);
-  if (buf != 0) return 0;
+  if (buf == 0)
+  {
+     buf = factory->GetRenderBuffer (name);
+  }
 
-  return factory->GetRenderBuffer (name);
+  return buf;
 }
 
 iMeshObjectFactory* csGenmeshMeshObject::GetFactory () const

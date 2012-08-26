@@ -265,7 +265,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
       fraction -= callback.m_closestHitFraction;
 
-      if (callback.hasHit())
+      if (callback.hasHit() && !btGhostObject::upcast(callback.m_hitCollisionObject))   // ignore ghost objects
       {	
         // we moved only a fraction
         //btScalar hitDistance;
@@ -475,6 +475,16 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btScalar magnitude = (btScalar(1.0)/m_rigidBody->getInvMass()) * btScalar(8.0);
     m_rigidBody->applyCentralImpulse (up * magnitude);
 #endif
+  }
+
+  void csKinematicActorController::setJumpSpeed (btScalar jumpSpeed)
+  {
+    m_jumpSpeed = jumpSpeed;
+  }
+
+  btScalar csKinematicActorController::getJumpSpeed () const
+  {
+    return m_jumpSpeed;
   }
 
   void csKinematicActorController::setGravity(btScalar gravity)

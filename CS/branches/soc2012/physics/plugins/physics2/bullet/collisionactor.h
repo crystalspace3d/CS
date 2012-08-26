@@ -22,12 +22,8 @@
 #include "cssysdef.h"
 #include "common2.h"
 #include "collisionghost.h"
-//#include "kinematicactorcontroller.h"
+#include "kinematicactorcontroller.h"
 
-
-// TODO: btKinematicCharacterController is terrible - We need to get rid of it at some point
-// It has no virtual ctor but tons of protected members, and many of them 
-class btKinematicCharacterController;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -36,7 +32,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   */
 class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletGhostCollisionObject,  CS::Collisions::iCollisionActor>
 {
-  btKinematicCharacterController* controller;
+  csKinematicActorController* controller;
   csScalar airControlFactor;
   csScalar walkSpeed;
   bool gravityEnabled;

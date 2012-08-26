@@ -44,9 +44,9 @@ PhysDemo::PhysDemo()
   pauseDynamic (false), dynamicStepFactor (1.0f),
   dragging (false), softDragging (false),
   debugMode (DEBUG_COLLIDERS),
-  actorAirControl(.3f),
-  moveSpeed(7.f),
-  turnSpeed(2.f),
+  actorAirControl(.2f),
+  moveSpeed(3.f),
+  turnSpeed(1.6f),
   //actorMode (ActorModeKinematic)
   actorMode (ActorModeDynamic)
   ,
@@ -420,7 +420,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
       if (!kinematicActor)
       {
         //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y/2);
-        csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
+        csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y / 1.5, ActorDimensions.x/2);
         //csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
 
         /*csOrthoTransform trans;

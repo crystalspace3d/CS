@@ -20,7 +20,6 @@
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
-#include "BulletDynamics/Character/btKinematicCharacterController.h"
 
 #include "ivaria/collisions.h"
 
@@ -34,7 +33,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     btPairCachingGhostObject* go = GetPairCachingGhostObject();
     btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
-    controller = new btKinematicCharacterController(go, convShape, stepHeight = props->GetStepHeight(), UpAxis);
+    controller = new csKinematicActorController(go, convShape, stepHeight = props->GetStepHeight(), UpAxis);
     
     SetWalkSpeed(props->GetWalkSpeed());
     SetJumpSpeed(props->GetJumpSpeed());
@@ -83,7 +82,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btPairCachingGhostObject* go = GetPairCachingGhostObject();
     btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
     delete controller;
-    controller = new btKinematicCharacterController(go, convShape, stepHeight = newHeight, UpAxis);
+    controller = new csKinematicActorController(go, convShape, stepHeight = newHeight, UpAxis);
   }
 
   void csBulletCollisionActor::Walk(csVector3 vel)
@@ -127,6 +126,37 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (!controller) return;
 
     controller->setGravity(-sector->GetBulletWorld()->getGravity()[UpAxis]);
+
+    // Remove ghost objects from list of blocking objects:
+    btPairCachingGhostObject* go = GetPairCachingGhostObject();
+    for (int i = 0; i < go->getOverlappingPairCache()->getNumOverlappingPairs(); )
+    {
+      btBroadphasePair* collisionPair = &go->getOverlappingPairCache()->getOverlappingPairArray()[i];
+      btBroadphaseProxy* otherProxy;
+      if ((btCollisionObject*)collisionPair->m_pProxy0->m_clientObject == (btCollisionObject*)go)
+      {
+        otherProxy = collisionPair->m_pProxy1;
+      }
+      else
+      {
+        otherProxy = collisionPair->m_pProxy0;
+      }
+
+      btCollisionObject* otherObj = (btCollisionObject*)otherProxy->m_clientObject;
+      if (otherObj->getInternalType() == btCollisionObject::CO_GHOST_OBJECT)
+      {
+        // Disregard ghost object collisions
+        go->getOverlappingPairCache()->removeOverlappingPair(
+          collisionPair->m_pProxy0, collisionPair->m_pProxy1,
+          sector->GetBulletWorld()->getDispatcher());
+      }
+      else
+      {
+        ++i;
+      }
+    }
+
+    // Resolve collisions and setup step height
     controller->updateAction(sector->bulletWorld, delta);
     
     csVector3 pos = BulletToCS(controller->getGhostObject()->getWorldTransform().getOrigin(), this->system->getInverseInternalScale());

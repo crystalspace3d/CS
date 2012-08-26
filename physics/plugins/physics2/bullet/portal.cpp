@@ -393,7 +393,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         // Soft Body:
         CS_ASSERT(pCloneObj->QuerySoftBody());
         csBulletSoftBody* sObj = dynamic_cast<csBulletSoftBody*>(pObj->QuerySoftBody());
-        csBulletSoftBody* sCloneObj = dynamic_cast<csBulletSoftBody*>(sCloneObj->QuerySoftBody());
+        csBulletSoftBody* sCloneObj = dynamic_cast<csBulletSoftBody*>(pCloneObj->QuerySoftBody());
         CS_ASSERT(sObj && sCloneObj);
         CS_ASSERT(sObj->GetNodeCount() == sCloneObj->GetNodeCount());
         

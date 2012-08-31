@@ -404,8 +404,6 @@ bool MocapViewer::CreateScene ()
 
   // Read the command line options
   // Read the file name
-  csRef<iCommandLineParser> clp =
-    csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   csString mocapFilename = clp->GetName (0);
   if (mocapFilename == "")
   {
@@ -531,7 +529,7 @@ bool MocapViewer::CreateScene ()
   csRandomGen globalRandomGenerator (globalSeed);
   int seedCount = 0;
   for (int i = 0; i < SEED_COUNT; i++)
-    seeds[i] = globalRandomGenerator.Get (~0);
+    seeds[i] = globalRandomGenerator.Get (942438977);
 
   // ------------------------------
   // Switching of the bone animation channels

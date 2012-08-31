@@ -5,15 +5,10 @@
 @cindex MacOS/X
 
 @emph{Written by Eric Sunshine, @email{sunshine@@sunshineco.com}.  Copyright
-@copyright{} 1999, 2000, 2001, 2002, 2003, 2004 by Eric Sunshine.  Last updated
-18 may 2012.}
+@copyright{} 1999-2012 by Eric Sunshine.  Last updated 15 July 2012.}
 
-Crystal Space was ported to MacOS/X by Eric Sunshine.  If you have questions or
-comments about this port, please contact Eric Sunshine at
-@email{sunshine@@sunshineco.com}.  Matt Reda added OpenGL, CoreGraphics, and
-CoreAudio drivers to the MacOS/X port.  If you have questions or comments about
-these drivers, please contact Matt Reda at @email{mreda@@mac.com} or Eric
-Sunshine.
+Crystal Space was ported to MacOS/X by Eric Sunshine.  Matt Reda added OpenGL,
+CoreGraphics, and CoreAudio drivers to the MacOS/X port.
 
 This section contains configuration, compilation, installation, and usage
 instructions for the MacOS/X port of Crystal Space.  The MacOS/X port of
@@ -37,27 +32,6 @@ Space, and jump directly to the section explaining how to run the applications
 * MacOS/X Running Programs:: Using Crystal Space
 @end menu
 
-@subsubheading Warning about compilation issues with the default Xcode compiler
-
-The C++ compiler that is shipped by default with the recent Xcode releases does
-not support the C++ standard. This is unfortunately not a joke, and the Crystal
-Space engine won't build because of that, with compilation error messages about
-generic thunk code failed.
-
-In order to fix this, you should use another (real) compiler such as @sc{gcc} or
-Clang. After having installed one of those, you then need to specify them to the
-Crystal Space configuration system using e.g.:
-
-@example
-./configure CC=/usr/bin/gcc CXX=/usr/bin/g++
-@end example
-
-Or for Clang:
-
-@example
-./configure CC=/usr/bin/clang CXX=/usr/bin/clang++
-@end example
-
 @node MacOS/X Libraries, MacOS/X Resources, MacOS/X, MacOS/X
 @subsubsection Library Prerequisites
 
@@ -67,51 +41,21 @@ manipulation (@pxref{External Libraries}).  The libraries @samp{libpng} and
 @samp{libjpeg}, which are present on many Unix installations, are absent from
 MacOS/X.  The optional @samp{libmng} is less common.
 
-One way to procure these libraries is to install them with Fink, which is a
-tool for installing pre-built Unix and Unix-like tools and resources on
-MacOS/X.
+Various package managers exist to simplify the task of installing command-line
+tools and development libraries, such as @samp{libpng} and @samp{libjpeg}.
+Choose one of the package managers below and follow its documentation to
+install prerequisites libraries.
 
-@noindent
-@uref{http://fink.sourceforge.net/}
+@itemize @bullet
+@item @uref{http://www.macports.org,MacPorts}
+@item @uref{http://www.finkproject.org,Fink}
+@item @uref{http://mxcl.github.com/homebrew/,Homebrew}
+@end itemize
 
 Alternately, the libraries can be built manually.  You can download the
 required external library source code packages from their canonical download
-sites (@pxref{External Libraries}).
-
-If you have permission to do so, it is best to install the @sc{jpeg}, @sc{png},
-and @sc{mng} libraries in standard locations by following the installation
-instructions for each package (for example @samp{make install}).  In some
-cases, these libraries may already be present on your computer if you installed
-them separately (via Fink, for instance) or if they were installed by default.
-(For example, @sc{zlib}, which is also required by Crystal Space, is already
-pre-installed on MacOS/X.)
-
-If you do not have permission to install these libraries, you can still build
-Crystal Space by unpacking each external library into the @file{CS/libs}
-directory and building them there.  For example:
-
-@example
-cd CS/libs
-gnutar xfz libpng*.tar.gz
-gnutar xfz jpegsrc*.tar.gz
-gnutar xfz libmng*.tar.gz
-@end example
-
-@noindent
-The libraries can be built as follows:
-
-@example
-cd CS/libs/libpng*
-make -f scripts/makefile.macosx libpng.a
-
-cd ../*jpeg*
-sh ./configure
-make libjpeg.a
-
-cd ../libmng*
-sh ./configure
-make libmng.a
-@end example
+sites (@pxref{External Libraries}). Follow the included documentation to build
+and install each library.
 
 @node MacOS/X Resources, MacOS/X Building, MacOS/X Libraries, MacOS/X
 @subsubsection Resources
@@ -172,11 +116,11 @@ Crystal Space can be built from the command-line (Terminal.app) using either
 @file{make} or Jam (@pxref{GettingJam}).  Both tools work equally well.  In the
 examples below, wherever @samp{make -k} is used, you can instead substitute
 @file{jam} if you so desire.  @emph{Note}: Apple ships a very old and
-highly modified version of Jam with MacOS/X which is unsuitable for building
-Crystal Space.  If this is the only Jam which you have installed, then just
-build Crystal Space using @file{make}.  Alternately, you may download and
-install a more recent version of Jam (@pxref{GettingJam}). Jam might also be
-available via Fink (though it was not at the time of this writing).
+highly modified version of Jam with older versions of MacOS/X which is
+unsuitable for building Crystal Space.  If this is the only Jam which you have
+installed, then just build Crystal Space using @file{make}.  Alternately, you
+may download and install a more recent version of Jam (@pxref{GettingJam}) or
+install it via one of the package managers.
 
 The Crystal Space project consists of a number of components and example
 programs.  The following commands are all issued from within the top level

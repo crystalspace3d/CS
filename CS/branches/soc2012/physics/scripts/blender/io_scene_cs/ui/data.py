@@ -64,17 +64,38 @@ class MESH_PT_csFactory(csFactoryPanel, bpy.types.Panel):
     if ob.type == 'MESH':
       ob = bpy.context.active_object.data
       row = layout.row()
-      self.LayoutAddProperty(row, ob, "goodCollider")
+      row.prop(ob, "use_imposter")
   
       row = layout.row()
-      self.LayoutAddProperty(row, ob, "badCollider")
-      
+      row.prop(ob, "no_shadow_receive")
+
       row = layout.row()
-      row.prop(ob, "use_imposter")
-    
+      row.prop(ob, "no_shadow_cast")
+
+      row = layout.row()
+      row.prop(ob, "limited_shadow_cast")
+
 
 BoolProperty(['Mesh'], 
      attr="use_imposter", 
-     name="imposter", 
-     description="Whether or not this mesh should use an imposter", 
+     name="Imposter mesh", 
+     description="Whether or not this mesh should use an imposter",
+     default=False)
+
+BoolProperty(['Mesh'], 
+     attr="no_shadow_receive", 
+     name="No shadow receive", 
+     description="Whether or not shadows can be cast on this mesh",
+     default=False)
+
+BoolProperty(['Mesh'], 
+     attr="no_shadow_cast", 
+     name="No shadow cast", 
+     description="Whether or not this mesh can cast shadows on other objects while in normal shadow casting mode",
+     default=False)
+
+BoolProperty(['Mesh'], 
+     attr="limited_shadow_cast", 
+     name="Limited shadow cast", 
+     description="Whether or not this mesh can cast shadows on other objects while in limited shadow casting mode",
      default=False)

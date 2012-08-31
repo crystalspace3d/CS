@@ -59,6 +59,17 @@ namespace CS
    * \sa StrDup(const char*)
    */
   CS_CRYSTALSPACE_EXPORT wchar_t* StrDupW (const char *s);
+
+  /**
+   * Locate the first occurrence of the null-terminated string s2 in the
+   * null-terminated string s1 ignoring case of both strings.
+   * For best portability, use this function rather than strcasestr().
+   * \param str1 The string where to search into.
+   * \param str2 The string to search inside str1.
+   * \return nullptr If str2 was not found, else a pointer to the start
+   *         of the matching string.
+   */
+  CS_CRYSTALSPACE_EXPORT const char* StrCaseStr (const char *str1, const char *str2);
 }
 
 ///\internal Helper function needed by the csStrNew variants below

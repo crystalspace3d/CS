@@ -32,16 +32,29 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 
   class csXMLShaderCompiler;
   class csXMLShader;
+  class csXMLShaderPluginWrapper;
   class csXMLShaderWrapper;
 
-  struct CachedPlugin;
-  struct CachedPlugins;
   struct PassActionPrecache;
 
   class csXMLShaderTech
   {
+  public:
+    struct CachedPlugin
+    {
+      bool available;
+      csString pluginID;
+      csString progType;
+
+      csRef<iShaderProgramPlugin> programPlugin;
+      csRef<iDocumentNode> programNode;
+
+      CachedPlugin() : available (false) {}
+    };
   private:
+    struct CachedPlugins;
     friend class csXMLShader;
+    friend class csXMLShaderPluginWrapper;
     friend class csXMLShaderWrapper;
     friend struct PassActionPrecache;
 
@@ -163,8 +176,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
 
     // Parse a vertex attribute specifier 
     csVertexAttrib ParseVertexAttribute (const char* dest, 
-      iShaderDestinationResolver* resolveVP,  
-      iShaderDestinationResolver* resolveFP); 
+      iShaderDestinationResolver* resolve);
 
     // load one pass, return false if it fails
     bool LoadPass (iDocumentNode *node, ShaderPass* pass, size_t variant,
@@ -173,27 +185,23 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       iFile* cacheFile, iHierarchicalCache* cacheTo);
 
     template<typename PassAction>
-    bool LoadPassPrograms (iDocumentNode* passNode, PassAction& action,
-      size_t variant, CachedPlugins& cachedPlugins);
+    bool LoadPassPrograms (PassAction& actionProg, PassAction& actionVPr, size_t variant,
+                           CachedPlugins& cachedPlugins);
 
     struct LoadHelpers;
     bool ParseModes (ShaderPass* pass, iDocumentNode* node, LoadHelpers& helpers);
     bool ParseBuffers (ShaderPassPerTag& pass, int passNum, iDocumentNode* node, 
-      LoadHelpers& helpers, iShaderDestinationResolver* resolveFP,
-      iShaderDestinationResolver* resolveVP);
+      LoadHelpers& helpers, iShaderDestinationResolver* resolve);
     bool ParseTextures (ShaderPassPerTag& pass, 
-      iDocumentNode* node, LoadHelpers& helpers, iShaderDestinationResolver* resolveFP);
+      iDocumentNode* node, LoadHelpers& helpers, iShaderDestinationResolver* resolve);
     bool ParseInstances (ShaderPassPerTag& pass, int passNum,
-      iDocumentNode* node, LoadHelpers& helpers, 
-      iShaderDestinationResolver* resolveFP, iShaderDestinationResolver* resolveVP);
+      iDocumentNode* node, LoadHelpers& helpers, iShaderDestinationResolver* resolve);
 
-    bool WritePass (ShaderPass* pass, const CachedPlugins& plugins,
-      iFile* cacheFile);
+    bool WritePass (ShaderPass* pass, iFile* cacheFile);
     iShaderProgram::CacheLoadResult LoadPassFromCache (ShaderPass* pass,
       iDocumentNode* node, size_t variant, iFile* cacheFile,
       iHierarchicalCache* cache);
-    bool ReadPass (ShaderPass* pass, iFile* cacheFile,
-      CachedPlugins& plugins);
+    bool ReadPass (ShaderPass* pass, iFile* cacheFile);
 
     bool WriteShadervarName (CS::ShaderVarStringID svid, iFile* cacheFile);
     CS::ShaderVarStringID ReadShadervarName (iFile* cacheFile);
@@ -214,9 +222,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
         csRef<iBase>& progObj, const char* tag);
   bool GetProgramPlugins (iDocumentNode *node, CachedPlugins& cacheInfo,
     size_t variant);
-  bool GetProgramPlugin (iDocumentNode *node, CachedPlugin& cacheInfo,
-    size_t variant);
-  
+
   iShaderProgram::CacheLoadResult LoadProgramFromCache (iBase* previous,
     iHierarchicalCache* cache, const CachedPlugin& cacheInfo,
     csRef<iShaderProgram>& prog, csString& tag, int passNumber);
@@ -224,7 +230,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
   void SetFailReason (const char* reason, ...) CS_GNUC_PRINTF (2, 3);
 
   int GetPassNumber (ShaderPass* pass);
-public:
+  public:
   CS_LEAKGUARD_DECLARE (csXMLShaderTech);
 
   csXMLShaderTech (csXMLShader* parent);
@@ -250,7 +256,10 @@ public:
 
   const char* GetFailReason()
   { return fail_reason.GetData(); }
-};
+
+    bool GetProgramPlugin (iDocumentNode *node, CachedPlugin& cacheInfo,
+      size_t variant);
+  };
 
 }
 CS_PLUGIN_NAMESPACE_END(XMLShader)

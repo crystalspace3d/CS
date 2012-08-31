@@ -34,18 +34,22 @@
 #include "csplugincommon/canvas/graph2d.h"
 #include "csplugincommon/iopengl/driverdb.h"
 #include "glfontcache.h"
-#include "iutil/event.h"
 #include "glstates.h"
 #include "glextmanager.h"
 #include "glss.h"
 #include "driverdb.h"
-
-class OpenGLTextureCache;
-class GLFontCache;
+#include "glcanvascommon.h"
 
 /**\addtogroup plugincommon
  * @{ */
-/**
+
+namespace CS
+{
+  namespace PluginCommon
+  {
+    namespace GL
+    {
+      /**
  * Basic OpenGL version of the 2D driver class.
  * You can look at one of the OpenGL canvas classes as an example
  * of how to inherit and use this class.  In short,
@@ -54,85 +58,19 @@ class GLFontCache;
  * the 2D drawing functions, which are supplied for you here.
  * That way all OpenGL drawing functions are unified over platforms,
  * so that a fix or improvement will be inherited by all platforms
- * instead of percolating via people copying code over. 
+      * instead of percolating via people copying code over.
  */
-class CS_CSPLUGINCOMMON_GL_EXPORT csGraphics2DGLCommon : 
-  public scfImplementationExt2<csGraphics2DGLCommon, 
-	  csGraphics2D, 
-	  iEventPlug,
-	  iOpenGLDriverDatabase>
-{
-public:
-  enum GLPixelFormatValue
+      class CS_CSPLUGINCOMMON_GL_EXPORT Graphics2DCommon :
+        public virtual CS::PluginCommon::Graphics2DCommon,
+        public virtual iOpenGLDriverDatabase
   {
-    glpfvColorBits = 0,
-    glpfvAlphaBits,
-    glpfvDepthBits,
-    glpfvStencilBits,
-    glpfvAccumColorBits,
-    glpfvAccumAlphaBits,
-    glpfvMultiSamples,
-
-    glpfvValueCount
-  };
-  typedef int GLPixelFormat[glpfvValueCount];
-protected:
-  friend class csGLScreenShot;
-  friend class csGLFontCache;
-  
-  class CS_CSPLUGINCOMMON_GL_EXPORT csGLPixelFormatPicker
-  {
-    csGraphics2DGLCommon* parent;
-
-    /*
-    size_t nextValueIndices[glpfvValueCount];
-    csArray<int> values[glpfvValueCount];
-    
-
-    char* order;
-    size_t orderPos;
-    size_t orderNum;*/
-
-    // Hold properties for a single pixelformat property
-    struct PixelFormatPropertySet
-    {
-      GLPixelFormatValue valueType;
-      size_t nextIndex;
-      size_t firstIndex;
-      csArray<int> possibleValues;
-    };
-
-    /* Pixel format properties, however this is _not_ indexed by 
-    GLPixelFormatValue but sorted by order */
-    PixelFormatPropertySet pixelFormats[glpfvValueCount];
-
-    // Remapping table from real GLPixelFormatValue to index in table above
-    size_t pixelFormatIndexTable[glpfvValueCount]; 
-
-    GLPixelFormat currentValues;
-    bool currentValid;
-
-    void ReadStartValues ();
-    void ReadPickerValues ();
-    void ReadPickerValue (const char* valuesStr, csArray<int>& values);
-    void SetInitialIndices ();
-    void SetupIndexTable (const char* orderStr);
-    bool PickNextFormat ();
-  public:
-    csGLPixelFormatPicker (csGraphics2DGLCommon* parent);
-    ~csGLPixelFormatPicker ();
-
-    void Reset();
-    bool GetNextFormat (GLPixelFormat& format);
-  };
-  friend class csGLPixelFormatPicker;
+      protected:
+        friend class ::csGLScreenShot;
+        friend class ::csGLFontCache;
 
   /// Cache for GL states
   csGLStateCache* statecache;
   csGLStateCacheContext *statecontext;
-
-  /// Canvas is completely opened
-  bool openComplete;
 
   bool hasRenderTarget;
 
@@ -154,14 +92,11 @@ protected:
   //int multiSamples;
   /// Whether to favor quality or speed.
   bool multiFavorQuality;
-  /// Depth buffer resolution
-  //int depthBits;
-  GLPixelFormat currentFormat;
   /// Driver database
   csGLDriverDatabase driverdb;
   bool useCombineTE;
 
-  void GetPixelFormatString (const GLPixelFormat& format, csString& str);
+        void Report (int severity, const char* msg, ...);
 
   /// Open default driver database.
   void OpenDriverDB (const char* phase = 0);
@@ -171,27 +106,22 @@ protected:
    * Returns \c false if the line should not be drawn.
    */
   bool DrawLineNearClip (csVector3 & v1, csVector3 & v2);
-
-  void Report (int severity, const char* msg, ...);
-public:
+      public:
   virtual const char* GetRendererString (const char* str);
   virtual const char* GetVersionString (const char* ver);
-  
+
   virtual const char* GetHWRenderer();
   virtual const char* GetHWGLVersion();
   virtual const char* GetHWVendor();
-
-  /// The event plug object
-  csRef<iEventOutlet> EventOutlet;
 
   /**
    * Constructor does little, most initialization stuff happens in
    * Initialize().
    */
-  csGraphics2DGLCommon (iBase *iParent);
+        Graphics2DCommon ();
 
   /// Clear font cache etc.
-  virtual ~csGraphics2DGLCommon ();
+        virtual ~Graphics2DCommon ();
 
   /*
    * You must supply all the functions not supplied here, such as
@@ -255,7 +185,7 @@ public:
     int color);
   /// Blit.
   virtual void Blit (int x, int y, int w, int h, unsigned char const* data);
-  
+
   /// Query pixel R,G,B at given screen location
   virtual void GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB);
   /// As GetPixel() above, but with alpha
@@ -276,28 +206,66 @@ public:
 
   /// Execute a debug command.
   virtual bool DebugCommand (const char* cmd);
-  
-  void SetViewport (int left, int top, int width, int height);
 
-  /**\name iEventPlug implementation
-   * @{ */
-  virtual unsigned GetPotentiallyConflictingEvents ()
-  { return CSEVTYPE_Keyboard | CSEVTYPE_Mouse; }
-  virtual unsigned QueryEventPriority (unsigned /*iType*/)
-  { return 150; }
-  /** @} */
+  void SetViewport (int left, int top, int width, int height);
 
   /**\name iGLDriverDatabase implementation
    * @{ */
-  void ReadDatabase (iDocumentNode* dbRoot, 
+        void ReadDatabase (iDocumentNode* dbRoot,
     int configPriority = iConfigManager::ConfigPriorityPlugin + 20,
     const char* phase = 0)
   {
     driverdb.Open (this, dbRoot, phase, configPriority);
   }
   /** @} */
-};
+      };
+    } // namespace GL
+  } // namespace PluginCommon
+} // namespace CS
 
 /** @} */
+
+/**
+ * Basic OpenGL version of the 2D driver class.
+ * You can look at one of the OpenGL canvas classes as an example
+ * of how to inherit and use this class.  In short,
+ * inherit from this common class instead of from csGraphics2D,
+ * and override all the functions you normally would except for
+ * the 2D drawing functions, which are supplied for you here.
+ * That way all OpenGL drawing functions are unified over platforms,
+ * so that a fix or improvement will be inherited by all platforms
+ * instead of percolating via people copying code over.
+ */
+class CS_CSPLUGINCOMMON_GL_EXPORT csGraphics2DGLCommon :
+  public scfImplementationExt2<csGraphics2DGLCommon,
+      csGraphics2D,
+      scfFakeInterface<iOpenGLDriverDatabase>,
+      scfFakeInterface<iOpenGLCanvas> >,
+  public virtual CS::PluginCommon::GL::Graphics2DCommon,
+  public virtual CS::PluginCommon::GL::CanvasCommonBase
+{
+protected:
+  iGraphicsCanvas* GetCanvas() { return this; }
+public:
+  /**
+   * Constructor does little, most initialization stuff happens in
+   * Initialize().
+   */
+  csGraphics2DGLCommon (iBase *iParent);
+
+  /// Clear font cache etc.
+  virtual ~csGraphics2DGLCommon ();
+
+  /*
+   * You must supply all the functions not supplied here, such as
+   * SetMouseCursor etc. Note also that even though Initialize, Open,
+   * and Close are supplied here, you must still override these functions
+   * for your own subclass to make system-specific calls for creating and
+   * showing windows, etc.
+   */
+
+  /// Initialize the plugin
+  virtual bool Initialize (iObjectRegistry *object_reg);
+};
 
 #endif // __CS_GLCOMMON2D_H__

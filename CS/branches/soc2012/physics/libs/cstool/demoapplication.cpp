@@ -92,6 +92,9 @@ bool DemoApplication::OnInitialize (int argc, char* argv[])
   if (!RegisterQueue (GetObjectRegistry (), csevAllEvents (GetObjectRegistry ())))
     return ReportError ("Failed to setup the event handler!");
 
+  clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
+  if (!clp) return ReportError ("Failed to locate command line parser!");
+
   return true;
 }
 
@@ -130,6 +133,9 @@ bool DemoApplication::Application ()
   // Create a view to display things
   view = csPtr<iView> (new csView (engine, g3d));
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
+
+  natwin = g2d->GetNativeWindow ();
+  if (natwin) natwin->SetTitle (GetApplicationName ());
 
   // Load remaining plugins
   csRef<iPluginManager> pluginManager = csQueryRegistry<iPluginManager> (GetObjectRegistry ());
@@ -191,6 +197,12 @@ bool DemoApplication::CreateRoom ()
     CS::Geometry::GeneralMeshBuilder::CreateFactoryAndMesh (engine, room,
 				   "background", "background_factory", &bgBox);
   background->SetRenderPriority (engine->GetRenderPriority ("sky"));
+
+  // Do not use shadow casting for the background otherwise it will
+  // push the far plane farther and that will reduce needlessly the quality
+  // of the shadow map.
+  background->GetFlags ().Set (CS_ENTITY_NOSHADOWCAST, CS_ENTITY_NOSHADOWCAST);
+  background->GetFlags ().Set (CS_ENTITY_NOSHADOWRECEIVE, CS_ENTITY_NOSHADOWRECEIVE);
 
   csRef<iMaterialWrapper> bgMaterial =
     CS::Material::MaterialBuilder::CreateColorMaterial

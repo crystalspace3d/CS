@@ -28,7 +28,6 @@ class csObjectPanel():
     return r
 
 
-
 @rnaOperator
 class OBJECT_OT_csObject_RemoveProperty(bpy.types.Operator):
   bl_idname = "csObject_RemoveProperty"
@@ -61,18 +60,3 @@ class OBJECT_PT_csObject(csObjectPanel, bpy.types.Panel):
       else:
         d = colR.operator("csObject_RemoveProperty", text="Default")
         d.prop = name
-
-  
-  def draw(self, context):
-    layout = self.layout
-    
-    ob = bpy.context.active_object
-
-    if ob.type == 'MESH':
-      row = layout.row()
-      self.LayoutAddProperty(row, ob, "goodCollider")
-  
-      row = layout.row()
-      self.LayoutAddProperty(row, ob, "badCollider")
-
-

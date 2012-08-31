@@ -28,7 +28,7 @@
 				ProgramDataBaseFileName="..\..\out\release9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\release9\build\libviewmesh_static_plugins\"
@@ -50,7 +50,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -88,8 +88,7 @@
 			Name="ReleaseWithDlls|Win32"
 			OutputDirectory="..\..\out\release9\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\release9\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
-			WholeProgramOptimization="1"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -99,10 +98,10 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDatabaseFileName="..\..\out\release9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\release9\build\libviewmesh_static_plugins\"
@@ -123,21 +122,19 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9.dll"
-				ImportLibrary="..\..\out\release9\libs\libviewmesh_static_plugins.lib"
-				ProgramDatabaseFile="..\..\out\release9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\release9\libs\libviewmesh_static_plugins.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -152,7 +149,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -177,7 +174,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -197,7 +194,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -235,7 +232,7 @@
 			Name="DebugWithDlls|Win32"
 			OutputDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -245,11 +242,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -268,21 +264,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -297,7 +291,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -322,7 +316,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -342,7 +336,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -380,7 +374,7 @@
 			Name="MemoryTrackerWithDlls|Win32"
 			OutputDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -390,11 +384,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -413,21 +406,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -442,7 +433,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -467,7 +458,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -487,7 +478,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -525,7 +516,7 @@
 			Name="RefTrackerWithDlls|Win32"
 			OutputDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -535,11 +526,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -558,21 +548,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -587,7 +575,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -612,7 +600,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -632,7 +620,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -670,7 +658,7 @@
 			Name="ThreadCheckerWithDlls|Win32"
 			OutputDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -680,11 +668,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x86\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9\build\libviewmesh_static_plugins\"
@@ -703,21 +690,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9_d.dll"
-				ImportLibrary="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9\build\libviewmesh_static_plugins\Win32\viewmesh_static_plugins-2.1-vc9_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x86\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -732,7 +717,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -757,7 +742,7 @@
 				ProgramDataBaseFileName="..\..\out\release9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\libviewmesh_static_plugins\"
@@ -779,7 +764,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -817,8 +802,7 @@
 			Name="ReleaseWithDlls|x64"
 			OutputDirectory="..\..\out\release9-x64\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\release9-x64\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
-			WholeProgramOptimization="1"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -828,10 +812,10 @@
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
-				ProgramDatabaseFileName="..\..\out\release9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64.pdb"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\release9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\release9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\release9-x64\build\libviewmesh_static_plugins\"
@@ -852,21 +836,19 @@
 				EnableCOMDATFolding="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9-x64.dll"
-				ImportLibrary="..\..\out\release9-x64\libs\libviewmesh_static_plugins.lib"
-				ProgramDatabaseFile="..\..\out\release9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9.lib bulletcollision-vc9.lib bulletdynamics-vc9.lib bulletmath-vc9.lib CEGUIBase-vc9.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\release9-x64\libs\libviewmesh_static_plugins.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -881,7 +863,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -906,7 +888,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -926,7 +908,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -964,7 +946,7 @@
 			Name="DebugWithDlls|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -974,11 +956,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -997,21 +978,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1026,7 +1005,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -1051,7 +1030,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -1071,7 +1050,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1109,7 +1088,7 @@
 			Name="MemoryTrackerWithDlls|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1119,11 +1098,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -1142,21 +1120,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1171,7 +1147,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -1196,7 +1172,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -1216,7 +1192,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1254,7 +1230,7 @@
 			Name="RefTrackerWithDlls|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1264,11 +1240,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -1287,21 +1262,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1316,7 +1289,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -1341,7 +1314,7 @@
 				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
 				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D;WIN32;CS_USE_STATIC_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -1361,7 +1334,7 @@
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
@@ -1399,7 +1372,7 @@
 			Name="ThreadCheckerWithDlls|x64"
 			OutputDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
 			IntermediateDirectory="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
@@ -1409,11 +1382,10 @@
 				RuntimeTypeInfo="TRUE"
 				RuntimeLibrary="3"
 
-
-				ProgramDatabaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
+				ProgramDataBaseFileName="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins.pdb"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D;WIN32;CS_USE_SHARED_LIBS"
 				OptimizeForProcessor="1"
-				AdditionalOptions=" "
+				AdditionalOptions="-I..\..\winlibs\x64\include\bullet "
 				AdditionalIncludeDirectories=".;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				PrecompiledHeaderFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\libviewmesh_static_plugins.pch"
 				AssemblerListingLocation="..\..\out\debug9-x64\build\libviewmesh_static_plugins\"
@@ -1432,21 +1404,19 @@
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
 				IgnoreDefaultLibraryNames="LIBC,LIBCD,LIBCMT,LIBCMTD,MSVCRT"
-                        OutputFile="..\..\viewmesh_static_plugins-2.1-vc9-x64_d.dll"
-				ImportLibrary="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
-				ProgramDatabaseFile="..\..\out\debug9-x64\build\libviewmesh_static_plugins\x64\viewmesh_static_plugins-2.1-vc9-x64_d.pdb"
 				AdditionalOptions=" "
-				AdditionalDependencies="zlib.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
+				AdditionalDependencies="zlib.lib bulletsoftbody-vc9_d.lib bulletcollision-vc9_d.lib bulletdynamics-vc9_d.lib bulletmath-vc9_d.lib CEGUIBase-vc9_d.lib libjpeg.lib libmng.lib libpng.lib cal3d-vc9_d.lib opengl32.lib version.lib cg.lib cgGL.lib"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\winlibs\x64\lib;..\..\win32libs\lib"
 				LargeAddressAware="2"
 				TargetMachine="17"/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="..\..\out\debug9-x64\libs\libviewmesh_static_plugins_d.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -1461,7 +1431,7 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
+				PreprocessorDefinitions="_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_HAVE_CAL3D;_WIN64;PROJECTGEN_VERSION=9"
 				AdditionalIncludeDirectories=".;..\..\apps\tools\viewmesh;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include"
 				Culture="1033"/>
 			<Tool
@@ -1479,13 +1449,6 @@
 			</File>
 			<File
 				RelativePath="..\..\mk\msvc\appviewmesh_static_staticuse.cpp">
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="">
-			<File
-				RelativePath="..\..\mk\msvc\libviewmesh_static_plugins.rc">
 			</File>
 		</Filter>
 	</Files>

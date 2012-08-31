@@ -75,8 +75,7 @@ namespace RenderManager
           {
 	          // Todo: Handle static lod & draw distance
 	          csZBufMode zmode = meshList[m].imesh->GetZBufMode ();
-	          CS::Graphics::RenderPriority renderPrio =
-	            meshList[m].imesh->GetRenderPriority ();
+	    CS::Graphics::RenderPriority renderPrio = meshList[m].imesh->GetRenderPriority ();
   
         #ifdef CS_DEBUG
 	          const char* const db_mesh_name = meshList[m].imesh->QueryObject()->GetName();
@@ -106,6 +105,8 @@ namespace RenderManager
 		            context.AddRenderMesh (rm, renderPrio, sm);
 	            }
 	          }
+
+
 	        }
 	      }
       } // end objectvisible

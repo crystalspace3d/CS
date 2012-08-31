@@ -505,6 +505,7 @@ class iEngine(core.iBase):
     def FindTexture(*args): return _iengine.iEngine_FindTexture(*args)
     def CreateLightFactory(*args): return _iengine.iEngine_CreateLightFactory(*args)
     def FindLightFactory(*args): return _iengine.iEngine_FindLightFactory(*args)
+    def GetLightFactories(*args): return _iengine.iEngine_GetLightFactories(*args)
     def CreateLight(*args): return _iengine.iEngine_CreateLight(*args)
     def FindLight(*args): return _iengine.iEngine_FindLight(*args)
     def FindLightID(*args): return _iengine.iEngine_FindLightID(*args)
@@ -941,6 +942,7 @@ class iSceneNode(core.iBase):
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def GetMovable(*args): return _iengine.iSceneNode_GetMovable(*args)
+    def GetObjectModel(*args): return _iengine.iSceneNode_GetObjectModel(*args)
     def QueryMesh(*args): return _iengine.iSceneNode_QueryMesh(*args)
     def QueryLight(*args): return _iengine.iSceneNode_QueryLight(*args)
     def QueryCamera(*args): return _iengine.iSceneNode_QueryCamera(*args)

@@ -11,10 +11,6 @@ from io_scene_cs.utilities import B2CS
 from io_scene_cs.utilities import StringProperty
 
 
-# Property defining an UV texture's name for a mesh ('None' if not defined)
-StringProperty(['Mesh'], attr="uv_texture", name="UV texture", default='None')
-
-
 def GetMaterial(self, index):
   if index < len(self.materials):
     return self.materials[index]
@@ -22,6 +18,13 @@ def GetMaterial(self, index):
 
 bpy.types.Mesh.GetMaterial = GetMaterial
 
+def GetFirstMaterial(self):
+  for i,mat in enumerate(self.materials):
+    if self.materials[i] != None:
+      return self.materials[i]
+  return None
+
+bpy.types.Mesh.GetFirstMaterial = GetFirstMaterial
 
 def GetSubMeshesRaw(self, name, indexV, indexGroups, mappingBuffer = []):
   """ Compute the CS submeshes of this Blender mesh by remapping
@@ -109,13 +112,15 @@ def GetSubMeshesRaw(self, name, indexV, indexGroups, mappingBuffer = []):
 bpy.types.Mesh.GetSubMeshesRaw = GetSubMeshesRaw
 
 
-def GetSubMeshes(self, name = '', mappingBuffer = [], numVertices = 0):
+def GetSubMeshes(self, name = '', mappingBuffer = None, numVertices = 0):
   """ Create the CS submeshes of this Blender mesh
       param name: name of the mesh
       param mappingBuffer: mapping buffer defining a CS vertex for each
             face vertex of the Blender mesh
       param numVertices: number of CS vertices previously defined      
   """
+  if mappingBuffer is None:
+      mappingBuffer = []
   indexV = numVertices
   indexGroups = {}
   indexV, indexGroups = self.GetSubMeshesRaw(name, indexV, indexGroups, mappingBuffer)
@@ -426,12 +431,8 @@ def GetBoneInfluences (self, **kwargs):
       param kwargs: mapping buffers of this armature
   """
   # Recover mapping buffers from kwargs
-  meshData = []
-  if 'meshData' in kwargs:
-    meshData = kwargs['meshData']
-  mappingBuffers = []
-  if 'mappingVertices' in kwargs:
-    mappingVertices = kwargs['mappingVertices']
+  meshData = kwargs.get('meshData', [])
+  mappingVertices = kwargs.get('mappingVertices', [])
 
   # Get bone influences per vertex (max 4)
   boneNames = GetBoneNames(self.bones)

@@ -26,6 +26,8 @@
 
 #include "csextern.h"
 
+#include "canvascommon.h"
+
 #include "csutil/cfgacc.h"
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
@@ -52,27 +54,26 @@ class csFontCache;
 
 #include "csutil/deprecated_warn_off.h"
 
-/**
- * This is the base class for 2D canvases. Plugins should derive their 
- * own class from this one and implement required (marked with an 
- * asterisk (*)) functions.
- * Functions not marked with an asterisk are optional, but possibly
- * slow since they are too general.
- */
-class CS_CRYSTALSPACE_EXPORT csGraphics2D : 
-  public scfImplementation7<csGraphics2D, 
-    iGraphics2D, iComponent, iNativeWindow, iNativeWindowManager,
-    iPluginConfig, iDebugHelper, iEventHandler>
+namespace CS
 {
-public:
-  /// The configuration file.
-  csConfigAccess config;
-
+  namespace PluginCommon
+  {
+    /**
+     * This is the base class for iGraphics2D implementations.
+ */
+    class CS_CRYSTALSPACE_EXPORT Graphics2DCommon :
+      public virtual iGraphics2D,
+      public virtual iComponent,
+      public virtual iEventHandler
+    {
+    public:
   /// The clipping rectangle.
   int ClipX1, ClipX2, ClipY1, ClipY2;
 
   /// Open/Close state.
   bool is_open;
+      /// Resize event for the canvas we're associated with
+      csEventID evCanvasResize;
 
   /// The object registry.
   iObjectRegistry* object_reg;
@@ -84,75 +85,27 @@ public:
   /// The font cache
   csFontCache* fontCache;
 
-  /// Pointer to a title.
-  csString win_title;
-
-  /// The width, height and depth of visual.
-  int fbWidth, fbHeight, Depth;
-
   int vpLeft, vpTop, vpWidth, vpHeight;
+      bool viewportIsFullScreen;
 
-  /**
-   * Display number.  If 0, use primary display; else if greater than 0, use
-   * that display number.  If that display number is not present, use primary
-   * display.
-   */
-  int DisplayNumber;
-  /// True if visual is full-screen.
-  bool FullScreen;
-  /// Whether to allow resizing.
-  bool AllowResizing;
   /**
    * The counter that is incremented inside BeginDraw and decremented in
    * FinishDraw().
    */
   int FrameBufferLocked;
-  /**
-   * Change the depth of the canvas.
-   */
-  virtual void ChangeDepth (int d);
-  /**
-   * Get the name of this canvas
-   */
-  virtual const char *GetName() const;
+    protected:
+      csRef<iEventHandler> weakEventHandler;
 
-  /// Hardware mouse cursor setting
-  enum HWMouseMode
-  {
-    /// Never use hardware cursor
-    hwmcOff,
-    /// Always use hardware cursor, if possible
-    hwmcOn,
-    /// Only use hardware cursor if true RGBA cursor is available
-    hwmcRGBAOnly
-  };
-  HWMouseMode hwMouse;
-protected:
-  /// Screen refresh rate
-  int refreshRate;
-  /// Activate Vsync
-  bool vsync;
-  /// Reduce window size to fit into workspace, if necessary
-  bool fitToWorkingArea;
+      virtual iGraphicsCanvas* GetCanvas() = 0;
 
-  csString name;
-  csRef<iEventHandler> weakEventHandler;
-
-  /**
-   * Helper function for FitSizeToWorkingArea(): obtain workspace dimensions.
-   */
-  virtual bool GetWorkspaceDimensions (int& width, int& height);
-  /**
-   * Helper function for FitSizeToWorkingArea(): compute window dimensions
-   * with the window frame included.
-   */
-  virtual bool AddWindowFrameDimensions (int& width, int& height);
-public:
+      /// Handle a resize event from the canvas.
+      void HandleResize ();
+    public:
   /// Create csGraphics2D object
-  csGraphics2D (iBase*);
+      Graphics2DCommon ();
 
   /// Destroy csGraphics2D object
-  virtual ~csGraphics2D ();
+      virtual ~Graphics2DCommon ();
 
   /// Initialize the plugin
   virtual bool Initialize (iObjectRegistry*);
@@ -163,6 +116,9 @@ public:
   virtual bool Open ();
   /// (*) Close graphics system
   virtual void Close ();
+
+      virtual int GetWidth () { return vpWidth; }
+      virtual int GetHeight () { return vpHeight; }
 
   /// Set clipping rectangle
   virtual void SetClipRect (int xmin, int ymin, int xmax, int ymax);
@@ -177,9 +133,6 @@ public:
   /// This routine should be called when you finished drawing
   virtual void FinishDraw ();
 
-  /// (*) Flip video pages (or dump backbuffer into framebuffer).
-  virtual void Print (csRect const* /*area*/ = 0) { }
-
   /// Clear backbuffer
   virtual void Clear (int color);
   /// Clear all video pages
@@ -192,7 +145,7 @@ public:
     if (b < 0) b = 0; else if (b > 255) b = 255;
     if (a < 0) a = 0; else if (a > 255) a = 255;
     return ((255 - a) << 24) | (r << 16) | (g << 8) | b;
-    /* Alpha is "inverted" so '-1' can be decomposed to a 
+        /* Alpha is "inverted" so '-1' can be decomposed to a
        transparent color. (But alpha not be inverted, '-1'
        would be "opaque white". However, -1 is the color
        index for "transparent text background". */
@@ -208,22 +161,19 @@ public:
     a = 255 - (color >> 24);
     GetRGB (color, r, g, b);
   }
-  
+
   //@{
   /// Write a text string into the back buffer
   virtual void Write (iFont *font , int x, int y, int fg, int bg,
     const char *text, uint flags = 0);
   virtual void Write (iFont *font , int x, int y, int fg, int bg,
-    const wchar_t* text, uint flags = 0);  
+        const wchar_t* text, uint flags = 0);
   //@}
 
-  virtual bool SetGamma (float /*gamma*/) { return false; }
-  virtual float GetGamma () const { return 1.0; }
-
-private:
+    private:
     /// helper function for ClipLine()
   bool CLIPt (float denom, float num, float& tE, float& tL);
-public:
+    public:
 
   /**
    * Clip a line against given rectangle
@@ -236,73 +186,18 @@ public:
   virtual iFontServer *GetFontServer ()
   { return FontServer; }
 
-  virtual int GetWidth () { return vpWidth; }
-  virtual int GetHeight () { return vpHeight; }
-  int GetColorDepth () { return Depth; }
-
-  /**
-   * Perform a system specific extension. Return false if extension
-   * not supported.
-   */
-  virtual bool PerformExtension (char const* command, ...);
-
   /**
    * Perform a system specific extension. Return false if extension
    * not supported.
    */
   virtual bool PerformExtensionV (char const* command, va_list);
 
-  /// Enable/disable canvas resize (Over-ride in sub classes)
-  virtual void AllowResize (bool /*iAllow*/) { };
+      bool Resize (int w, int h);
 
-  /// Resize the canvas
-  virtual bool Resize (int w, int h);
-
-  /// Return the Native Window interface for this canvas (if it has one)
-  virtual iNativeWindow* GetNativeWindow ();
-
-  /// Returns 'true' if the program is being run full-screen.
-  virtual bool GetFullScreen ()
-  { return FullScreen; }
-
-  /**
-   * Change the fullscreen state of the canvas.
-   */
-  virtual void SetFullScreen (bool b);
-
-  /// Set mouse cursor position; return success status
-  virtual bool SetMousePosition (int x, int y);
-
-  /**
-   * Set mouse cursor to one of predefined shape classes
-   * (see csmcXXX enum above). If a specific mouse cursor shape
-   * is not supported, return 'false'; otherwise return 'true'.
-   * If system supports it and iBitmap != 0, shape should be
-   * set to the bitmap passed as second argument; otherwise cursor
-   * should be set to its nearest system equivalent depending on
-   * iShape argument.
-   */
-  virtual bool SetMouseCursor (csMouseCursorID iShape);
-
-  /**
-   * Set mouse cursor using an image.  If the operation is unsupported, 
-   * return 'false' otherwise return 'true'.
-   * On some platforms there is only monochrome pointers available.  In this
-   * all black colors in the image will become the value of 'bg' and all 
-   * non-black colors will become 'fg'
-   */
-  virtual bool SetMouseCursor (iImage *image, const csRGBcolor* keycolor = 0, 
-                               int hotspot_x = 0, int hotspot_y = 0,
-                               csRGBcolor fg = csRGBcolor(255,255,255),
-                               csRGBcolor bg = csRGBcolor(0,0,0));
-  
   void SetViewport (int left, int top, int width, int height);
   void GetViewport (int& left, int& top, int& width, int& height)
   { left = vpLeft; top = vpTop; width = vpWidth; height = vpHeight; }
-  
-  void GetFramebufferDimensions (int& width, int& height)
-  { width = fbWidth; height = fbHeight; }
-  
+
   const char* GetHWRenderer ()
   { return 0; }
   const char* GetHWGLVersion ()
@@ -312,56 +207,44 @@ public:
 
   CS_EVENTHANDLER_NAMES("crystalspace.graphics2d.common")
   CS_EVENTHANDLER_NIL_CONSTRAINTS
+    };
+  } // namespace PluginCommon
+} // namespace CS
 
+/**
+ * This is the base class for 2D canvases. Plugins should derive their 
+ * own class from this one and implement required (marked with an 
+ * asterisk (*)) functions.
+ * Functions not marked with an asterisk are optional, but possibly
+ * slow since they are too general.
+ */
+class CS_CRYSTALSPACE_EXPORT csGraphics2D : 
+  public scfImplementation7<csGraphics2D, 
+    scfFakeInterface<iGraphics2D>,
+    scfFakeInterface<iComponent>,
+    scfFakeInterface<iNativeWindow>,
+    scfFakeInterface<iNativeWindowManager>,
+    scfFakeInterface<iPluginConfig>,
+    iDebugHelper,
+    scfFakeInterface<iEventHandler> >,
+  public virtual CS::PluginCommon::Graphics2DCommon,
+  public virtual CS::PluginCommon::CanvasCommonBase
+{
 protected:
-  /**\name iNativeWindowManager implementation
-   * @{ */
-  // Virtual Alert function so it can be overridden by subclasses
-  // of csGraphics2D.
-  virtual void AlertV (int type, const char* title, const char* okMsg,
-    const char* msg, va_list args);
-  virtual void Alert (int type, const char* title, const char* okMsg,
-      const char* msg, ...);
-  virtual void AlertV (int type, const wchar_t* title, const wchar_t* okMsg,
-    const wchar_t* msg, va_list args);
-  virtual void Alert (int type, const wchar_t* title, const wchar_t* okMsg,
-      const wchar_t* msg, ...);
-  /** @} */
+  iGraphicsCanvas* GetCanvas() { return this; }
+public:
+  /// The configuration file.
+  csConfigAccess config;
 
-  /**\name iNativeWindow implementation
-   * @{ */
-  // Virtual SetTitle function so it can be overridden by subclasses
-  // of csGraphics2D.
-  virtual void SetTitle (const char* title);
-  virtual void SetTitle (const wchar_t* title)
-  { SetTitle (csString (title)); }
+  /// Create csGraphics2D object
+  csGraphics2D (iBase*);
 
-  /** Sets the icon of this window with the provided one.
-   *  
-   *  @note Virtual SetIcon function so it can be overridden by subclasses of csGraphics2D.
-   *  @param image the iImage to set as the icon of this window.
-   */  
-  virtual void SetIcon (iImage *image);
+  /// Destroy csGraphics2D object
+  virtual ~csGraphics2D ();
 
-  virtual bool IsWindowTransparencyAvailable() { return false; }
-  virtual bool SetWindowTransparent (bool transparent) { return false; }
-  virtual bool GetWindowTransparent () { return false; }
-
-  virtual bool SetWindowDecoration (WindowDecoration decoration, bool flag)
-  { return false; }
-  virtual bool GetWindowDecoration (WindowDecoration decoration);
-
-  virtual bool FitSizeToWorkingArea (int& desiredWidth,
-                                     int& desiredHeight);
-  /** @} */
-
-  /**\name iPluginConfig implementation
-   * @{ */
-  virtual bool GetOptionDescription (int idx, csOptionDescription*);
-  virtual bool SetOption (int id, csVariant* value);
-  virtual bool GetOption (int id, csVariant* value);
-  /** @} */
-
+  /// Initialize the plugin
+  virtual bool Initialize (iObjectRegistry*);
+protected:
   /**\name iDebugHelper implementation
    * @{ */
   virtual bool DebugCommand (const char* cmd);

@@ -38,56 +38,50 @@
 #include "csutil/xmltiny.h"
 #include "csutil/eventnames.h"
 
-csGraphics2DGLCommon::csGraphics2DGLCommon (iBase *iParent) :
-  scfImplementationType (this, iParent), statecache (0), statecontext (0),
-    openComplete (false), hasRenderTarget (false)
+namespace CS
 {
-  EventOutlet = 0;
+  namespace PluginCommon
+  {
+    namespace GL
+    {
+      Graphics2DCommon::Graphics2DCommon () :
+        statecache (0), statecontext (0),
+          hasRenderTarget (false)
+      {
   multiFavorQuality = false;
   fontCache = 0;
   useCombineTE = false;
 
-  memset (currentFormat, 0, sizeof (currentFormat));
-
   ssPool = 0;
-}
+      }
 
-bool csGraphics2DGLCommon::Initialize (iObjectRegistry *object_reg)
-{
-  if (!csGraphics2D::Initialize (object_reg))
+      bool Graphics2DCommon::Initialize (iObjectRegistry *object_reg)
+      {
+        if (!CS::PluginCommon::Graphics2DCommon::Initialize (object_reg))
     return false;
-
-  /* Note: r3dopengl.cfg is also added by the renderer. This is done because
-   * either the canvas or the renderer may be loaded before the other, but
-   * both need settings from that file. */
-  config.AddConfig (object_reg, "/config/r3dopengl.cfg");
 
   ext.Initialize (object_reg, this);
 
+        csConfigAccess config (object_reg);
   multiFavorQuality = config->GetBool ("Video.OpenGL.MultisampleFavorQuality");
 
-  // Create the event outlet
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
-  if (q != 0)
-    EventOutlet = q->CreateEventOutlet (this);
-
   return true;
-}
+      }
 
-csGraphics2DGLCommon::~csGraphics2DGLCommon ()
-{
+      Graphics2DCommon::~Graphics2DCommon ()
+      {
   Close ();
-  
+
   while (ssPool)
   {
     csGLScreenShot* next = ssPool->poolNext;
     delete ssPool;
     ssPool = next;
   }
-}
+      }
 
-bool csGraphics2DGLCommon::Open ()
-{
+      bool Graphics2DCommon::Open ()
+      {
   if (is_open) return true;
 
   ext.Open ();
@@ -106,8 +100,8 @@ bool csGraphics2DGLCommon::Open ()
   /* Some drivers need that to get the initial scissor right
    * (Mesa DRI Intel(R) 915GM 20050225 in this case) */
   glScissor (0, 0, 1, 1);
-  
-  if (!csGraphics2D::Open ())
+
+        if (!CS::PluginCommon::Graphics2DCommon::Open ())
     return false;
 
   const char *renderer = (const char *)glGetString (GL_RENDERER);
@@ -116,25 +110,14 @@ bool csGraphics2DGLCommon::Open ()
   if (renderer || version || vendor)
     Report (CS_REPORTER_SEVERITY_NOTIFY,
       "OpenGL renderer: %s (vendor: %s) version %s",
-      renderer ? renderer : "unknown", vendor ? vendor: "unknown", 
+            renderer ? renderer : "unknown", vendor ? vendor: "unknown",
       version ? version : "unknown");
 
+        int fbWidth, fbHeight;
+        GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
   Report (CS_REPORTER_SEVERITY_NOTIFY,
     "Using %s mode at resolution %dx%d.",
-    FullScreen ? "full screen" : "windowed", fbWidth, fbHeight);
-
-  {
-    csString pfStr;
-    GetPixelFormatString (currentFormat, pfStr);
-
-    Report (CS_REPORTER_SEVERITY_NOTIFY,
-      "Pixel format: %s", pfStr.GetData());
-  }
-  if (currentFormat[glpfvColorBits] < 24)
-  {
-    Report (CS_REPORTER_SEVERITY_WARNING,
-      "WARNING! Crystal Space performs better in 24 or 32 bit display mode!");
-  }
+          GetFullScreen() ? "full screen" : "windowed", fbWidth, fbHeight);
 
   if (version)
   {
@@ -173,7 +156,7 @@ bool csGraphics2DGLCommon::Open ()
   ext.InitGL_ARB_texture_env_combine ();
   if (!ext.CS_GL_ARB_texture_env_combine)
     ext.InitGL_EXT_texture_env_combine ();
-  useCombineTE = ext.CS_GL_ARB_multitexture && 
+        useCombineTE = ext.CS_GL_ARB_multitexture &&
     (ext.CS_GL_ARB_texture_env_combine || ext.CS_GL_EXT_texture_env_combine);
   if (useCombineTE)
   {
@@ -187,14 +170,16 @@ bool csGraphics2DGLCommon::Open ()
   ext.InitGL_EXT_blend_func_separate ();
   ext.InitGL_ARB_multisample();
 
+        csRef<iOpenGLCanvas> gl_canvas (scfQueryInterface<iOpenGLCanvas> (GetCanvas()));
+        CS_ASSERT(gl_canvas);
   if (ext.CS_GL_ARB_multisample)
   {
-    GLint glmultisamp = (GLint)currentFormat[glpfvMultiSamples];
+          GLint glmultisamp = gl_canvas->GetMultiSamples();
     glGetIntegerv (GL_SAMPLES_ARB, &glmultisamp);
 
     if (glmultisamp)
     {
-      if (glmultisamp != currentFormat[glpfvMultiSamples])
+            if (glmultisamp != gl_canvas->GetMultiSamples())
 	      Report (CS_REPORTER_SEVERITY_NOTIFY,
 	        "Multisample: actually %d samples", (int)glmultisamp);
 
@@ -203,7 +188,7 @@ bool csGraphics2DGLCommon::Open ()
       {
         glHint (GL_MULTISAMPLE_FILTER_HINT_NV,
           multiFavorQuality ? GL_NICEST : GL_FASTEST);
-	
+
         GLint msHint;
         glGetIntegerv (GL_MULTISAMPLE_FILTER_HINT_NV, &msHint);
         Report (CS_REPORTER_SEVERITY_NOTIFY,
@@ -217,7 +202,7 @@ bool csGraphics2DGLCommon::Open ()
 	      "Multisample: disabled");
     }
   }
-  
+
   GLFontCache->Setup();
 
   CS::PluginCommon::GL::SetAssumedState (statecache, &ext);
@@ -229,33 +214,33 @@ bool csGraphics2DGLCommon::Open ()
   glViewport (0, 0, vpWidth, vpHeight);
   Clear (0);
 
-  openComplete = true;
   return true;
-}
+      }
 
-void csGraphics2DGLCommon::Close ()
-{
+      void Graphics2DCommon::Close ()
+      {
   if (!is_open) return;
-  csGraphics2D::Close ();
+        CS::PluginCommon::Graphics2DCommon::Close ();
   delete statecontext; statecontext = 0;
   delete statecache; statecache = 0;
   ext.Close ();
   driverdb.Close ();
-  openComplete = false;
-}
+      }
 
-void csGraphics2DGLCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
-{
+      void Graphics2DCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
+      {
   if (fontCache) ((csGLFontCache*)fontCache)->FlushText ();
 
-  csGraphics2D::SetClipRect (xmin, ymin, xmax, ymax);
+        int fbWidth, fbHeight;
+        GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
+        CS::PluginCommon::Graphics2DCommon::SetClipRect (xmin, ymin, xmax, ymax);
   glScissor (vpLeft + ClipX1, fbHeight - (vpTop + ClipY2),
     ClipX2 - ClipX1, ClipY2 - ClipY1);
-}
+      }
 
-bool csGraphics2DGLCommon::BeginDraw ()
-{
-  if (!csGraphics2D::BeginDraw ())
+      bool Graphics2DCommon::BeginDraw ()
+      {
+        if (!CS::PluginCommon::Graphics2DCommon::BeginDraw ())
     return false;
   //if (FrameBufferLocked != 1)
     //return true;
@@ -263,6 +248,8 @@ bool csGraphics2DGLCommon::BeginDraw ()
   /* Note: the renderer relies on this function to setup
    * matrices etc. So be careful when changing stuff. */
 
+        int fbWidth, fbHeight;
+        GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
   glViewport (vpLeft, fbHeight - (vpTop + vpHeight), vpWidth, vpHeight);
   if (!hasRenderTarget)
   {
@@ -300,8 +287,8 @@ bool csGraphics2DGLCommon::BeginDraw ()
     glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
   statecache->SetColorMask (true, true, true, true);
-    
-  statecache->Enable_GL_BLEND ();		      
+
+        statecache->Enable_GL_BLEND ();
   if (ext.CS_GL_EXT_blend_func_separate)
     // Blending mode that's premultiplied alpha friendly
     statecache->SetBlendFuncSeparate (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -310,45 +297,45 @@ bool csGraphics2DGLCommon::BeginDraw ()
     statecache->SetBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   return true;
-}
+      }
 
-void csGraphics2DGLCommon::FinishDraw ()
-{
+      void Graphics2DCommon::FinishDraw ()
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
-  csGraphics2D::FinishDraw();
+        CS::PluginCommon::Graphics2DCommon::FinishDraw();
   if (FrameBufferLocked != 0) return;
   //statecache->Disable_GL_SCISSOR_TEST ();
-}
+      }
 
-void csGraphics2DGLCommon::DecomposeColor (int iColor,
+      void Graphics2DCommon::DecomposeColor (int iColor,
   GLubyte &oR, GLubyte &oG, GLubyte &oB, GLubyte &oA)
-{
+      {
   oA = 255 - ((iColor >> 24) & 0xff);
   oR = (iColor >> 16) & 0xff;
   oG = (iColor >> 8) & 0xff;
   oB = iColor & 0xff;
-}
+      }
 
-void csGraphics2DGLCommon::DecomposeColor (int iColor,
+      void Graphics2DCommon::DecomposeColor (int iColor,
   float &oR, float &oG, float &oB, float &oA)
-{
+      {
   GLubyte r, g, b, a;
   DecomposeColor (iColor, r, g, b, a);
   oR = r / 255.0;
   oG = g / 255.0;
   oB = b / 255.0;
   oA = a / 255.0;
-}
+      }
 
-void csGraphics2DGLCommon::setGLColorfromint (int color)
-{
+      void Graphics2DCommon::setGLColorfromint (int color)
+      {
   GLubyte oR, oG, oB, oA;
   DecomposeColor (color, oR, oG, oB, oA);
   glColor4ub (oR, oG, oB, oA);
-}
+      }
 
-csGLScreenShot* csGraphics2DGLCommon::GetScreenShot ()
-{
+      csGLScreenShot* Graphics2DCommon::GetScreenShot ()
+      {
   csGLScreenShot* res;
   if (ssPool)
   {
@@ -357,42 +344,35 @@ csGLScreenShot* csGraphics2DGLCommon::GetScreenShot ()
   }
   else
   {
-#include "csutil/custom_new_disable.h"
+      #include "csutil/custom_new_disable.h"
     res = new csGLScreenShot (this);
-#include "csutil/custom_new_enable.h"
+      #include "csutil/custom_new_enable.h"
   }
-  scfRefCount++;
+        IncRef();
   return res;
-}
+      }
 
-void csGraphics2DGLCommon::RecycleScreenShot (csGLScreenShot* shot)
-{
+      void Graphics2DCommon::RecycleScreenShot (csGLScreenShot* shot)
+      {
   shot->poolNext = ssPool;
   ssPool = shot;
-  if (scfRefCount == 1)
-  {
-    delete this;
-    return;
+        DecRef();
   }
-  scfRefCount--;
-}
 
-void csGraphics2DGLCommon::GetPixelFormatString (const GLPixelFormat& format, 
-						 csString& str)
-{
-  const char* valueNames[glpfvValueCount] = {"Color", "Alpha", "Depth",
-    "Stencil", "AccumColor", "AccumAlpha", "MultiSamples"};
-
-  str.Clear();
-  for (int v = 0; v < glpfvValueCount; v++)
+      void Graphics2DCommon::Report (int severity, const char* msg, ...)
   {
-    str.AppendFmt ("%s: %d ", valueNames[v], format[v]);
+        va_list args;
+        va_start (args, msg);
+        csReportV (object_reg, severity,
+          "crystalspace.graphics2d.openglcommon",
+          msg, args);
+        va_end (args);
   }
-}
 
-#include "csutil/custom_new_disable.h"
-void csGraphics2DGLCommon::OpenDriverDB (const char* phase)
-{
+      #include "csutil/custom_new_disable.h"
+      void Graphics2DCommon::OpenDriverDB (const char* phase)
+      {
+        csConfigAccess config (object_reg);
   const char* driverDB = config->GetStr ("Video.OpenGL.DriverDB.Path",
     "/config/gldrivers.xml");
   int driverDBprio = config->GetInt ("Video.OpenGL.DriverDB.Priority",
@@ -402,12 +382,12 @@ void csGraphics2DGLCommon::OpenDriverDB (const char* phase)
   csRef<iFile> dbfile = vfs->Open (driverDB, VFS_FILE_READ);
   if (!dbfile)
   {
-    Report (CS_REPORTER_SEVERITY_WARNING, 
+          Report (CS_REPORTER_SEVERITY_WARNING,
       "Could not open driver database file %s", CS::Quote::Single (driverDB));
     return;
   }
 
-  csRef<iDocumentSystem> docsys = 
+        csRef<iDocumentSystem> docsys =
     csQueryRegistry<iDocumentSystem> (object_reg);
   if (!docsys.IsValid())
     docsys.AttachNew (new csTinyDocumentSystem ());
@@ -416,7 +396,7 @@ void csGraphics2DGLCommon::OpenDriverDB (const char* phase)
   const char* err = doc->Parse (dbfile, true);
   if (err != 0)
   {
-    Report (CS_REPORTER_SEVERITY_WARNING, 
+          Report (CS_REPORTER_SEVERITY_WARNING,
       "Error parsing driver database: %s", err);
     return;
   }
@@ -424,42 +404,32 @@ void csGraphics2DGLCommon::OpenDriverDB (const char* phase)
   csRef<iDocumentNode> dbRoot (doc->GetRoot()->GetNode ("gldriverdb"));
   if (!dbRoot.IsValid())
   {
-    Report (CS_REPORTER_SEVERITY_WARNING, 
+          Report (CS_REPORTER_SEVERITY_WARNING,
       "Driver database lacks <gldriverdb> node");
     return;
   }
 
   driverdb.Open (this, dbRoot, phase, driverDBprio);
-}
-#include "csutil/custom_new_enable.h"
+      }
+      #include "csutil/custom_new_enable.h"
 
-void csGraphics2DGLCommon::Report (int severity, const char* msg, ...)
-{
-  va_list args;
-  va_start (args, msg);
-  csReportV (object_reg, severity, 
-    "crystalspace.canvas.openglcommon",
-    msg, args);
-  va_end (args);
-}
-
-const char* csGraphics2DGLCommon::GetHWRenderer()
-{
+      const char* Graphics2DCommon::GetHWRenderer()
+      {
 	return (char*)glGetString (GL_RENDERER);
-}
+      }
 
-const char* csGraphics2DGLCommon::GetHWGLVersion()
-{
+      const char* Graphics2DCommon::GetHWGLVersion()
+      {
 	return (char*)glGetString (GL_VERSION);
-}
+      }
 
-const char* csGraphics2DGLCommon::GetHWVendor()
-{
+      const char* Graphics2DCommon::GetHWVendor()
+      {
 	return (char*)glGetString (GL_VENDOR);
-}
+      }
 
-const char* csGraphics2DGLCommon::GetRendererString (const char* str)
-{
+      const char* Graphics2DCommon::GetRendererString (const char* str)
+      {
   if (strcmp (str, "renderer") == 0)
   {
     return (char*)glGetString (GL_RENDERER);
@@ -477,10 +447,10 @@ const char* csGraphics2DGLCommon::GetRendererString (const char* str)
     return CS_PLATFORM_NAME;
   }
   return 0;
-}
+      }
 
-const char* csGraphics2DGLCommon::GetVersionString (const char* ver)
-{
+      const char* Graphics2DCommon::GetVersionString (const char* ver)
+      {
   if (strcmp (ver, "gl") == 0)
   {
     return (char*)glGetString (GL_VERSION);
@@ -494,21 +464,21 @@ const char* csGraphics2DGLCommon::GetVersionString (const char* ver)
     if (space) return space+1;
   }
   return 0;
-}
+      }
 
-void csGraphics2DGLCommon::Clear (int color)
-{
+      void Graphics2DCommon::Clear (int color)
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   float r, g, b, a;
   DecomposeColor (color, r, g, b, a);
   glClearColor (r, g, b, a);
   glClear (GL_COLOR_BUFFER_BIT);
-}
+      }
 
-void csGraphics2DGLCommon::DrawLine (
+      void Graphics2DCommon::DrawLine (
   float x1, float y1, float x2, float y2, int color)
-{
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   // prepare for 2D drawing--so we need no fancy GL effects!
@@ -553,25 +523,25 @@ void csGraphics2DGLCommon::DrawLine (
   if (fabs(float(int(y1))-y1) < 0.1f) { y1 += 0.05f; }
   if (fabs(float(int(y2))-y2) < 0.1f) { y2 += 0.05f; }
   if (fabs(float(int(x1))-x1) < 0.1f) { x1 += 0.05f; }
-  if (fabs(float(int(x2))-x2) < 0.1f) { x2 += 0.05f; }  
+        if (fabs(float(int(x2))-x2) < 0.1f) { x2 += 0.05f; }
 
   // Notice: using height-y has range 1..height, but this is OK.
   //    This is because on opengl y=0.0 is off screen, as is y=height.
   //    using height-sy gives output on screen which is identical to
   //    using the software canvas.
   //    the same goes for all the other DrawX functions.
-  
+
   glBegin (GL_LINES);
   glVertex2f (x1, vpHeight - y1);
   glVertex2f (x2, vpHeight - y2);
   glEnd ();
 
   if (gl_alphaTest) statecache->Enable_GL_ALPHA_TEST ();
-}
+      }
 
-void csGraphics2DGLCommon::DrawLineProjected
+      void Graphics2DCommon::DrawLineProjected
   (const csVector3& _v1, const csVector3& _v2, float fov, int color)
-{
+      {
   csVector3 v1 (_v1), v2 (_v2);
   if (!DrawLineNearClip (v1, v2)) return;
 
@@ -583,12 +553,12 @@ void csGraphics2DGLCommon::DrawLineProjected
   int py2 = vpHeight - 1 - csQint (v2.y * iz2 + (vpHeight / 2));
 
   DrawLine (px1, py1, px2, py2, color);
-}
+      }
 
-void csGraphics2DGLCommon::DrawLineProjected
+      void Graphics2DCommon::DrawLineProjected
   (const csVector3& _v1, const csVector3& _v2,
    const CS::Math::Matrix4& projection, int color)
-{
+      {
   csVector3 v1 (_v1), v2 (_v2);
   if (!DrawLineNearClip (v1, v2)) return;
 
@@ -603,10 +573,10 @@ void csGraphics2DGLCommon::DrawLineProjected
   int py2 = vpHeight - 1 - csQint ((v2p.y + 1) * (vpHeight / 2));
 
   DrawLine (px1, py1, px2, py2, color);
-}
+      }
 
-bool csGraphics2DGLCommon::DrawLineNearClip (csVector3 & v1, csVector3 & v2)
-{
+      bool Graphics2DCommon::DrawLineNearClip (csVector3 & v1, csVector3 & v2)
+      {
   if (v1.z < SMALL_Z && v2.z < SMALL_Z)
     return false;
 
@@ -631,12 +601,12 @@ bool csGraphics2DGLCommon::DrawLineNearClip (csVector3 & v1, csVector3 & v2)
     v2.z = SMALL_Z;
   }
   return true;
-}
+      }
 
-void csGraphics2DGLCommon::DrawBoxProjected
-(const csBox3& box, const csTransform& object2camera,
+      void Graphics2DCommon::DrawBoxProjected
+      (const csBox3& box, const csTransform& object2camera,
  const CS::Math::Matrix4& projection, int color)
-{
+      {
   csVector3 vxyz = object2camera * box.GetCorner (CS_BOX_CORNER_xyz);
   csVector3 vXyz = object2camera * box.GetCorner (CS_BOX_CORNER_Xyz);
   csVector3 vxYz = object2camera * box.GetCorner (CS_BOX_CORNER_xYz);
@@ -657,10 +627,10 @@ void csGraphics2DGLCommon::DrawBoxProjected
   DrawLineProjected (vxYz, vxYZ, projection, color);
   DrawLineProjected (vXyz, vXyZ, projection, color);
   DrawLineProjected (vXYz, vXYZ, projection, color);
-}
+      }
 
-void csGraphics2DGLCommon::DrawBox (int x, int y, int w, int h, int color)
-{
+      void Graphics2DCommon::DrawBox (int x, int y, int w, int h, int color)
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   statecache->Disable_GL_TEXTURE_2D ();
@@ -674,10 +644,10 @@ void csGraphics2DGLCommon::DrawBox (int x, int y, int w, int h, int color)
   glVertex2i (x + w, y - h);
   glVertex2i (x, y - h);
   glEnd ();
-}
+      }
 
-void csGraphics2DGLCommon::DrawPixel (int x, int y, int color)
-{
+      void Graphics2DCommon::DrawPixel (int x, int y, int color)
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   // prepare for 2D drawing--so we need no fancy GL effects!
@@ -689,16 +659,16 @@ void csGraphics2DGLCommon::DrawPixel (int x, int y, int color)
   float y1 = y;
   if (fabs(float(int(y1))-y1) < 0.1f) { y1 += 0.05f; }
   float x1 = x;
-  if (fabs(float(int(x1))-x1) < 0.1f) { x1 += 0.05f; }  
+        if (fabs(float(int(x1))-x1) < 0.1f) { x1 += 0.05f; }
   setGLColorfromint (color);
   glBegin (GL_POINTS);
   glVertex2f (x1, vpHeight - y1);
   glEnd ();
-}
+      }
 
-void csGraphics2DGLCommon::DrawPixels (
+      void Graphics2DCommon::DrawPixels (
   csPixelCoord const* pixels, int num_pixels, int color)
-{
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   // prepare for 2D drawing--so we need no fancy GL effects!
@@ -716,11 +686,11 @@ void csGraphics2DGLCommon::DrawPixels (
     glVertex2i (x, vpHeight - y);
   }
   glEnd ();
-}
+      }
 
-void csGraphics2DGLCommon::Blit (int x, int y, int w, int h,
+      void Graphics2DCommon::Blit (int x, int y, int w, int h,
 	unsigned char const* data)
-{
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   int orig_x = x;
@@ -738,10 +708,10 @@ void csGraphics2DGLCommon::Blit (int x, int y, int w, int h,
   glColor3f (0., 0., 0.);
   /*
     @@@ HACK When a render target was set, the screen is set up
-    so every drawing takes place in a rect in the upper left, but flipped. 
-    However, the raster position is transformed, but glDrawPixels() always 
-    takes those as the lower left dest coord (in window.) So it has to drawn 
-    h pixels farther down. 
+          so every drawing takes place in a rect in the upper left, but flipped.
+          However, the raster position is transformed, but glDrawPixels() always
+          takes those as the lower left dest coord (in window.) So it has to drawn
+          h pixels farther down.
    */
   glRasterPos2i (x, vpHeight-y);
   if (!hasRenderTarget)
@@ -753,16 +723,16 @@ void csGraphics2DGLCommon::Blit (int x, int y, int w, int h,
     glPixelZoom (1.0f, 1.0f);
 
   if (gl_alphaTest) statecache->Enable_GL_ALPHA_TEST ();
-}
+      }
 
-void csGraphics2DGLCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB)
-{
+      void Graphics2DCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB)
+      {
   uint8 dummy;
-  csGraphics2DGLCommon::GetPixel (x, y, oR, oG, oB, dummy);
-}
+        this->GetPixel (x, y, oR, oG, oB, dummy);
+      }
 
-void csGraphics2DGLCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB, uint8 &oA)
-{
+      void Graphics2DCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &oB, uint8 &oA)
+      {
   uint8 px[4];
   if (!hasRenderTarget)
     y = vpHeight - y;
@@ -772,10 +742,10 @@ void csGraphics2DGLCommon::GetPixel (int x, int y, uint8 &oR, uint8 &oG, uint8 &
   oG = px[1];
   oB = px[2];
   oA = px[3];
-}
+      }
 
-csPtr<iImage> csGraphics2DGLCommon::ScreenShot ()
-{
+      csPtr<iImage> Graphics2DCommon::ScreenShot ()
+      {
   ((csGLFontCache*)fontCache)->FlushText ();
 
   // Need to resolve pixel alignment issues
@@ -788,14 +758,14 @@ csPtr<iImage> csGraphics2DGLCommon::ScreenShot ()
 
   csGLScreenShot* ss = GetScreenShot ();
   ss->SetData (screen_shot);
-  
+
   delete[] screen_shot;
 
   return ss;
-}
+      }
 
-bool csGraphics2DGLCommon::PerformExtensionV (char const* command, va_list args)
-{
+      bool Graphics2DCommon::PerformExtensionV (char const* command, va_list args)
+      {
   if (!strcasecmp (command, "flush"))
   {
     glFlush ();
@@ -822,15 +792,15 @@ bool csGraphics2DGLCommon::PerformExtensionV (char const* command, va_list args)
   if (!strcasecmp (command, "userendertarget"))
   {
     int hasRenderTarget = va_arg (args, int);
-    csGraphics2DGLCommon::hasRenderTarget = (hasRenderTarget != 0);
+          this->hasRenderTarget = (hasRenderTarget != 0);
     return true;
   }
-  else 
-    return csGraphics2D::PerformExtensionV (command, args);
-}
+        else
+          return CS::PluginCommon::Graphics2DCommon::PerformExtensionV (command, args);
+      }
 
-bool csGraphics2DGLCommon::DebugCommand (const char* cmdstr)
-{
+      bool Graphics2DCommon::DebugCommand (const char* cmdstr)
+      {
   CS_ALLOC_STACK_ARRAY(char, cmd, strlen (cmdstr) + 1);
   strcpy (cmd, cmdstr);
   char* param = 0;
@@ -859,7 +829,7 @@ bool csGraphics2DGLCommon::DebugCommand (const char* cmdstr)
       return false;
     }
 
-    const char* dir = 
+          const char* dir =
       ((param != 0) && (*param != 0)) ? param : "/tmp/fontcachedump/";
     csRefArray<iImage> images;
     ((csGLFontCache*)fontCache)->DumpFontCache (images);
@@ -893,269 +863,67 @@ bool csGraphics2DGLCommon::DebugCommand (const char* cmdstr)
   }
 
   return false;
-}
+      }
 
-void csGraphics2DGLCommon::SetViewport (int left, int top, int width, int height)
-{ 
+      void Graphics2DCommon::SetViewport (int left, int top, int width, int height)
+      {
+        int fbWidth, fbHeight;
+        GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
   vpLeft = left; vpTop = top; vpWidth = width; vpHeight = height;
   glViewport (vpLeft, fbHeight - (vpTop + vpHeight), vpWidth, vpHeight);
   glScissor (vpLeft + ClipX1, fbHeight - (vpTop + ClipY2),
     ClipX2 - ClipX1, ClipY2 - ClipY1);
-}
+      }
 
-bool csGraphics2DGLCommon::Resize (int width, int height)
-{
-  if (!is_open)
+      bool Graphics2DCommon::Resize (int width, int height)
   {
-    vpWidth = fbWidth = width;
-    vpHeight = fbHeight = height;
-    return true;
-  }
-  if (!AllowResizing)
-    return false;
+        int old_width, old_height;
+        GetCanvas()->GetFramebufferDimensions (old_width, old_height);
+        int old_vpwidth (vpWidth), old_vpheight (vpHeight);
 
+        if (is_open)
   ((csGLFontCache*)fontCache)->FlushText ();
 
+        if (!CS::PluginCommon::Graphics2DCommon::Resize (width, height))
+          return false;
+
+        if (old_width != width || old_height != height)
+        {
   if ((vpLeft == 0) && (vpTop == 0)
-       && (vpWidth == fbWidth) && (vpHeight == fbHeight))
+              && (old_vpwidth == old_width) && (old_vpheight == old_height))
   {
-    vpWidth = width;
-    vpHeight = height;
     SetClipRect (0, 0, vpWidth, vpHeight);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
-  fbWidth = width;
-  fbHeight = height;
-  if (openComplete)
-    /* csGraphics2D::Open() causes a resize due to fitting to the working area;
-     * don't emit a resize event in that case */
-    EventOutlet->Broadcast (csevCanvasResize(object_reg, this), (intptr_t)this);
+        }
   return true;
-}
-
-
-csGraphics2DGLCommon::csGLPixelFormatPicker::csGLPixelFormatPicker(
-  csGraphics2DGLCommon* parent) : parent (parent)
-{
-  Reset();
-}
-
-csGraphics2DGLCommon::csGLPixelFormatPicker::~csGLPixelFormatPicker()
-{
-}
-
-void csGraphics2DGLCommon::csGLPixelFormatPicker::ReadStartValues ()
-{
-  currentValues[glpfvColorBits] = parent->Depth;
-  currentValues[glpfvAlphaBits] = 
-    parent->config->GetInt ("Video.OpenGL.AlphaBits", 8);
-  currentValues[glpfvDepthBits] = 
-    parent->config->GetInt ("Video.OpenGL.DepthBits", 32);
-  currentValues[glpfvStencilBits] = 
-    parent->config->GetInt ("Video.OpenGL.StencilBits", 8);
-  currentValues[glpfvAccumColorBits] = 
-    parent->config->GetInt ("Video.OpenGL.AccumColorBits", 0);
-  currentValues[glpfvAccumAlphaBits] = 
-    parent->config->GetInt ("Video.OpenGL.AccumAlphaBits", 0);
-  currentValues[glpfvMultiSamples] = 
-    parent->config->GetInt ("Video.OpenGL.MultiSamples", 0);
-  currentValid = true;
-}
-
-void csGraphics2DGLCommon::csGLPixelFormatPicker::ReadPickerValues ()
-{
-  const char* order = parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.ReductionOrder", "ACmasdc");
-  SetupIndexTable (order);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.ColorBits"), 
-    pixelFormats[pixelFormatIndexTable[glpfvColorBits]].possibleValues);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.AlphaBits"), 
-    pixelFormats[pixelFormatIndexTable[glpfvAlphaBits]].possibleValues);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.DepthBits"), 
-    pixelFormats[pixelFormatIndexTable[glpfvDepthBits]].possibleValues);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.StencilBits"), 
-    pixelFormats[pixelFormatIndexTable[glpfvStencilBits]].possibleValues);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.AccumColorBits"), 
-    pixelFormats[pixelFormatIndexTable[glpfvAccumColorBits]].possibleValues);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.AccumAlphaBits"), 
-    pixelFormats[pixelFormatIndexTable[glpfvAccumAlphaBits]].possibleValues);
-
-  ReadPickerValue (parent->config->GetStr (
-    "Video.OpenGL.FormatPicker.MultiSamples"), 
-    pixelFormats[pixelFormatIndexTable[glpfvMultiSamples]].possibleValues);
-}
-
-template<class T>
-static int ReverseCompare(T const& r1, T const& r2)
-{
-  return csComparator<T,T>::Compare(r2,r1);
-}
-
-void csGraphics2DGLCommon::csGLPixelFormatPicker::ReadPickerValue (
-  const char* valuesStr, csArray<int>& values)
-{
-  if ((valuesStr != 0) && (*valuesStr != 0))
-  {
-    CS_ALLOC_STACK_ARRAY(char, myValues, strlen (valuesStr) + 1);
-    strcpy (myValues, valuesStr);
-
-    char* currentVal = myValues;
-    while ((currentVal != 0) && (*currentVal != 0))
-    {
-      char* comma = strchr (currentVal, ',');
-      if (comma != 0) *comma = 0;
-
-      char dummy;
-      int val;
-      if (sscanf (currentVal, "%d%c", &val, &dummy) == 1)
-      {
-	      values.Push (val);
       }
-      currentVal = comma ? comma + 1 : 0;
-    }
-  }
+    } // namespace GL
+  } // namespace PluginCommon
+} // namespace CS
 
-  if (values.GetSize () == 0)
-    values.Push (0);
-
-  values.Sort (ReverseCompare<int>);
+csGraphics2DGLCommon::csGraphics2DGLCommon (iBase *iParent)
+  : scfImplementationType (this, iParent)
+{
 }
 
-void csGraphics2DGLCommon::csGLPixelFormatPicker::SetInitialIndices ()
+csGraphics2DGLCommon::~csGraphics2DGLCommon ()
 {
-  for (size_t format = 0; format < glpfvValueCount; ++format)
-  {
-    size_t formatIdx = pixelFormatIndexTable[format];
-
-    const csArray<int>& values = pixelFormats[formatIdx].possibleValues;
-
-    size_t closestIndex = values.GetSize () - 1;   
-
-    for (size_t i = 0; i < values.GetSize (); ++i)
-    {
-      // find first which is less than value
-      if (values[i] <= currentValues[format])
-      {
-        closestIndex = i;
-        break;
-      }
-    }
-
-    //pixelFormats[formatIdx].firstIndex = csMin (firstIndex, values.GetSize () - 1);
-    pixelFormats[formatIdx].firstIndex = closestIndex;
-    pixelFormats[formatIdx].nextIndex = pixelFormats[formatIdx].firstIndex;
-  }
 }
 
-void csGraphics2DGLCommon::csGLPixelFormatPicker::SetupIndexTable (
-  const char* orderStr)
+bool csGraphics2DGLCommon::Initialize (iObjectRegistry *object_reg)
 {
-  size_t orderIdx = 0;
+  if (!csGraphics2D::Initialize (object_reg))
+    return false;
+  if (!CS::PluginCommon::GL::Graphics2DCommon::Initialize (object_reg))
+    return false;
 
-  while (*orderStr != 0 && orderIdx < glpfvValueCount)
-  {
-    char orderVal = *orderStr;
+  CS_ASSERT (object_reg != 0);
+  /* Note: r3dopengl.cfg is also added by the renderer. This is done because
+  * either the canvas or the renderer may be loaded before the other, but
+  * both need settings from that file. */
+  config.AddConfig (object_reg, "/config/r3dopengl.cfg");
+  CS::PluginCommon::GL::CanvasCommonBase::Initialize (object_reg);
 
-    // Map character to value type
-    GLPixelFormatValue val = glpfvColorBits;
-    switch (orderVal)
-    {
-    case 'c':
-      val = glpfvColorBits;
-      break;
-    case 'a':
-      val = glpfvAlphaBits;
-      break;
-    case 'd':
-      val = glpfvDepthBits;
-      break;
-    case 's':
-      val = glpfvStencilBits;
-      break;
-    case 'C':
-      val = glpfvAccumColorBits;
-      break;
-    case 'A':
-      val = glpfvAccumAlphaBits;
-      break;
-    case 'm':
-      val = glpfvMultiSamples;
-      break;
-    }
-
-    //Now map orderIdx to val
-    pixelFormatIndexTable[val] = orderIdx;
-
-    //Set it to be this value too
-    pixelFormats[orderIdx].valueType = val;
-
-    orderStr++;
-    orderIdx++;
-  }
-}
-
-bool csGraphics2DGLCommon::csGLPixelFormatPicker::PickNextFormat ()
-{
-  for (size_t i = 0; i < glpfvValueCount; ++i)
-  {
-    currentValues[pixelFormats[i].valueType] = 
-      pixelFormats[i].possibleValues[pixelFormats[i].nextIndex];
-  }
-
-  // Increment
-  bool incComplete = true;
-  size_t indexToInc = 0;
-
-  do 
-  {
-    pixelFormats[indexToInc].nextIndex++;
-    incComplete = true;
-
-    if (pixelFormats[indexToInc].nextIndex >= 
-      pixelFormats[indexToInc].possibleValues.GetSize ())
-    {
-      //roll around
-      pixelFormats[indexToInc].nextIndex = pixelFormats[indexToInc].firstIndex;
-      incComplete = false;
-      indexToInc++;
-    }
-
-  } while(!incComplete && indexToInc < glpfvValueCount);
-
-  return incComplete;
-}
-
-void csGraphics2DGLCommon::csGLPixelFormatPicker::Reset()
-{
-  for (size_t v = 0; v < glpfvValueCount; v++)
-  {
-    pixelFormats[v].possibleValues.DeleteAll();
-  }
-
-  ReadStartValues();
-  ReadPickerValues();
-  SetInitialIndices();
-  PickNextFormat ();
-}
-
-bool csGraphics2DGLCommon::csGLPixelFormatPicker::GetNextFormat (
-  GLPixelFormat& format)
-{
-  memcpy (format, currentValues, sizeof (GLPixelFormat));
-
-  bool oldCurrentValid = currentValid;
-  currentValid = PickNextFormat ();
-  return oldCurrentValid;
+  return true;
 }

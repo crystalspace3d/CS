@@ -39,32 +39,21 @@
 #include "iutil/comp.h"
 #include "ivaria/reporter.h"
 
-csGraphics2D::csGraphics2D (iBase* parent) : 
-  scfImplementationType (this, parent), fontCache (0), hwMouse (hwmcOff),
-  fitToWorkingArea (false)
+namespace CS
 {
-  static uint g2d_count = 0;
-
-  fbWidth = 640;
-  fbHeight = 480;
-  Depth = 16;
-  DisplayNumber = 0;
-  FullScreen = false;
+  namespace PluginCommon
+  {
+    Graphics2DCommon::Graphics2DCommon () : fontCache (0), viewportIsFullScreen (true)
+    {
   is_open = false;
-  win_title = "Crystal Space Application";
   object_reg = 0;
-  AllowResizing = false;
-  refreshRate = 0;
-  vsync = false;
   weakEventHandler = 0;
 
-  name.Format ("graph2d.%x", g2d_count++);
-
   fontCache = 0;
-}
+    }
 
-csGraphics2D::~csGraphics2D ()
-{
+    Graphics2DCommon::~Graphics2DCommon ()
+    {
   if (weakEventHandler != 0)
   {
     csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
@@ -72,53 +61,32 @@ csGraphics2D::~csGraphics2D ()
       CS::RemoveWeakListener (q, weakEventHandler);
   }
   Close ();
-}
+    }
 
-bool csGraphics2D::Initialize (iObjectRegistry* r)
-{
-  CS_ASSERT (r != 0);
-  object_reg = r;
-  plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
-  // Get the system parameters
-  config.AddConfig (object_reg, "/config/video.cfg");
-  vpWidth = fbWidth = config->GetInt ("Video.ScreenWidth", fbWidth);
-  vpHeight = fbHeight = config->GetInt ("Video.ScreenHeight", fbHeight);
-  Depth = config->GetInt ("Video.ScreenDepth", Depth);
-  FullScreen = config->GetBool ("Video.FullScreen", FullScreen);
-  fitToWorkingArea = config->GetBool ("Video.FitToWorkingArea", fitToWorkingArea);
-  DisplayNumber = config->GetInt ("Video.DisplayNumber", DisplayNumber);
-  refreshRate = config->GetInt ("Video.DisplayFrequency", 0);
-  vsync = config->GetBool ("Video.VSync", false);
-  
-  const char* hwMouseFlag = config->GetStr ("Video.SystemMouseCursor", "yes");
-  if ((strcasecmp (hwMouseFlag, "yes") == 0)
-      || (strcasecmp (hwMouseFlag, "true") == 0)
-      || (strcasecmp (hwMouseFlag, "on") == 0)
-      || (strcmp (hwMouseFlag, "1") == 0))
+    void Graphics2DCommon::HandleResize ()
   {
-    hwMouse = hwmcOn;
-  }
-  else if (strcasecmp (hwMouseFlag, "rgbaonly") == 0)
+      if (viewportIsFullScreen)
   {
-    hwMouse = hwmcRGBAOnly;
+          int fbWidth, fbHeight;
+          GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
+          SetViewport (0, 0, fbWidth, fbHeight);
   }
-  else
+  }
+
+    bool Graphics2DCommon::Initialize (iObjectRegistry* r)
   {
-    hwMouse = hwmcOff;
-  }
-  csRef<iCommandLineParser> cmdline (
-    csQueryRegistry<iCommandLineParser> (object_reg));
-  if (cmdline->GetOption ("sysmouse") || cmdline->GetOption ("nosysmouse"))
-  {
-    hwMouse = cmdline->GetBoolOption ("sysmouse") ? hwmcOn : hwmcOff;
-  }
+      CS_ASSERT (r != 0);
+      object_reg = r;
+      plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
+      // Get the system parameters
+      GetCanvas()->GetFramebufferDimensions (vpWidth, vpHeight);
 
   // Get the font server: A missing font server is NOT an error
   if (!FontServer)
   {
     FontServer = csQueryRegistry<iFontServer> (object_reg);
   }
-#ifdef CS_DEBUG
+    #ifdef CS_DEBUG
   if (!FontServer)
   {
     csReport (r, CS_REPORTER_SEVERITY_WARNING,
@@ -127,32 +95,23 @@ bool csGraphics2D::Initialize (iObjectRegistry* r)
       "This is normal if you don't want one (warning displays only in "
       "debug mode)");
   }
-#endif
+    #endif
 
+      evCanvasResize = csevCanvasResize (object_reg, GetCanvas());
   csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
   if (q != 0)
   {
-    csEventID events[3] = { csevSystemOpen (object_reg), 
-			    csevSystemClose (object_reg), 
+        csEventID events[4] = { csevSystemOpen (object_reg),
+                                csevSystemClose (object_reg),
+                                evCanvasResize,
 			    CS_EVENTLIST_END };
     CS::RegisterWeakListener (q, this, events, weakEventHandler);
   }
   return true;
-}
+    }
 
-void csGraphics2D::ChangeDepth (int d)
-{
-  if (Depth == d) return;
-  Depth = d;
-}
-
-const char* csGraphics2D::GetName() const
-{
-  return name;
-}
-
-bool csGraphics2D::HandleEvent (iEvent& Event)
-{
+    bool Graphics2DCommon::HandleEvent (iEvent& Event)
+    {
   if (Event.Name == csevSystemOpen (object_reg))
   {
     Open ();
@@ -163,75 +122,76 @@ bool csGraphics2D::HandleEvent (iEvent& Event)
     Close ();
     return true;
   }
+      else if (Event.Name == evCanvasResize)
+      {
+        HandleResize ();
+        return true;
+      }
   else
   {
     return false;
   }
-}
+    }
 
-bool csGraphics2D::Open ()
-{
+    bool Graphics2DCommon::Open ()
+    {
   if (is_open) return true;
   is_open = true;
 
+      if (!GetCanvas()->CanvasOpen()) return false;
+
+      int fbWidth, fbHeight;
+      GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
+
   vpLeft = 0;
   vpTop = 0;
-  
+      vpWidth = fbWidth;
+      vpHeight = fbHeight;
+
   FrameBufferLocked = 0;
 
   SetClipRect (0, 0, fbWidth, fbHeight);
-  
-  if (!FullScreen && fitToWorkingArea)
-  {
-    int newWidth (vpWidth), newHeight (vpHeight);
-    if (FitSizeToWorkingArea (newWidth, newHeight))
-    {
-      bool oldResize (AllowResizing);
-      AllowResizing = true;
-      Resize (newWidth, newHeight);
-      AllowResizing = oldResize;
-    }
-  }
 
   return true;
-}
+    }
 
-void csGraphics2D::Close ()
-{
+    void Graphics2DCommon::Close ()
+    {
   if (!is_open) return;
   is_open = false;
+      GetCanvas()->CanvasClose();
   delete fontCache;
   fontCache = 0;
-}
+    }
 
-bool csGraphics2D::BeginDraw ()
-{
+    bool Graphics2DCommon::BeginDraw ()
+    {
   FrameBufferLocked++;
   return true;
-}
+    }
 
-void csGraphics2D::FinishDraw ()
-{
+    void Graphics2DCommon::FinishDraw ()
+    {
   if (FrameBufferLocked)
     FrameBufferLocked--;
-}
+    }
 
-void csGraphics2D::Clear(int color)
-{
+    void Graphics2DCommon::Clear(int color)
+    {
   DrawBox (0, 0, vpWidth, vpHeight, color);
-}
+    }
 
-void csGraphics2D::ClearAll (int color)
-{
+    void Graphics2DCommon::ClearAll (int color)
+    {
   if (!BeginDraw ())
     return;
   Clear (color);
   FinishDraw ();
-  Print ();
-}
+      GetCanvas()->Print (nullptr);
+    }
 
-void csGraphics2D::SetClipRect (int xmin, int ymin, int xmax, int ymax)
-{
+    void Graphics2DCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
+    {
   if (xmin < 0) xmin = 0;
   else if (xmin > vpWidth) xmin = vpWidth;
   if (xmax < 0) xmax = 0;
@@ -242,20 +202,20 @@ void csGraphics2D::SetClipRect (int xmin, int ymin, int xmax, int ymax)
   else if (ymax > vpHeight) ymax = vpHeight;
   ClipX1 = xmin; ClipX2 = xmax;
   ClipY1 = ymin; ClipY2 = ymax;
-  
+
   if (fontCache)
     fontCache->SetClipRect (ClipX1, ClipY1, ClipX2, ClipY2);
-}
+    }
 
-void csGraphics2D::GetClipRect (int &xmin, int &ymin, int &xmax, int &ymax)
-{
+    void Graphics2DCommon::GetClipRect (int &xmin, int &ymin, int &xmax, int &ymax)
+    {
   xmin = ClipX1; xmax = ClipX2;
   ymin = ClipY1; ymax = ClipY2;
-}
+    }
 
-/* helper function for ClipLine below */
-bool csGraphics2D::CLIPt(float denom, float num, float& tE, float& tL)
-{
+    /* helper function for ClipLine below */
+    bool Graphics2DCommon::CLIPt(float denom, float num, float& tE, float& tL)
+    {
     float t;
 
     if(denom > 0)
@@ -270,20 +230,20 @@ bool csGraphics2D::CLIPt(float denom, float num, float& tE, float& tL)
         if(t < tE) return false;
         else if(t < tL) tL = t; // note: there is a mistake on this line in the C edition of the book!
     }
-    else 
+        else
       if(num > 0) return false;
     return true;
-}
+    }
 
-/* This function and the next one were taken
+    /* This function and the next one were taken
    from _Computer Graphics: Principals and Practice_ (2nd ed)
    by Foley et al
    This implements the Liang-Barsky efficient parametric
    line-clipping algorithm
-*/
-bool csGraphics2D::ClipLine (float &x0, float &y0, float &x1, float &y1,
+    */
+    bool Graphics2DCommon::ClipLine (float &x0, float &y0, float &x1, float &y1,
                              int xmin, int ymin, int xmax, int ymax)
-{
+    {
     // exclude the left/bottom edges (the Liang-Barsky algorithm will
     // clip to those edges exactly, whereas the documentation for
     // ClipLine specifies that the lower/bottom edges are excluded)
@@ -294,7 +254,7 @@ bool csGraphics2D::ClipLine (float &x0, float &y0, float &x1, float &y1,
     float dy = y1 - y0;
     bool visible = false;
 
-    if(dx == 0 && dy == 0 && x0 >= xmin && y0 >= ymin && x0 < xmax && y0 < ymax) 
+        if(dx == 0 && dy == 0 && x0 >= xmin && y0 >= ymin && x0 < xmax && y0 < ymax)
     {
         visible = true;
     }
@@ -321,246 +281,84 @@ bool csGraphics2D::ClipLine (float &x0, float &y0, float &x1, float &y1,
                     }
     }
     return !visible;
-}
+    }
 
-void csGraphics2D::Write (iFont *font, int x, int y, int fg, int bg, 
-			  const char *text, uint flags) 
-{ 
+    void Graphics2DCommon::Write (iFont *font, int x, int y, int fg, int bg,
+                  const char *text, uint flags)
+    {
   if (!text || !*text) return;
   fontCache->WriteString (font, x, y, fg, bg, text, false, flags);
-}
+    }
 
-void csGraphics2D::Write (iFont *font, int x, int y, int fg, int bg, 
-			  const wchar_t*text, uint flags) 
-{ 
+    void Graphics2DCommon::Write (iFont *font, int x, int y, int fg, int bg,
+                  const wchar_t*text, uint flags)
+    {
   if (!text || !*text) return;
   fontCache->WriteString (font, x, y, fg, bg, text, true, flags);
-}
+    }
 
-bool csGraphics2D::PerformExtensionV (char const* command, va_list args)
-{
+    bool Graphics2DCommon::PerformExtensionV (char const* command, va_list args)
+    {
   return false;
-}
+    }
 
-bool csGraphics2D::PerformExtension (char const* command, ...)
-{
-  va_list args;
-  va_start (args, command);
-  bool rc = PerformExtensionV(command, args);
-  va_end (args);
-  return rc;
-}
+    bool Graphics2DCommon::Resize (int w, int h)
+    {
+      int old_width, old_height;
+      GetCanvas()->GetFramebufferDimensions (old_width, old_height);
+      if (!GetCanvas()->CanvasResize (w, h))
+        return false;
 
-void csGraphics2D::AlertV (int type, const char* title, const char* okMsg,
-    const char* msg, va_list arg)
-{
-  (void)type; (void)title; (void)okMsg;
-  csPrintf ("ALERT: ");
-  csPrintfV (msg, arg);
-  csPrintf ("\n");
-  fflush (stdout);
-}
-
-void csGraphics2D::Alert (int type, const char* title, const char* okMsg, 
-			  const char* msg, ...)
-{
-  va_list arg;
-  va_start (arg, msg);
-  AlertV (type, title, okMsg, msg, arg);
-  va_end (arg);
-}
-
-void csGraphics2D::Alert (int type, const wchar_t* title, const wchar_t* okMsg, 
-			  const wchar_t* msg, ...)
-{
-  va_list arg;
-  va_start (arg, msg);
-  AlertV (type, csString (title), csString (okMsg), csString (msg), arg);
-  va_end (arg);
-}
-
-void csGraphics2D::AlertV (int type, const wchar_t* title, const wchar_t* okMsg,
-    const wchar_t* msg, va_list arg)
-{
-  AlertV (type, csString (title), csString (okMsg), csString (msg), arg);
-}
-
-iNativeWindow* csGraphics2D::GetNativeWindow ()
-{
-  return static_cast<iNativeWindow*> (this);
-}
-
-void csGraphics2D::SetTitle (const char* title)
-{
-  win_title = title;
-}
-
-void csGraphics2D::SetIcon (iImage *image)
-{
-    
-}
-
-bool csGraphics2D::Resize (int w, int h)
-{
   if (!is_open)
   {
     // Still in Initialization phase, configuring size of canvas
-    vpWidth = fbWidth = w;
-    vpHeight = fbHeight = h;
+        GetCanvas()->GetFramebufferDimensions (vpWidth, vpHeight);
     return true;
   }
 
-  if (!AllowResizing)
-    return false;
-
-  if (fbWidth != w || fbHeight != h)
+      if (old_width != w || old_height != h)
   {
     if ((vpLeft == 0) && (vpTop == 0)
-        && (vpWidth == fbWidth) && (vpHeight == fbHeight))
+            && (vpWidth == old_width) && (vpHeight == old_height))
     {
       vpWidth = w;
       vpHeight = h;
     }
-    fbWidth = w;
-    fbHeight = h;
   }
   return true;
-}
+    }
 
-void csGraphics2D::SetFullScreen (bool b)
-{
-  if (FullScreen == b) return;
-  FullScreen = b;
-}
-
-bool csGraphics2D::SetMousePosition (int x, int y)
-{
-  (void)x; (void)y;
-  return false;
-}
-
-bool csGraphics2D::SetMouseCursor (csMouseCursorID iShape)
-{
-  return (iShape == csmcArrow);
-}
-
-bool csGraphics2D::SetMouseCursor (iImage *, const csRGBcolor*, int, int, 
-                                   csRGBcolor, csRGBcolor)
-{
-  return false;
-}
-
-void csGraphics2D::SetViewport (int left, int top, int width, int height)
-{ 
+    void Graphics2DCommon::SetViewport (int left, int top, int width, int height)
+    {
   vpLeft = left; vpTop = top; vpWidth = width; vpHeight = height;
   fontCache->SetViewportOfs (left, top);
-}
 
-bool csGraphics2D::DebugCommand (const char* /*cmd*/)
-{
-  return false;
-}
-
-bool csGraphics2D::GetWindowDecoration (WindowDecoration decoration)
-{
-  // Decorations that are commonly on
-  switch (decoration)
-  {
-  case decoCaption:
-    return !FullScreen;
-  default:
-    break;
+      int fbWidth, fbHeight;
+      GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
+      viewportIsFullScreen = (vpLeft == 0) && (vpTop == 0)
+        && (vpWidth == fbWidth) && (vpHeight == fbHeight);
   }
-
-  // Everything else: assume off
-  return false;
-}
-
-bool csGraphics2D::GetWorkspaceDimensions (int& width, int& height)
-{
-  return false;
-}
-
-bool csGraphics2D::AddWindowFrameDimensions (int& width, int& height)
-{
-  return false;
-}
-
-bool csGraphics2D::FitSizeToWorkingArea (int& desiredWidth,
-                                         int& desiredHeight)
-{
-  int wswidth, wsheight;
-  if (!GetWorkspaceDimensions (wswidth, wsheight))
-    return false;
-  int framedWidth (desiredWidth), framedHeight (desiredHeight);
-  if (!AddWindowFrameDimensions (framedWidth, framedHeight))
-    return false;
-  if (framedWidth > wswidth)
-  {
-    desiredWidth -= (framedWidth - wswidth);
-  }
-  if (framedHeight > wsheight)
-  {
-    desiredHeight -= (framedHeight - wsheight);
-  }
-  return true;
-}
+  } // namespace PluginCommon
+} // namespace CS
 
 //---------------------------------------------------------------------------
 
-#define NUM_OPTIONS 3
-
-static const csOptionDescription config_options [NUM_OPTIONS] =
+csGraphics2D::csGraphics2D (iBase* scfParent) : scfImplementationType (this, scfParent)
 {
-  csOptionDescription( 0, "depth", "Display depth", CSVAR_LONG ),
-  csOptionDescription( 1, "fs", "Fullscreen if available", CSVAR_BOOL ),
-  csOptionDescription( 2, "mode", "Window size or resolution", CSVAR_STRING )
-};
+}
 
-bool csGraphics2D::SetOption (int id, csVariant* value)
+csGraphics2D::~csGraphics2D () {}
+
+bool csGraphics2D::DebugCommand (const char* /*cmd*/)
 {
-  if (value->GetType () != config_options[id].type)
     return false;
-  switch (id)
-  {
-    case 0: ChangeDepth (value->GetLong ()); break;
-    case 1: SetFullScreen (value->GetBool ()); break;
-    case 2:
-    {
-      const char* buf = value->GetString ();
-      int wres, hres;
-      if (sscanf (buf, "%dx%d", &wres, &hres) == 2)
-        Resize (wres, hres);
-      break;
-    }
-    default: return false;
-  }
-  return true;
 }
 
-bool csGraphics2D::GetOption (int id, csVariant* value)
+bool csGraphics2D::Initialize (iObjectRegistry* r)
 {
-  switch (id)
-  {
-    case 0: value->SetLong (Depth); break;
-    case 1: value->SetBool (FullScreen); break;
-    case 2:
-    {
-      csString buf;
-      buf.Format ("%dx%d", GetWidth (), GetHeight ());
-      value->SetString (buf);
-      break;
-    }
-    default: return false;
-  }
-  return true;
-}
+  CS_ASSERT (r != 0);
+  config.AddConfig (r, "/config/video.cfg");
+  CS::PluginCommon::CanvasCommonBase::Initialize (r);
 
-bool csGraphics2D::GetOptionDescription (int idx, csOptionDescription* option)
-{
-  if (idx < 0 || idx >= NUM_OPTIONS)
-    return false;
-  *option = config_options[idx];
-  return true;
+  return Graphics2DCommon::Initialize (r);
 }
-

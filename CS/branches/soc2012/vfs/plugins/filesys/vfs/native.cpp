@@ -183,7 +183,7 @@ public:
   // Get file time
   virtual bool SetTime (const char *filename, const csFileTime &iTime);
   // Get file size
-  virtual bool GetSize (const char *filename, uint64_t &oSize);
+  virtual bool GetSize (const char *filename, size64_t &oSize);
   // Check for file existence
   virtual bool Exists (const char *filename);
   // Delete a given file
@@ -239,7 +239,7 @@ class NativeFile : public scfImplementationExt0<NativeFile, csVfsFileBase>
   // Real path
   char *realPath;
   // File size
-  uint64_t size;
+  size64_t size;
   // Native file handle
   FILE *handle;
   // Read-only?
@@ -262,7 +262,7 @@ public:
   // Query VFS filename
   virtual const char *GetName () { return virtualPath; }
   // Query file size
-  virtual uint64_t GetSize () { return size; }
+  virtual size64_t GetSize () { return size; }
   // Read Length bytes into the buffer at which Data points.
   virtual size_t Read (char *data, size_t length);
   // Write Length bytes from the buffer at which Data points.
@@ -272,7 +272,7 @@ public:
   // Check whether pointer is at End of File
   virtual bool AtEOF ();
   // Query file pointer (absolute position)
-  virtual uint64_t GetPos ();
+  virtual size64_t GetPos ();
   // Set file pointer (relative position; absolute by default)
   virtual bool SetPos (off64_t newPos, int relativeTo = VFS_POS_ABSOLUTE);
   // Get all data into a single buffer.
@@ -280,8 +280,8 @@ public:
   // Get all data into a single buffer with custom allocator.
   virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
   // Get subset of file as iFile
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0);
+  virtual csPtr<iFile> GetPartialView (size64_t offset,
+                                       size64_t size = ~(size64_t)0);
 };
 
 
@@ -290,7 +290,7 @@ class NativeFile::View : public scfImplementationExt0<View, csVfsPartialView>
 {
   friend class NativeFile;
   // Constructor
-  View (NativeFile *parent, uint64_t offset, uint64_t size) :
+  View (NativeFile *parent, size64_t offset, size64_t size) :
     scfImplementationType (this, parent, offset, size)
   {
     /* nothing to do here */
@@ -394,7 +394,7 @@ NativeFile::NativeFile (NativeFS *parent,
     {
       // fseek succeeded;
       size = ftell (handle);
-      if (size == (uint64_t)-1)
+      if (size == (size64_t)-1)
       {
         // cannot possibly have this size
         size = 0;
@@ -560,13 +560,13 @@ bool NativeFile::AtEOF ()
 }
 
 // Query file pointer (absolute position)
-uint64_t NativeFile::GetPos ()
+size64_t NativeFile::GetPos ()
 {
   // TODO: ensure large file compatibility
   if (handle)
     return ftell (handle);
 
-  return (uint64_t)-1;
+  return (size64_t)-1;
 }
 
 // Set file pointer (relative position; absolute by default)
@@ -630,7 +630,7 @@ csPtr<iDataBuffer> NativeFile::GetAllData (bool nullTerminated)
   }
 
   // backup pointer
-  uint64_t oldPos = GetPos ();
+  size64_t oldPos = GetPos ();
   // set pointer at beginning
   SetPos (0);
   // read!
@@ -668,7 +668,7 @@ csPtr<iDataBuffer> NativeFile::GetAllData (CS::Memory::iAllocator *allocator)
   }
 
   // backup pointer
-  uint64_t oldPos = GetPos ();
+  size64_t oldPos = GetPos ();
   // set pointer at beginning
   SetPos (0);
   // read!
@@ -683,7 +683,7 @@ csPtr<iDataBuffer> NativeFile::GetAllData (CS::Memory::iAllocator *allocator)
 }
 
 // Get subset of file as iFile
-csPtr<iFile> NativeFile::GetPartialView (uint64_t offset, uint64_t size)
+csPtr<iFile> NativeFile::GetPartialView (size64_t offset, size64_t size)
 {
   // this doesn't really work with iFile not opened for read access
   if (!readOnly)
@@ -953,7 +953,7 @@ bool NativeFS::SetTime (const char *filename, const csFileTime &iTime)
 }
 
 // Get file size
-bool NativeFS::GetSize (const char *filename, uint64_t &oSize)
+bool NativeFS::GetSize (const char *filename, size64_t &oSize)
 {
   csString path (ToRealPath (filename));
   struct stat info;

@@ -64,8 +64,8 @@ public:
    */
   virtual int GetStatus ();
   // Get subset of file as iFile
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0);
+  virtual csPtr<iFile> GetPartialView (size64_t offset,
+                                       size64_t size = ~(size64_t)0);
 };
 
 #endif

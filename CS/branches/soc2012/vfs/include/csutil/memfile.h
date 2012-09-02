@@ -83,25 +83,25 @@ public:
 
   /// Returns "#csMemFile"
   virtual const char* GetName();
-  virtual uint64_t GetSize();
+  virtual size64_t GetSize();
   virtual int GetStatus();
 
   virtual size_t Read(char* Data, size_t DataSize);
   virtual size_t Write(const char* Data, size_t DataSize);
   virtual void Flush();
   virtual bool AtEOF();
-  virtual uint64_t GetPos();
+  virtual size64_t GetPos();
   virtual bool SetPos(off64_t newpos, int ref = 0);
 
   virtual csPtr<iDataBuffer> GetAllData (bool nullterm = false);
   csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator*);
-  csPtr<iFile> GetPartialView (uint64_t offset, uint64_t size = ~(uint64_t)0);
+  csPtr<iFile> GetPartialView (size64_t offset, size64_t size = ~(size64_t)0);
   /**
    * Returns a pointer to the memory buffer.  May return 0 if memory file
    * is empty.  Use GetSize() for size info.
    */
   virtual const char* GetData() const;
-  uint64_t GetDataSize () const { return size; }
+  size64_t GetDataSize () const { return size; }
 
   /// Make file empty.
   void Empty();

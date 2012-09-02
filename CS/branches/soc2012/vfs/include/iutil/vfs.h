@@ -20,10 +20,6 @@
 #ifndef __CS_IUTIL_VFS_H__
 #define __CS_IUTIL_VFS_H__
 
-// current dev environment is 64-bit
-// @@@FIXME: move this to configure phase
-#define CS_SIZE_T_64BIT
-
 /**\file
  * Virtual File System SCF interface
  */
@@ -34,6 +30,18 @@
 #include "iutil/databuff.h"
 #include "iutil/pluginconfig.h"
 #include <time.h>
+
+// off64_t workaround for Mac OS X
+#if defined(CS_PLATFORM_MACOSX) 
+typedef off_t off64_t;
+#endif
+
+// size64_t for compatibility reasons
+#if (CS_LONG_SIZE == 8)
+typedef size_t size64_t;
+#else
+typedef uint64_t size64_t;
+#endif
 
 namespace CS
 {
@@ -260,7 +268,7 @@ struct iFile : public virtual iBase
   virtual const char *GetName () = 0;
 
   /// Query file size
-  virtual uint64_t GetSize () = 0;
+  virtual size64_t GetSize () = 0;
 
   /**
    * Check (and clear) file last error status
@@ -294,7 +302,7 @@ struct iFile : public virtual iBase
   virtual bool AtEOF () = 0;
 
   /// Query current file pointer.
-  virtual uint64_t GetPos () = 0;
+  virtual size64_t GetPos () = 0;
 
   /**
    * Set new file pointer.
@@ -334,8 +342,8 @@ struct iFile : public virtual iBase
    * \return A file object operating on a part of the original file.
    * \remarks Note that the returned file will not support writing.
    */
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0) = 0;
+  virtual csPtr<iFile> GetPartialView (size64_t offset,
+                                       size64_t size = ~(size64_t)0) = 0;
 };
 
 /**
@@ -425,7 +433,7 @@ struct iFileSystem : public virtual iBase
    * \return true if operation succeeded; false otherwise. Use GetStatus() for
    *   error information.
    */
-  virtual bool GetSize (const char *filename, uint64_t &oSize) = 0;
+  virtual bool GetSize (const char *filename, size64_t &oSize) = 0;
 
   /**
    * Query whether a file or directory of given name exists.
@@ -773,16 +781,16 @@ struct iVFS : public virtual iBase
    * Query file size (without opening it).
    * \return True if the query succeeded, else false.
    */
-  virtual bool GetFileSize (const char *filename, uint64_t &oSize) = 0;
+  virtual bool GetFileSize (const char *filename, size64_t &oSize) = 0;
 
-  // if 64-bit, size_t is equivalent to uint64_t.
+  // if 64-bit, size_t is equivalent to size64_t.
   // deprecated overload is only available for non 64-bit systems.
-#if (CS_PROCESSOR_SIZE != 64)
+#if (CS_LONG_SIZE != 8)
   /**
    * Query file size (without opening it).
    * \return True if the query succeeded, else false.
    */
-  CS_DEPRECATED_METHOD_MSG("Use uint64_t overload instead.")
+  CS_DEPRECATED_METHOD_MSG("Use size64_t overload instead.")
   virtual bool GetFileSize (const char *filename, size_t &oSize) = 0;
 #endif
 

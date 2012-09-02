@@ -76,7 +76,7 @@ public:
   // Get archive identifier
   void GetIdentifier (csString &oIdentifier);
   // Get size of given file
-  bool GetSize (const char *path, uint64_t &oSize);
+  bool GetSize (const char *path, size64_t &oSize);
   // Determine whether a file exists
   bool Exists (const char *path);
   // Flush cache
@@ -130,7 +130,7 @@ public:
 
   virtual bool SetTime (const char *filename, const csFileTime &iTime);
 
-  virtual bool GetSize (const char *filename, uint64_t &oSize);
+  virtual bool GetSize (const char *filename, size64_t &oSize);
 
   virtual bool Exists (const char *filename);
 
@@ -246,7 +246,7 @@ public:
   // query file name
   virtual const char *GetName ();
   // query file size
-  virtual uint64_t GetSize ();
+  virtual size64_t GetSize ();
   // Read from file
   virtual size_t Read (char *data, size_t dataSize);
   // Write to file
@@ -256,7 +256,7 @@ public:
   // Query whether pointer is at end of file
   virtual bool AtEOF ();
   // Query current file pointer
-  virtual uint64_t GetPos ();
+  virtual size64_t GetPos ();
   // Set new position of file pointer
   virtual bool SetPos (off64_t newpos, int ref = VFS_POS_ABSOLUTE);
   // Request whole content of the file as a single buffer.
@@ -265,8 +265,8 @@ public:
   // Uses custom allocator.
   virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
   // Request part of the file as an iFile
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0);
+  virtual csPtr<iFile> GetPartialView (size64_t offset,
+                                       size64_t size = ~(size64_t)0);
 };
 
 // Factory/archive handler for zip filesystem

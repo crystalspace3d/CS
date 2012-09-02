@@ -252,12 +252,12 @@ public:
                                   const csFilePermission &iPerm);
 
 // this function is enabled only when size_t is not 64-bit
-#ifndef CS_SIZE_T_64BIT
+#if CS_LONG_SIZE != 8
   /// Query file size (without opening it)
   virtual bool GetFileSize (const char *filename, size_t &oSize);
 #endif
   /// Query file size (without opening it)
-  virtual bool GetFileSize (const char *filename, uint64_t &oSize);
+  virtual bool GetFileSize (const char *filename, size64_t &oSize);
 
   /**
    * Query real-world path from given VFS path.

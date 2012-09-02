@@ -51,17 +51,17 @@ namespace
 const char* csMemFile::GetName() { return "#csMemFile"; }
 const char* csMemFile::GetData() const 
 { return buffer ? buffer->GetData() : 0; }
-uint64_t csMemFile::GetSize() { return size; }
+size64_t csMemFile::GetSize() { return size; }
 int csMemFile::GetStatus() { return status; }
 void csMemFile::Flush() {}
 bool csMemFile::AtEOF() { return (cursor >= size); }
-uint64_t csMemFile::GetPos() { return cursor; }
+size64_t csMemFile::GetPos() { return cursor; }
 bool csMemFile::SetPos(off64_t newPos, int relativeTo)
 {
   // is newPos negative (backwards)
   bool negative = newPos < 0;
   // take absolute value
-  uint64_t distance = negative ? -newPos : newPos;
+  size64_t distance = negative ? -newPos : newPos;
   // only virtual pointer is moved
   switch (relativeTo)
   {
@@ -81,7 +81,7 @@ bool csMemFile::SetPos(off64_t newPos, int relativeTo)
       break;
     case VFS_POS_ABSOLUTE:
       // absolute mode requested
-      cursor = ((uint64_t)newPos > size) ? size : newPos;
+      cursor = ((size64_t)newPos > size) ? size : newPos;
       break;
     default:
       return false;
@@ -222,7 +222,7 @@ csPtr<iDataBuffer> csMemFile::GetAllData (CS::Memory::iAllocator* /*allocator*/)
   return GetAllData ();
 }
 
-csPtr<iFile> csMemFile::GetPartialView (uint64_t offset, uint64_t size)
+csPtr<iFile> csMemFile::GetPartialView (size64_t offset, size64_t size)
 {
   if (!buffer) return 0;
   if (offset < 0) offset = 0; // cannot have negative offset

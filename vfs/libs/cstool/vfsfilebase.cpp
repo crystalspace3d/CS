@@ -29,7 +29,7 @@ int csVfsFileBase::GetStatus ()
   return error;
 }
 
-csPtr<iFile> csVfsFileBase::GetPartialView (uint64_t offset, uint64_t size)
+csPtr<iFile> csVfsFileBase::GetPartialView (size64_t offset, size64_t size)
 {
   // default implementation using csVfsPartialView
   return csPtr<iFile> (new csVfsPartialView (this, offset, size));

@@ -49,11 +49,11 @@ protected:
   /// Parent csVfsFileBase
   csRef<csVfsFileBase> parent;
   // Zero-based offset of parent csVfsFileBase
-  uint64_t offset;
+  size64_t offset;
   /// Length of this view
-  uint64_t size;
+  size64_t size;
   /// Zero-based position of this view
-  uint64_t pos;
+  size64_t pos;
   /// Last error status of this view
   int lastError;
 
@@ -67,7 +67,7 @@ public:
    * \remarks Actual size will be adjusted if it goes over parent csVfsFileBase
    *   boundary.
    */
-  csVfsPartialView (csVfsFileBase *parent, uint64_t offset, uint64_t size);
+  csVfsPartialView (csVfsFileBase *parent, size64_t offset, size64_t size);
   /// Destructor. Cleans up any resources that are no longer used.
   virtual ~csVfsPartialView ();
   /**
@@ -77,7 +77,7 @@ public:
    */
   virtual const char *GetName () { return "#csVfsPartialView"; }
   /// Query the size of this view.
-  virtual uint64_t GetSize () { return size; }
+  virtual size64_t GetSize () { return size; }
   // Query and reset last error status
   virtual int GetStatus ();
   /**
@@ -96,7 +96,7 @@ public:
   // Check whether pointer is at End of File
   virtual bool AtEOF ();
   // Query file pointer (absolute position)
-  virtual uint64_t GetPos ();
+  virtual size64_t GetPos ();
   // Set file pointer (relative position; absolute by default)
   virtual bool SetPos (off64_t newPos, int relativeTo = VFS_POS_ABSOLUTE);
   // Get all data into a single buffer.
@@ -104,8 +104,8 @@ public:
   // Get all data into a single buffer with custom allocator.
   virtual csPtr<iDataBuffer> GetAllData (CS::Memory::iAllocator *allocator);
   // Get subset of file as iFile
-  virtual csPtr<iFile> GetPartialView (uint64_t offset,
-                                       uint64_t size = ~(uint64_t)0);
+  virtual csPtr<iFile> GetPartialView (size64_t offset,
+                                       size64_t size = ~(size64_t)0);
 };
 
 #endif

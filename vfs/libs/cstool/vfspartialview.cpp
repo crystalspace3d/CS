@@ -29,8 +29,8 @@
          size   (size of this view)
  */ 
 csVfsPartialView::csVfsPartialView (csVfsFileBase *parent,
-                                    uint64_t offset,
-                                    uint64_t size) :
+                                    size64_t offset,
+                                    size64_t size) :
   scfImplementationType (this, parent),
   parent (parent),
   offset (offset),
@@ -82,7 +82,7 @@ size_t csVfsPartialView::Read (char *data, size_t dataSize)
   // Save last error status
   int parentError = parent->lastError;
   // Save last position
-  uint64_t lastPos = parent->GetPos ();
+  size64_t lastPos = parent->GetPos ();
 
   // Apply offset of this view
   parent->SetPos (offset + pos);
@@ -128,7 +128,7 @@ bool csVfsPartialView::AtEOF ()
 }
 
 // Query file pointer (absolute position)
-uint64_t csVfsPartialView::GetPos ()
+size64_t csVfsPartialView::GetPos ()
 {
   return pos;
 }
@@ -139,7 +139,7 @@ bool csVfsPartialView::SetPos (off64_t newPos, int relativeTo)
   // is newPos negative (backwards)
   bool negative = newPos < 0;
   // take absolute value
-  uint64_t distance = negative ? -newPos : newPos;
+  size64_t distance = negative ? -newPos : newPos;
   // only virtual pointer is moved
   switch (relativeTo)
   {
@@ -159,7 +159,7 @@ bool csVfsPartialView::SetPos (off64_t newPos, int relativeTo)
       break;
     case VFS_POS_ABSOLUTE:
       // absolute mode requested
-      pos = ((uint64_t)newPos > size) ? size : newPos;
+      pos = ((size64_t)newPos > size) ? size : newPos;
       break;
     default:
       // unknown constant
@@ -186,7 +186,7 @@ csPtr<iDataBuffer> csVfsPartialView::GetAllData (bool nullTerminated)
   }
 
   // backup pointer
-  uint64_t oldPos = GetPos ();
+  size64_t oldPos = GetPos ();
   // set pointer at beginning
   SetPos (0);
   // read!
@@ -227,7 +227,7 @@ csVfsPartialView::GetAllData (CS::Memory::iAllocator *allocator)
   }
 
   // backup pointer
-  uint64_t oldPos = GetPos ();
+  size64_t oldPos = GetPos ();
   // set pointer at beginning
   SetPos (0);
   // read!
@@ -242,8 +242,8 @@ csVfsPartialView::GetAllData (CS::Memory::iAllocator *allocator)
 }
 
 // Get subset of file as iFile
-csPtr<iFile> csVfsPartialView::GetPartialView (uint64_t offset,
-                                                uint64_t size)
+csPtr<iFile> csVfsPartialView::GetPartialView (size64_t offset,
+                                                size64_t size)
 {
   // Let the constructor handle everything
   return csPtr<iFile> (

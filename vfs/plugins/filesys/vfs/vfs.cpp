@@ -222,7 +222,7 @@ public:
   // Set permission
   bool SetFilePermission (const char *suffix, const csFilePermission &iPerm);
   // Get file size
-  bool GetFileSize (const char *suffix, uint64_t &oSize);
+  bool GetFileSize (const char *suffix, size64_t &oSize);
   // Query whether a given virtual path refers to a valid directory
   bool IsDir (const char *vfsPath);
   // Query whether current node has no children nor filesystems.
@@ -824,7 +824,7 @@ bool VfsNode::SetFileTime (const char *suffix, const csFileTime &iTime)
   return false;
 }
 
-bool VfsNode::GetFileSize (const char *suffix, uint64_t &oSize)
+bool VfsNode::GetFileSize (const char *suffix, size64_t &oSize)
 {
   // find 1st iFileSystem containing file 'suffix'
   csRef<iFileSystem> fs = FindFile (suffix);
@@ -2545,7 +2545,7 @@ bool csVFS::GetFileSize (const char *filename, size_t &oSize)
 }
 #endif
 
-bool csVFS::GetFileSize (const char *filename, uint64_t &oSize)
+bool csVFS::GetFileSize (const char *filename, size64_t &oSize)
 {
   if (!filename)
     return false;

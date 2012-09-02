@@ -6,6 +6,7 @@ CSUTIL.GENERIC +=
   apppath.cpp
   expandname.cpp
   findlib.cpp
+  filepermission.cpp
   getopt.cpp
   loadlib.cpp
   memutil_impl.cpp

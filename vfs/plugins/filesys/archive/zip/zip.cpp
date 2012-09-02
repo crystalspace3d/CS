@@ -159,7 +159,7 @@ bool ZipArchive::Flush ()
 }
 
 // Get size of file
-bool ZipArchive::GetSize (const char *path, uint64_t &oSize)
+bool ZipArchive::GetSize (const char *path, size64_t &oSize)
 {
   CS::Threading::RecursiveMutexScopedLock lock (mutex);
   // look first in cache
@@ -324,9 +324,9 @@ const char *csZipArchiveFile::GetName ()
 }
 
 // get file size
-uint64_t csZipArchiveFile::GetSize ()
+size64_t csZipArchiveFile::GetSize ()
 {
-  uint64_t size;
+  size64_t size;
   if (archive->GetSize (path, size))
     return size;
   lastError = archive->GetStatus ();
@@ -372,7 +372,7 @@ bool csZipArchiveFile::AtEOF ()
   return (pos >= GetSize ());
 }
 
-uint64_t csZipArchiveFile::GetPos ()
+size64_t csZipArchiveFile::GetPos ()
 {
   return pos;
 }
@@ -382,7 +382,7 @@ bool csZipArchiveFile::SetPos (off64_t newPos, int relativeTo)
   // is newPos negative (backwards)
   bool negative = newPos < 0;
   // take absolute value
-  uint64_t distance = negative ? -newPos : newPos;
+  size64_t distance = negative ? -newPos : newPos;
   // get file size
   size_t size = GetSize ();
   // only virtual pointer is moved
@@ -404,7 +404,7 @@ bool csZipArchiveFile::SetPos (off64_t newPos, int relativeTo)
       break;
     case VFS_POS_ABSOLUTE:
       // absolute mode requested
-      pos = ((uint64_t)newPos > size) ? size : newPos;
+      pos = ((size64_t)newPos > size) ? size : newPos;
       break;
     default:
       return false;
@@ -469,8 +469,8 @@ csPtr<iDataBuffer> csZipArchiveFile::GetAllData (iAllocator *_alloc)
 }
 
 // Get partial view of current file
-csPtr<iFile> csZipArchiveFile::GetPartialView (uint64_t offset,
-                                               uint64_t size)
+csPtr<iFile> csZipArchiveFile::GetPartialView (size64_t offset,
+                                               size64_t size)
 {
   return csPtr<iFile> (new View (this, offset, size));
 }
@@ -579,7 +579,7 @@ bool csZipFS::SetTime (const char *filename, const csFileTime &iTime)
   return true;
 }
 
-bool csZipFS::GetSize (const char *filename, uint64_t &oSize)
+bool csZipFS::GetSize (const char *filename, size64_t &oSize)
 {
   CS::Threading::RecursiveMutexScopedLock lock (archive->mutex);
   // get full path

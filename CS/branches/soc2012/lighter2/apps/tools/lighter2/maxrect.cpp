@@ -32,13 +32,13 @@ void MaxRectangles::FreeSubrect (SubRect* sr)
 }
 
 MaxRectangles::MaxRectangles (const csRect& region)
-  : region(region)
+  : region(region), regionArea(region.Area())
 {
   Clear();
 }
 
 MaxRectangles::MaxRectangles (const MaxRectangles& other)
-  : region(other.region)
+  : region(other.region), regionArea(other.region.Area())
 {
   Clear();
 }
@@ -48,6 +48,7 @@ void MaxRectangles::Clear ()
   notPrunedIndex = 0;
   freeRects.DeleteAll();
   allocatedRects.DeleteAll();
+  usedArea = 0.0f;
 
   if (!region.IsEmpty())
   {
@@ -80,7 +81,7 @@ void MaxRectangles::Reclaim (MaxRectangles::SubRect* subrect)
 {
   size_t numParentsRect = subrect->splittedRect.GetSize();
 
-  for (int i=0; i < numParentsRect; i++)
+  for (size_t i=0; i < numParentsRect; i++)
   {
     freeRects.Push(subrect->splittedRect[i]);
   }
@@ -89,6 +90,7 @@ void MaxRectangles::Reclaim (MaxRectangles::SubRect* subrect)
   allocatedRects.Delete(subrect);
   minRectDirty = true;
   FreeSubrect(subrect);
+  usedArea += subrect->rect.Area();
 
   // We added new rectangles which are highly succeptible
   // to contain some other rectangle but as can be a lot
@@ -189,6 +191,7 @@ bool MaxRectangles::Grow(int newWidth, int newHeight)
       freeRects.Push(newRectHeight);
 
     region.SetSize(newWidth,newHeight);
+    regionArea = region.Area();
   }
 
   return !smaller;
@@ -198,7 +201,7 @@ bool MaxRectangles::Shrink (int newWidth, int newHeight)
 {
   size_t numRectanglesToProcess = freeRects.GetSize();
   
-  for (int i =0; i < numRectanglesToProcess; i++)
+  for (size_t i =0; i < numRectanglesToProcess; i++)
   {
     if (freeRects[i].xmax > newWidth)
     {
@@ -217,6 +220,7 @@ bool MaxRectangles::Shrink (int newWidth, int newHeight)
     }
   }
   region.SetSize(newWidth,newHeight);
+  regionArea = region.Area();
   return true;
 }
 
@@ -227,13 +231,6 @@ MaxRectangles::SubRect* MaxRectangles::Place(const csRect& rect)
   SubRect* resultRec = alloc.Alloc();
   resultRec->rect = rect;
   resultRec->allocIndex = allocatedRects.Push(resultRec);
-
-#ifdef CS_DEBUG
-  for (size_t i=0; i < allocatedRects.GetSize(); i++)
-  {
-    //CS_ASSERT( rect.Intersects(allocatedRects[i]->rect));
-  }
-#endif
 
   for (size_t i=0; i < numRectanglesToProcess; i++)
   {
@@ -246,6 +243,7 @@ MaxRectangles::SubRect* MaxRectangles::Place(const csRect& rect)
     }
   }
 
+  usedArea -= rect.Area();
   PruneFreeList();
 
   minimumRectangle.Union(rect);
@@ -267,6 +265,11 @@ csRect MaxRectangles::GetMinimumRectangle ()
     }
   }
   return minimumRectangle;
+}
+
+float MaxRectangles::GetUsedArea() const
+{
+  return usedArea;
 }
 
 bool MaxRectangles::PlaceInto (const MaxRectangles* rectangles, 
@@ -548,13 +551,15 @@ bool MaxRectangles::SplitFreeRect(const csRect& freeRect, const csRect& allocate
 
 //--------------------------------------------------------------------------
 
-MaxRectanglesCompact::MaxRectanglesCompact(const csRect& maxArea)
-  : MaxRectangles (csRect (0, 0, 0, 0)), maxArea (maxArea), growPO2 (false)
+MaxRectanglesCompact::MaxRectanglesCompact(const csRect& maxRectSize)
+  : MaxRectangles (csRect (0, 0, 0, 0)), growPO2 (false),
+  maxRectSize (maxRectSize), maxRectArea(maxRectSize.Area())
 {
 }
 
 MaxRectanglesCompact::MaxRectanglesCompact(const MaxRectanglesCompact& other)
-  : MaxRectangles (other), maxArea (other.maxArea), growPO2 (other.growPO2)
+  : MaxRectangles (other), growPO2 (other.growPO2),
+  maxRectSize (other.maxRectSize), maxRectArea(other.maxRectArea)
 {
 }
 
@@ -580,7 +585,7 @@ MaxRectangles::SubRect* MaxRectanglesCompact::Alloc (int w, int h, csRect& rect)
   MaxRectangles::SubRect* r = MaxRectangles::Alloc(w,h,rect);
 
   //If it's doesn't and the rectangle can be enlarged
-  if ((r == 0)&&(region != maxArea))
+  if ((r == 0)&&(region != maxRectSize))
   {
     const static int WIDTH = 0;
     const static int HEIGHT = 1;
@@ -596,8 +601,8 @@ MaxRectangles::SubRect* MaxRectanglesCompact::Alloc (int w, int h, csRect& rect)
       int sideLength = ((side == WIDTH) ? w : h);
       // Enlarge one side
       SetDimension (newRect, side, 
-        csMin (NewSize (GetDimension (region, side), sideLength), 
-          GetDimension (maxArea, side)));
+        csMin (NewSize (GetDimension (region, side), sideLength),
+        GetDimension (maxRectSize, side)));
       // Ensure other side is at least as large as requested
       int otherSideLength = ((side == 0) ? h : w);
       if (GetDimension (newRect, side ^ 1) < otherSideLength)

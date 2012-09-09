@@ -611,7 +611,7 @@ namespace lighter
   {
     layouts.Sort(SortLayoutTransform);
 
-    for (int l=0; l < layouts.GetSize(); l++)
+    for (size_t l=0; l < layouts.GetSize(); l++)
     {
       csRect& rect = layouts[l]->rect;
       AllocResultHash results;

@@ -47,7 +47,7 @@ namespace lighter
 
       // First compute the center of the polygon
       csVector3 center = vertexData.positions[0];
-      for (int i=1; i<verticesCount;i++)
+      for (size_t i=1; i<verticesCount;i++)
       {
         center += vertexData.positions[i];
       }
@@ -55,7 +55,7 @@ namespace lighter
       center *= 1/verticesCount;
       vertexData.positions.Push(center);
 
-      for (int i=0; i<verticesCount;i++)
+      for (size_t i=0; i<verticesCount;i++)
       {
         Primitive prim(vertexData,0);
 

@@ -188,7 +188,7 @@ namespace lighter
       surface.filledRatio += sizes[s].uvsize.x * sizes[s].uvsize.y;
     }
 
-    for (int i = 0; i < newFactory->surfaceGroup.GetSize(); i++)
+    for (size_t i = 0; i < newFactory->surfaceGroup.GetSize(); i++)
     {
       newFactory->surfaceGroup[i].filledRatio /=
         newFactory->surfaceGroup[i].rect.Area();

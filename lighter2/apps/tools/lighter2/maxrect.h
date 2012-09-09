@@ -66,10 +66,14 @@ public:
 protected:
   /// Dimensions of this region.
   csRect region;
+  /// The total area of the current region
+  float regionArea;
   /// Array of the allocated rectangles
   csArray<SubRect*> allocatedRects;
   /// Array of the empty rectangles
   csArray<csRect> freeRects;
+  /// Area used by allocated rectangles
+  float usedArea;
   //
   csRect minimumRectangle;
   bool minRectDirty;
@@ -148,6 +152,11 @@ public:
   csRect GetMinimumRectangle ();
 
   /**
+   * Return the area used by allocated subrectangles
+   */
+  float GetUsedArea() const;
+
+  /**
    * Place the maxrectangles of another allocator into a rectangle allocated
    * from this allocator.
    */
@@ -174,6 +183,11 @@ public:
    */
   void Dump (const char* tag = 0);
 
+  virtual float GetFreeArea() const;
+  {
+    return regionArea - usedArea;
+  }
+
 private :
   void inline DeleteFreeRect(int index)
   {
@@ -192,20 +206,21 @@ private :
 
 class MaxRectanglesCompact : public MaxRectangles
 {
-  const csRect maxArea;
+  const csRect maxRectSize;
+  const float maxRectArea;
   bool growPO2;
   
   inline int NewSize (int amount, int inc)
   { return growPO2 ? csFindNearestPowerOf2 (amount + inc) : amount + inc; }
 public:
-  MaxRectanglesCompact (const csRect& maxArea);
+  MaxRectanglesCompact (const csRect& maxRectSize);
   MaxRectanglesCompact (const MaxRectanglesCompact& other);
 
   void Clear ();
   SubRect* Alloc (int w, int h, csRect& rect);
 
   /// Return the upper limit of the rectangle.
-  const csRect& GetMaximumRectangle () const { return maxArea; }
+  const csRect& GetMaximumRectangle () const { return maxRectSize; }
 
   /**
    * Enable growing to PO2 dimensions. Means that if an enlargement
@@ -220,6 +235,18 @@ public:
   SubRect* AllocNoGrow (int w, int h, csRect& rect)
   {
     return MaxRectangles::Alloc (w, h, rect);
+  }
+
+  /// Get the maximal free space if the rectangle is not able to expand
+  float GetFreeAreaNoGrow() const;
+  {
+    return MaxRectangles::GetFreeArea();
+  }
+
+  /// Get the maximal free space of the rectangle
+  float GetFreeArea() const;
+  {
+    return maxRectArea - usedArea;
   }
 };
 #endif

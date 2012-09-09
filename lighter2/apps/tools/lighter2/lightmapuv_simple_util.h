@@ -28,6 +28,13 @@ namespace lighter
     size_t index;
   };
 
+  struct SizeUsedareaAndIndex
+  {
+    csVector2 uvsize;
+    size_t index;
+    float usedArea;
+  };
+
   template<typename T>
   static int SortByUVSize (T const& s1, T const& s2)
   {
@@ -44,6 +51,20 @@ namespace lighter
     return 0;
   }
 
+  template<typename T>
+  static int SortByUVSizeAndArea (T const& s1, T const& s2)
+  {
+    int result = SortByUVSize<T>(s1,s2);
+    if (result == 0)
+    {
+      if (s1.usedArea < s2.usedArea)
+        result = -1;
+      else if (s2.usedArea > s2.usedArea)
+        result = 1;
+    }
+    return result;
+  }
+
   /// Set of primitives to be mapped on one allocator
   struct PrimToMap
   {
@@ -51,6 +72,7 @@ namespace lighter
     size_t sourceIndex;
     csVector2 uvsize;
     csRect rect;
+    float requiredArea;
   };
 
   struct MPTAAMAlloc
@@ -58,6 +80,12 @@ namespace lighter
     static MaxRectangles::SubRect* Alloc (MaxRectangles& allocator,
       int w, int h, csRect& rect)
     { return allocator.Alloc (w, h, rect);  }
+
+    /// Return weither our rectangle have a least minArea free space
+    static bool HasEnoughSpace (MaxRectangles& allocator, const float minArea)
+    {
+      return ((allocator.GetFreeArea() - minArea) >= 0.0f);
+    }
   };
 
   struct MPTAAMAllocNoGrow
@@ -65,6 +93,12 @@ namespace lighter
     static MaxRectangles::SubRect* Alloc (
       MaxRectanglesCompact& allocator, int w, int h, csRect& rect)
     { return allocator.AllocNoGrow (w, h, rect);  }
+    
+    /// Return weither our rectangle have a least minArea free space
+    static bool HasEnoughSpace (MaxRectanglesCompact& allocator, const float minArea)
+    {
+      return ((allocator.GetFreeAreaNoGrow() - minArea) >= 0.0f);
+    }
   };
 
 #if defined(DUMP_SUBRECTANGLES)
@@ -76,40 +110,50 @@ namespace lighter
 
   template<class AllocMixin>
   static bool MapPrimsToAlloc (csArray<PrimToMap>& primsToMap, 
-    MaxRectanglesCompact& alloc, 
+    MaxRectanglesCompact& alloc, const float minimalArea,
     csArray<MaxRectangles::SubRect*>& outSubRects, 
     bool failDump = false)
   {
     bool success = true;
     csRect oldSize (alloc.GetRectangle());
     csArray<MaxRectanglesCompact::SubRect*> subRects;
-    for (size_t p = 0; p < primsToMap.GetSize(); p++)
+
+    // they are enougth free space in the rectangle try to layout prims
+    if (AllocMixin::HasEnoughSpace(alloc,minimalArea))
     {
-      MaxRectanglesCompact::SubRect* sr = 
-        AllocMixin::Alloc (alloc, int (ceilf (primsToMap[p].uvsize.x)),
-          int (ceilf (primsToMap[p].uvsize.y)), primsToMap[p].rect);
-      if (sr == 0)
+      for (size_t p = 0; p < primsToMap.GetSize(); p++)
       {
-#if defined(DUMP_SUBRECTANGLES)
-        if (failDump)
+        MaxRectanglesCompact::SubRect* sr = 
+          AllocMixin::Alloc (alloc, int (ceilf (primsToMap[p].uvsize.x)),
+            int (ceilf (primsToMap[p].uvsize.y)), primsToMap[p].rect);
+        if (sr == 0)
         {
-          csString str;
-          str.Format ("MapPrimsToAlloc_fail_%d", MapPrimsToAlloc_counter++);
-          alloc.Dump (str);
-        }
+#if defined(DUMP_SUBRECTANGLES)
+          if (failDump)
+          {
+            csString str;
+            str.Format ("MapPrimsToAlloc_fail_%d", MapPrimsToAlloc_counter++);
+            alloc.Dump (str);
+          }
 #endif
 
-        for (size_t s = subRects.GetSize(); s-- > 0; )
-          alloc.Reclaim (subRects[s]);
-        success = false;
-        alloc.Shrink (oldSize.Width(), oldSize.Height());
-        break;
-      }
-      else
-      {
-        subRects.Push (sr);
+          for (size_t s = subRects.GetSize(); s-- > 0; )
+            alloc.Reclaim (subRects[s]);
+          success = false;
+          alloc.Shrink (oldSize.Width(), oldSize.Height());
+          break;
+        }
+        else
+        {
+          subRects.Push (sr);
+        }
       }
     }
+    else
+    {
+      success = false;
+    }
+
     outSubRects = subRects;
     return success;
   }
@@ -144,8 +188,9 @@ namespace lighter
 
   template<class Arrays, class Allocators, class AllocMixin>
   static int AllocAllPrimsInner (const Arrays& arrays, Allocators& allocs,
-    AllocResultHash& result, const csArray<SizeAndIndex>& testOrder,
-    csArray<PrimToMap>& primsToMap, bool failDump = false)
+    AllocResultHash& result, const csArray<SizeUsedareaAndIndex>& testOrder,
+    csArray<PrimToMap>& primsToMap, const float minimalArea, 
+    bool failDump = false)
   {
     size_t allocator;
     bool allMapped = false;
@@ -157,7 +202,7 @@ namespace lighter
     {
       size_t useAlloc = testOrder[a].index;
       allMapped = MapPrimsToAlloc<AllocMixin> (primsToMap, 
-        allocs.Get (useAlloc), subRects);
+        allocs.Get (useAlloc), minimalArea, subRects);
       if (allMapped)
       {
         allocator = useAlloc;
@@ -167,7 +212,7 @@ namespace lighter
     if (!allMapped)
     {
       allMapped = MapPrimsToAlloc<AllocMixin> (primsToMap, 
-        allocs.New (allocator), subRects);
+        allocs.New (allocator), minimalArea, subRects);
       newCreated = true;
     }
     if (allMapped) 
@@ -238,7 +283,7 @@ namespace lighter
       progress->SetProgress (0);
     }
     bool createTestOrder = true;
-    csArray<SizeAndIndex> testOrder;
+    csArray<SizeUsedareaAndIndex> testOrder;
 
     result.DeleteAll();
 
@@ -250,13 +295,14 @@ namespace lighter
         testOrder.Empty ();
         for (size_t a = 0; a < allocs.GetSize(); a++)
         {
-          SizeAndIndex si;
+          SizeUsedareaAndIndex si;
           si.index = a;
           const csRect& allocRec = allocs.Get (a).GetRectangle();
           si.uvsize.Set (allocRec.xmax, allocRec.ymax);
+          si.usedArea = allocs.Get (a).GetUsedArea();
           testOrder.Push (si);
         }
-        testOrder.Sort (SortByUVSize<SizeAndIndex>);
+        testOrder.Sort (SortByUVSizeAndArea<SizeUsedareaAndIndex>);
         createTestOrder = false;
       }
 
@@ -277,6 +323,8 @@ namespace lighter
           // If we get here none of the queues could be mapped...
           return false;
 
+        float minimalArea = 0.0f;
+
         csArray<PrimToMap> primsToMap;
         for (size_t a = 0; a < tryCount; a++)
         {
@@ -289,6 +337,8 @@ namespace lighter
             prim.sourceIndex = p;
             prim.uvsize = queue.GetUVSize (p);
             primsToMap.Push (prim);
+
+            minimalArea += prim.uvsize.x * prim.uvsize.y;
           }
         }
         primsToMap.Sort (SortByUVSize<PrimToMap>);
@@ -303,12 +353,14 @@ namespace lighter
         if (flags & allocTryNoGrow)
         {
           res = AllocAllPrimsInner<Arrays, Allocators, MPTAAMAllocNoGrow> (
-            arrays, allocs, thisResult, testOrder, primsToMap, doFailDump);
+            arrays, allocs, thisResult, testOrder, primsToMap, minimalArea,
+            doFailDump);
         }
         if (!res && (flags & allocTryNormal))
         {
           res = AllocAllPrimsInner<Arrays, Allocators, MPTAAMAlloc> (
-            arrays, allocs, thisResult, testOrder, primsToMap, doFailDump);
+            arrays, allocs, thisResult, testOrder, primsToMap, minimalArea,
+            doFailDump);
         }
 
         if (res) 

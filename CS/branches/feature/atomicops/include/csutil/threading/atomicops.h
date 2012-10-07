@@ -207,4 +207,115 @@ namespace Threading
 #error "No atomic operations defined for your platform!"
 #endif
 
+namespace CS
+{
+  // Namespace for atomic operations with less typing
+  namespace Atomic
+  {
+    /**
+     * Set value pointed to by target to value and return previous value
+     */
+    CS_FORCEINLINE
+    static int32 Swap (int32* target, int32 value)
+    {
+      return Threading::AtomicOperations::Swap (target, value);
+    }
+
+    /**
+     * Set pointer pointed to by target to value and return previous value.
+     */
+    template<typename T>
+    CS_FORCEINLINE
+    static T* Swap ( T** target, T* value)
+    {
+      return Threading::AtomicOperations::Swap ((void**)target, (void*)value);
+    }
+
+    /**
+     * Compare value pointed to by target with comparand, if they are equal
+     * set value pointed to by target to value, otherwise do nothing.
+     * Returns initial value pointed to by target.
+     */
+    CS_FORCEINLINE
+    static int32 CompareAndSet (int32* target, int32 value,
+      int32 comparand)
+    {
+      return Threading::AtomicOperations::CompareAndSet (target, value, comparand);
+    }
+
+    /**
+     * Compare pointer pointed to by target with comparand, if they are equal
+     * set pointer pointed to by target to value, otherwise do nothing.
+     * Returns initial pointer pointed to by target.
+     */
+    template<typename T>
+    CS_FORCEINLINE
+    static void* CompareAndSet (T** target, T* value,
+      T* comparand)
+    {
+      return Threading::AtomicOperations::CompareAndSet ((void**)target,
+                                                         (void*)value,
+                                                         (void*)comparand);
+    }
+
+    /**
+     * Atomically increment value pointed to by target.
+     * Returns value after increment.
+     */
+    CS_FORCEINLINE
+    static int32 Increment (int32* target)
+    {
+      return Threading::AtomicOperations::Increment (target);
+    }
+
+    /**
+     * Atomically decrement value pointed to by target.
+     * Returns value after decrement.
+     */
+    CS_FORCEINLINE
+    static int32 Decrement (int32* target)
+    {
+      return Threading::AtomicOperations::Decrement (target);
+    }
+
+    /**
+     * Atomically read value pointed to by target.
+     */
+    CS_FORCEINLINE
+    static int32 Read (const int32* target)
+    {
+      return Threading::AtomicOperations::Read (const_cast<int32*> (target));
+    }
+
+    /**
+    * Atomically read pointer pointed to by target.
+    */
+    template<typename T>
+    CS_FORCEINLINE
+    static T* Read (T* const* target)
+    {
+      return (T*)Threading::AtomicOperations::Read ((void* const*)target);
+    }
+
+    /**
+     * Atomically set value pointed to by target to value
+     */
+    CS_FORCEINLINE
+    static void Write (int32* target, int32 value)
+    {
+      Threading::AtomicOperations::Write (target, value);
+    }
+
+    /**
+     * Atomically set value pointed to by target to value
+     */
+    template<typename T>
+    CS_FORCEINLINE
+    static void Write ( T** target, T* value)
+    {
+      Threading::AtomicOperations::Write ((void**)target, (void*)value);
+    }
+  } // namespace Atomic
+} // namespace CS
+
 #endif

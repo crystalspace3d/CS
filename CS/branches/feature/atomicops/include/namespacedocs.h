@@ -35,6 +35,12 @@ namespace CS
   {}
 
   /**
+   * Atomic operations
+   */
+  namespace Atomic
+  {}
+
+  /**
    * Checksums and message digests
    */
   namespace Checksum

@@ -33,12 +33,12 @@ namespace Threading
   class AtomicOperationsMSVC
   {
   public:
-    inline static int32 Set (int32* target, int32 value)
+    inline static int32 Swap (int32* target, int32 value)
     {
       return (int32)_InterlockedExchange ((long*)target, value);
     }
 
-    inline static void* Set (void** target, void* value)
+    inline static void* Swap (void** target, void* value)
     {
 #if CS_PROCESSOR_SIZE == 64
       return (void*)_InterlockedExchange64 ((__int64*)target, (__int64)value);

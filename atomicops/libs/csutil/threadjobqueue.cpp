@@ -64,7 +64,7 @@ namespace Threading
     // Kill all threads, friendly
     for(size_t i = 0; i < numWorkerThreads; ++i)
     {
-      CS::Threading::AtomicOperations::Set (
+      CS::Threading::AtomicOperations::Write (
 	&(allThreadState[i]->runnable->shutdownQueue), 0xff);    
       allThreadState[i]->tsNewJob.NotifyAll ();
     }

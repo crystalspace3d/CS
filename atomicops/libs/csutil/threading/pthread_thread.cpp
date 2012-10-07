@@ -60,7 +60,7 @@ namespace Implementation
       Barrier* startupBarrier = tp->startupBarrier;
 
       // Set as running and wait for main thread to catch up
-      AtomicOperations::Set (isRunningPtr, 1);
+      AtomicOperations::Write (isRunningPtr, 1);
       startupBarrier->Wait ();
 
     #ifdef CS_HAVE_PTHREAD_SETNAME_NP
@@ -76,7 +76,7 @@ namespace Implementation
       runnable->Run ();
 
       // Set as non-running
-      AtomicOperations::Set (isRunningPtr, 0);
+      AtomicOperations::Write (isRunningPtr, 0);
       
       return 0;
     }
@@ -115,7 +115,7 @@ namespace Implementation
       int res = pthread_cancel (threadHandle);
       if (res == 0)
       {
-        AtomicOperations::Set (&isRunning, 0);
+        AtomicOperations::Write (&isRunning, 0);
       }
     }
   }

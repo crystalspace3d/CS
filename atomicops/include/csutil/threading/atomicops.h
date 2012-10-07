@@ -40,18 +40,32 @@ namespace Threading
      * Set value pointed to by target to value and return previous value
      */
     CS_FORCEINLINE_TEMPLATEMETHOD
-    static int32 Set (int32* target, int32 value)
+    static int32 Swap (int32* target, int32 value)
     {
-      return Impl::Set (target, value);
+      return Impl::Swap (target, value);
     }
 
     /**
      * Set pointer pointed to by target to value and return previous value.
      */
     CS_FORCEINLINE_TEMPLATEMETHOD
+    static void* Swap ( void** target, void* value)
+    {
+      return Impl::Swap (target, value);
+    }
+
+    CS_DEPRECATED_METHOD_MSG("Use Swap() or Write()")
+    CS_FORCEINLINE_TEMPLATEMETHOD
+    static int32 Set (int32* target, int32 value)
+    {
+      return Swap (target, value);
+    }
+
+    CS_DEPRECATED_METHOD_MSG("Use Swap() or Write()")
+    CS_FORCEINLINE_TEMPLATEMETHOD
     static void* Set ( void** target, void* value)
     {
-      return Impl::Set (target, value);
+      return Swap (target, value);
     }
 
     /**
@@ -116,6 +130,25 @@ namespace Threading
       return Impl::CompareAndSet (
         const_cast<void**> (target), (void*)0, (void*)0);
     }
+
+    /**
+     * Atomically set value pointed to by target to value
+     */
+    CS_FORCEINLINE_TEMPLATEMETHOD
+    static void Write (int32* target, int32 value)
+    {
+      Impl::Swap (target, value);
+    }
+
+    /**
+     * Atomically set value pointed to by target to value
+     */
+    CS_FORCEINLINE_TEMPLATEMETHOD
+    static void Write ( void** target, void* value)
+    {
+      Impl::Swap (target, value);
+    }
+
   };
 }
 }

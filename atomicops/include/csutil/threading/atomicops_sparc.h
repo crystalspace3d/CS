@@ -28,7 +28,7 @@ namespace Threading
   class AtomicOperationsSparc
   {
   public:
-    inline static int32 Set (int32* target, int32 value)
+    inline static int32 Swap (int32* target, int32 value)
     {
       *const_cast<volatile int32*> (target) = value;
       __asm__ __volatile__
@@ -39,9 +39,9 @@ namespace Threading
       return value;
     }
 
-    inline static void* Set (void** target, void* value)
+    inline static void* Swap (void** target, void* value)
     {
-      return (void*)Set ((int32*)target, (int32)value);
+      return (void*)Swap ((int32*)target, (int32)value);
     }
 
     inline static int32 CompareAndSet (int32* target, int32 value,

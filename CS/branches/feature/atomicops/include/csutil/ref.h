@@ -257,10 +257,9 @@ public:
     CS_ASSERT_MSG ("csPtr<> was already assigned to a csRef<>",
       newobj.obj != (T*)CS_VOIDED_PTR);
 #   endif
-    T* oldobj = (T*)CS::Threading::AtomicOperations::Read ((void**)&obj);
+    T* oldobj = CS::Atomic::Read (&obj);
     // First assign and then DecRef() of old object!
-    if (CS::Threading::AtomicOperations::CompareAndSet ((void**)&obj,
-      newobj.obj, oldobj) == oldobj)
+    if (CS::Atomic::CompareAndSet (&obj, newobj.obj, oldobj) == oldobj)
     {
       CSREF_TRACK_DECREF (oldobj, this);
     }
@@ -290,15 +289,14 @@ public:
    */
   csRef& operator = (T* newobj)
   {
-    T* oldobj = (T*)CS::Threading::AtomicOperations::Read ((void**)&obj);
+    T* oldobj = CS::Atomic::Read (&obj);
     if (oldobj != newobj)
     {
       // It is very important to first assign the new value to
       // 'obj' BEFORE calling DecRef() on the old object. Otherwise
       // it is easy to get in infinite loops with objects being
       // destructed forever (when ref=0 is used for example).
-      if (CS::Threading::AtomicOperations::CompareAndSet ((void**)&obj,
-        newobj, oldobj) == oldobj)
+      if (CS::Atomic::CompareAndSet (&obj, newobj, oldobj) == oldobj)
       {
         CSREF_TRACK_INCREF (newobj, this);
         CSREF_TRACK_DECREF (oldobj, this);

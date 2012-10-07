@@ -28,7 +28,7 @@ namespace Threading
   class AtomicOperationsX86GCC
   {
   public:
-    inline static int32 Set (int32* target, int32 value)
+    inline static int32 Swap (int32* target, int32 value)
     {
       __asm__ __volatile__
       (
@@ -40,10 +40,10 @@ namespace Threading
       return value;
     }
 
-    inline static void* Set (void** target, void* value)
+    inline static void* Swap (void** target, void* value)
     {
 #if CS_PROCESSOR_SIZE == 32
-      return (void*)Set ((int32*)target, (int32)value);
+      return (void*)Swap ((int32*)target, (int32)value);
 #elif CS_PROCESSOR_SIZE == 64
       __asm__ __volatile__
       (

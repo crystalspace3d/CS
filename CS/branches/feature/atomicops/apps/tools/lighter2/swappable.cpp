@@ -251,7 +251,7 @@ namespace lighter
 
     // Set it to swapped in atomic
     int32 oldStatus = 
-      CS::Threading::AtomicOperations::Set (&e->swapStatus, SwapEntry::swappedIn);
+      CS::Threading::AtomicOperations::Swap (&e->swapStatus, SwapEntry::swappedIn);
     
     if (oldStatus == SwapEntry::swappedIn ||
       oldStatus == SwapEntry::swapping) 

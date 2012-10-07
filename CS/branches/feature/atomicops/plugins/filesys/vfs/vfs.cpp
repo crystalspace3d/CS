@@ -193,7 +193,7 @@ public:
   }
   void UpdateTime ()
   {
-    CS::Threading::AtomicOperations::Set (&LastUseTime, csGetTicks ());
+    CS::Threading::AtomicOperations::Write (&LastUseTime, csGetTicks ());
   }
   void IncRef ()
   {

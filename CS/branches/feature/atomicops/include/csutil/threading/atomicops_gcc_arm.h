@@ -48,7 +48,7 @@ namespace Threading
 
     public:
 
-    inline static int32 Set (int32* target, int32 value)
+    inline static int32 Swap (int32* target, int32 value)
     {
        while(Swpb(&AtomicLock, ~0) != 0);
        *target = value;
@@ -56,7 +56,7 @@ namespace Threading
        return value;
     }
 
-    inline static void* Set (void** target, void* value)
+    inline static void* Swap (void** target, void* value)
     {
        return (void*)Set ((int32*)target, (int32)value);
     }

@@ -304,7 +304,7 @@ namespace
       if (CS::Threading::AtomicOperations::Decrement (&remainingActions) == 0)
       {
         CS::Debug::VerifyAllMemory ();
-        CS::Threading::AtomicOperations::Set (&remainingActions, verifyFreq);
+        CS::Threading::AtomicOperations::Write (&remainingActions, verifyFreq);
       }
     }
     
@@ -413,7 +413,7 @@ namespace
       if (CS::Threading::AtomicOperations::Decrement (&remainingActions) == 0)
       {
         CS::Debug::VerifyAllMemory ();
-        CS::Threading::AtomicOperations::Set (&remainingActions, verifyFreq);
+        CS::Threading::AtomicOperations::Write (&remainingActions, verifyFreq);
       }
     }
   }

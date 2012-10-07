@@ -28,12 +28,12 @@ namespace Threading
   class CS_CRYSTALSPACE_EXPORT AtomicOperationsGenericGCC
   {
     public:
-    inline static int32 Set (int32* target, int32 value)
+    inline static int32 Swap (int32* target, int32 value)
     {
       return __sync_lock_test_and_set (target, value);
     }
 
-    inline static void* Set (void** target, void* value)
+    inline static void* Swap (void** target, void* value)
     {
       return __sync_lock_test_and_set (target, value);
     }

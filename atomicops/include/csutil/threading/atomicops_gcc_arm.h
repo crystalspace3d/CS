@@ -22,11 +22,14 @@
 
 #ifndef DOXYGEN_RUN
 
+#include "atomicops_simple.h"
+
 namespace CS
 {
 namespace Threading
 {
-  class CS_CRYSTALSPACE_EXPORT AtomicOperationsArmGCC
+  class CS_CRYSTALSPACE_EXPORT AtomicOperationsArmGCC :
+    public AtomicOperationsSimple<AtomicOperationsArmGCC>
   {
 
     private:

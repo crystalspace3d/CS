@@ -118,7 +118,7 @@ namespace Threading
     CS_FORCEINLINE_TEMPLATEMETHOD
     static int32 Read (const int32* target)
     {
-      return Impl::CompareAndSet (const_cast<int32*> (target), 0, 0);
+      return Impl::Read (const_cast<int32*> (target));
     }
 
     /**
@@ -127,8 +127,7 @@ namespace Threading
     CS_FORCEINLINE_TEMPLATEMETHOD
     static void* Read (void* const* target)
     {
-      return Impl::CompareAndSet (
-        const_cast<void**> (target), (void*)0, (void*)0);
+      return Impl::Read (const_cast<void**> (target));
     }
 
     /**
@@ -137,7 +136,7 @@ namespace Threading
     CS_FORCEINLINE_TEMPLATEMETHOD
     static void Write (int32* target, int32 value)
     {
-      Impl::Swap (target, value);
+      Impl::Write (target, value);
     }
 
     /**
@@ -146,7 +145,7 @@ namespace Threading
     CS_FORCEINLINE_TEMPLATEMETHOD
     static void Write ( void** target, void* value)
     {
-      Impl::Swap (target, value);
+      Impl::Write (target, value);
     }
 
   };

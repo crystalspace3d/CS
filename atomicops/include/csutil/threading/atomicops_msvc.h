@@ -21,6 +21,8 @@
 
 #ifndef DOXYGEN_RUN
 
+#include "atomicops_simple.h"
+
 namespace CS
 {
 namespace Threading
@@ -30,7 +32,8 @@ namespace Threading
 #pragma warning(disable: 4311)
 
   //Windows and MSVC, use intrinsics
-  class AtomicOperationsMSVC
+  class AtomicOperationsMSVC :
+    public AtomicOperationsSimple<AtomicOperationsMSVC>
   {
   public:
     inline static int32 Swap (int32* target, int32 value)

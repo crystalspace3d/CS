@@ -21,11 +21,14 @@
 
 #ifndef DOXYGEN_RUN
 
+#include "atomicops_simple.h"
+
 namespace CS
 {
 namespace Threading
 {
-  class AtomicOperationsX86GCC
+  class AtomicOperationsX86GCC :
+    public AtomicOperationsSimple<AtomicOperationsX86GCC>
   {
   public:
     inline static int32 Swap (int32* target, int32 value)

@@ -21,11 +21,14 @@
 
 #ifndef DOXYGEN_RUN
 
+#include "atomicops_simple.h"
+
 namespace CS
 {
 namespace Threading
 {
-  class CS_CRYSTALSPACE_EXPORT AtomicOperationsGenericGCC
+  class CS_CRYSTALSPACE_EXPORT AtomicOperationsGenericGCC :
+    public AtomicOperationsSimple<AtomicOperationsGenericGCC>
   {
     public:
     inline static int32 Swap (int32* target, int32 value)

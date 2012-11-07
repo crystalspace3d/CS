@@ -283,7 +283,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
    * Used to create a one-dimensional softbody
    */
   class BulletSoftRopeFactory : public scfVirtImplementationExt1<
-    BulletSoftBodyFactory, BulletSoftBodyFactory, CS::Physics::iSoftRopeFactory>
+    BulletSoftRopeFactory, BulletSoftBodyFactory, CS::Physics::iSoftRopeFactory>
   {
   protected:
     csVector3 start, end;

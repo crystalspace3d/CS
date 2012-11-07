@@ -201,7 +201,7 @@ bool PhysDemo::SetLevel(PhysDemoLevel level, bool convexDecomp)
     break;
 
   case PhysDemoLevelTerrain:
-    path = "/lev/terraini/worldmod";
+    path = "/lev/terraini/world";
     break;
 
   case PhysDemoLevelCastle:
@@ -321,7 +321,7 @@ void PhysDemo::SetupHUD()
     for (size_t i = 0; i < templ.GetSecondaryFunctions().GetSize(); ++i)
     {
       ItemFunction* func = templ.GetSecondaryFunction(i);
-      desc.Push (csString().Format(" %d: %s", i+1, func->GetName().GetData()));
+      desc.Push (csString().Format(" %zu: %s", i+1, func->GetName().GetData()));
     }
   }
   else
@@ -333,7 +333,7 @@ void PhysDemo::SetupHUD()
   for (size_t i = 0; i < player.GetInventory().GetItems().GetSize(); ++i)
   {
     Item* item = player.GetInventory().GetItem(i);
-    desc.Push (csString().Format(" F%d: %s", i+1, item->GetName()));
+    desc.Push (csString().Format(" F%zu: %s", i+1, item->GetName()));
   }
 }
 

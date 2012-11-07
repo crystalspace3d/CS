@@ -38,12 +38,9 @@
 struct iCameraPosition;
 
 // Some global variables
-
-
 static const csScalar DefaultDensity(300);
 static const csScalar DefaultFriction(.5);
 static const csScalar DefaultElasticity(0.1f);
-
 
 // Actor/Camera modes
 enum ActorMode
@@ -119,7 +116,9 @@ public:
   csRef<iMeshFactoryWrapper> MeshFactory;
 
   /// Creates a new RigidBody from the given collider and render mesh
-  csPtr<CS::Physics::iRigidBody> SpawnRigidBody(const csString& name, const csOrthoTransform& trans, csScalar friction = 1, csScalar density = 30);
+  csPtr<CS::Physics::iRigidBody> SpawnRigidBody
+    (const csString& name, const csOrthoTransform& trans,
+     csScalar friction = 1, csScalar density = 30);
 };
 
 //static const csVector3 ActorDimensions(0.8);
@@ -128,6 +127,8 @@ static const csVector3 ActorDimensions(0.3f, 1.8f, 0.3f);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
+  friend class RenderMeshColliderPair;
+
 public:
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
   csRef<iConvexDecomposer> convexDecomposer;

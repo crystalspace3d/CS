@@ -51,8 +51,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletCollisionObject::csBulletCollisionObject (csBulletSystem* sys)
     : scfImplementationType (this), portalWarp (btQuaternion::getIdentity ()), sector (nullptr),
-    system (sys), btObject (nullptr),
-    insideWorld (false), portalData(nullptr)
+    system (sys), portalData (nullptr), btObject (nullptr), insideWorld (false)
   {
   }
 

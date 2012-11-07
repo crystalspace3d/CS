@@ -86,7 +86,7 @@ namespace Physics
    */
   struct iPhysicalObjectFactory : public virtual CS::Collisions::iCollisionObjectFactory
   {
-    //SCF_INTERFACE (CS::Physics::iPhysicalObjectFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iPhysicalObjectFactory, 1, 0, 0);
 
     /// Get the PhysicalObjectType of the object whose data is stored in this properties object
     virtual PhysicalObjectType GetPhysicalObjectType () const = 0;
@@ -136,7 +136,7 @@ namespace Physics
    */
   struct iRigidBodyFactory : public virtual iPhysicalObjectFactory
   {
-    //SCF_INTERFACE (CS::Physics::iRigidBodyFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iRigidBodyFactory, 1, 0, 0);
 
     /// Create a rigid body
     // TODO: rename into CreateInstance ()
@@ -180,7 +180,7 @@ namespace Physics
    */
   struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
   {
-    //SCF_INTERFACE (CS::Physics::iSoftBodyFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iSoftBodyFactory, 1, 0, 0);
 
     /// Create a soft body
     virtual csPtr<iSoftBody> CreateSoftBody () = 0;
@@ -191,7 +191,7 @@ namespace Physics
    */
   struct iSoftRopeFactory : public virtual iSoftBodyFactory
   {
-    //SCF_INTERFACE (CS::Physics::iSoftRopeFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iSoftRopeFactory, 1, 0, 0);
 
     /// Get the start position of the rope
     virtual const csVector3& GetStart () const = 0;
@@ -214,7 +214,7 @@ namespace Physics
    */
   struct iSoftClothFactory : public virtual iSoftBodyFactory
   {
-    //SCF_INTERFACE (CS::Physics::iSoftClothFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iSoftClothFactory, 1, 0, 0);
 
     /// Get the four corners of the cloth
     virtual const csVector3* GetCorners () const = 0;
@@ -237,7 +237,7 @@ namespace Physics
    */
   struct iSoftMeshFactory : public virtual iSoftBodyFactory
   {
-    //SCF_INTERFACE (CS::Physics::iSoftMeshFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iSoftMeshFactory, 1, 0, 0);
 
     /// Get the factory that contains the mesh to define the softbody
     virtual iGeneralFactoryState* GetGenmeshFactory () const = 0;
@@ -251,7 +251,7 @@ namespace Physics
    */
   struct iDynamicActorFactory : public virtual iRigidBodyFactory
   {
-    //SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
 
     /// Create a dynamic actor
     virtual csPtr<iDynamicActor> CreateDynamicActor () = 0;

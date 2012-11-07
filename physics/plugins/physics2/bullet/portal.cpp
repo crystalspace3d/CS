@@ -376,8 +376,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csOrthoTransform objTrans(obj->GetTransform());
     csOrthoTransform cloneTrans(cloneObj->GetTransform());
     
-    const csVector3& pos = objTrans.GetOrigin();
-    const csVector3& clonePos = cloneTrans.GetOrigin();
+    //const csVector3& pos = objTrans.GetOrigin();
+    //const csVector3& clonePos = cloneTrans.GetOrigin();
 
     if (obj->QueryPhysicalBody())
     {

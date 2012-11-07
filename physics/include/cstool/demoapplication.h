@@ -152,7 +152,7 @@ class CS_CRYSTALSPACE_EXPORT DemoApplication : public csApplicationFramework,
   /// Image format of the screenshots
   csString screenshotFormat;
 
- public:
+ protected:
   /// Reference to the engine
   csRef<iEngine> engine;
   /// Reference to the loader
@@ -197,9 +197,6 @@ class CS_CRYSTALSPACE_EXPORT DemoApplication : public csApplicationFramework,
 
   /// Access to the configuration manager system
   csConfigAccess config;
-
-  /// The speed in m/s at which the actor can move
-  float actorSpeed;
 
   //-- csBaseEventHandler
   /**

@@ -36,15 +36,6 @@
 /// The scalar type to be used for physics (float is default, but can easily be changed to double)
 typedef float csScalar;
 
-// Some temporary stuff that has to be moved to a utility class or replaced by something entirely different:
-#define	SQRT2				1.41421356237f	
-
-/// 3D vector defined by Horizontal (2D) and Vertical (1D) components
-#define HV_VECTOR3(horizontal2, vertical1) csVector3((horizontal2).x, vertical1, (horizontal2).y)
-
-/// 2D horizontal components of the given 3D vector
-#define HORIZONTAL_COMPONENT(vec3) csVector2((vec3).x, (vec3).z);
-
 struct iTerrainSystem;
 struct iSector;
 struct iMeshWrapper;
@@ -67,14 +58,16 @@ static const csVector3 UpVector(0, 1, 0);
   */
   enum CollisionObjectType
   {
-    COLLISION_OBJECT_PHYSICAL = 0,
-    COLLISION_OBJECT_GHOST,
-    COLLISION_OBJECT_ACTOR,
-    COLLISION_OBJECT_END
+    //TODO: COLLISION_OBJECT_BASE = 0,
+    COLLISION_OBJECT_PHYSICAL = 0,       /*!< The collision object is a physical object. */
+    COLLISION_OBJECT_GHOST,              /*!< The collision object is a ghost. */
+    COLLISION_OBJECT_ACTOR,              /*!< The collision object is an actor. */
+    COLLISION_OBJECT_END                 /*!< Count of collision object types (probably to be removed). */
   };
 
   typedef short CollisionGroupMask;
 
+  /// \todo remove this
   enum CollisionGroupType
   {
     CollisionGroupTypeDefault =     0,
@@ -86,6 +79,7 @@ static const csVector3 UpVector(0, 1, 0);
     CollisionGroupTypeActor =       5
   };
 
+  /// \todo remove this
   enum CollisionGroupMaskValue
   {
     CollisionGroupMaskValueDefault =      0x0001,
@@ -100,6 +94,7 @@ static const csVector3 UpVector(0, 1, 0);
   /**
   * A structure of collision group. 
   * The objects in the group will not collide with each other.
+  * \todo Real group management, with transparent allocation of the masks
   */
   struct CollisionGroup
   {

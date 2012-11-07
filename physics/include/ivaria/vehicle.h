@@ -19,6 +19,10 @@
 #ifndef __IVARIA_VEHICLE__
 #define __IVARIA_VEHICLE__
 
+/**\file
+ * Physical vehicles
+ */
+
 #include "csutil/csobject.h"
 #include "csutil/array.h"
 #include "csutil/scf.h"
@@ -57,6 +61,9 @@ namespace CS
     struct iVehicle;
     struct iVehicleWheelFactory;
 
+    /**
+     * The wheel of a vehicle
+     */
     struct iVehicleWheel : public virtual iBase
     {
       SCF_INTERFACE (CS::Physics::iVehicleWheel, 1, 0, 0);
@@ -158,10 +165,14 @@ namespace CS
       virtual void SetRotation(csScalar r) = 0;
     };
 
+    /**
+     * The factory for the wheel of a vehicle
+     */
     struct iVehicleWheelFactory : public virtual iBase
     {
       SCF_INTERFACE (CS::Physics::iVehicleWheelFactory, 1, 0, 0);
-      ///// Creates a new wheel
+
+      /// Creates a new wheel
       //virtual csPtr<iVehicleWheel> CreateWheel() = 0;
 
       /// Collider of the wheel
@@ -258,7 +269,6 @@ namespace CS
     {
       SCF_INTERFACE (CS::Physics::iVehicleFactory, 1, 0, 0);
 
-
       /// Creates a new vehicle
       virtual csPtr<iVehicle> CreateVehicle(CS::Physics::iPhysicalSector* sector) = 0;
 
@@ -334,6 +344,9 @@ namespace CS
       const csArray<size_t>& GetAffectedWheelIndices() const { return affectedWheelIndices; }
     };
 
+    /**
+     * A physical vehicle
+     */
     struct iVehicle : public virtual iUpdatable
     {
       SCF_INTERFACE (CS::Physics::iVehicle, 1, 0, 0);

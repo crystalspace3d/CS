@@ -21,7 +21,7 @@
 #define __CS_IVARIA_COLLIDERS_H__
 
 /**\file
- * Collision interfaces
+ * Collision primitives interfaces
  */
 
 #include "csutil/scf.h"
@@ -60,18 +60,18 @@ namespace Collisions
  */
 enum ColliderType
 {
-COLLIDER_INVALID = 0,
-COLLIDER_BOX,
-COLLIDER_SPHERE,
-COLLIDER_CYLINDER,
-COLLIDER_CAPSULE,
-COLLIDER_CONE,
-COLLIDER_PLANE,
-COLLIDER_CONVEX_MESH,
-COLLIDER_CONCAVE_MESH,
-COLLIDER_CONCAVE_MESH_SCALED,
-COLLIDER_TERRAIN,
-COLLIDER_COMPOUND
+COLLIDER_INVALID = 0,              /*!< Undefined collider type. */
+COLLIDER_BOX,                      /*!< The collider is a box. */
+COLLIDER_SPHERE,                   /*!< The collider is a sphere. */
+COLLIDER_CYLINDER,                 /*!< The collider is a cylinder. */
+COLLIDER_CAPSULE,                  /*!< The collider is a capsule. */
+COLLIDER_CONE,                     /*!< The collider is a cone. */
+COLLIDER_PLANE,                    /*!< The collider is a plane. */
+COLLIDER_CONVEX_MESH,              /*!< The collider is a convex mesh. */
+COLLIDER_CONCAVE_MESH,             /*!< The collider is a concave mesh. */
+COLLIDER_CONCAVE_MESH_SCALED,      /*!< The collider is a scaled concave mesh. */
+COLLIDER_TERRAIN,                  /*!< The collider is a terrain. */
+COLLIDER_COMPOUND                  /*!< The collider is a compound collider. */
 };
 
 /**
@@ -104,10 +104,9 @@ struct iCollider : public virtual iBase
   virtual bool IsDynamic () const = 0;
 
   /// Get the frame of reference
-  virtual csOrthoTransform GetPrincipalAxisTransform() const = 0;
+  virtual csOrthoTransform GetPrincipalAxisTransform () const = 0;
   /// Set the frame of reference
-  virtual void SetPrincipalAxisTransform(const csOrthoTransform& trans) = 0;
-  
+  virtual void SetPrincipalAxisTransform (const csOrthoTransform& trans) = 0;
 
   /// Add a child collider, fixed relative to this collider.
   virtual void AddCollider (iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ()) = 0;
@@ -128,7 +127,7 @@ struct iCollider : public virtual iBase
   virtual size_t GetColliderCount () = 0;
 
   /// Returns the AABB of this shape, centered at it's center of mass (assuming uniform density)
-  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const = 0;
+  virtual void GetAABB (csVector3& aabbMin, csVector3& aabbMax) const = 0;
 };
 
 
@@ -145,6 +144,7 @@ struct iCollider : public virtual iBase
  * - iCollider
  * - iCollisionObject
  */
+// TODO: remove?
 struct iColliderCompound : public virtual iCollider
 {
   SCF_INTERFACE (CS::Collisions::iColliderCompound, 1, 0, 0);

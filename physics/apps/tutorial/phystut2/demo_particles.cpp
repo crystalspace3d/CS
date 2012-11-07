@@ -93,7 +93,7 @@ void PhysDemo::AddParticles(const csVector3& origin, float yFactor, int num)
 
   csRef<iParticleBuiltinEffectorForceWithCollisions> force = eff_factory->CreateForceWithCollisions(GetCurrentSector());
   //csRef<iParticleBuiltinEffectorForce> force = csPtr<iParticleBuiltinEffectorForce>(new ParticlePhysEffectorForce(GetCurrentSector()));
-  force->SetAcceleration(0);
+  force->SetAcceleration (csVector3(0.0f, -9.81f, 0.0f));
   force->SetRandomAcceleration (csVector3(1.5f, yFactor * 1.5f, 1.5f));
 
   csRef<iParticleSystem> partstate = scfQueryInterface<iParticleSystem> (exp->GetMeshObject());

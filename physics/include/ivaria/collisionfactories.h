@@ -20,7 +20,7 @@
 #define __CS_IVARIA_COLLISIONFACTORIES_H__
 
 /**\file
-* Collision interfaces
+* Collision factories interfaces
 */
 
 #include "ivaria/collisionscommon.h"
@@ -53,38 +53,56 @@ namespace Collisions
 
   struct CollisionGroup;
 
+  /**
+   * \todo Document me
+   */
   struct iCollisionObjectFactory : public virtual iBase
   {
+    //SCF_INTERFACE (CS::Collisions::iCollisionObjectFactory, 1, 0, 0);
+
     /// Return the underlying object
-    virtual iObject *QueryObject (void) = 0;
+    virtual iObject *QueryObject () = 0;
 
     /// Get the system of this factory
-    virtual iCollisionSystem* GetSystem() const = 0;
+    virtual iCollisionSystem* GetSystem () const = 0;
 
     /// Create a baby
-    virtual csPtr<iCollisionObject> CreateCollisionObject() = 0;
+    // TODO: rename into CreateInstance()
+    virtual csPtr<iCollisionObject> CreateCollisionObject () = 0;
 
     /// Get the collider of all objects that will be constructed with these properties
-    virtual iCollider* GetCollider() const = 0;
+    virtual iCollider* GetCollider () const = 0;
     /// Set the collider of all objects that will be constructed with these properties
-    virtual void SetCollider(iCollider* value)  = 0;
+    virtual void SetCollider (iCollider* value)  = 0;
 
     /// Get the collision group of all objects that will be constructed with these properties
-    virtual const CollisionGroup& GetCollisionGroup() const = 0;
+    virtual const CollisionGroup& GetCollisionGroup () const = 0;
     /// Set the collision group of all objects that will be constructed with these properties
-    virtual void SetCollisionGroup(const CollisionGroup& value)  = 0;
+    virtual void SetCollisionGroup (const CollisionGroup& value)  = 0;
   };
 
+  /**
+   * \todo Document me
+   */
   struct iGhostCollisionObjectFactory : public virtual iCollisionObjectFactory
   {
+    //SCF_INTERFACE (CS::Collisions::iGhostCollisionObjectFactory, 1, 0, 0);
+
     /// Create a baby
-    virtual csPtr<iGhostCollisionObject> CreateGhostCollisionObject() = 0;
+    // TODO: rename into CreateInstance()
+    virtual csPtr<iGhostCollisionObject> CreateGhostCollisionObject () = 0;
   };
 
+  /**
+   * \todo Document me
+   */
   struct iCollisionActorFactory : public virtual iGhostCollisionObjectFactory
   {
+    //SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
+
     /// Create a baby
-    virtual csPtr<iCollisionActor> CreateCollisionActor() = 0;
+    // TODO: rename into CreateInstance()
+    virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
 
     /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const = 0;

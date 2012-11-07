@@ -19,7 +19,7 @@
 #ifndef __CS_BULLET_VEHICLE_H__
 #define __CS_BULLET_VEHICLE_H__
 
-#include "ivaria/ivehicle.h"
+#include "ivaria/vehicle.h"
 #include "rigidbody2.h"
 
 #include "BulletDynamics/Vehicle/btRaycastVehicle.h"

@@ -153,8 +153,8 @@ void PhysDemo::MoveActor()
           if (!IsGravityOff())
           {
             // Only walk horizontally when gravity applies
-            csVector2 newVel2 = HORIZONTAL_COMPONENT(newVel);
-            player.GetActor()->WalkHorizontal(newVel2);
+            csVector2 newVel2 (newVel.x, newVel.z);
+            player.GetActor ()->WalkHorizontal (newVel2);
             //dynamicActor->Walk(newVel);
           }
           else
@@ -233,13 +233,13 @@ void PhysDemo::RotateActor()
     }
     
     csVector3 actorDir3 = actorTrans.GetT2O().Col3();
-    csVector2 actorDir2 = HORIZONTAL_COMPONENT(actorDir3);
+    csVector2 actorDir2 (actorDir3.x, actorDir3.z);
 
     // Update actor yaw
     if (yaw)
     {
       actorDir2.Rotate(yaw);
-      actorDir3 = HV_VECTOR3(actorDir2, 0);
+      actorDir3.Set(actorDir2.x, 0, actorDir2.y);
       actorTrans.LookAt(actorDir3, UpVector);
       player.GetObject()->SetTransform(actorTrans);
     }
@@ -263,17 +263,17 @@ void PhysDemo::RotateActor()
       }
       
       // Set horizontal camera direction equal to actor direction, scaled correspondingly
-      csVector2 camDir2 = HORIZONTAL_COMPONENT(camDir3);
+      csVector2 camDir2 (camDir3.x, camDir3.z);
       actorDir2.Normalize();
       actorDir2 *= camDir2.Norm();
-      camDir3 = HV_VECTOR3(actorDir2, currentPitchCos);
+      camDir3.Set(actorDir2.x, currentPitchCos, actorDir2.y);
 
       // Update camera pitch
       if (pitch)
       {
         actorDir2.Normalize();
         actorDir2.Rotate(HALF_PI);
-        csVector3 camOrth3 = HV_VECTOR3(actorDir2, 0);
+        csVector3 camOrth3 (actorDir2.x, 0, actorDir2.y);
         
         // rotate by quaternion
         csQuaternion q;

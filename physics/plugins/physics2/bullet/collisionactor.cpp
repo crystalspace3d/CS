@@ -103,11 +103,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       // cannot entirely control movement mid-air
       newVel2 = airControlFactor * newVel2;
-      newVel2 += (1.f - airControlFactor) * HORIZONTAL_COMPONENT(vel);
+      csVector2 horizontalVel (vel.x, vel.z);
+      newVel2 += (1.f - airControlFactor) * csVector2 (vel.x, vel.z);
     }
     
     // previous vertical movement is unchanged
-    csVector3 newVel = HV_VECTOR3(newVel2, vel[UpAxis]);
+    csVector3 newVel (newVel2.x, vel[UpAxis], newVel2.y);
     
     controller->setVelocityForTimeInterval(CSToBullet(newVel, system->getInternalScale()), csScalar(INT_MAX));
   }

@@ -20,7 +20,7 @@
 #define __IVARIA_PHYSICSFACTORIESH__
 
 /**\file
-* Physics interfaces
+* Physics factories interfaces
 */
 
 #include "csutil/scf.h"
@@ -74,6 +74,7 @@ namespace Physics
   */
   enum PhysicalObjectType
   {
+    // TODO: remove that initialization
     PHYSICAL_OBJECT_RIGIDBODY = CS::Collisions::COLLISION_OBJECT_END,
     PHYSICAL_OBJECT_SOFTYBODY,
     PHYSICAL_OBJECT_DYNAMICACTOR,
@@ -85,28 +86,30 @@ namespace Physics
    */
   struct iPhysicalObjectFactory : public virtual CS::Collisions::iCollisionObjectFactory
   {
+    //SCF_INTERFACE (CS::Physics::iPhysicalObjectFactory, 1, 0, 0);
+
     /// Get the PhysicalObjectType of the object whose data is stored in this properties object
-    virtual PhysicalObjectType GetPhysicalObjectType() const = 0;
+    virtual PhysicalObjectType GetPhysicalObjectType () const = 0;
 
     /// Get the density of all objects that will be constructed by this factory
-    virtual float GetDensity() const = 0;
+    virtual float GetDensity () const = 0;
     /// Set the density of all objects that will be constructed by this factory
-    virtual void SetDensity(float value) = 0;
+    virtual void SetDensity (float value) = 0;
     
     /// Get the mass of all objects that will be constructed by this factory
-    virtual float GetMass() const = 0;
+    virtual float GetMass () const = 0;
     /// Set the mass of all objects that will be constructed by this factory
-    virtual void SetMass(float value) = 0;
+    virtual void SetMass (float value) = 0;
 
     /// Set the friction of all objects that will be constructed by this factory
-    virtual void SetFriction(float value) = 0;
+    virtual void SetFriction (float value) = 0;
     /// Get the friction of all objects that will be constructed by this factory
-    virtual float GetFriction() const = 0;
+    virtual float GetFriction () const = 0;
     
     /// Whether this object is affected by gravity
-    virtual bool GetGravityEnabled() const = 0;
+    virtual bool GetGravityEnabled () const = 0;
     /// Whether this object is affected by gravity
-    virtual void SetGravityEnabled(bool enabled) = 0;
+    virtual void SetGravityEnabled (bool enabled) = 0;
   };
 
   // TODO: There are a lot more configurable parameters - See btRigidBodyConstructionInfo:
@@ -133,7 +136,11 @@ namespace Physics
    */
   struct iRigidBodyFactory : public virtual iPhysicalObjectFactory
   {
-    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody() = 0;
+    //SCF_INTERFACE (CS::Physics::iRigidBodyFactory, 1, 0, 0);
+
+    /// Create a rigid body
+    // TODO: rename into CreateInstance ()
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody () = 0;
 
     /// Set the elasticity of this rigid body.
     virtual void SetElasticity (float value) = 0;
@@ -173,7 +180,10 @@ namespace Physics
    */
   struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
   {
-    virtual csPtr<iSoftBody> CreateSoftBody() = 0;
+    //SCF_INTERFACE (CS::Physics::iSoftBodyFactory, 1, 0, 0);
+
+    /// Create a soft body
+    virtual csPtr<iSoftBody> CreateSoftBody () = 0;
   };
 
   /**
@@ -181,17 +191,22 @@ namespace Physics
    */
   struct iSoftRopeFactory : public virtual iSoftBodyFactory
   {
-    /// Start position of the rope
-    virtual const csVector3& GetStart() const = 0;
-    virtual void SetStart(const csVector3& v) = 0;
+    //SCF_INTERFACE (CS::Physics::iSoftRopeFactory, 1, 0, 0);
+
+    /// Get the start position of the rope
+    virtual const csVector3& GetStart () const = 0;
+    /// Set the start position of the rope
+    virtual void SetStart (const csVector3& v) = 0;
     
-    /// End position of the rope
-    virtual const csVector3& GetEnd() const = 0;
-    virtual void SetEnd(const csVector3& v) = 0;
+    /// Get the end position of the rope
+    virtual const csVector3& GetEnd () const = 0;
+    /// Set the end position of the rope
+    virtual void SetEnd (const csVector3& v) = 0;
     
-    /// Amount of nodes along the rope
-    virtual size_t GetNodeCount() const = 0;
-    virtual void SetNodeCount(size_t c) = 0;
+    /// Get the amount of nodes along the rope
+    virtual size_t GetNodeCount () const = 0;
+    /// Set the amount of nodes along the rope
+    virtual void SetNodeCount (size_t c) = 0;
   };
 
   /**
@@ -199,19 +214,22 @@ namespace Physics
    */
   struct iSoftClothFactory : public virtual iSoftBodyFactory
   {
+    //SCF_INTERFACE (CS::Physics::iSoftClothFactory, 1, 0, 0);
+
     /// Get the four corners of the cloth
-    virtual const csVector3* GetCorners() const = 0;
+    virtual const csVector3* GetCorners () const = 0;
     /// Set the four corners of the cloth
-    virtual void SetCorners(csVector3 corners[4]) = 0;
+    virtual void SetCorners (csVector3 corners[4]) = 0;
 
     /// Get the two segment counts along the two primary axes
-    virtual void GetSegmentCounts(size_t& count1, size_t& count2) const = 0;
+    virtual void GetSegmentCounts (size_t& count1, size_t& count2) const = 0;
     /// Set the two segment counts along the two primary axes
-    virtual void SetSegmentCounts(size_t count1, size_t count2) = 0;
+    virtual void SetSegmentCounts (size_t count1, size_t count2) = 0;
     
-    /// Whether there must be diagonal segments in the cloth
-    virtual bool GetWithDiagonals() const = 0;
-    virtual void SetWithDiagonals(bool d) = 0;
+    /// Get whether there must be diagonal segments in the cloth
+    virtual bool GetWithDiagonals () const = 0;
+    /// Set whether there must be diagonal segments in the cloth
+    virtual void SetWithDiagonals (bool d) = 0;
   };
   
   /**
@@ -219,17 +237,24 @@ namespace Physics
    */
   struct iSoftMeshFactory : public virtual iSoftBodyFactory
   {
+    //SCF_INTERFACE (CS::Physics::iSoftMeshFactory, 1, 0, 0);
+
     /// Get the factory that contains the mesh to define the softbody
-    virtual iGeneralFactoryState* GetGenmeshFactory() const = 0;
+    virtual iGeneralFactoryState* GetGenmeshFactory () const = 0;
     /// Set the factory that contains the mesh to define the softbody
-    virtual void SetGenmeshFactory(iGeneralFactoryState* s) = 0;
+    virtual void SetGenmeshFactory (iGeneralFactoryState* s) = 0;
 
   };
 
-
+  /**
+   * Used to create a dynamic actor
+   */
   struct iDynamicActorFactory : public virtual iRigidBodyFactory
   {
-    virtual csPtr<iDynamicActor> CreateDynamicActor() = 0;
+    //SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
+
+    /// Create a dynamic actor
+    virtual csPtr<iDynamicActor> CreateDynamicActor () = 0;
 
     /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const = 0;
@@ -252,10 +277,11 @@ namespace Physics
     virtual void SetAirControlFactor (float f) = 0;
     
     /// Get whether to use a kinematic method for smooth steps
-    virtual bool GetUseKinematicSteps() const = 0;
+    virtual bool GetUseKinematicSteps () const = 0;
     /// Set whether to use a kinematic method for smooth steps
-    virtual void SetUseKinematicSteps(bool u) = 0;
+    virtual void SetUseKinematicSteps (bool u) = 0;
   };
+
 }
 }
 #endif

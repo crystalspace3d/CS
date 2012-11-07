@@ -58,7 +58,7 @@ namespace Collisions
    */
   struct iCollisionObjectFactory : public virtual iBase
   {
-    //SCF_INTERFACE (CS::Collisions::iCollisionObjectFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Collisions::iCollisionObjectFactory, 1, 0, 0);
 
     /// Return the underlying object
     virtual iObject *QueryObject () = 0;
@@ -86,7 +86,7 @@ namespace Collisions
    */
   struct iGhostCollisionObjectFactory : public virtual iCollisionObjectFactory
   {
-    //SCF_INTERFACE (CS::Collisions::iGhostCollisionObjectFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Collisions::iGhostCollisionObjectFactory, 1, 0, 0);
 
     /// Create a baby
     // TODO: rename into CreateInstance()
@@ -98,7 +98,7 @@ namespace Collisions
    */
   struct iCollisionActorFactory : public virtual iGhostCollisionObjectFactory
   {
-    //SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
+    SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
 
     /// Create a baby
     // TODO: rename into CreateInstance()
@@ -124,6 +124,7 @@ namespace Collisions
     /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
     virtual void SetAirControlFactor (float f) = 0;
   };
+
 } 
 }
 #endif

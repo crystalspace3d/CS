@@ -178,8 +178,7 @@ bool TextHUDManager::HandleEvent (iEvent& event)
 
     if (keyDescriptions->GetSize () > maxKeys)
     {
-      // TODO: No key should ever be hardcoded ever
-      //WriteShadow (margin, y, fontColor, "F1: more keys");
+      WriteShadow (margin, y, fontColor, "F1: more keys");
       y += lineSize;
     }
   }

@@ -111,8 +111,6 @@ public:
   virtual csOrthoTransform GetTransform () const;
   virtual void SetRotation (const csMatrix3& rot);
   virtual void Rotate (const csVector3& v, float angle);
-  virtual void IncreaseYaw(float yawDelta);
-  virtual void IncreasePitch(float pitchDelta);
   
   /// Returns the AABB of this object, centered at it's center of mass
   virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;

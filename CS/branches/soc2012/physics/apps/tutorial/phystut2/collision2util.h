@@ -44,6 +44,7 @@ struct iConvexDecomposedColliderResult
   virtual void YieldCollider(CS::Collisions::iCollider* collider);
 };
 
+// TODO: move in the cstool lib
 class Collision2Helper
 {
 public:
@@ -65,6 +66,7 @@ public:
     iConvexDecomposer* decomposer = nullptr);
 
   /// Perform convex decomposition on the given trimesh and compound the result meshes into a single collider
+  // TODO: merge within the convex decomposition plugin
   static csPtr<CS::Collisions::iColliderCompound> PerformConvexDecomposition(
   CS::Collisions::iCollisionSystem* colSys,
   iConvexDecomposer* decomposer,

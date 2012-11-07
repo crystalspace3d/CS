@@ -36,7 +36,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   static const btVector3 BTUpVector(CSToBullet(UpVector, 1));
   static const csScalar AddedMargin = csScalar(0.02);
 
-
   csBulletActorMotionState::csBulletActorMotionState(csBulletRigidBody* body,
     const btTransform& initialTransform,
     const btTransform& principalAxis) :
@@ -147,12 +146,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       // cannot entirely control movement mid-air
       csScalar realAirFactor = airControlFactor * sector->GetWorldTimeStep();
       newVel2 = realAirFactor * newVel2;
-      newVel2 += (1.f - realAirFactor) * HORIZONTAL_COMPONENT(vel);
+      newVel2 += (1.f - realAirFactor) * csVector2 (vel.x, vel.z);
     }
 
     // previous vertical movement is unchanged
-    csVector3 newVel = HV_VECTOR3(newVel2, vel[UpAxis]);
-    SetLinearVelocity(newVel);
+    csVector3 newVel (newVel2.x, vel[UpAxis], newVel2.y);
+    SetLinearVelocity (newVel);
   }
 
   /// Applies an upward impulse to this actor, and an inverse impulse to objects beneath

@@ -19,6 +19,10 @@
 #ifndef __CS_IVARIA_PHYSICSCOMMON_H__
 #define __CS_IVARIA_PHYSICSCOMMON_H__
 
+/**\file
+ * \todo: Document or remove me
+ */
+
 #include "csutil/scf.h"
 #include "csutil/csstring.h"
 #include "csgeom/vector2.h"
@@ -45,7 +49,8 @@ namespace CS
     struct iPhysicalSector;
 
     /**
-    * Custom code to be called upon every step
+     * Custom code to be called upon every step
+     * \todo probably to be removed
     */
     struct iUpdatable : public virtual iBase
     {
@@ -54,20 +59,20 @@ namespace CS
       /**
        * Method is called before every step, given "dt" seconds have passed since the beginning of the last step.
        */
-      virtual void PreStep(csScalar dt) = 0;
+      virtual void PreStep (csScalar dt) = 0;
       /**
        * Method is called after every step, given "dt" seconds have passed since the beginning of the last step.
        */
-      virtual void PostStep(csScalar dt) = 0;
+      virtual void PostStep (csScalar dt) = 0;
 
       /// The collision object associated with this updatable (if any)
-      virtual CS::Collisions::iCollisionObject* GetCollisionObject() = 0;
+      virtual CS::Collisions::iCollisionObject* GetCollisionObject () = 0;
 
       /// Called when updatable is added to the given sector
-      virtual void OnAdded(iPhysicalSector* sector) = 0;
+      virtual void OnAdded (iPhysicalSector* sector) = 0;
 
       /// Called when updatable is removed from the given sector
-      virtual void OnRemoved(iPhysicalSector* sector) = 0;
+      virtual void OnRemoved (iPhysicalSector* sector) = 0;
     };
   }
 }

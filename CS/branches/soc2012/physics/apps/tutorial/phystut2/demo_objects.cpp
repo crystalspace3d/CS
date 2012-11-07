@@ -1265,8 +1265,8 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   csVector3 pos = GetCameraPosition(); GetPointOnGroundBeneathPos(pos, pos);    // move to ground
   csVector3 dir = GetCameraDirection();
   
-  csVector2 pos2 = HORIZONTAL_COMPONENT(pos);
-  csVector2 dir2 = HORIZONTAL_COMPONENT(dir);
+  csVector2 pos2 (pos.x, pos.z);
+  csVector2 dir2 (dir.x, dir.z);
   csVector2 dirOrth2 = dir2;
   dirOrth2.Rotate(HALF_PI);
   
@@ -1298,7 +1298,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   {
     for (int z = 0; z < numDir && n < stackNum; ++z)
     {
-      csVector3 boxPos = HV_VECTOR3(boxPos2, pos[UpAxis]);
+      csVector3 boxPos (boxPos2.x, pos[UpAxis], boxPos2.y);
       boxPos += (.5f * (1 + vSpacingFactor) * boxLen) * UpVector;
       for (int i = 0; i < stackHeight; ++i)
       {

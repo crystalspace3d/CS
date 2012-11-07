@@ -78,9 +78,9 @@ struct iVehicleWheelInfo;
  */
 enum RigidBodyState
 {
-  STATE_STATIC = 0,
-  STATE_DYNAMIC,
-  STATE_KINEMATIC
+  STATE_STATIC = 0,    /*!< The body is in the static state. */
+  STATE_DYNAMIC,       /*!< The body is in the dynamic state. */
+  STATE_KINEMATIC      /*!< The body is in the kinematic state. */
 };
 
 /**
@@ -104,7 +104,7 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   SCF_INTERFACE (CS::Physics::iPhysicalBody, 1, 0, 1);
 
   /// Whether this is a rigid or soft body object
-  virtual bool IsPhysicalObject() const { return true; }
+  virtual bool IsPhysicalObject () const { return true; }
 
   /// Get the type of this physical body.
   virtual PhysicalObjectType GetPhysicalObjectType () const = 0;
@@ -165,7 +165,7 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
    * Get whether this object is dynamic.
    * Dynamic objects are moved by dynamics simulation.
    */
-  virtual bool IsDynamic() const = 0;
+  virtual bool IsDynamic () const = 0;
 
   /**
    * Set the friction of this body.
@@ -176,11 +176,10 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   /// Get the friction of this body.
   virtual float GetFriction () const = 0;
 
-  
   /// Whether this object is affected by gravity
-  virtual void SetGravityEnabled(bool enabled) = 0;
+  virtual void SetGravityEnabled (bool enabled) = 0;
   /// Whether this object is affected by gravity
-  virtual bool GetGravityEnabled() const = 0;
+  virtual bool GetGravityEnabled () const = 0;
 };
 
 /**
@@ -280,7 +279,7 @@ struct iRigidBody : public virtual iPhysicalBody
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa iDynamicSystem::SetLinearDamping()
+   * \sa iDynamicSystem::SetLinearDamping ()
    */
   virtual void SetLinearDamping (float d) = 0;
 
@@ -288,7 +287,7 @@ struct iRigidBody : public virtual iPhysicalBody
   virtual float GetLinearDamping () = 0;
 
   /**
-   * Set the angular Damping for this rigid body. The dampening correspond to
+   * Set the angular damping for this rigid body. The dampening correspond to
    * how much the movements of the objects will be reduced. It is a value
    * between 0 and 1, giving the ratio of speed that will be reduced
    * in one second. 0 means that the movement will not be reduced, while
@@ -297,11 +296,16 @@ struct iRigidBody : public virtual iPhysicalBody
    */
   virtual void SetAngularDamping (float d) = 0;
 
-  /// Get the angular Damping for this rigid body.
+  /// Get the angular damping for this rigid body.
   virtual float GetAngularDamping () = 0;
   
-  virtual csVector3 GetAngularFactor() const = 0;
-  virtual void SetAngularFactor(const csVector3& f) = 0;
+  /// Get the angular factor for this rigid body.
+  virtual csVector3 GetAngularFactor () const = 0;
+  /**
+   * Set the angular factor for this rigid body.
+   * \todo Document me
+   */
+  virtual void SetAngularFactor (const csVector3& f) = 0;
 };
 
 /**
@@ -311,11 +315,11 @@ struct iRigidBody : public virtual iPhysicalBody
  *
  * \warning This feature uses a hack around the physical simulation of soft bodies
  * and may not always be stable. Use it at your own risk.
- * \sa CS::Physics::iSoftBody::AnchorVertex(size_t,iAnchorAnimationControl)
+ * \sa CS::Physics::iSoftBody::AnchorVertex (size_t,iAnchorAnimationControl)
  */
 struct iAnchorAnimationControl : public virtual iBase
 {
-  SCF_INTERFACE(CS::Physics::iAnchorAnimationControl, 1, 0, 0);
+  SCF_INTERFACE (CS::Physics::iAnchorAnimationControl, 1, 0, 0);
 
   /**
    * Return the new position of the anchor, in world coordinates.
@@ -383,7 +387,7 @@ struct iSoftBody : public virtual iPhysicalBody
    * rigid body. This can be used to have a finer control of the anchor position
    * relatively to the rigid body.
    *
-   * This would work only if you called AnchorVertex(size_t,iRigidBody*) before.
+   * This would work only if you called AnchorVertex (size_t,iRigidBody*) before.
    * The position to be provided is in world coordinates.
    *
    * \warning The stability of the simulation can be lost if you move the position too far
@@ -414,7 +418,7 @@ struct iSoftBody : public virtual iPhysicalBody
   virtual void SetWindVelocity (const csVector3& velocity) = 0;
 
   /// Get the wind velocity of the whole body.
-virtual const csVector3 GetWindVelocity () const = 0;
+  virtual const csVector3 GetWindVelocity () const = 0;
 
   /// Add a force at the given vertex of the body.
   virtual void AddForce (const csVector3& force, size_t vertexIndex) = 0;
@@ -532,7 +536,7 @@ virtual const csVector3 GetWindVelocity () const = 0;
   virtual void GenerateCluster (int iter) = 0;
 
   /// Count of all nodes
-  virtual size_t GetNodeCount() const = 0;
+  virtual size_t GetNodeCount () const = 0;
 
   /// The linear velocity of the given node
   virtual csVector3 GetLinearVelocity (size_t nodeIndex) const = 0;
@@ -543,6 +547,7 @@ virtual const csVector3 GetWindVelocity () const = 0;
 /**
  * General helper class for CS::Physics::Bullet::iSoftBody.
  */
+// TODO: move in a lib tool class
 struct SoftBodyHelper
 {
   /**
@@ -767,7 +772,7 @@ struct iJoint : public virtual iBase
   virtual bool RebuildJoint () = 0;
 
   /// Set this joint to a spring joint.
-  virtual void SetSpring(bool isSpring, bool forceUpdate = false) = 0;
+  virtual void SetSpring (bool isSpring, bool forceUpdate = false) = 0;
 
   /// Set the linear stiffness of the spring.
   virtual void SetLinearStiffness (csVector3 stiff, bool forceUpdate = false) = 0;
@@ -840,7 +845,6 @@ struct iKinematicCallback : public virtual iBase
  * \sa CS::Collisions::iCollisionSystem
  */
 struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
- //public virtual iBase
 {
   SCF_INTERFACE (CS::Physics::iPhysicalSystem, 1, 0, 0);
   
@@ -906,17 +910,27 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    * Create a pivot joint to attach to a rigid body to a position in world space
    * in order to manipulate it.
    */
-  virtual csPtr<iJoint> CreateRigidPivotJoint (iRigidBody* body, const csVector3 position) = 0;
+  virtual csPtr<iJoint> CreateRigidPivotJoint
+    (iRigidBody* body, const csVector3 position) = 0;
   
 
   // Factories
   
-  virtual csPtr<iRigidBodyFactory> CreateRigidBodyFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+  /// Create a rigid body factory
+  virtual csPtr<iRigidBodyFactory> CreateRigidBodyFactory
+    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
 
-  virtual csPtr<iDynamicActorFactory> CreateDynamicActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") = 0;
+  /// Create a dynamic actor factory
+  virtual csPtr<iDynamicActorFactory> CreateDynamicActorFactory
+    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") = 0;
 
+  /// Create a soft rope factory
   virtual csPtr<iSoftRopeFactory> CreateSoftRopeFactory () = 0;
+
+  /// Create a soft cloth factory
   virtual csPtr<iSoftClothFactory> CreateSoftClothFactory () = 0;
+
+  /// Create a soft mesh factory
   virtual csPtr<iSoftMeshFactory> CreateSoftMeshFactory () = 0;
   
 
@@ -936,7 +950,7 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 
 
   /// Resets the entire system and deletes all sectors
-  virtual void DeleteAll() = 0;
+  virtual void DeleteAll () = 0;
 };
 
 /**
@@ -983,7 +997,7 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * in one second. 0 means that the movement will not be reduced, while
    * 1 means that the object will not move.
    * The default value is 0.
-   * \sa CS::Physics::iRigidBody::SetLinearDamping()
+   * \sa CS::Physics::iRigidBody::SetLinearDamping ()
    */
   virtual void SetLinearDamping (csScalar d) = 0;
 
@@ -1038,7 +1052,6 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
 
   /// Find  the soft body in this setor.
   virtual iSoftBody* FindSoftBody (const char* name) = 0;
-
 
   /// Add a joint to the sector. The joint must have attached two physical bodies.
   virtual void AddJoint (iJoint* joint) = 0;
@@ -1105,12 +1118,12 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
   /**
    * Will cause the step function to be called on this updatable every step
    */
-  virtual void AddUpdatable(iUpdatable* u) = 0;
+  virtual void AddUpdatable (iUpdatable* u) = 0;
   
   /**
    * Removes the given updatable
    */
-  virtual void RemoveUpdatable(iUpdatable* u) = 0;
+  virtual void RemoveUpdatable (iUpdatable* u) = 0;
 };
 
 /**
@@ -1190,7 +1203,7 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
    *
    * This anchor is only effective if the vertex of the animesh is influenced by more
    * than one bone or by some morph targets. If it is not the case then it is more
-   * efficient to simply use CS::Physics::iSoftBody::AnchorVertex(size_t,iRigidBody*).
+   * efficient to simply use CS::Physics::iSoftBody::AnchorVertex (size_t,iRigidBody*).
    *
    * You have to provide a rigid body attached to the animesh as a main physical anchor
    * point. The main way to do that is to use a CS::Animation::iSkeletonRagdollNode
@@ -1226,7 +1239,7 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
 
 
 /**
- * TODO: This class should have a common base interface with iCollisionActor
+ * \todo This class should have a common base interface with iCollisionActor
  * 
  * This is the interface for a Dynamic Actor.
  * It allows the user to easily navigate a physical object on ground.
@@ -1240,17 +1253,18 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
  * 
  * Main users of this interface:
  * - iPhysicalSector
- *
+ * \todo All actor classes should be merged around a common abstract interface
  */
 struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions::iActor
 {
   SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
 
   /// Get whether to use a kinematic method for smooth steps
-  virtual bool GetUseKinematicSteps() const = 0;
+  virtual bool GetUseKinematicSteps () const = 0;
   /// Set whether to use a kinematic method for smooth steps
-  virtual void SetUseKinematicSteps(bool u) = 0;
+  virtual void SetUseKinematicSteps (bool u) = 0;
 };
+
 }
 }
 #endif

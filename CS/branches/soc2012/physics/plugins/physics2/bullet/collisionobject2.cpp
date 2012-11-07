@@ -295,16 +295,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  void csBulletCollisionObject::IncreasePitch(float pitchDelta)
-  {
-    Rotate(CS_VEC_TILT_UP, pitchDelta);
-  }
-
-  void csBulletCollisionObject::IncreaseYaw(float yawDelta)
-  {
-    Rotate (CS_VEC_ROT_RIGHT, yawDelta);
-  }
-
   bool csBulletCollisionObject::TestOnGround()
   { 
     static const float groundAngleCosThresh = .7f;

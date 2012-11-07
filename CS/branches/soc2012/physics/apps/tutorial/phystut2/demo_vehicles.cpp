@@ -31,13 +31,9 @@
 #include "csutil/floatrand.h"
 #include "physdemo.h"
 
-#include "ivaria/colliders.h"
-#include "ivaria/ivehicle.h"
-
 using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
-
 
 /// The available brakes
 static VehicleBrakeInfo FrontBrake, RearBrake, HandBrake;
@@ -46,7 +42,7 @@ static VehicleBrakeInfo FrontBrake, RearBrake, HandBrake;
 static VehicleSteeringDevice SteeringWheel;
 
 
-// ##############################################################################################################################
+// #######################################################################
 // Default vehicle parameters:
 
 static const csScalar SteeringIncrement(csScalar(.04));
@@ -124,8 +120,7 @@ const static csScalar ActorBailSideSpeed(3);
 void AddWheel(iVehicleFactory* vehicleFact, int axleN, int inAxleN);
 
 
-
-// ##############################################################################################################################
+// #######################################################################
 // Create & setup vehicles
 
 csPtr<iVehicle> PhysDemo::CreateVehicle()
@@ -236,9 +231,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   return csPtr<iVehicle>(vehicle);
 }
 
-
-
-// ##############################################################################################################################
+// #######################################################################
 // Steering, acceleration and braking
 
 void PhysDemo::MoveActorVehicle()
@@ -283,7 +276,7 @@ void PhysDemo::UpdateVehiclePassengers()
 }
 
 
-// ##############################################################################################################################
+// #######################################################################
 // Enter & Exit vehicle
 
 void PhysDemo::EnterTargetVehicle()
@@ -335,8 +328,8 @@ void PhysDemo::LeaveCurrentVehicle()
   {
     if (!GetPointOnGroundBeneathPos(pos, pos)) pos = actorTrans.GetOrigin();
   }
-  actorTrans.SetOrigin(pos + HV_VECTOR3(csVector2(0), ActorDimensions[UpAxis]));   // place above terrain
-  actorTrans.SetT2O(csMatrix3());                                                  // no rotation
+  actorTrans.SetOrigin(pos + csVector3 (0.0f, ActorDimensions[UpAxis], 0.0f));   // place above terrain
+  actorTrans.SetT2O(csMatrix3());                                                // no rotation
   actorObj->SetTransform(actorTrans);
 
   if (actorObj->QueryPhysicalBody())
@@ -355,7 +348,7 @@ void PhysDemo::LeaveCurrentVehicle()
 
 }
 
-// ##############################################################################################################################
+// #######################################################################
 // Spawn & Delete Vehicle
 
 void PhysDemo::SpawnVehicle()
@@ -388,7 +381,7 @@ void PhysDemo::DeleteTargetVehicle()
   GetCurrentSector()->RemoveUpdatable(vehicle);
 }
 
-// ##############################################################################################################################
+// #######################################################################
 // Do stuff to vehicle
 
 void PhysDemo::AccelerateTargetVehicle()
@@ -400,7 +393,8 @@ void PhysDemo::AccelerateTargetVehicle()
 }
 
 
-// ##############################################################################################################################
+// #######################################################################
+
 // Vehicle Utilities
 
 

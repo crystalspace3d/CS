@@ -25,9 +25,9 @@
 #include "cstool/demoapplication.h"
 
 #include "ivaria/collisions.h"
-#include "ivaria/physics.h"
-#include "ivaria/ivehicle.h"
 #include "ivaria/convexdecompose.h"
+#include "ivaria/physics.h"
+#include "ivaria/vehicle.h"
 
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"

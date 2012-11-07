@@ -30,7 +30,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
  /**
   * TODO: IsMovingUp
   */
-class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,  csBulletGhostCollisionObject,  CS::Collisions::iCollisionActor>
+class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,
+    csBulletGhostCollisionObject, CS::Collisions::iCollisionActor>
 {
   csKinematicActorController* controller;
   csScalar airControlFactor;

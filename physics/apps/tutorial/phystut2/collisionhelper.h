@@ -20,8 +20,8 @@
  * Utility class for any kind of collision system
  */
 
-#ifndef __COLLISION2UTIL_H
-#define __COLLISION2UTIL_H
+#ifndef __CS_CSTOOL_COLLISIONHELPER_H
+#define __CS_CSTOOL_COLLISIONHELPER_H
 
 #include "csextern.h"
 
@@ -45,33 +45,42 @@ struct iConvexDecomposedColliderResult
 };
 
 // TODO: move in the cstool lib
-class Collision2Helper
+class CS_CRYSTALSPACE_EXPORT CollisionHelper 
 {
+  iObjectRegistry* objectRegistry;
+  CS::Collisions::iCollisionSystem* collisionSystem;
+  csStringID baseID;
+  csStringID collisionID;
+
 public:
+  /// Initialize this collision helper
+  // TODO: set convex decomposer as a param too
+  void Initialize (iObjectRegistry* objectRegistry,
+		   CS::Collisions::iCollisionSystem* collisionSystem);
+
   /// Creates and adds all collision objects of all meshes in the given engine to the collision system
-  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iEngine* engine, 
-    iConvexDecomposer* decomposer = nullptr, 
-    iCollection* collection = nullptr);
+  void InitializeCollisionObjects (iEngine* engine, 
+				   iConvexDecomposer* decomposer = nullptr, 
+				   iCollection* collection = nullptr);
   
   /// Creates and adds all collision objects of all meshes in the given sector to the collision system
-  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys,
-    iSector* sector, 
-    iConvexDecomposer* decomposer = nullptr, 
-    iCollection* collection = nullptr);
+  void InitializeCollisionObjects (iSector* sector, 
+				   iConvexDecomposer* decomposer = nullptr, 
+				   iCollection* collection = nullptr);
 
   /// Recursively creates and adds all collision objects of the mesh and it's children to the collision system
-  static void InitializeCollisionObjects (CS::Collisions::iCollisionSystem* colsys, iSector* sector, 
-    iMeshWrapper* mesh, 
-    iConvexDecomposer* decomposer = nullptr);
+  void InitializeCollisionObjects (iSector* sector, 
+				   iMeshWrapper* mesh, 
+				   iConvexDecomposer* decomposer = nullptr);
 
-  /// Perform convex decomposition on the given trimesh and compound the result meshes into a single collider
-  // TODO: merge within the convex decomposition plugin
-  static csPtr<CS::Collisions::iColliderCompound> PerformConvexDecomposition(
-  CS::Collisions::iCollisionSystem* colSys,
-  iConvexDecomposer* decomposer,
-  iTriangleMesh* concaveMesh);
+  /// Tries to find and return the underlying collision iTriangleMesh that has any of this system's ids
+  iTriangleMesh* FindCollisionMesh (iMeshWrapper* mesh);
+
+  /// Perform convex decomposition on the given concave trimesh and compound the result meshes into a single collider
+  // TODO: merge into the convex decomposition plugin
+  csPtr<CS::Collisions::iColliderCompound> PerformConvexDecomposition (
+    iConvexDecomposer* decomposer,
+    iTriangleMesh* concaveMesh);
 };
 
-
-#endif
+#endif // __CS_CSTOOL_COLLISIONHELPER_H

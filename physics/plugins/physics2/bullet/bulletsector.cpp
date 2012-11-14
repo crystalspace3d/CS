@@ -19,7 +19,7 @@
 
 #include "cssysdef.h"
 //#include "ivaria/reporter.h"
-#include "ivaria/softanim.h"
+#include "imesh/softanim.h"
 #include "imesh/animesh.h"
 #include "iengine/scenenode.h"
 #include "iengine/movable.h"
@@ -171,7 +171,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     // first re-activate all objects
     for (size_t i = 0; i < collisionObjects.GetSize(); ++i)
     {
-      if (collisionObjects[i]->IsPhysicalObject() && collisionObjects[i]->QueryPhysicalBody()->IsDynamic())
+      if (collisionObjects[i]->GetObjectType () == COLLISION_OBJECT_PHYSICAL
+	  && collisionObjects[i]->QueryPhysicalBody ()->IsDynamic ())
       {
         collisionObjects[i]->btObject->activate(true);
       }
@@ -249,19 +250,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       collisionObjects.Delete (collObject);
       RemoveSceneNodeFromSector (object->GetAttachedSceneNode());
 
-      if (collObject->IsPhysicalObject())
+      iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
+      if (phyBody->QueryRigidBody())
       {
-        iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
-        if (phyBody->QueryRigidBody())
-        {
-          rigidBodies.Delete(dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
-        }
-        else
-        {
-          csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ());
-          softBodies.Delete(btBody);
-          RemoveUpdatable(btBody);
-        }
+	rigidBodies.Delete(dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
+      }
+      else
+      {
+	csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ());
+	softBodies.Delete(btBody);
+	RemoveUpdatable(btBody);
       }
     }
   }
@@ -519,7 +517,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     PointContactResult result(sys, collisions);
 
     csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
-    if (collObject->IsPhysicalObject())
+    if (collObject->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
     {
       bulletWorld->contactTest (collObject->btObject, result);
     }
@@ -812,9 +810,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       csRef<iGeneralMeshState> meshState =
         scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
 
-      // Why is this happening here?
-      csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
-        scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
+      // TODO: manage that from the animation controller
+      csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
+        scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
 
       if (!animationControl->GetSoftBody ())
         animationControl->SetSoftBody (body);
@@ -1070,14 +1068,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         btCollisionObject* obB =
           static_cast<btCollisionObject*> (contactManifold->getBody1 ());
 
-        csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obA->getUserPointer ()));
-        csBulletCollisionObject* csCOB = dynamic_cast <csBulletCollisionObject*> (static_cast<CS::Collisions::iCollisionObject*>(obB->getUserPointer ()));
+        csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*>
+	  (static_cast<CS::Collisions::iCollisionObject*>(obA->getUserPointer ()));
+        csBulletCollisionObject* csCOB = dynamic_cast <csBulletCollisionObject*>
+	  (static_cast<CS::Collisions::iCollisionObject*>(obB->getUserPointer ()));
 
-        if (csCOA && csCOA->IsPhysicalObject())
+        if (csCOA && csCOA->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
           if (csCOA->contactObjects.Contains (csCOB) == csArrayItemNotFound)
             csCOA->contactObjects.Push (csCOB);
 
-        if (csCOB && csCOB->IsPhysicalObject())
+        if (csCOB && csCOB->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
           if (csCOB->contactObjects.Contains (csCOA) == csArrayItemNotFound)
             csCOB->contactObjects.Push (csCOA);
       }

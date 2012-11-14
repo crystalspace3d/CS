@@ -77,7 +77,7 @@ csPtr<Item> ItemMgr::CreateItem(ItemTemplate& templ)
   return csPtr<Item>(item);
 }
 
-ItemTemplate& ItemMgr::CreateTemplate(const csString& name)
+ItemTemplate& ItemMgr::CreateTemplate(const char* name)
 {
   size_t i = Templates.GetSize();
   Templates.SetSize(i + 1);
@@ -85,33 +85,4 @@ ItemTemplate& ItemMgr::CreateTemplate(const csString& name)
   templ.index = i;
   templ.name = name;
   return templ;
-}
-
-
-ProjectileTemplate::ProjectileTemplate(csScalar speed) :
-speed(speed)
-{
-
-}
-
-bool ProjectileLauncher::Use(Item* item)
-{
-  // TODO: Find ammunition in inventory
-  
-  csReversibleTransform trans = item->GetFullTransform();
-
-  csVector3 forward = trans.GetT2O() * csVector3(0, 0, 1);
-  forward.Normalize();
-  
-  // Get starting point and velocity of projectile
-  //const csVector3& from(trans.GetOrigin());
-  //csVector3 velocity = GetProjectileTemplate().GetSpeed() * forward;
-  
-  // TODO: Create projectile object & RigidBody
-
-  // TODO: Fire! 
-  
-  // TODO: Keep track of trajectory using continuous collision detection
-  
-  return false;
 }

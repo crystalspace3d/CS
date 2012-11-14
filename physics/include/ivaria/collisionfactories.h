@@ -66,13 +66,14 @@ namespace Collisions
     /// Get the system of this factory
     virtual iCollisionSystem* GetSystem () const = 0;
 
-    /// Create a baby
-    // TODO: rename into CreateInstance()
+    /// Create an instance
+    // TODO: rename into CreateInstance()?
     virtual csPtr<iCollisionObject> CreateCollisionObject () = 0;
 
     /// Get the collider of all objects that will be constructed with these properties
     virtual iCollider* GetCollider () const = 0;
     /// Set the collider of all objects that will be constructed with these properties
+    // TODO: need a root transform
     virtual void SetCollider (iCollider* value)  = 0;
 
     /// Get the collision group of all objects that will be constructed with these properties
@@ -88,7 +89,7 @@ namespace Collisions
   {
     SCF_INTERFACE (CS::Collisions::iGhostCollisionObjectFactory, 1, 0, 0);
 
-    /// Create a baby
+    /// Create an instance
     // TODO: rename into CreateInstance()
     virtual csPtr<iGhostCollisionObject> CreateGhostCollisionObject () = 0;
   };
@@ -100,7 +101,7 @@ namespace Collisions
   {
     SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
 
-    /// Create a baby
+    /// Create an instance
     // TODO: rename into CreateInstance()
     virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
 

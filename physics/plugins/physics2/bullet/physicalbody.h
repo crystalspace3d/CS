@@ -24,11 +24,8 @@
 
 #include "ivaria/physics.h"
 
-//enum PhysicalObjectType;
-
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-//using CS::Physics::iPhysicalBody;
 
   /**
   * Class extended by csBulletRigidBody and csBulletSoftBody
@@ -40,30 +37,32 @@ class csPhysicalBody : public scfVirtImplementationExt1<
   friend class csBulletSystem;
   
 protected:
+  // TODO: mass should probably be stored instead of density
   btScalar density;
 
-  void CreatePhysicalBodyObject(CS::Physics::iPhysicalObjectFactory* props);
+  void CreatePhysicalBodyObject (CS::Physics::iPhysicalObjectFactory* props);
 
 public:
   csPhysicalBody (csBulletSystem* sys);
-  virtual ~csPhysicalBody();
+  virtual ~csPhysicalBody ();
 
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return this;}
   
-  virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_PHYSICAL;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const
+  { return CS::Collisions::COLLISION_OBJECT_PHYSICAL; }
 
   virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const = 0;
-  virtual bool IsDynamic() const { return true; }
-
   virtual CS::Physics::iRigidBody* QueryRigidBody () = 0;
   virtual CS::Physics::iSoftBody* QuerySoftBody () = 0;
+
+  virtual bool IsDynamic() const { return true; }
 
   virtual bool Disable ();
   virtual bool Enable ();
   virtual bool IsEnabled ();
 
-  virtual void SetFriction (float friction) { btObject->setFriction(friction); }
-  virtual float GetFriction () const {return btObject->getFriction();}
+  virtual void SetFriction (float friction) { btObject->setFriction (friction); }
+  virtual float GetFriction () const {return btObject->getFriction ();}
 
   virtual void SetMass (float mass) = 0;
   virtual float GetMass () const = 0;
@@ -76,16 +75,15 @@ public:
 
   virtual void SetAngularVelocity (const csVector3& vel) = 0;
   virtual csVector3 GetAngularVelocity () const = 0;
-
   
   /// Whether this object is affected by gravity
-  virtual bool GetGravityEnabled() const { return true; }
+  virtual bool GetGravityEnabled () const { return true; }
   /// Whether this object is affected by gravity
-  virtual void SetGravityEnabled(bool enabled) {}
+  virtual void SetGravityEnabled (bool enabled) {}
 
   virtual void AddForce (const csVector3& force) = 0;
   
-  virtual csPtr<CS::Collisions::iCollisionObject> ClonePassivePortalObject();
+  virtual csPtr<CS::Collisions::iCollisionObject> ClonePassivePortalObject ();
 };
 
 }

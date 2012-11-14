@@ -80,7 +80,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   utf32_char code = csKeyEventHelper::GetCookedCode (&event);
   if (code >= '1' && code <= '9')
   {
-    // An number key has been pressed -> Use tool function
+    // A number key has been pressed -> Use the tool function
     if (selectedItem)
     {
       size_t i = size_t(code - '1');

@@ -335,5 +335,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       trans = children->transforms[index];
     }
   }
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

@@ -25,21 +25,21 @@ using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csPhysicalBody::CreatePhysicalBodyObject(iPhysicalObjectFactory* props)
+  void csPhysicalBody::CreatePhysicalBodyObject (iPhysicalObjectFactory* props)
   {
-    CreateCollisionObject(props);
+    CreateCollisionObject (props);
 
-    if (props->GetDensity())
+    if (props->GetDensity ())
     {
-      SetDensity(props->GetDensity());
+      SetDensity (props->GetDensity ());
     }
     else
     {
-      SetMass(props->GetMass());
+      SetMass (props->GetMass ());
     }
 
-    SetFriction(props->GetFriction());
-    SetGravityEnabled(props->GetGravityEnabled());
+    SetFriction (props->GetFriction ());
+    SetGravityEnabled (props->GetGravityEnabled ());
   }
 
 csPhysicalBody::csPhysicalBody (csBulletSystem* phySys)
@@ -56,7 +56,7 @@ bool csPhysicalBody::Disable ()
   CS_ASSERT (btObject);
   SetLinearVelocity (csVector3 (0.0f));
   SetAngularVelocity (csVector3 (0.0f));
-  btObject->setInterpolationWorldTransform (btObject->getWorldTransform());
+  btObject->setInterpolationWorldTransform (btObject->getWorldTransform ());
   btObject->setActivationState (ISLAND_SLEEPING);
   return true;
 }
@@ -75,14 +75,14 @@ bool csPhysicalBody::IsEnabled ()
 }
 
 
-csPtr<CS::Collisions::iCollisionObject> csPhysicalBody::ClonePassivePortalObject() 
+csPtr<CS::Collisions::iCollisionObject> csPhysicalBody::ClonePassivePortalObject () 
 { 
-  csRef<iPhysicalBody> obj = scfQueryInterface<iPhysicalBody>(csRef<iCollisionObject>(CloneObject()));
+  csRef<iPhysicalBody> obj = scfQueryInterface<iPhysicalBody>(csRef<iCollisionObject>(CloneObject ()));
 
   if (obj)
   {
     // disable gravity for cloned objects
-    obj->SetGravityEnabled(false);
+    obj->SetGravityEnabled (false);
   }
 
   return csPtr<iCollisionObject>(obj);

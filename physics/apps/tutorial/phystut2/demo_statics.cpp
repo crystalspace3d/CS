@@ -30,14 +30,11 @@
 #include "cstool/materialbuilder.h"
 #include "physdemo.h"
 
-#include "collision2util.h"
-
 #include "iengine/campos.h"
 
 const static csScalar StaticElasticity(csScalar(0.1));
 
 const csString DefaultSectorName("defaultsector");
-
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -266,15 +263,12 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
 }
 
-bool PhysDemo::LoadLevel(const csString& pathname, bool convexDecomp)
+bool PhysDemo::LoadLevel(const char* pathname, bool convexDecomp)
 {
-  CS_ASSERT(pathname.Length());
-
   csString folder, filename;
-  GetFolderAndFile(pathname, folder, filename);
+  GetFolderAndFile (pathname, folder, filename);
 
-  const csString& levelname = pathname;
-  printf ("Loading level: %s...\n", levelname.GetData());
+  printf ("Loading level: %s...\n", pathname);
 
   // Load the level file
   csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
@@ -282,26 +276,26 @@ bool PhysDemo::LoadLevel(const csString& pathname, bool convexDecomp)
   VFS->PushDir();
   if (!VFS->ChDir (folder.GetData()))
   {
-    ReportError("ERROR: Couldn't find directory \"%s\" for level: %s", folder.GetData(), levelname.GetData());
+    ReportError("ERROR: Couldn't find directory \"%s\" for level: %s", folder.GetData(), pathname);
     return false;
   }
 
   if (!loader->LoadMapFile (filename, false))
   {
-    ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename.GetData(), levelname.GetData());
+    ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename.GetData(), pathname);
     return false;
   }
   VFS->PopDir();
   
   // create physical world from render world
-  Collision2Helper::InitializeCollisionObjects(physicalSystem, engine, convexDecomp ? &*convexDecomposer : nullptr);
+  collisionHelper.InitializeCollisionObjects (engine, convexDecomp ? &*convexDecomposer : nullptr);
 
   // Set default sector
   room = engine->GetSectors()->Get(0);
 
   CS_ASSERT(room && "Invalid level - Has no sectors.");
 
-  printf ("Done - level loaded: %s\n", levelname.GetData());
+  printf ("Done - level loaded: %s\n", pathname);
   return true;
 }
 

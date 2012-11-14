@@ -23,6 +23,7 @@
 #include "cssysdef.h"
 #include "csutil/weakref.h"
 #include "cstool/demoapplication.h"
+#include "collisionhelper.h"
 
 #include "ivaria/collisions.h"
 #include "ivaria/convexdecompose.h"
@@ -32,6 +33,7 @@
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
 #include "imesh/modifiableterrain.h"
+#include "imesh/softanim.h"
 
 #include "agent.h"
 
@@ -41,6 +43,11 @@ struct iCameraPosition;
 static const csScalar DefaultDensity(300);
 static const csScalar DefaultFriction(.5);
 static const csScalar DefaultElasticity(0.1f);
+
+static const int UpAxis = 1;
+static const int HorizontalAxis1 = 0;
+static const int HorizontalAxis2 = 2;
+static const csVector3 UpVector(0, 1, 0);
 
 // Actor/Camera modes
 enum ActorMode
@@ -89,8 +96,9 @@ static const int KeyHandbrake = CSKEY_SPACE;
 class PhysDemo;
 
 /// Retreives folder and file information from a full (unix-style) path
-inline void GetFolderAndFile(const csString& path, csString& folder, csString& filename)
+inline void GetFolderAndFile(const char* _path, csString& folder, csString& filename)
 {
+  const csString path (_path);
   size_t index = path.FindLast ('/');
   if (index != (size_t) -1)
   {
@@ -117,7 +125,7 @@ public:
 
   /// Creates a new RigidBody from the given collider and render mesh
   csPtr<CS::Physics::iRigidBody> SpawnRigidBody
-    (const csString& name, const csOrthoTransform& trans,
+    (const char* name, const csOrthoTransform& trans,
      csScalar friction = 1, csScalar density = 30);
 };
 
@@ -130,10 +138,11 @@ class PhysDemo : public CS::Utility::DemoApplication
   friend class RenderMeshColliderPair;
 
 public:
+  CollisionHelper collisionHelper;
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
   csRef<iConvexDecomposer> convexDecomposer;
 
-  csRef<CS::Physics::iSoftBodyAnimationControlType> softBodyAnimationType;
+  csRef<CS::Animation::iSoftBodyAnimationControlType> softBodyAnimationType;
 
   csRef<iGenMeshAnimationControlFactory> softBodyAnimationFactory;
   bool isSoftBodyWorld;
@@ -252,14 +261,14 @@ public:
   void CreateBoxRoom(csScalar size = 100);
   
   /// Load a scene from file
-  bool LoadLevel(const csString& filepath, bool convexDecomp = false);
+  bool LoadLevel(const char* filepath, bool convexDecomp = false);
 
   void CreateGhostCylinder();
   void ApplyGhostSlowEffect();
 
   /// Creates a new rigid body, places it at the given pos and, optionally, gives it some initial momentum
   csRef<CS::Physics::iRigidBody> SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos, 
-    const csString& name, csScalar friction = 1, csScalar density = 30, bool setVelocity = false);
+    const char* name, csScalar friction = 1, csScalar density = 30, bool setVelocity = false);
 
 
   // particles
@@ -453,7 +462,7 @@ public:
   /// Reset the current scene and setup the given level
   bool SetLevel(PhysDemoLevel level, bool convexDecomp = false);
   /// Reset the current scene and setup the given level
-  bool SetLevel(const csString& pathname, bool convexDecomp = false);
+  bool SetLevel(const char* pathname, bool convexDecomp = false);
 
   /// Get the iModifiableDataFeeder of the first terrain that has one in the given sector (if any)
   iModifiableDataFeeder* GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector);

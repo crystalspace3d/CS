@@ -241,12 +241,11 @@ float csBulletColliderPlane::ComputeShapeVolume() const
   return 0;
 }
 
-
-
 // #######################################################################################################
 // Convex Mesh
 
-csBulletColliderConvexMesh::csBulletColliderConvexMesh (iMeshWrapper* mesh, iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify)
+csBulletColliderConvexMesh::csBulletColliderConvexMesh
+(iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify)
   : scfImplementationType (this), mesh (mesh)
 {
   collSystem = sys;
@@ -308,14 +307,10 @@ float csBulletColliderConvexMesh::ComputeShapeVolume() const
   if (!mesh) 
     return volume;
 
-  csRef<iTriangleMesh> triMesh = collSystem->FindColdetTriangleMesh (mesh);
-  if (!triMesh)
-    return volume;
+  size_t triangleCount = mesh->GetTriangleCount ();
 
-  size_t triangleCount = triMesh->GetTriangleCount ();
-
-  csTriangle *c_triangle = triMesh->GetTriangles ();
-  csVector3 *c_vertex = triMesh->GetVertices ();
+  csTriangle *c_triangle = mesh->GetTriangles ();
+  csVector3 *c_vertex = mesh->GetVertices ();
   csVector3 origin = c_vertex[c_triangle[0].a];
 
   float vol = 0.0f;
@@ -333,16 +328,14 @@ float csBulletColliderConvexMesh::ComputeShapeVolume() const
   return vol;
 }
 
-
-
 // #######################################################################################################
 // Concave Mesh
 
-csBulletColliderConcaveMesh::csBulletColliderConcaveMesh (iMeshWrapper* mesh, btTriangleMesh* triMesh, csBulletSystem* sys)
-  : scfImplementationType (this), mesh(mesh), triMesh (triMesh)
+csBulletColliderConcaveMesh::csBulletColliderConcaveMesh (iTriangleMesh* mesh, btTriangleMesh* triMesh, csBulletSystem* sys)
+  : scfImplementationType (this), mesh (mesh), triMesh (triMesh)
 {
   collSystem = sys;
-  btBvhTriangleMeshShape* treeShape = new btBvhTriangleMeshShape (triMesh,true);
+  btBvhTriangleMeshShape* treeShape = new btBvhTriangleMeshShape (triMesh, true);
   treeShape->recalcLocalAabb();
   shape = treeShape;
   margin = 0.04 * collSystem->getInverseInternalScale ();
@@ -370,14 +363,13 @@ float csBulletColliderConcaveMesh::ComputeShapeVolume() const
 
   //return aabbExtents.x() * aabbExtents.y() * aabbExtents.z();
   
-  csRef<iTriangleMesh> itriMesh = collSystem->FindColdetTriangleMesh (mesh);
-  if (!itriMesh)
-    return 0;
+  if (!mesh) return 0.0f;
 
-  size_t triangleCount = itriMesh->GetTriangleCount ();
+  // TODO: using the indices of the btTriangleMesh would be both more efficient and accurate
+  size_t triangleCount = mesh->GetTriangleCount ();
 
-  csTriangle *c_triangle = itriMesh->GetTriangles ();
-  csVector3 *c_vertex = itriMesh->GetVertices ();
+  csTriangle *c_triangle = mesh->GetTriangles ();
+  csVector3 *c_vertex = mesh->GetVertices ();
   csVector3 origin = c_vertex[c_triangle[0].a];
 
   float vol = 0.0f;
@@ -387,6 +379,7 @@ float csBulletColliderConcaveMesh::ComputeShapeVolume() const
     csVector3 b = c_vertex[c_triangle[i].b] - origin;
     csVector3 c = c_vertex[c_triangle[i].c] - origin;
     csVector3 d;
+    // TODO: is internal scale used?
     d.Cross (b, c);
     vol += btFabs (a * d);
   }

@@ -32,9 +32,9 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  static const csScalar DefaultGroundAngleCosThresh = csScalar(0.7);             // min cos of angle between ground and up-axis (45 degrees)
-  static const btVector3 BTUpVector(CSToBullet(UpVector, 1));
-  static const csScalar AddedMargin = csScalar(0.02);
+  static const csScalar DefaultGroundAngleCosThresh = csScalar(0.7f);             // min cos of angle between ground and up-axis (45 degrees)
+  static const btVector3 BTUpVector(CSToBullet(csVector3 (0.0f, 1.0f, 0.0f), 1));
+  static const csScalar AddedMargin = csScalar(0.02f);
 
   csBulletActorMotionState::csBulletActorMotionState(csBulletRigidBody* body,
     const btTransform& initialTransform,
@@ -150,7 +150,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
 
     // previous vertical movement is unchanged
-    csVector3 newVel (newVel2.x, vel[UpAxis], newVel2.y);
+    csVector3 newVel (newVel2.x, vel[1], newVel2.y);
     SetLinearVelocity (newVel);
   }
 
@@ -159,7 +159,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     // apply upward impulse to actor
     csVector3 vel = GetLinearVelocity();
-    vel[UpAxis] += GetJumpSpeed();
+    vel[1] += GetJumpSpeed();
     SetLinearVelocity(vel);
 
     // Apply inverse of impulse to objects beneath.
@@ -169,7 +169,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     // split inverse of impulse between all objects
    /* csScalar touchedGroundObjectCountInv = 1.f / touchedGroundObjectCount;
-    vel[UpAxis] = -GetJumpSpeed() * touchedGroundObjectCountInv;
+    vel[1] = -GetJumpSpeed() * touchedGroundObjectCountInv;
     vel[HorizontalAxis1] = -vel[HorizontalAxis1] * touchedGroundObjectCountInv;
     vel[HorizontalAxis2] = -vel[HorizontalAxis2] * touchedGroundObjectCountInv;
 
@@ -298,7 +298,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     // we went up by stepHeight during the stepUp routine, and what goes up must come down!
     btVector3 targetPosition = currentPosition;
-    BulletVectorComponent(targetPosition, UpAxis) -= stepHeight;
+    BulletVectorComponent(targetPosition, 1) -= stepHeight;
 
     start.setIdentity ();
     end.setIdentity ();

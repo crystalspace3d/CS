@@ -70,7 +70,7 @@ public:
 
   virtual iObject* QueryObject () { return (iObject*) this; }
 
-  //iCollisionObject
+  //-- iCollisionObject
   virtual void RebuildObject ();
 
   virtual void SetCollider (CS::Collisions::iCollider* collider);
@@ -85,13 +85,14 @@ public:
 
   virtual void SetTransform (const csOrthoTransform& trans);
 
-  //iPhysicalBody
-  
-  virtual bool IsDynamicPhysicalObject() const { return physicalState != CS::Physics::STATE_DYNAMIC; }
+  //-- iPhysicalBody
+  virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const
+  { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
+  virtual iRigidBody* QueryRigidBody () { return dynamic_cast<iRigidBody*> (this); }
+  virtual iSoftBody* QuerySoftBody () { return nullptr; }
 
-  virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY;}
-  virtual iRigidBody* QueryRigidBody () {return dynamic_cast<iRigidBody*> (this);}
-  virtual iSoftBody* QuerySoftBody () {return dynamic_cast<iSoftBody*> (this);}
+  virtual bool IsDynamic () const
+  { return physicalState == CS::Physics::STATE_DYNAMIC; }
 
   virtual void SetMass (btScalar mass);
   virtual btScalar GetMass () const;
@@ -111,15 +112,12 @@ public:
   virtual csVector3 GetLinearVelocity () const;
   virtual void SetLinearVelocity (const csVector3& vel);
   
-  virtual bool IsDynamic() const { return GetState() == CS::Physics::STATE_DYNAMIC; }
-
-  //iRigidBody
+  //-- iRigidBody
   virtual CS::Physics::RigidBodyState GetState () const {return physicalState;}
   virtual bool SetState (CS::Physics::RigidBodyState state);
 
   virtual void SetElasticity (float elasticity);
   virtual float GetElasticity ();
-
 
   virtual void SetAngularVelocity (const csVector3& vel);
   virtual csVector3 GetAngularVelocity () const;
@@ -163,14 +161,12 @@ public:
   /// Whether this object can be affected by gravity
   virtual void SetGravityEnabled(bool enabled);
 
-  
   // Some convinience methods:
 
   /// Whether gravity is currently affecting this object
   bool DoesGravityApply() const;
   
   bool IsMovingUpward() const;
-
 };
 
 class csBulletDefaultKinematicCallback : public scfImplementation1<

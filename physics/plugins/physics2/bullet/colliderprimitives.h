@@ -184,20 +184,20 @@ class csBulletColliderConvexMesh:
   public scfVirtImplementationExt1<csBulletColliderConvexMesh,
   csBulletCollider, CS::Collisions::iColliderConvexMesh>
 {
-  csRef<iMeshWrapper> mesh;
+  csRef<iTriangleMesh> mesh;
 
 protected:
   virtual float ComputeShapeVolume() const;
   
 public:
-  csBulletColliderConvexMesh (iMeshWrapper* mesh, iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify);
+  csBulletColliderConvexMesh (iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify);
   csBulletColliderConvexMesh (btConvexHullShape* shape, float volume, csBulletSystem* sys);
 
   virtual ~csBulletColliderConvexMesh ();
   virtual CS::Collisions::ColliderType GetColliderType () const
  {return CS::Collisions::COLLIDER_CONVEX_MESH;}
 
-  virtual iMeshWrapper* GetMesh () {return mesh;}
+  virtual iTriangleMesh* GetMesh () {return mesh;}
 };
 
 class csBulletColliderConcaveMesh:
@@ -205,18 +205,18 @@ class csBulletColliderConcaveMesh:
   csBulletCollider, CS::Collisions::iColliderConcaveMesh>
 {
   friend class csBulletColliderConcaveMeshScaled;
-  iMeshWrapper* mesh;
+  iTriangleMesh* mesh;
   btTriangleMesh* triMesh;
 
 protected:
   virtual float ComputeShapeVolume() const;
 
 public:
-  csBulletColliderConcaveMesh (iMeshWrapper* mesh, btTriangleMesh* triMesh, csBulletSystem* sys);
+  csBulletColliderConcaveMesh (iTriangleMesh* mesh, btTriangleMesh* triMesh, csBulletSystem* sys);
   virtual ~csBulletColliderConcaveMesh ();
   virtual CS::Collisions::ColliderType GetColliderType () const { return CS::Collisions::COLLIDER_CONCAVE_MESH; }
 
-  virtual iMeshWrapper* GetMesh () { return mesh; }
+  virtual iTriangleMesh* GetMesh () { return mesh; }
 };
 
 class csBulletColliderConcaveMeshScaled:

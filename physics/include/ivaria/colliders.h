@@ -33,13 +33,14 @@
 #include "csgeom/plane3.h"
 #include "iutil/object.h"
 
-struct iTerrainSystem;
-struct iTerrainCell;
-struct iSector;
+struct iCamera;
 struct iMeshWrapper;
 struct iMovable;
 struct iPortal;
-struct iCamera;
+struct iSector;
+struct iTerrainCell;
+struct iTerrainSystem;
+struct iTriangleMesh;
 struct iView;
 
 namespace CS
@@ -71,7 +72,7 @@ COLLIDER_CONVEX_MESH,              /*!< The collider is a convex mesh. */
 COLLIDER_CONCAVE_MESH,             /*!< The collider is a concave mesh. */
 COLLIDER_CONCAVE_MESH_SCALED,      /*!< The collider is a scaled concave mesh. */
 COLLIDER_TERRAIN,                  /*!< The collider is a terrain. */
-COLLIDER_COMPOUND                  /*!< The collider is a compound collider. */
+COLLIDER_COMPOUND                  /*!< The collider is a compound collider. TODO: to be removed? */
 };
 
 /**
@@ -101,14 +102,17 @@ struct iCollider : public virtual iBase
   virtual float GetVolume () const = 0;
 
   /// Whether this collider (and all its children) can be used for dynamic simulation
+  // TODO: remove?
   virtual bool IsDynamic () const = 0;
 
   /// Get the frame of reference
+  // TODO: remove!
   virtual csOrthoTransform GetPrincipalAxisTransform () const = 0;
   /// Set the frame of reference
   virtual void SetPrincipalAxisTransform (const csOrthoTransform& trans) = 0;
 
   /// Add a child collider, fixed relative to this collider.
+  // TODO: Add/RemoveChild?
   virtual void AddCollider (iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ()) = 0;
 
   /// Remove the given collider from this collider.
@@ -127,6 +131,7 @@ struct iCollider : public virtual iBase
   virtual size_t GetColliderCount () = 0;
 
   /// Returns the AABB of this shape, centered at it's center of mass (assuming uniform density)
+  // TODO: remove? or use csBox at least
   virtual void GetAABB (csVector3& aabbMin, csVector3& aabbMax) const = 0;
 };
 
@@ -286,8 +291,8 @@ struct iColliderConvexMesh : public virtual iCollider
 {
   SCF_INTERFACE (CS::Collisions::iColliderConvexMesh, 1, 0, 0);
 
-  /// Get the mesh factory of this collider.
-  virtual iMeshWrapper* GetMesh () = 0;
+  /// Get the triangle mesh of this collider.
+  virtual iTriangleMesh* GetMesh () = 0;
 };
 
 /**
@@ -307,7 +312,7 @@ struct iColliderConcaveMesh : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderConcaveMesh, 1, 0, 0);
 
   /// Get the mesh factory of this collider.
-  virtual iMeshWrapper* GetMesh () = 0;
+  virtual iTriangleMesh* GetMesh () = 0;
 };
 
 /**
@@ -328,8 +333,12 @@ struct iColliderConcaveMeshScaled : public virtual iCollider
 
   /// Get the concave collider scaled by this collider.
   virtual iColliderConcaveMesh* GetCollider () = 0;
+  // TODO: Get/SetScale()
 };
 
+/**
+ * A terrain collider.
+ */
 struct iColliderTerrain : public virtual iCollider
 {
   SCF_INTERFACE (CS::Collisions::iColliderTerrain, 1, 0, 0);

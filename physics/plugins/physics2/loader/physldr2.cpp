@@ -680,6 +680,8 @@ bool csPhysicsLoader2::ParseColliderConvexMesh (iDocumentNode *node, CS::Collisi
   
   if (m)
   {
+    // TODO
+/*
     csRef<CS::Collisions::iColliderConvexMesh> conv = collisionSystem->CreateColliderConvexMesh (m);
 
     csOrthoTransform trans;
@@ -688,6 +690,8 @@ bool csPhysicsLoader2::ParseColliderConvexMesh (iDocumentNode *node, CS::Collisi
 
     object->GetCollider()->AddCollider (conv, trans);
     return true;
+*/
+    return false;
   }
   else
   {
@@ -707,6 +711,8 @@ bool csPhysicsLoader2::ParseColliderConcaveMesh (iDocumentNode *node, CS::Collis
 
   if (m)
   {
+    // TODO
+/*
     csRef<CS::Collisions::iColliderConcaveMesh> conc = collisionSystem->CreateColliderConcaveMesh (m);
 
     csOrthoTransform trans;
@@ -715,6 +721,8 @@ bool csPhysicsLoader2::ParseColliderConcaveMesh (iDocumentNode *node, CS::Collis
 
     object->GetCollider()->AddCollider (conc, trans);
     return true;
+*/
+    return false;
   }
   else
   {

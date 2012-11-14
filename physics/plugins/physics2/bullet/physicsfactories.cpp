@@ -18,7 +18,6 @@
 
 #include "cssysdef.h"
 
-#include "ivaria/softanim.h"
 #include "imesh/animesh.h"
 #include "iengine/scenenode.h"
 #include "iengine/movable.h"
@@ -56,21 +55,26 @@
 
 #include "physicsfactories.h"
 
-
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
+
   csPtr<CS::Collisions::iGhostCollisionObject> BulletGhostCollisionObjectFactory::CreateGhostCollisionObject ()
   {
-    csRef<csBulletGhostCollisionObject> collObject;
+/*
+    csRef<CS::Collisions::iGhostCollisionObject> collObject;
     collObject.AttachNew (new csBulletGhostCollisionObject (system));
 
     collObject->CreateGhostCollisionObject (this);
+*/
+    csBulletGhostCollisionObject* object = new csBulletGhostCollisionObject (system);
+    object->CreateGhostCollisionObject (this);
 
     //objects.Push (collObject);
-    return csPtr<iGhostCollisionObject> (collObject);
+    //return csPtr<iGhostCollisionObject> (collObject);
+    return csPtr<iGhostCollisionObject> (object);
   }
 
   csPtr<CS::Collisions::iCollisionObject> BulletGhostCollisionObjectFactory::CreateCollisionObject () 

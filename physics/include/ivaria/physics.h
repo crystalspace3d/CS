@@ -74,16 +74,6 @@ struct iVehicleWheelFactory;
 struct iVehicleWheelInfo;
 
 /**
- * The type of a rigid body state.
- */
-enum RigidBodyState
-{
-  STATE_STATIC = 0,    /*!< The body is in the static state. */
-  STATE_DYNAMIC,       /*!< The body is in the dynamic state. */
-  STATE_KINEMATIC      /*!< The body is in the kinematic state. */
-};
-
-/**
  * The type of debug mode.
  */
 enum DebugMode
@@ -103,25 +93,30 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
 {
   SCF_INTERFACE (CS::Physics::iPhysicalBody, 1, 0, 1);
 
-  /// Whether this is a rigid or soft body object
-  virtual bool IsPhysicalObject () const { return true; }
-
   /// Get the type of this physical body.
   virtual PhysicalObjectType GetPhysicalObjectType () const = 0;
 
   /**
    * Query the iRigidBody interface of this body. It returns NULL if the
-   * interface is not valid, ie GetType() is not CS::Physics::PHYSICAL_OBJECT_RIGIDBODY.
+   * interface is not valid, ie GetPhysicalObjectType() is not CS::Physics::PHYSICAL_OBJECT_RIGIDBODY.
    */
   virtual iRigidBody* QueryRigidBody () = 0;
 
   /**
    * Query the iSoftBody interface of this body. It returns NULL if the
-   * interface is not valid, ie GetType() is not CS::Physics::PHYSICAL_OBJECT_SOFTYBODY.
+   * interface is not valid, ie GetPhysicalObjectType() is not CS::Physics::PHYSICAL_OBJECT_SOFTBODY.
    */
   virtual iSoftBody* QuerySoftBody () = 0;
 
+  /**
+   * Get whether this object is dynamic, that is if it is either a dynamic actor,
+   * a soft body, or a dynamic rigid body. The only objects that are not dynamic
+   * are the rigid bodies that are either in static or kinematic state.
+   */
+  virtual bool IsDynamic () const = 0;
+
   /// Disable this collision object.
+  // TODO: Set/GetEnabled
   virtual bool Disable () = 0;
 
   /// Enable this collision object.
@@ -160,12 +155,6 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual csVector3 GetLinearVelocity () const = 0;
   /// Set the linear velocity (translational velocity component).
   virtual void SetLinearVelocity (const csVector3& vel) = 0;
-
-  /**
-   * Get whether this object is dynamic.
-   * Dynamic objects are moved by dynamics simulation.
-   */
-  virtual bool IsDynamic () const = 0;
 
   /**
    * Set the friction of this body.
@@ -208,6 +197,7 @@ struct iRigidBody : public virtual iPhysicalBody
   virtual RigidBodyState GetState () const = 0;
   
   /// Set the current state of the body.
+  // TODO: return void
   virtual bool SetState (RigidBodyState state) = 0;
   
   /// Get the elasticity of this rigid body.
@@ -258,9 +248,11 @@ struct iRigidBody : public virtual iPhysicalBody
       const csVector3& pos) = 0;
 
   /// Get total force (world space).
+  // TODO: remove? GetTotalForce?
   virtual csVector3 GetForce () const = 0;
 
   /// Get total torque (world space).
+  // TODO: remove?
   virtual csVector3 GetTorque () const = 0;
 
   /**
@@ -918,11 +910,11 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   
   /// Create a rigid body factory
   virtual csPtr<iRigidBodyFactory> CreateRigidBodyFactory
-    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "") = 0;
 
   /// Create a dynamic actor factory
   virtual csPtr<iDynamicActorFactory> CreateDynamicActorFactory
-    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor") = 0;
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "DynamicActor") = 0;
 
   /// Create a soft rope factory
   virtual csPtr<iSoftRopeFactory> CreateSoftRopeFactory () = 0;
@@ -1125,118 +1117,6 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    */
   virtual void RemoveUpdatable (iUpdatable* u) = 0;
 };
-
-/**
- * Animation control type for a genmesh animated by a CS::Physics::iSoftBody.
- *
- * Main ways to get pointers to this interface:
- * - csQueryPluginClass()
- * - csLoadPlugin()
- *
- * Main users of this interface:
- * - Genmesh plugin (crystalspace.mesh.object.genmesh) 
- */
-struct iSoftBodyAnimationControlType : public iGenMeshAnimationControlType
-{
-  SCF_INTERFACE (CS::Physics::iSoftBodyAnimationControlType, 1, 0, 0);
-};
-
-/**
- * Animation control factory for a genmesh animated by a CS::Physics::iSoftBody.
- *
- * Main creators of instances implementing this interface:
- * - CS::Physics::iSoftBodyAnimationControlType::CreateAnimationControlFactory()
- *
- * Main ways to get pointers to this interface:
- * - iGeneralFactoryState::GetAnimationControlFactory()
- *
- * Main users of this interface:
- * - Genmesh plugin (crystalspace.mesh.object.genmesh) 
- */
-struct iSoftBodyAnimationControlFactory : public iGenMeshAnimationControlFactory
-{
-  SCF_INTERFACE (CS::Physics::iSoftBodyAnimationControlFactory, 1, 0, 0);
-};
-
-/**
- * Animation control for a genmesh animated by a CS::Physics::iSoftBody. This class will
- * animate the vertices of the genmesh depending on the physical simulation of the
- * soft body. It will also update automatically the position of the genmesh.
- *
- * The soft body controlling the animation of the genmesh can also be attached precisely to a
- * given vertex of an animesh. This allows to have the soft body following precisely the vertices
- * of the animesh, even when it is deformed by the skinning and morphing processes.
- *
- * Main creators of instances implementing this interface:
- * - CS::Physics::iSoftBodyAnimationControlFactory::CreateAnimationControl()
- *
- * Main ways to get pointers to this interface:
- * - iGeneralMeshState::GetAnimationControl()
- *
- * Main users of this interface:
- * - Genmesh plugin (crystalspace.mesh.object.genmesh) 
- */
-struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
-{
-  SCF_INTERFACE (CS::Physics::iSoftBodyAnimationControl, 1, 0, 0);
-
-  /**
-   * Set the soft body to be used to animate the genmesh. You can switch this soft body
-   * at any time, the animation of the genmesh will just be adapted to the new soft body.
-   * \param body The soft body that will be used to animate this genmesh.
-   * \param doubleSided True if the genmesh is double-sided (ie this is a cloth
-   * soft body), false otherwise. If the genmesh is double-sided, then the duplicated
-   * vertices must be added at the end of the vertex array, so that a vertex of index
-   * 'i' is duplicated at index 'i + body->GetVertexCount ()'.
-   */
-  virtual void SetSoftBody (iSoftBody* body, bool doubleSided = false) = 0;
-
-  /**
-   * Get the soft body used to animate the genmesh.
-   */
-  virtual iSoftBody* GetSoftBody () = 0;
-
-  /**
-   * Create an anchor between the soft body and an animesh. The position of the anchor
-   * will be updated accordingly when the vertex is moved by the skinning and morphing
-   * processes of the animesh.
-   *
-   * This anchor is only effective if the vertex of the animesh is influenced by more
-   * than one bone or by some morph targets. If it is not the case then it is more
-   * efficient to simply use CS::Physics::iSoftBody::AnchorVertex (size_t,iRigidBody*).
-   *
-   * You have to provide a rigid body attached to the animesh as a main physical anchor
-   * point. The main way to do that is to use a CS::Animation::iSkeletonRagdollNode
-   * animation node.
-   *
-   * Note also that you may anchor a same soft body to different animeshes, for example
-   * to create a cloth hold by several avatars.
-   *
-   * \param animesh The CS::Mesh::iAnimatedMesh to attach the soft body to.
-   * \param body The rigid body used as the main physical anchor point.
-   * \param bodyVertexIndex The index of the vertex on the soft body which will be anchored.
-   * \param animeshVertexIndex The index of the vertex on the animesh which will be anchored.
-   * If no values are provided then the system will compute the vertex on the animesh which is
-   * the closest to the given vertex of the soft body. This vertex can be queried afterwards
-   * through GetAnimatedMeshAnchorVertex().
-   */
-  virtual void CreateAnimatedMeshAnchor (CS::Mesh::iAnimatedMesh* animesh,
-    iRigidBody* body,
-		size_t bodyVertexIndex,
-		size_t animeshVertexIndex = (size_t) ~0) = 0;
-
-  /**
-   * Get the vertex of the animesh which is anchored to the given vertex of the soft body.
-   */
-  virtual size_t GetAnimatedMeshAnchorVertex (size_t bodyVertexIndex) = 0;
-
-  /**
-   * Remove the given anchor.
-   * \warning This won't actually work, due to a limitation inside the Bullet library...
-   */
-  virtual void RemoveAnimatedMeshAnchor (size_t bodyVertexIndex) = 0;
-};
-
 
 /**
  * \todo This class should have a common base interface with iCollisionActor

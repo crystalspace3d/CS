@@ -34,6 +34,7 @@
 #include "colliders.h"
 
 /// The scalar type to be used for physics (float is default, but can easily be changed to double)
+// TODO: Most probably to be removed
 typedef float csScalar;
 
 struct iTerrainSystem;
@@ -48,21 +49,18 @@ namespace CS
 {
 namespace Collisions
 {
-static const int UpAxis = 1;
-static const int HorizontalAxis1 = 0;
-static const int HorizontalAxis2 = 2;
-static const csVector3 UpVector(0, 1, 0);
-
   /**
   * The type of a collision object.
   */
   enum CollisionObjectType
   {
-    //TODO: COLLISION_OBJECT_BASE = 0,
-    COLLISION_OBJECT_PHYSICAL = 0,       /*!< The collision object is a physical object. */
-    COLLISION_OBJECT_GHOST,              /*!< The collision object is a ghost. */
-    COLLISION_OBJECT_ACTOR,              /*!< The collision object is an actor. */
-    COLLISION_OBJECT_END                 /*!< Count of collision object types (probably to be removed). */
+    COLLISION_OBJECT_SIMPLE = 0,     /*!< The collision object is a simple static collision object.
+				       It can never be upcast to a iPhysicalObject.*/
+    COLLISION_OBJECT_PHYSICAL,       /*!< The collision object is a physical object and can be
+				       upcast to a iPhysicalObject. */
+    COLLISION_OBJECT_GHOST,          /*!< The collision object is a ghost. */
+    COLLISION_OBJECT_ACTOR,          /*!< The collision object is an actor. */
+    COLLISION_OBJECT_END             /*!< Count of collision object types (probably to be removed). */
   };
 
   typedef short CollisionGroupMask;
@@ -94,7 +92,7 @@ static const csVector3 UpVector(0, 1, 0);
   /**
   * A structure of collision group. 
   * The objects in the group will not collide with each other.
-  * \todo Real group management, with transparent allocation of the masks
+  * \todo Real group management, with transparent allocation of the masks, inherit iBase
   */
   struct CollisionGroup
   {

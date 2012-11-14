@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2012 by Dominik Seifert
-    Copyright (C) 2012 by Christian Van Brussel
+    Copyright (C) 2011-2012 by Christian Van Brussel
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -129,9 +129,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
 
     // Only actors and dynamic objects can traverse portals
-    return 
-      (obj->QueryActor() || 
-      (obj->QueryPhysicalBody() && obj->QueryPhysicalBody()->IsDynamic()));
+    return obj->GetObjectType () == COLLISION_OBJECT_ACTOR
+      || (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL
+	  && obj->QueryPhysicalBody ()->IsDynamic ());
   }
   
   bool CollisionPortal::IsOnOtherSide(csBulletCollisionObject* obj)
@@ -766,7 +766,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //    else
   //    {
   //      // Create a new copy.
-  //      if (obj->IsPhysicalObject())
+  //      if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //      {
   //        btVector3 localInertia (0.0f, 0.0f, 0.0f);
   //        iPhysicalBody* pb = obj->QueryPhysicalBody ();
@@ -855,7 +855,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   //  btTransform btTrans = CSToBullet (trans.GetInverse (), sourceSector->sys->getInternalScale ());
 
-  //  if (obj->IsPhysicalObject())
+  //  if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //  {
   //    iPhysicalBody* pb = obj->QueryPhysicalBody ();
   //    if (pb->QueryRigidBody())
@@ -887,7 +887,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //  csBulletCollisionObject* cpy, 
   //  float duration)
   //{
-  //  if (obj->IsPhysicalObject())
+  //  if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //  {
   //    iPhysicalBody* pb = obj->QueryPhysicalBody ();
   //    if (pb->QueryRigidBody())

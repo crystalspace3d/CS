@@ -284,5 +284,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       sector->RemoveSceneNodeFromSector(iwheel->GetSceneNode());
     }
   }
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

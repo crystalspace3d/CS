@@ -138,8 +138,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     /// Whether this object can be affected by gravity
     virtual void SetGravityEnabled(bool enabled) { csBulletRigidBody::SetGravityEnabled(enabled); }
 
-
-
     // Kinematic stuff
     inline btConvexShape* GetConvexShape() const;
 

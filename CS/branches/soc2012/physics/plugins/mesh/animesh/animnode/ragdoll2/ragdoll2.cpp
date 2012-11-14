@@ -524,6 +524,9 @@ csRef<iCollider> RagdollNode::CreateBoneCollider(CS::Animation::iBodyBoneCollide
 {
   switch (type)
   {
+  case NO_GEOMETRY:
+    return csRef<iCollider> (nullptr);
+
   case BOX_COLLIDER_GEOMETRY:
     {
       csVector3 boxSize;
@@ -542,6 +545,8 @@ csRef<iCollider> RagdollNode::CreateBoneCollider(CS::Animation::iBodyBoneCollide
       boneCollider->GetCapsuleGeometry (length, radius);
       return csRef<iColliderCapsule>(collisionSystem->CreateColliderCapsule (length, radius));
     }
+// TODO
+/*
   case CONVEXMESH_COLLIDER_GEOMETRY:
     {
       iMeshWrapper* mesh;
@@ -555,6 +560,10 @@ csRef<iCollider> RagdollNode::CreateBoneCollider(CS::Animation::iBodyBoneCollide
       boneCollider->GetMeshGeometry (mesh);
       return csRef<iColliderConcaveMesh>(collisionSystem->CreateColliderConcaveMesh (mesh));
     }
+*/
+  case CONVEXMESH_COLLIDER_GEOMETRY:
+  case TRIMESH_COLLIDER_GEOMETRY:
+    return csRef<iCollider> (nullptr);
 
   case PLANE_COLLIDER_GEOMETRY:
     {

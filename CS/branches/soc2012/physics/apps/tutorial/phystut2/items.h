@@ -84,8 +84,8 @@ protected:
   csString name;
 
 public:
-  ItemFunction(const csString& name) : name(name) {}
-  const csString& GetName() const { return name; }
+  ItemFunction(const char* name) : name(name) {}
+  const char* GetName() const { return name; }
 
   /// Tries to use the item. Returns false, if function could not be used.
   virtual bool Use(Item* item) = 0;
@@ -141,7 +141,7 @@ public:
 
   int GetFunctionCount() const { return primaryFunctions.GetSize() + secondaryFunctions.GetSize(); }
   
-  const csString& GetName() const { return name; }
+  const char* GetName() const { return name; }
 };
 
 /**
@@ -178,7 +178,7 @@ public:
   inline ItemTemplate& GetTemplate() { return *templ; }
 
   /// The name of this item
-  virtual const char* GetName() const { return templ->GetName().GetData(); }
+  virtual const char* GetName() const { return templ->GetName (); }
 
   inline Agent* GetOwner() const;
 
@@ -213,74 +213,11 @@ public:
 public:
   csPtr<Item> CreateItem(ItemTemplate& templ);
 
-  ItemTemplate& CreateTemplate(const csString& name);
+  ItemTemplate& CreateTemplate(const char* name);
 
   size_t GetTemplateCount() { return Templates.GetSize(); }
 
   ItemTemplate& GetTemplate(size_t i) { return Templates[i]; }
-};
-
-// #########################################################################################################################
-// Weapons & Projectiles
-
-/**
- * Defines one sort of projectile
- */
-class ProjectileTemplate
-{
-protected:
-  // TODO: Need some sort of representation? 
-  // Maybe a mesh, maybe a billboard, for big projectiles a combination of collider and mesh
-  csScalar speed;
-
-public:
-  ProjectileTemplate(csScalar speed);
-
-  csScalar GetSpeed() const { return speed; }
-};
-
-/**
- * Projectile launchers are a function for items that launches projectiles
- */
-class ProjectileLauncher : public ItemFunction
-{
-protected:
-  ProjectileTemplate& projectileTemplate;
-
-public:
-  ProjectileLauncher(const csString& name, ProjectileTemplate& projectileTemplate) : 
-      ItemFunction(name),
-        projectileTemplate(projectileTemplate)
-  {
-  }
-  
-  ProjectileTemplate& GetProjectileTemplate() { return projectileTemplate; }
-  const ProjectileTemplate& GetProjectileTemplate() const { return projectileTemplate; }
-
-  virtual bool Use(Item* item);
-};
-
-/**
- * Information that is attached to an iRigidBody which represents the actual projectile 
- * TODO
- */
-class ProjectileInfo // : CS::Collisions::iCollisionObject
-{
-protected:
-public:
-};
-
-/**
- * A weapon is an item that can fire projectiles.
- */
-class Weapon : public Item
-{
-protected:
-public:
-  Weapon() :
-      Item()
-  {
-  }
 };
 
 #endif

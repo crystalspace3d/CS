@@ -32,14 +32,11 @@
 
 #include "physdemo.h"
 
-#include "collision2util.h"
-
-
 using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csString& name, const csOrthoTransform& trans,
+csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const char* name, const csOrthoTransform& trans,
   csScalar friction, csScalar density)
 { 
   csRef<iRigidBodyFactory> factory = physDemo.physicalSystem->CreateRigidBodyFactory(Collider, name);
@@ -52,7 +49,7 @@ csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const csSt
   
   iMaterialWrapper* mat = physDemo.engine->GetMaterialList()->FindByName ("stone");
   csRef<iMeshWrapper> mesh = MeshFactory->CreateMeshWrapper();
-  mesh->QueryObject()->SetName(name.GetData());
+  mesh->QueryObject()->SetName (name);
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   body->SetAttachedSceneNode(mesh->QuerySceneNode());
@@ -90,7 +87,7 @@ csRef<CS::Physics::iRigidBody> PhysDemo::SpawnBox (const csVector3& extents, con
 }
 
 csRef<CS::Physics::iRigidBody> PhysDemo::SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos,
-  const csString& name, csScalar friction, csScalar density, bool setVelocity)
+  const char* name, csScalar friction, csScalar density, bool setVelocity)
 {
   //static csRandomFloatGen randGen;
 
@@ -433,12 +430,14 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh()
   csRef<CS::Collisions::iCollider> starCollider;
   if (mainCollider == nullptr)
   {
-    mainCollider = physicalSystem->CreateColliderConcaveMesh (star);
+    mainCollider = physicalSystem->CreateColliderConcaveMesh
+      (collisionHelper.FindCollisionMesh (star));
     starCollider = mainCollider;
   }
   else
   {
-    starCollider = csRef<CS::Collisions::iColliderConcaveMeshScaled>(physicalSystem->CreateColliderConcaveMeshScaled (mainCollider, 1.0f));
+    starCollider = csRef<CS::Collisions::iColliderConcaveMeshScaled>
+      (physicalSystem->CreateColliderConcaveMeshScaled (mainCollider, 1.0f));
   }  
 
   // create body
@@ -492,7 +491,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   mesh->GetMeshObject()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
-  csRef<CS::Collisions::iColliderConvexMesh> collider = physicalSystem->CreateColliderConvexMesh (mesh);
+  csRef<CS::Collisions::iColliderConvexMesh> collider =
+    physicalSystem->CreateColliderConvexMesh (collisionHelper.FindCollisionMesh (mesh));
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(collider, "convexmesh");
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
@@ -540,8 +540,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (meshFact, "mesh"));
 
   // perform convex decomposition
-  csRef<iColliderCompound> rootCollider = Collision2Helper::PerformConvexDecomposition(
-    physicalSystem, convexDecomposer, physicalSystem->FindColdetTriangleMesh(mesh));
+  csRef<iColliderCompound> rootCollider = collisionHelper.PerformConvexDecomposition
+    (convexDecomposer, collisionHelper.FindCollisionMesh (mesh));
 
   // Create a body
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(rootCollider, "compound");
@@ -1174,8 +1174,8 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
   // If it's a double-side soft body like cloth, you have to call SetSoftBody (body, true);
   /*csRef<iGeneralMeshState> meshState =
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject());
-  csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
-    scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
+  csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
+    scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
   animationControl->SetSoftBody (body, true);*/
 
   return body;
@@ -1242,8 +1242,8 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   // Init the animation control for the animation of the genmesh
   csRef<iGeneralMeshState> meshState =
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject());
-  csRef<CS::Physics::iSoftBodyAnimationControl> animationControl =
-    scfQueryInterface<CS::Physics::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
+  csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
+    scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
   animationControl->SetSoftBody (body);
 
   // This would have worked too

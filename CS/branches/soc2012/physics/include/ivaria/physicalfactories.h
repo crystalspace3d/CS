@@ -75,7 +75,7 @@ namespace Physics
   enum PhysicalObjectType
   {
     // TODO: remove that initialization
-    PHYSICAL_OBJECT_RIGIDBODY = CS::Collisions::COLLISION_OBJECT_END,
+    PHYSICAL_OBJECT_RIGIDBODY = 0,// = CS::Collisions::COLLISION_OBJECT_END,
     PHYSICAL_OBJECT_SOFTYBODY,
     PHYSICAL_OBJECT_DYNAMICACTOR,
     PHYSICAL_OBJECT_END
@@ -142,10 +142,14 @@ namespace Physics
     // TODO: rename into CreateInstance ()
     virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody () = 0;
 
-    /// Set the elasticity of this rigid body.
+    /// Set the dynamic state of this rigid body factory.
+    virtual void SetState (RigidBodyState state) = 0;
+    virtual RigidBodyState GetState () const = 0;
+
+    /// Set the elasticity of this rigid body factory.
     virtual void SetElasticity (float value) = 0;
 
-    /// Get the elasticity of this rigid body.
+    /// Get the elasticity of this rigid body factory.
     virtual float GetElasticity () const = 0;
     /**
     * Set the linear Damping for this rigid body. The damping correspond to
@@ -249,6 +253,7 @@ namespace Physics
   /**
    * Used to create a dynamic actor
    */
+  // TODO: really needed?
   struct iDynamicActorFactory : public virtual iRigidBodyFactory
   {
     SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
@@ -282,6 +287,7 @@ namespace Physics
     virtual void SetUseKinematicSteps (bool u) = 0;
   };
 
+  // TODO: joint factory
 }
 }
 #endif

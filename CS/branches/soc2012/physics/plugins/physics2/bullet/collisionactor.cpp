@@ -33,7 +33,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     btPairCachingGhostObject* go = GetPairCachingGhostObject();
     btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
-    controller = new csKinematicActorController(go, convShape, stepHeight = props->GetStepHeight(), UpAxis);
+    controller = new csKinematicActorController
+      (go, convShape, stepHeight = props->GetStepHeight(), 1);
     
     SetWalkSpeed(props->GetWalkSpeed());
     SetJumpSpeed(props->GetJumpSpeed());
@@ -82,7 +83,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btPairCachingGhostObject* go = GetPairCachingGhostObject();
     btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape());
     delete controller;
-    controller = new csKinematicActorController(go, convShape, stepHeight = newHeight, UpAxis);
+    controller = new csKinematicActorController(go, convShape, stepHeight = newHeight, 1);
   }
 
   void csBulletCollisionActor::Walk(csVector3 vel)
@@ -108,7 +109,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
     
     // previous vertical movement is unchanged
-    csVector3 newVel (newVel2.x, vel[UpAxis], newVel2.y);
+    csVector3 newVel (newVel2.x, vel[1], newVel2.y);
     
     controller->setVelocityForTimeInterval(CSToBullet(newVel, system->getInternalScale()), csScalar(INT_MAX));
   }
@@ -126,7 +127,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (!controller) return;
 
-    controller->setGravity(-sector->GetBulletWorld()->getGravity()[UpAxis]);
+    controller->setGravity(-sector->GetBulletWorld()->getGravity()[1]);
 
     // Remove ghost objects from list of blocking objects:
     btPairCachingGhostObject* go = GetPairCachingGhostObject();

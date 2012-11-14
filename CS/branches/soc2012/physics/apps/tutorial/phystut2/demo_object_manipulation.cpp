@@ -24,20 +24,15 @@
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
 #include "iengine/portal.h"
+#include "iengine/campos.h"
 #include "imesh/genmesh.h"
 #include "imesh/terrain2.h"
+#include "ivaria/colliders.h"
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
 #include "csutil/floatrand.h"
 
-#include "collision2util.h"
-
-
-#include "iengine/campos.h"
-
 #include "physdemo.h"
-
-#include "ivaria/colliders.h"
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -198,11 +193,8 @@ void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
       // First decompose it
       csPrintf("Performing convex decomposition on object: \"%s\"...\n", obj->QueryObject()->GetName());
 
-      csRef<iColliderCompound> collider = Collision2Helper::PerformConvexDecomposition(
-        physicalSystem,
-        convexDecomposer,
-        physicalSystem->FindColdetTriangleMesh(obj->GetAttachedSceneNode ()->QueryMesh ())
-        );
+      csRef<iColliderCompound> collider = collisionHelper.PerformConvexDecomposition
+	(convexDecomposer, collisionHelper.FindCollisionMesh (obj->GetAttachedSceneNode ()->QueryMesh ()));
       obj->SetCollider(collider);
 
       csPrintf("Done - Performed convex decomposition on object: \"%s\".\n", obj->QueryObject()->GetName());

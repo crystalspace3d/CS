@@ -32,6 +32,7 @@
 #include "csgeom/transfrm.h"
 #include "csgeom/plane3.h"
 #include "iutil/object.h"
+#include "iutil/strset.h"
 #include "colliders.h"
 #include "ivaria/collisionfactories.h"
 
@@ -98,6 +99,7 @@ struct HitBeamResult
 struct CollisionData
 {
   /// Collision object A.
+  // TODO: objectA/B redundant with the parameters of iCollisionCallback::OnCollision()?
   iCollisionObject* objectA;
 
   /// Collision object B.
@@ -125,7 +127,7 @@ struct CollisionData
  * Main users of this interface:
  * - iCollisionSystem
  */
-struct iCollisionCallback: public virtual iBase
+struct iCollisionCallback : public virtual iBase
 {
   SCF_INTERFACE (CS::Collisions::iCollisionCallback, 1, 0, 0);
 
@@ -141,6 +143,7 @@ struct iCollisionCallback: public virtual iBase
 
 /**
  * Used by iCollisionSystem to yield disconnected mesh parts
+ * \todo To be removed
  */
 struct iColliderCompoundResult
 {
@@ -182,9 +185,6 @@ struct iCollisionObject : public virtual iBase
 
   /// Whether this object is currently added to the world
   virtual bool IsInWorld () const = 0;
-
-  /// Whether this is a rigid or soft body object
-  virtual bool IsPhysicalObject () const = 0;
 
   /// Return the type of the collision object.
   virtual CollisionObjectType GetObjectType () const = 0;
@@ -253,6 +253,7 @@ struct iCollisionObject : public virtual iBase
   virtual iCollisionCallback* GetCollisionCallback () = 0;
 
   /// Test collision with another collision objects.
+  // TODO: return also the collision data
   virtual bool Collide (iCollisionObject* otherObject) = 0;
 
   /// Follow a beam from start to end and return whether this body was hit.
@@ -272,13 +273,14 @@ struct iCollisionObject : public virtual iBase
   virtual void SetMayBeDeactivated (bool d) = 0;
 
   /// Creates a new object that has all the properties of this one, except for transformation and movable and camera
-  // TODO: remove?
+  // TODO: remove? factories should be used instead
   virtual csPtr<iCollisionObject> CloneObject () = 0;
   
   /**
    * Passive objects, such as portal clones, are not supposed to be tempered with 
    * and should not be acted upon by game logic
    */
+  // TODO: remove?
   virtual bool IsPassive () const = 0;
 };
 
@@ -288,6 +290,7 @@ struct iCollisionObject : public virtual iBase
  * This can be used as a test for collisions, or to implement any sort of object that does not entirely play by the laws 
  * of ridig body or soft body dynamics.
  */
+// TODO: rename? iCollisionGhost?
 struct iGhostCollisionObject : public virtual iCollisionObject
 {
   SCF_INTERFACE (CS::Collisions::iGhostCollisionObject, 1, 0, 0);
@@ -530,7 +533,7 @@ struct iCollisionSystem : public virtual iBase
 
   /**
    * Set the internal scale to be applied to the whole dynamic world. Use this
-   *to put back the range of dimensions you use for your objects to the one
+   * to put back the range of dimensions you use for your objects to the one
    * Bullet was designed for.
    * 
    * Bullet does not work well if the dimensions of your objects are smaller
@@ -546,14 +549,13 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iColliderCompound> CreateColliderCompound () = 0;
 
   /// Create a convex mesh collider.
-  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify = false) = 0;
-  /// Create a convex mesh collider.
-  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, iMeshWrapper* mesh = nullptr, bool simplify = false) = 0;
+  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, bool simplify = false) = 0;
 
   /// Create a static concave mesh collider.
-  virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh) = 0;
+  virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh) = 0;
 
   /// Create a scaled concave mesh collider.
+  // TODO: const csVector3& scale
   virtual csPtr<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
     iColliderConcaveMesh* collider, csVector3 scale) = 0;
 
@@ -583,13 +585,14 @@ struct iCollisionSystem : public virtual iBase
   virtual iCollisionSector* CreateCollisionSector () = 0;
   
   /// Retrieves the collision sector that corresponds to the given iSector. It adds a new one if it does not exist yet
+  // TODO: FindCollisionSector instead?
   virtual CS::Collisions::iCollisionSector* GetOrCreateCollisionSector (iSector* sector) = 0;
 
   /// Amount of sectors in this system
   virtual size_t GetCollisionSectorCount () const = 0;
 
   /// Find a collision sector by name.
-  virtual iCollisionSector* FindCollisionSector (const csString& name) = 0; 
+  virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
 
   /// Get a collision sector by index
   virtual iCollisionSector* GetCollisionSector (size_t index) = 0; 
@@ -604,7 +607,6 @@ struct iCollisionSystem : public virtual iBase
   virtual CollisionGroup& FindCollisionGroup (const char* name) = 0;
 
   /// Set whether the two groups collide with each other.
-  // TODO: what's that?
   virtual void SetGroupCollision (const char* name1,
     const char* name2, bool collide) = 0;
 
@@ -622,24 +624,21 @@ struct iCollisionSystem : public virtual iBase
 
   /// Tries to find and return the underlying collision iTriangleMesh that has any of this system's ids
   // TODO: move in collision utils
-  virtual iTriangleMesh* FindColdetTriangleMesh (iMeshWrapper* mesh) = 0;
+  //virtual iTriangleMesh* FindColdetTriangleMesh (iMeshWrapper* mesh) = 0;
 
   // Factory
 
-  /// Creates a new object factory of the given type which is either a CollisionObjectType or PhysicalObjectType
-  virtual csPtr<iCollisionObjectFactory> CreateCollisionObjectFactory (int type) = 0;
-  
   /// Creates a iCollisionObjectFactory
   virtual csPtr<iCollisionObjectFactory> CreateCollisionObjectFactory
-    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "") = 0;
 
   /// Creates a iGhostCollisionObjectFactory
   virtual csPtr<iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory
-    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "") = 0;
 
   /// Creates a iCollisionActorFactory
   virtual csPtr<iCollisionActorFactory> CreateCollisionActorFactory
-    (CS::Collisions::iCollider* collider = nullptr, const csString& name = "") = 0;
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "") = 0;
 };
 
 } }

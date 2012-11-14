@@ -71,18 +71,22 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
 
   csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
   
-  // Load Physics plugin
+  // Load the Physics plugin
   physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
   if (!physicalSystem) return ReportError ("Could not load the bullet2 plugin!");
 
   // Load Convex Decomposition plugin
+  // TODO: rename that plugin
   convexDecomposer = csLoadPlugin<iConvexDecomposer> (plugmgr, "crystalspace.hacd");
   if (!convexDecomposer) 
   {
     // It is not vital to the operation of this demo
-    ReportWarning("Could not load the HACD plugin!");
+    ReportWarning ("Could not load the HACD plugin!");
   }
   
+  // Initialize the collision helper
+  collisionHelper.Initialize (GetObjectRegistry(), physicalSystem);
+
   // Get commandline parser
   csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
 
@@ -92,7 +96,8 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   // Load the soft body animation control plugin & factory
   if (isSoftBodyWorld)
   {
-    softBodyAnimationType = csLoadPlugin<iSoftBodyAnimationControlType>(plugmgr, "crystalspace.physics.softanim2");
+    softBodyAnimationType = csLoadPlugin<CS::Animation::iSoftBodyAnimationControlType>
+      (plugmgr, "crystalspace.physics.softanim2");
     if (!softBodyAnimationType)
       return ReportError ("Could not load soft body animation for genmeshes plugin!");
 
@@ -129,6 +134,9 @@ bool PhysDemo::Application()
     ItemTemplate& templ = ItemMgr::Instance->GetTemplate(i);
     player.GetInventory().AddItem(templ);
   }
+
+  if (ItemMgr::Instance->GetTemplateCount ())
+    selectedItem = player.GetInventory().GetItem (0);
 
   // Load specified scene
   csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
@@ -214,7 +222,7 @@ bool PhysDemo::SetLevel(PhysDemoLevel level, bool convexDecomp)
   return SetLevel(path, convexDecomp);
 }
 
-bool PhysDemo::SetLevel(const csString& mapPath, bool convexDecomp)
+bool PhysDemo::SetLevel(const char* mapPath, bool convexDecomp)
 {
   // Reset scene
   Reset();
@@ -230,7 +238,7 @@ bool PhysDemo::SetLevel(const csString& mapPath, bool convexDecomp)
 
   // Create the environment
   bool loaded = false;
-  if (mapPath.Length() > 0)
+  if (mapPath)
   {
     loaded = LoadLevel(mapPath, convexDecomp);
     currentMap = mapPath;
@@ -312,16 +320,16 @@ void PhysDemo::SetupHUD()
   if (selectedItem)
   {
     ItemTemplate& templ = selectedItem->GetTemplate();
-    desc.Push ("--Current Tool (" + templ.GetName() + ")--");
+    desc.Push (csString().Format("--Current Tool (%s)--", templ.GetName()));
     for (size_t i = 0; i < csMin(templ.GetPrimaryFunctions().GetSize(), size_t(2)); ++i)
     {
       ItemFunction* func = templ.GetPrimaryFunction(i);
-      desc.Push (csString().Format(" %s: %s", i == 0 ? "LMB" : "RMB", func->GetName().GetData()));
+      desc.Push (csString().Format(" %s: %s", i == 0 ? "LMB" : "RMB", func->GetName()));
     }
     for (size_t i = 0; i < templ.GetSecondaryFunctions().GetSize(); ++i)
     {
       ItemFunction* func = templ.GetSecondaryFunction(i);
-      desc.Push (csString().Format(" %zu: %s", i+1, func->GetName().GetData()));
+      desc.Push (csString().Format(" %zu: %s", i+1, func->GetName()));
     }
   }
   else
@@ -460,21 +468,23 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
       lastActorObj->GetSector()->AddCollisionObject(player.GetObject());
     }
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
-    SetGravity(-10 * UpVector);
+    //SetGravity (csVector3 (0.0f, -9.81f, 0.0f));
   }
   else
   {
     // The camera is free now -> Requires actor object to already be created & set
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("None"));
-    if (player.GetObject()->QueryPhysicalBody())
+    iPhysicalBody* physActor = player.GetObject()->QueryPhysicalBody();
+    if (physActor)
     {
-      iPhysicalBody* physActor = player.GetObject()->QueryPhysicalBody();
       physActor->SetLinearVelocity(0);
+      physActor->SetGravityEnabled (false);
       if (physActor->QueryRigidBody())
       {
         physActor->QueryRigidBody()->SetAngularVelocity(0);
       }
     }
+    // TODO: remove this hack and use SetGravityEnabled instead
     SetGravity(0);
   }
 }
@@ -539,6 +549,7 @@ bool PhysDemo::GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundP
 CS_IMPLEMENT_APPLICATION
   
 /// We use this to keep the physical system alive until the end to make sure its destroyed last
+// TODO: why the need to be destroyed last?
 csRef<iPhysicalSystem> _physSys;
 
 int main (int argc, char* argv[])

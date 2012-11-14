@@ -190,7 +190,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (IsPassive()) return 0;
 
     size_t result = 0;
-    if (IsPhysicalObject())
+    if (GetObjectType () == COLLISION_OBJECT_PHYSICAL)
     {
       result = contactObjects.GetSize ();
     }
@@ -216,7 +216,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (IsPassive()) return nullptr;
 
     // TODO: Fix this method and split it up into the corresponding sub-classes
-    if (IsPhysicalObject())
+    if (GetObjectType () == COLLISION_OBJECT_PHYSICAL)
     {
       if (index < contactObjects.GetSize () && index >= 0)
       {
@@ -309,7 +309,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       
       int dir = coll.objectA == this ? 1 : -1;
 
-      float groundAngleCos = coll.normalWorldOnB * UpVector;
+      float groundAngleCos = coll.normalWorldOnB * csVector3 (0.0f, 1.0f, 0.0f);
       if (dir * groundAngleCos > groundAngleCosThresh)
       {
         return true;

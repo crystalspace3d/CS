@@ -49,8 +49,18 @@ namespace CS
     struct iPhysicalSector;
 
     /**
+     * The type of a rigid body state.
+     */
+    enum RigidBodyState
+    {
+      STATE_STATIC = 0,    /*!< The body is in the static state. */
+      STATE_DYNAMIC,       /*!< The body is in the dynamic state. */
+      STATE_KINEMATIC      /*!< The body is in the kinematic state. */
+    };
+
+   /**
      * Custom code to be called upon every step
-     * \todo probably to be removed
+     * \todo Most probably to be removed
     */
     struct iUpdatable : public virtual iBase
     {

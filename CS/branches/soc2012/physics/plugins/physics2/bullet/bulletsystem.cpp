@@ -19,7 +19,6 @@
 
 #include "cssysdef.h"
 //#include "ivaria/reporter.h"
-#include "ivaria/softanim.h"
 #include "imesh/animesh.h"
 #include "iengine/scenenode.h"
 #include "iengine/movable.h"
@@ -61,7 +60,7 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 SCF_IMPLEMENT_FACTORY (csBulletSystem)
 
@@ -132,50 +131,34 @@ void csBulletSystem::SetInternalScale (float scale)
 bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
 {
   this->object_reg = object_reg;
-  csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet> (
-    object_reg, "crystalspace.shared.stringset");
-  baseID = strings->Request ("base");
-  colldetID = strings->Request ("colldet");
   return true;
 }
 
 csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound ( )
 {
-   csRef<iColliderCompound> collider = csPtr<iColliderCompound>(new csBulletColliderCompound(this));
+   csRef<iColliderCompound> collider = csPtr<iColliderCompound>(new csBulletColliderCompound (this));
 
   //colliders.Push (collider);
   return csPtr<iColliderCompound>(collider);
 }
 
-csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify)
-{
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh);
-  if (!triMesh)
-    return csPtr<CS::Collisions::iColliderConvexMesh> (nullptr);
-
-  return CreateColliderConvexMesh(triMesh, mesh, simplify);
-}
-
 csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (
-  iTriangleMesh* triMesh, iMeshWrapper* mesh, bool simplify)
+  iTriangleMesh* triMesh, bool simplify)
 {
   btTriangleMesh* btTriMesh = CreateBulletTriMesh (triMesh);
   
   csRef<csBulletColliderConvexMesh> collider = csPtr<csBulletColliderConvexMesh>(
-    new csBulletColliderConvexMesh (mesh, triMesh, btTriMesh, this, simplify));
+    new csBulletColliderConvexMesh (triMesh, btTriMesh, this, simplify));
 
   //colliders.Push (collider);
   return csPtr<iColliderConvexMesh>(collider);
 }
 
-csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iMeshWrapper* mesh)
+csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iTriangleMesh* mesh)
 {
-  csRef<iTriangleMesh> triMesh = FindColdetTriangleMesh (mesh);
-  if (!triMesh) return csPtr<CS::Collisions::iColliderConcaveMesh> (nullptr);
-
-  btTriangleMesh* btTriMesh = CreateBulletTriMesh (triMesh);
-
-  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>(new csBulletColliderConcaveMesh (mesh, btTriMesh,this));
+  btTriangleMesh* btTriMesh = CreateBulletTriMesh (mesh);
+  csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>
+    (new csBulletColliderConcaveMesh (mesh, btTriMesh, this));
 
   //colliders.Push (collider);
   return csPtr<iColliderConcaveMesh>(collider);
@@ -184,7 +167,8 @@ csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcav
 csPtr<CS::Collisions::iColliderConcaveMeshScaled> csBulletSystem::CreateColliderConcaveMeshScaled (
   CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale)
 {
-  csRef<csBulletColliderConcaveMeshScaled> coll = csPtr<csBulletColliderConcaveMeshScaled>(new csBulletColliderConcaveMeshScaled (collider, scale,this));
+  csRef<csBulletColliderConcaveMeshScaled> coll = csPtr<csBulletColliderConcaveMeshScaled>
+    (new csBulletColliderConcaveMeshScaled (collider, scale, this));
 
   //colliders.Push (coll);
   return csPtr<iColliderConcaveMeshScaled>(coll);
@@ -247,46 +231,6 @@ csPtr<CS::Collisions::iCollisionTerrain> csBulletSystem::CreateCollisionTerrain 
   return csPtr<iCollisionTerrain>(collider);
 }
 
-csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory (int id)
-{
-  // Compiler can optimize this into a table-lookup
-  iCollisionObjectFactory* factory;
-  switch (id)
-  {
-  case COLLISION_OBJECT_ACTOR:
-    {
-    factory = new BulletCollisionActorFactory();
-    }
-  case COLLISION_OBJECT_GHOST:
-    {
-      factory = new BulletGhostCollisionObjectFactory();
-    }
-  case PHYSICAL_OBJECT_DYNAMICACTOR:
-    {
-      factory = new BulletDynamicActorFactory();
-    }
-  case PHYSICAL_OBJECT_RIGIDBODY:
-    {
-      factory = new BulletRigidBodyFactory();
-    }
-
-    // TODO: SoftBody factories
-  //case InternalCollisionObjectTypeSoftRope:
-  //  {
-  //  }
-  //case InternalCollisionObjectTypeSoftCloth:
-  //  {
-  //  }
-  //case InternalCollisionObjectTypeSoftMesh:
-  //  {
-  //  }
-  default:
-    // Just create a rigid body from it, for now
-    factory = new BulletRigidBodyFactory();
-  }
-  return csPtr<iCollisionObjectFactory> (factory);
-}
-
 CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector ()
 {
   csRef<csBulletSector> collSector = csPtr<csBulletSector>(new csBulletSector (this));
@@ -297,18 +241,18 @@ CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector ()
 
 CS::Collisions::iCollisionSector* csBulletSystem::GetOrCreateCollisionSector (iSector* sector)
 {
-  iCollisionSector* collSector = GetCollisionSector(sector);
+  iCollisionSector* collSector = GetCollisionSector (sector);
   if (!collSector)
   {
-    collSector = CreateCollisionSector();
-    collSector->SetSector(sector);
+    collSector = CreateCollisionSector ();
+    collSector->SetSector (sector);
   }
   return collSector;
 }
 
-CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const csString& name)
+CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const char* name)
 {
-  return this->collSectors.FindByName (name.GetData());
+  return this->collSectors.FindByName (name);
 }
 
 CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSector* sec)
@@ -462,23 +406,23 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
 /// Creates a new factory to produce vehicles
 csPtr<iVehicleFactory> csBulletSystem::CreateVehicleFactory ()
 {
-  return csPtr<iVehicleFactory>(new BulletVehicleFactory(this));
+  return csPtr<iVehicleFactory>(new BulletVehicleFactory (this));
 }
 
 /// Creates a new factory to produce vehicle wheels
 csPtr<iVehicleWheelFactory> csBulletSystem::CreateVehicleWheelFactory ()
 {
-  return csPtr<iVehicleWheelFactory>(new BulletVehicleWheelFactory(this));
+  return csPtr<iVehicleWheelFactory>(new BulletVehicleWheelFactory (this));
 }
 
 csPtr<iVehicleWheelInfo> csBulletSystem::CreateVehicleWheelInfo (iVehicleWheelFactory* factory)
 {
-  return csPtr<iVehicleWheelInfo>(new BulletVehicleWheelInfo(factory));
+  return csPtr<iVehicleWheelInfo>(new BulletVehicleWheelInfo (factory));
 }
 
 iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
 {
-  return vehicleMap.Get(obj, nullptr);
+  return vehicleMap.Get (obj, nullptr);
 }
 
 
@@ -500,7 +444,7 @@ CS::Collisions::CollisionGroup& csBulletSystem::CreateCollisionGroup (const char
   if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
     return collGroups[CollisionGroupTypeDefault];
 
-  CS::Collisions::CollisionGroup newGroup(name);
+  CS::Collisions::CollisionGroup newGroup (name);
   newGroup.value = 1 << groupCount;
   newGroup.mask = ~newGroup.value;
   collGroups.Push (newGroup);
@@ -555,7 +499,7 @@ bool csBulletSystem::GetGroupCollision (const char* name1,
 }
 
 bool dummyWorldInit = false;
-void csBulletSystem::SeparateDisconnectedSubMeshes(iColliderCompound* compoundCollider, iColliderCompoundResult* results)
+void csBulletSystem::SeparateDisconnectedSubMeshes (iColliderCompound* compoundCollider, iColliderCompoundResult* results)
 {
   // Make sure we have a valid dispatcher
   static btDefaultCollisionConfiguration* configuration;
@@ -579,145 +523,125 @@ void csBulletSystem::SeparateDisconnectedSubMeshes(iColliderCompound* compoundCo
   }
 
   // Add all partial colliders as objects to the collision world
-  CS_ALLOC_STACK_ARRAY(btCollisionObject, objs, compoundCollider->GetColliderCount());
-  for (size_t i = 0; i < compoundCollider->GetColliderCount(); ++i)
+  CS_ALLOC_STACK_ARRAY (btCollisionObject, objs, compoundCollider->GetColliderCount ());
+  for (size_t i = 0; i < compoundCollider->GetColliderCount (); ++i)
   {
     btCollisionObject& obj = objs[i];
 
     CS::Collisions::iCollider* ipartialCollider;
     csOrthoTransform transform;
-    compoundCollider->GetCollider(i, ipartialCollider, transform);
+    compoundCollider->GetCollider (i, ipartialCollider, transform);
 
     csBulletCollider* partialCollider = dynamic_cast<csBulletCollider*>(ipartialCollider);
-    obj.setCollisionShape(partialCollider->GetOrCreateBulletShape());
-    obj.setWorldTransform(CSToBullet(transform, getInternalScale()));
-    bulletWorld->addCollisionObject(&obj);
+    obj.setCollisionShape (partialCollider->GetOrCreateBulletShape ());
+    obj.setWorldTransform (CSToBullet (transform, getInternalScale ()));
+    bulletWorld->addCollisionObject (&obj);
   }
   
   // Test all partial colliders against each other
-  bulletWorld->performDiscreteCollisionDetection();
+  bulletWorld->performDiscreteCollisionDetection ();
   
   // TODO: Build islands
-  //btPersistentManifold** manifold = dispatcher->getInternalManifoldPointer();
-  //int maxNumManifolds = dispatcher->getNumManifolds();
+  //btPersistentManifold** manifold = dispatcher->getInternalManifoldPointer ();
+  //int maxNumManifolds = dispatcher->getNumManifolds ();
   //for (i=0;i<maxNumManifolds ;i++)
   //{
-  //  btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal(i);
+  //  btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal (i);
 
-  //  btCollisionObject* colObj0 = static_cast<btCollisionObject*>(manifold->getBody0());
-  //  btCollisionObject* colObj1 = static_cast<btCollisionObject*>(manifold->getBody1());
+  //  btCollisionObject* colObj0 = static_cast<btCollisionObject*>(manifold->getBody0 ());
+  //  btCollisionObject* colObj1 = static_cast<btCollisionObject*>(manifold->getBody1 ());
 
   //  ///@todo: check sleeping conditions!
-  //  if (((colObj0) && colObj0->getActivationState() != ISLAND_SLEEPING) ||
-  //    ((colObj1) && colObj1->getActivationState() != ISLAND_SLEEPING))
+  //  if (((colObj0) && colObj0->getActivationState () != ISLAND_SLEEPING) ||
+  //    ((colObj1) && colObj1->getActivationState () != ISLAND_SLEEPING))
   //  {
 
   //    //kinematic objects don't merge islands, but wake up all connected objects
-  //    if (colObj0->isKinematicObject() && colObj0->getActivationState() != ISLAND_SLEEPING)
+  //    if (colObj0->isKinematicObject () && colObj0->getActivationState () != ISLAND_SLEEPING)
   //    {
-  //      if (colObj0->hasContactResponse())
-  //        colObj1->activate();
+  //      if (colObj0->hasContactResponse ())
+  //        colObj1->activate ();
   //    }
-  //    if (colObj1->isKinematicObject() && colObj1->getActivationState() != ISLAND_SLEEPING)
+  //    if (colObj1->isKinematicObject () && colObj1->getActivationState () != ISLAND_SLEEPING)
   //    {
-  //      if (colObj1->hasContactResponse())
-  //        colObj0->activate();
+  //      if (colObj1->hasContactResponse ())
+  //        colObj0->activate ();
   //    }
-  //    if(m_splitIslands)
+  //    if (m_splitIslands)
   //    { 
   //      //filtering for response
-  //      if (dispatcher->needsResponse(colObj0,colObj1))
-  //        m_islandmanifold.push_back(manifold);
+  //      if (dispatcher->needsResponse (colObj0,colObj1))
+  //        m_islandmanifold.push_back (manifold);
   //    }
   //  }
   //}
 }
 
-iTriangleMesh* csBulletSystem::FindColdetTriangleMesh (iMeshWrapper* mesh)
-{
-  iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
-  csRef<iTriangleMesh> triMesh;
-  if  (objModel->GetTriangleData (colldetID))
-    triMesh = objModel->GetTriangleData (colldetID);
-  else
-    triMesh = objModel->GetTriangleData (baseID);
-
-  if (!triMesh || triMesh->GetVertexCount () == 0
-      || triMesh->GetTriangleCount () == 0)
-  {
-    /*csFPrintf (stderr, "iCollider: No collision polygons, triangles or vertices on mesh factory %s\n",
-      CS::Quote::Single (mesh->QueryObject ()->GetName ()));*/
-
-    return csRef<iTriangleMesh> (nullptr);
-  }
-  return triMesh;
-}
-
-
 // Factory
 
+csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory
+  (CS::Collisions::iCollider *collider, const char* name)
+{
+  BulletRigidBodyFactory* factory = new BulletRigidBodyFactory (collider, name);
+  factory->system = this;
+  factory->SetState (STATE_STATIC);
+  return csPtr<iCollisionObjectFactory> (factory);
+}
 
 csPtr<CS::Collisions::iGhostCollisionObjectFactory> 
-  csBulletSystem::CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider, const csString& name) 
+  csBulletSystem::CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider, const char* name) 
 { 
-  BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory(collider, name);
+  BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory (collider, name);
   fact->system = this;
-
   return csPtr<iGhostCollisionObjectFactory>(fact); 
 }
 
 csPtr<CS::Collisions::iCollisionActorFactory> 
-  csBulletSystem::CreateCollisionActorFactory (CS::Collisions::iCollider* collider, const csString& name) 
+  csBulletSystem::CreateCollisionActorFactory (CS::Collisions::iCollider* collider, const char* name) 
 {
-  BulletCollisionActorFactory* fact = new BulletCollisionActorFactory(collider, name);
+  BulletCollisionActorFactory* fact = new BulletCollisionActorFactory (collider, name);
   fact->system = this;
-
   return csPtr<iCollisionActorFactory>(fact); 
 }
 
 csPtr<CS::Physics::iRigidBodyFactory> 
-  csBulletSystem::CreateRigidBodyFactory (CS::Collisions::iCollider* collider, const csString& name)
+  csBulletSystem::CreateRigidBodyFactory (CS::Collisions::iCollider* collider, const char* name)
 {
-  BulletRigidBodyFactory* fact = new BulletRigidBodyFactory(collider, name);
+  BulletRigidBodyFactory* fact = new BulletRigidBodyFactory (collider, name);
   fact->system = this;
-
   return csPtr<iRigidBodyFactory>(fact); 
 }
 
 csPtr<CS::Physics::iDynamicActorFactory> 
-  csBulletSystem::CreateDynamicActorFactory (CS::Collisions::iCollider* collider, const csString& name)
+  csBulletSystem::CreateDynamicActorFactory (CS::Collisions::iCollider* collider, const char* name)
 {
-  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory(collider, name);
+  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (collider, name);
   fact->system = this;
-
   return csPtr<iDynamicActorFactory>(fact);
 }
 
 csPtr<CS::Physics::iSoftRopeFactory> csBulletSystem::CreateSoftRopeFactory ()
 {
-  BulletSoftRopeFactory* fact = new BulletSoftRopeFactory();
+  BulletSoftRopeFactory* fact = new BulletSoftRopeFactory ();
   fact->system = this;
-
   return csPtr<iSoftRopeFactory>(fact);
 }
 
 csPtr<CS::Physics::iSoftClothFactory> csBulletSystem::CreateSoftClothFactory ()
 {
-  BulletSoftClothFactory* fact = new BulletSoftClothFactory();
+  BulletSoftClothFactory* fact = new BulletSoftClothFactory ();
   fact->system = this;
-
   return csPtr<iSoftClothFactory>(fact);
 }
 
 csPtr<CS::Physics::iSoftMeshFactory> csBulletSystem::CreateSoftMeshFactory ()
 {
-  BulletSoftMeshFactory* fact = new BulletSoftMeshFactory();
+  BulletSoftMeshFactory* fact = new BulletSoftMeshFactory ();
   fact->system = this;
-
   return csPtr<iSoftMeshFactory>(fact);
 }
 
-void csBulletSystem::DeleteAll() 
+void csBulletSystem::DeleteAll () 
 {
   collSectors.DeleteAll ();
 }
@@ -752,4 +676,4 @@ btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
 }
 
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)

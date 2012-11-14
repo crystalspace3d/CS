@@ -23,14 +23,14 @@
 #include "csutil/dirtyaccessarray.h"
 #include "iutil/comp.h"
 #include "csutil/weakref.h"
-#include "ivaria/physics.h"
+#include "imesh/softanim.h"
 #include "iengine/movable.h"
 #include "imesh/animesh.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(SoftAnim2)
 {
 class SoftBodyControlType : public scfImplementation2<SoftBodyControlType,
-  CS::Physics::iSoftBodyAnimationControlType, iComponent>
+  CS::Animation::iSoftBodyAnimationControlType, iComponent>
 {
   friend class SoftBodyControlFactory;
   friend class SoftBodyControl;
@@ -54,11 +54,11 @@ private:
 
 class SoftBodyControlFactory : public scfImplementation2<SoftBodyControlFactory, 
   scfFakeInterface<iGenMeshAnimationControlFactory>,
-  CS::Physics::iSoftBodyAnimationControlFactory>
+  CS::Animation::iSoftBodyAnimationControlFactory>
 {
   friend class SoftBodyControl;
 public:
-  CS_LEAKGUARD_DECLARE(CS::Physics::iSoftBodyAnimationControlFactory);
+  CS_LEAKGUARD_DECLARE(CS::Animation::iSoftBodyAnimationControlFactory);
 
   SoftBodyControlFactory (SoftBodyControlType* type);
 
@@ -73,10 +73,10 @@ private:
 };
 
 class SoftBodyControl : public scfImplementation2<SoftBodyControl, 
-  scfFakeInterface<iGenMeshAnimationControl>, CS::Physics::iSoftBodyAnimationControl>
+  scfFakeInterface<iGenMeshAnimationControl>, CS::Animation::iSoftBodyAnimationControl>
 {
 public:
-  CS_LEAKGUARD_DECLARE(CS::Physics::iSoftBodyAnimationControl);
+  CS_LEAKGUARD_DECLARE(CS::Animation::iSoftBodyAnimationControl);
 
   SoftBodyControl (iMeshObject* mesh);
 

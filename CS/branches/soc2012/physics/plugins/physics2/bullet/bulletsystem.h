@@ -78,7 +78,7 @@ public:
     return strcmp (item.name.GetData (), key);
   }
   static csArrayCmp<CS::Collisions::CollisionGroup, char const*>
-    KeyCmp(char const* k)
+    KeyCmp (char const* k)
   {
     return csArrayCmp<CS::Collisions::CollisionGroup, char const*> (k,CompareKey);
   }
@@ -108,8 +108,6 @@ private:
   btSoftBodyWorldInfo* defaultInfo;
   float internalScale;
   float inverseInternalScale;
-  csStringID baseID;
-  csStringID colldetID;
   
   CollisionGroupVector collGroups;
   size_t systemFilterCount;
@@ -125,9 +123,8 @@ public:
   // iCollisionSystem
   virtual void SetInternalScale (float scale);
   virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound ( );
-  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iMeshWrapper* mesh, bool simplify = false);
-  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, iMeshWrapper* mesh = nullptr, bool simplify = false);
-  virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iMeshWrapper* mesh);
+  virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* mesh, bool simplify = false);
+  virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh);
   virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
       (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale);
   virtual csPtr<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
@@ -142,11 +139,11 @@ public:
   
   virtual CS::Collisions::iCollisionSector* CreateCollisionSector ();
   virtual CS::Collisions::iCollisionSector* GetOrCreateCollisionSector (iSector* sector);
-  virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize(); }
-  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const csString& name);
+  virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize (); }
+  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) 
   {
-    return csRef<CS::Collisions::iCollisionSector>(scfQueryInterface<CS::Collisions::iCollisionSector>(collSectors.Get(index)));
+    return csRef<CS::Collisions::iCollisionSector>(scfQueryInterface<CS::Collisions::iCollisionSector>(collSectors.Get (index)));
   }
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
 
@@ -154,25 +151,25 @@ public:
   virtual csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector () 
   { 
     return csPtr<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(
-      csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector())));
+      csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector ())));
   }
   
   
   // Factories
-  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (int id);
+  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory
+    (CS::Collisions::iCollider *collider, const char* name = "CollisionObject");
 
-  virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory (CS::Collisions::iCollider *collider, const csString & name = "CollisionObject")
-  { 
-    return csPtr<CS::Collisions::iCollisionObjectFactory>(csRef<CS::Physics::iRigidBodyFactory>(CreateRigidBodyFactory(collider, name))); 
-  }
+  virtual csPtr<CS::Collisions::iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "GhostObject");
 
-  virtual csPtr<CS::Collisions::iGhostCollisionObjectFactory> CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "GhostObject");
+  virtual csPtr<CS::Collisions::iCollisionActorFactory> CreateCollisionActorFactory
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "CollisionActor");
 
-  virtual csPtr<CS::Collisions::iCollisionActorFactory> CreateCollisionActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "CollisionActor");
+  virtual csPtr<CS::Physics::iRigidBodyFactory> CreateRigidBodyFactory
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "RigidBody");
 
-  virtual csPtr<CS::Physics::iRigidBodyFactory> CreateRigidBodyFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "RigidBody");
-
-  virtual csPtr<CS::Physics::iDynamicActorFactory> CreateDynamicActorFactory (CS::Collisions::iCollider* collider = nullptr, const csString& name = "DynamicActor");
+  virtual csPtr<CS::Physics::iDynamicActorFactory> CreateDynamicActorFactory
+    (CS::Collisions::iCollider* collider = nullptr, const char* name = "DynamicActor");
 
   virtual csPtr<CS::Physics::iSoftRopeFactory> CreateSoftRopeFactory ();
   virtual csPtr<CS::Physics::iSoftClothFactory> CreateSoftClothFactory () ;
@@ -209,7 +206,7 @@ public:
   /// Returns the vehicle that the given object is a part of, or nullptr
   virtual CS::Physics::iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj);
 
-  csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap() { return vehicleMap; }
+  csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap () { return vehicleMap; }
 
 
   // Misc
@@ -222,22 +219,20 @@ public:
   virtual bool GetGroupCollision (const char* name1,
     const char* name2);
   
-  virtual void SeparateDisconnectedSubMeshes(CS::Collisions::iColliderCompound* mesh, CS::Collisions::iColliderCompoundResult* results);
+  virtual void SeparateDisconnectedSubMeshes (CS::Collisions::iColliderCompound* mesh, CS::Collisions::iColliderCompoundResult* results);
 
-  virtual iTriangleMesh* FindColdetTriangleMesh (iMeshWrapper* mesh);
-
-  void DeleteAll();
+  void DeleteAll ();
 
   // Internal stuff
-  btSoftBodyWorldInfo* GetSoftBodyWorldInfo() const { return defaultInfo; }
-  float getInverseInternalScale() {return inverseInternalScale;}
-  float getInternalScale() {return internalScale;}
+  btSoftBodyWorldInfo* GetSoftBodyWorldInfo () const { return defaultInfo; }
+  float getInverseInternalScale () {return inverseInternalScale;}
+  float getInternalScale () {return internalScale;}
   void ReportWarning (const char* msg, ...);
   
   btTriangleMesh* CreateBulletTriMesh (iTriangleMesh* triMesh);
 };
 
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)
 
 #endif

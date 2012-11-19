@@ -39,7 +39,7 @@ csBulletJoint::csBulletJoint (csBulletSystem* system)
   transConstraintX (false), transConstraintY (false), transConstraintZ (false),
   rotConstraintX (false), rotConstraintY (false), rotConstraintZ (false)
 {
-  float squaredScale = sys->getInternalScale () * sys->getInternalScale ();
+  float squaredScale = sys->GetInternalScale () * sys->GetInternalScale ();
   maxforce = btVector3 (0.1f * squaredScale,
     0.1f * squaredScale,
     0.1f * squaredScale);
@@ -136,7 +136,7 @@ void csBulletJoint::SetPosition (const csVector3& position, bool forceUpdate)
     csBulletRigidBody* body1;
     body1 = dynamic_cast<csBulletRigidBody*> (bodies[0]);
 
-    btTransform jointTransform = CSToBullet (transform , sys->getInternalScale ());
+    btTransform jointTransform = CSToBullet (transform , sys->GetInternalScale ());
 
     if (!body1->btBody)
       return;
@@ -163,14 +163,14 @@ void csBulletJoint::SetTransConstraints (bool X, bool Y, bool Z, bool forceUpdat
 void csBulletJoint::SetMinimumDistance (const csVector3& dist, bool forceUpdate)
 
 {
-  minDist = CSToBullet (dist, sys->getInternalScale ());
+  minDist = CSToBullet (dist, sys->GetInternalScale ());
   if (forceUpdate)
     RebuildJoint ();
 }
 
 void csBulletJoint::SetMaximumDistance (const csVector3& dist, bool forceUpdate)
 {
-  maxDist = CSToBullet (dist, sys->getInternalScale ());
+  maxDist = CSToBullet (dist, sys->GetInternalScale ());
   if (forceUpdate)
     RebuildJoint ();
 }
@@ -214,7 +214,7 @@ void csBulletJoint::SetDesiredVelocity (const csVector3& velo, bool forceUpdate)
 
 void csBulletJoint::SetMaxForce (const csVector3& force, bool forceUpdate)
 {
-  float squaredScale = sys->getInternalScale () * sys->getInternalScale ();
+  float squaredScale = sys->GetInternalScale () * sys->GetInternalScale ();
   maxforce = btVector3 (force.x * squaredScale,
     force.y * squaredScale,
     force.z * squaredScale);
@@ -225,7 +225,7 @@ void csBulletJoint::SetMaxForce (const csVector3& force, bool forceUpdate)
 
 csVector3 csBulletJoint::GetMaxForce () const
 {
-  float squaredInverseScale = sys->getInverseInternalScale () * sys->getInverseInternalScale ();
+  float squaredInverseScale = sys->GetInverseInternalScale () * sys->GetInverseInternalScale ();
   return csVector3 (maxforce.getX () * squaredInverseScale,
     maxforce.getY () * squaredInverseScale,
     maxforce.getZ () * squaredInverseScale);
@@ -254,7 +254,7 @@ bool csBulletJoint::RebuildJoint ()
 
     if (jointFlag & (JOINT_POSITION | JOINT_TRANSFORM))
     {
-      btTransform jointTransform = CSToBullet (transform , sys->getInternalScale ());
+      btTransform jointTransform = CSToBullet (transform , sys->GetInternalScale ());
       frA = body1->btBody->getCenterOfMassTransform().inverse() * jointTransform;
       if (bodies[1])
       {
@@ -443,8 +443,8 @@ bool csBulletJoint::RebuildJoint ()
       dofJoint->getRotationalLimitMotor (2)->m_bounce = bounce[2];
       rigidJoint = dofJoint;
     } 
-    rigidJoint->setBreakingImpulseThreshold (threshold * sys->getInternalScale ());
-    rigidJoint->setDbgDrawSize(sys->getInternalScale ());
+    rigidJoint->setBreakingImpulseThreshold (threshold * sys->GetInternalScale ());
+    rigidJoint->setDbgDrawSize(sys->GetInternalScale ());
   }
   return true;
 }
@@ -525,7 +525,7 @@ void csBulletJoint::SetBreakingImpulseThreshold (float threshold, bool forceUpda
 {
   this->threshold = threshold;
   if (rigidJoint)
-    rigidJoint->setBreakingImpulseThreshold (threshold * sys->getInternalScale ());
+    rigidJoint->setBreakingImpulseThreshold (threshold * sys->GetInternalScale ());
   else
     if (forceUpdate)
       RebuildJoint ();
@@ -564,7 +564,7 @@ void csBulletJoint::AddBulletJoint ()
       btSoftBody::LJoint::Specs	lspecs;
       lspecs.cfm		=	1;
       lspecs.erp		=	1; 
-      lspecs.position = CSToBullet (position, sys->getInternalScale ());
+      lspecs.position = CSToBullet (position, sys->GetInternalScale ());
       if (bodies[1]->QueryRigidBody())
       {  
         csBulletRigidBody* body2 = dynamic_cast<csBulletRigidBody*> (bodies[1]);

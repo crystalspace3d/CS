@@ -32,7 +32,7 @@
 
 #include "iengine/campos.h"
 
-const static csScalar StaticElasticity(csScalar(0.1));
+const static float StaticElasticity = 0.1f;
 
 const csString DefaultSectorName("defaultsector");
 
@@ -67,7 +67,7 @@ void RotatePoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& ro
 }
 
 
-void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos, csScalar wallThickness)
+void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos, float wallThickness)
 {
   // The boxes that make up floor and ceiling
   // AABB over these two is the entire room, including walls
@@ -110,7 +110,7 @@ void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos,
   
 }
 
-void PhysDemo::CreateBoxRoom(csScalar size)
+void PhysDemo::CreateBoxRoom(float size)
 { 
   // Create and setup sector
   room = engine->CreateSector (DefaultSectorName);
@@ -118,12 +118,12 @@ void PhysDemo::CreateBoxRoom(csScalar size)
 
   // Add cam pos
   iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Center");
-  pos->Set(DefaultSectorName, csVector3 (0, 0, 0), csVector3 (0, 0, 1), UpVector);
+  pos->Set(DefaultSectorName, csVector3 (0, 1.0f - size * .5f, 0), csVector3 (0, 0, 1), UpVector);
 
   // Room parameters
-  csVector3 roomExtents(size); csVector3 halfRoomExtents(csScalar(.5) * roomExtents);
+  csVector3 roomExtents(size); csVector3 halfRoomExtents(.5f * roomExtents);
   csVector3 roomPos(0);
-  csScalar wallThickness = 5;
+  float wallThickness = 5;
   
   //csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two portals
   
@@ -134,7 +134,7 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   CreateBoxRoom(roomExtents, roomPos, wallThickness);
   
   //// Portal parameters
-  //csScalar portalEpsilon = csScalar(0.01);
+  //float portalEpsilon = 0.01;
   ////csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
   //csVector2 halfPortalExtents(1);
 
@@ -241,6 +241,40 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   // Set up some lights
   room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));
 
+  // Creating lights
+  csRef<iLight> light;
+  iLightList* lightList = room->GetLights ();
+
+  // This light is for the background
+  light = engine->CreateLight (0, csVector3 (-1, -1, 0), 9000, csColor (1));
+  light->SetAttenuationMode (CS_ATTN_NONE);
+  lightList->Add (light);
+
+  // Other lights
+  light = engine->CreateLight (0, csVector3 (1, 0, 0), 8, csColor4 (1, 1, 1, 1));
+  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  lightList->Add (light);
+
+  light = engine->CreateLight (0, csVector3 (-3, 0,  0), 8, csColor (1));
+  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  lightList->Add (light);
+
+  light = engine->CreateLight (0, csVector3 (0, 0, -3), 8, csColor (1));
+  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  lightList->Add (light);
+
+  light = engine->CreateLight (0, csVector3 (0, 0, 3), 8, csColor (1));
+  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  lightList->Add (light);
+
+  light = engine->CreateLight (0, csVector3 (0, -3, 0), 8, csColor (1));
+  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  lightList->Add (light);
+
+  engine->Prepare ();
+  CS::Lighting::SimpleStaticLighter::ShineLights
+    (room, engine, CS::Lighting::SimpleStaticLighter::CS_SHADOW_FULL);
+/*
   csRef<iLight> light;
   iLightList* lightList = room->GetLights();
   lightList->RemoveAll();
@@ -261,6 +295,7 @@ void PhysDemo::CreateBoxRoom(csScalar size)
   lightList->Add (light);
 
   CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
+*/
 }
 
 bool PhysDemo::LoadLevel(const char* pathname, bool convexDecomp)

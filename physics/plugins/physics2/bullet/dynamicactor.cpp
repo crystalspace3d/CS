@@ -32,9 +32,9 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  static const csScalar DefaultGroundAngleCosThresh = csScalar(0.7f);             // min cos of angle between ground and up-axis (45 degrees)
+  static const float DefaultGroundAngleCosThresh = 0.7f;             // min cos of angle between ground and up-axis (45 degrees)
   static const btVector3 BTUpVector(CSToBullet(csVector3 (0.0f, 1.0f, 0.0f), 1));
-  static const csScalar AddedMargin = csScalar(0.02f);
+  static const float AddedMargin = 0.02f;
 
   csBulletActorMotionState::csBulletActorMotionState(csBulletRigidBody* body,
     const btTransform& initialTransform,
@@ -127,7 +127,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (IsFreeFalling())
     {
       // cannot entirely control movement mid-air
-      csScalar realAirFactor = airControlFactor * sector->GetWorldTimeStep();
+      float realAirFactor = airControlFactor * sector->GetWorldTimeStep();
       newVel = realAirFactor * newVel;
       newVel += (1.f - realAirFactor) * vel;
     }
@@ -144,7 +144,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (IsFreeFalling())
     {
       // cannot entirely control movement mid-air
-      csScalar realAirFactor = airControlFactor * sector->GetWorldTimeStep();
+      float realAirFactor = airControlFactor * sector->GetWorldTimeStep();
       newVel2 = realAirFactor * newVel2;
       newVel2 += (1.f - realAirFactor) * csVector2 (vel.x, vel.z);
     }
@@ -168,28 +168,28 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // (imagine jumping in professional NIKE's vs jumping in cozy slippers)
 
     // split inverse of impulse between all objects
-   /* csScalar touchedGroundObjectCountInv = 1.f / touchedGroundObjectCount;
+   /* float touchedGroundObjectCountInv = 1.f / touchedGroundObjectCount;
     vel[1] = -GetJumpSpeed() * touchedGroundObjectCountInv;
     vel[HorizontalAxis1] = -vel[HorizontalAxis1] * touchedGroundObjectCountInv;
     vel[HorizontalAxis2] = -vel[HorizontalAxis2] * touchedGroundObjectCountInv;
 
-    btVector3 btVel = CSToBullet(vel, system->getInternalScale());*/
+    btVector3 btVel = CSToBullet(vel, system->GetInternalScale());*/
 
     // iterate over all objects touching the object
     // TODO: Fix me
     //for (int j = 0; j < manifoldArray.size(); ++j)
     //{
     //  btPersistentManifold* manifold = manifoldArray[j];
-    //  csScalar directionSign;
+    //  float directionSign;
     //  btCollisionObject* obj;
     //  if (manifold->getBody0() == ghost)
     //  {
-    //    directionSign = csScalar(-1.0);
+    //    directionSign = -1.0;
     //    obj = static_cast<btCollisionObject*> (manifold->getBody1());
     //  }
     //  else
     //  {
-    //    directionSign = csScalar(1.0);
+    //    directionSign = 1.0;
     //    obj = static_cast<btCollisionObject*> (manifold->getBody0());
     //  }
 
@@ -200,7 +200,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //  for (int p=0; p < manifold->getNumContacts(); ++p)
     //  {
     //    const btManifoldPoint&pt = manifold->getContactPoint(p);
-    //    csScalar dist = pt.getDistance();
+    //    float dist = pt.getDistance();
     //    if (dist < 0.0)
     //    {
     //      if (pt.m_normalWorldOnB.dot(BTUpVector) > DefaultGroundAngleCosThresh)
@@ -223,7 +223,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       DoesGravityApply();               // and gravity applies
   }
 
-  void csBulletDynamicActor::UpdatePreStep(csScalar dt)
+  void csBulletDynamicActor::UpdatePreStep(float dt)
   {
     onGround = TestOnGround();
 
@@ -234,7 +234,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  void csBulletDynamicActor::UpdatePostStep(csScalar dt)
+  void csBulletDynamicActor::UpdatePostStep(float dt)
   {
     if (kinematicSteps && !IsFreeFalling() && btBody->getLinearVelocity().length2() > 0)
     {
@@ -248,7 +248,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Code based on btKinematicCharacterController
 
-  void csBulletDynamicActor::stepUp (csScalar dt)
+  void csBulletDynamicActor::stepUp (float dt)
   {
     btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
     //m_targetPosition = currentPosition + BTUpVector * stepHeight;
@@ -265,7 +265,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //end.setIdentity ();
     //end.setOrigin (m_targetPosition);
 
-    //csKinematicClosestNotMeConvexResultCallback callback (btObject, -BTUpVector, csScalar(DefaultGroundAngleCosThresh));
+    //csKinematicClosestNotMeConvexResultCallback callback (btObject, -BTUpVector, DefaultGroundAngleCosThresh);
     //callback.m_collisionFilterGroup = collGroup.value;
     //callback.m_collisionFilterMask = collGroup.mask;
     //
@@ -288,7 +288,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //}
   }
 
-  void csBulletDynamicActor::stepDown (csScalar dt)
+  void csBulletDynamicActor::stepDown (float dt)
   {
     btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
 

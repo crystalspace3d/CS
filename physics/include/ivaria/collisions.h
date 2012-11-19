@@ -180,11 +180,11 @@ struct iCollisionObject : public virtual iBase
   /// Return the actor pointer if it's an actor, or NULL.
   virtual iActor* QueryActor () = 0;
 
-  /// Returns the sector to which is this object has been added or nullptr, if not in world
+  /**
+   * Return the collision sector containing this object, or nullptr if it is not
+   * in a sector (therefore currently not part of the physical simulation).
+   */
   virtual iCollisionSector* GetSector () const = 0;
-
-  /// Whether this object is currently added to the world
-  virtual bool IsInWorld () const = 0;
 
   /// Return the type of the collision object.
   virtual CollisionObjectType GetObjectType () const = 0;
@@ -193,10 +193,6 @@ struct iCollisionObject : public virtual iBase
   virtual void SetAttachedSceneNode (iSceneNode* sceneNode) = 0;
   /// Get the iSceneNode attached to this collision object. Its transform will always coincide with the object's transform
   virtual iSceneNode* GetAttachedSceneNode () const = 0;
-
-  /// Get the movable attached to this collision object.
-  // TODO: remove?
-  virtual iMovable* GetAttachedMovable () const = 0;
 
   /**
    * Set the camera attached to this collision object. Its position will be updated
@@ -212,24 +208,23 @@ struct iCollisionObject : public virtual iBase
 
   /// Set the collider that defines this object's shape
   virtual void SetCollider (iCollider* collider) = 0;
-  
-  /// Set the transform.
+
+  // TODO: set/get relative transform for the collider
+
+  /// Set the transform of this object.
   virtual void SetTransform (const csOrthoTransform& trans) = 0;
 
-  /// Get the transform.
+  /// Get the transform of this object.
   virtual csOrthoTransform GetTransform () const = 0;
   
-  /// Returns the AABB of this object, centered at it's center of mass
-  virtual void GetAABB (csVector3& aabbMin, csVector3& aabbMax) const = 0;
-
   /**
-   * Set current rotation in angles around every axis and set to actor.
+   * Set the current rotation in angles around every axis and set to actor.
    * If a camera is used, set it to camera too.
    */
   virtual void SetRotation (const csMatrix3& rot) = 0;
 
-  /// Rotate the collision actor by the given angle about the given axis
-  virtual void Rotate (const csVector3& v, float angle) = 0;
+  /// Returns the AABB of this object, centered at it's center of mass
+  virtual void GetAABB (csVector3& aabbMin, csVector3& aabbMax) const = 0;
 
   /// Rebuild this collision object.
   virtual void RebuildObject () = 0;
@@ -267,10 +262,9 @@ struct iCollisionObject : public virtual iBase
   virtual iCollisionObject* GetContactObject (size_t index) = 0;
   
   /// Whether this object may be excluded from deactivation.
-  // TODO: rename
-  virtual bool GetMayBeDeactivated () const = 0;
+  virtual bool GetDeactivable () const = 0;
   /// Whether this object may be excluded from deactivation.
-  virtual void SetMayBeDeactivated (bool d) = 0;
+  virtual void SetDeactivable (bool d) = 0;
 
   /// Creates a new object that has all the properties of this one, except for transformation and movable and camera
   // TODO: remove? factories should be used instead
@@ -278,9 +272,10 @@ struct iCollisionObject : public virtual iBase
   
   /**
    * Passive objects, such as portal clones, are not supposed to be tempered with 
-   * and should not be acted upon by game logic
+   * and should not be acted upon by game logic.
+   * \todo This should be removed, passive objects should simply not be visible from
+   * outside the physics plugin.
    */
-  // TODO: remove?
   virtual bool IsPassive () const = 0;
 };
 
@@ -545,6 +540,11 @@ struct iCollisionSystem : public virtual iBase
    */
   virtual void SetInternalScale (float scale) = 0;
 
+  /**
+   * Get the internal scale to be applied to the whole dynamic world.
+   */
+  virtual float GetInternalScale () const = 0;
+
   /// Creates an empty compound collider (does not have a root shape, but only children)
   virtual csPtr<iColliderCompound> CreateColliderCompound () = 0;
 
@@ -555,9 +555,8 @@ struct iCollisionSystem : public virtual iBase
   virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh) = 0;
 
   /// Create a scaled concave mesh collider.
-  // TODO: const csVector3& scale
   virtual csPtr<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
-    iColliderConcaveMesh* collider, csVector3 scale) = 0;
+    iColliderConcaveMesh* collider, const csVector3& scale) = 0;
 
   /// Create a cylinder collider, oriented along the y-axis
   virtual csPtr<iColliderCylinder> CreateColliderCylinder (float length, float radius) = 0;
@@ -584,21 +583,17 @@ struct iCollisionSystem : public virtual iBase
   /// Creates a new collision sector and adds it to the system's set
   virtual iCollisionSector* CreateCollisionSector () = 0;
   
-  /// Retrieves the collision sector that corresponds to the given iSector. It adds a new one if it does not exist yet
-  // TODO: FindCollisionSector instead?
-  virtual CS::Collisions::iCollisionSector* GetOrCreateCollisionSector (iSector* sector) = 0;
-
-  /// Amount of sectors in this system
+  /// Return the amount of sectors in this system
   virtual size_t GetCollisionSectorCount () const = 0;
-
-  /// Find a collision sector by name.
-  virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
 
   /// Get a collision sector by index
   virtual iCollisionSector* GetCollisionSector (size_t index) = 0; 
   
-  /// Get a collision sector by iSector
-  virtual iCollisionSector* GetCollisionSector (const iSector* sceneSector) = 0;
+  /// Find a collision sector by name, or nullptr if it has not been found.
+  virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
+
+  /// Find a collision sector by its associated iSector, or nullptr if it has not been found
+  virtual iCollisionSector* FindCollisionSector (const iSector* sceneSector) = 0;
 
   /// Create a collision group.
   virtual CollisionGroup& CreateCollisionGroup (const char* name) = 0;
@@ -621,10 +616,6 @@ struct iCollisionSystem : public virtual iBase
   // TODO: move in convex decompose
   virtual void SeparateDisconnectedSubMeshes
     (iColliderCompound* compoundCollider, iColliderCompoundResult* results) = 0;
-
-  /// Tries to find and return the underlying collision iTriangleMesh that has any of this system's ids
-  // TODO: move in collision utils
-  //virtual iTriangleMesh* FindColdetTriangleMesh (iMeshWrapper* mesh) = 0;
 
   // Factory
 

@@ -63,7 +63,7 @@ csBulletColliderTerrain::csBulletColliderTerrain ( float* gridData,
     size[2] * internalScale/ (cell->GetGridHeight() - 1));
   shape->setLocalScaling (localScale);
 
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
 }
 
 csBulletColliderTerrain::~csBulletColliderTerrain ()
@@ -206,7 +206,7 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
   // Create the terrain shape
   csBulletColliderTerrain* collider = new csBulletColliderTerrain(
     btHeightData, cell, minHeight, maxHeight,
-    collSystem->getInternalScale (), collSystem);
+    collSystem->GetInternalScale (), collSystem);
 
   // Create the rigid body and add it to the world
 

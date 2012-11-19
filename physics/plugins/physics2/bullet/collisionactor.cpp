@@ -21,6 +21,7 @@
 #include "btBulletCollisionCommon.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
+#include "iengine/scenenode.h"
 #include "ivaria/collisions.h"
 
 using namespace CS::Collisions;
@@ -89,7 +90,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void csBulletCollisionActor::Walk(csVector3 vel)
   {
     vel.Normalize();
-    controller->setVelocityForTimeInterval(CSToBullet(walkSpeed * vel, system->getInternalScale()), csScalar(INT_MAX));
+    controller->setVelocityForTimeInterval(CSToBullet(walkSpeed * vel, system->GetInternalScale()), INT_MAX);
   }
 
   void csBulletCollisionActor::WalkHorizontal (csVector2 newVel2)
@@ -111,19 +112,19 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // previous vertical movement is unchanged
     csVector3 newVel (newVel2.x, vel[1], newVel2.y);
     
-    controller->setVelocityForTimeInterval(CSToBullet(newVel, system->getInternalScale()), csScalar(INT_MAX));
+    controller->setVelocityForTimeInterval(CSToBullet(newVel, system->GetInternalScale()), INT_MAX);
   }
 
   void csBulletCollisionActor::StopMoving()
   {
     if (!IsFreeFalling())
     {
-      controller->setVelocityForTimeInterval(btVector3(0, 0, 0), csScalar(INT_MAX));
+      controller->setVelocityForTimeInterval(btVector3(0, 0, 0), INT_MAX);
     }
   }
 
  
-  void csBulletCollisionActor::UpdatePreStep (csScalar delta)
+  void csBulletCollisionActor::UpdatePreStep (float delta)
   {
     if (!controller) return;
 
@@ -161,22 +162,21 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // Resolve collisions and setup step height
     controller->updateAction(sector->bulletWorld, delta);
     
-    csVector3 pos = BulletToCS(controller->getGhostObject()->getWorldTransform().getOrigin(), this->system->getInverseInternalScale());
+    csVector3 pos = BulletToCS(controller->getGhostObject()->getWorldTransform().getOrigin(), this->system->GetInverseInternalScale());
     
     // update camera & movable position
     if (camera)
     {
       camera->GetTransform().SetOrigin(pos);
     }
-    iMovable* movable = GetAttachedMovable();
-    if (movable)
+    if (sceneNode)
     {
-      movable->SetFullPosition(pos);
-      movable->UpdateMove();
+      sceneNode->GetMovable ()->SetFullPosition (pos);
+      sceneNode->GetMovable ()->UpdateMove ();
     }
   }
   
-  void csBulletCollisionActor::UpdatePostStep (csScalar delta)
+  void csBulletCollisionActor::UpdatePostStep (float delta)
   {
   }
 
@@ -209,7 +209,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletCollisionActor::SetJumpSpeed (float jumpSpeed) 
   {
-    controller->setJumpSpeed(jumpSpeed * system->getInternalScale ());
+    controller->setJumpSpeed(jumpSpeed * system->GetInternalScale ());
   }
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

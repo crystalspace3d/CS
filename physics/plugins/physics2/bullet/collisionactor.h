@@ -34,10 +34,10 @@ class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisio
     csBulletGhostCollisionObject, CS::Collisions::iCollisionActor>
 {
   csKinematicActorController* controller;
-  csScalar airControlFactor;
-  csScalar walkSpeed;
+  float airControlFactor;
+  float walkSpeed;
   bool gravityEnabled;
-  csScalar stepHeight;
+  float stepHeight;
 
 public:
   void CreateCollisionActor(CS::Collisions::iCollisionActorFactory* props);
@@ -63,8 +63,8 @@ public:
 
   virtual void SetAttachedCamera(iCamera* camera);
   
-  virtual void UpdatePreStep (csScalar delta);
-  virtual void UpdatePostStep (csScalar delta);
+  virtual void UpdatePreStep (float delta);
+  virtual void UpdatePostStep (float delta);
 
   float GetGravity() const;
   void SetGravity(float gravity);

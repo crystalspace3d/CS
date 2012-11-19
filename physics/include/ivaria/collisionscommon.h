@@ -33,10 +33,6 @@
 #include "iutil/object.h"
 #include "colliders.h"
 
-/// The scalar type to be used for physics (float is default, but can easily be changed to double)
-// TODO: Most probably to be removed
-typedef float csScalar;
-
 struct iTerrainSystem;
 struct iSector;
 struct iMeshWrapper;
@@ -59,8 +55,7 @@ namespace Collisions
     COLLISION_OBJECT_PHYSICAL,       /*!< The collision object is a physical object and can be
 				       upcast to a iPhysicalObject. */
     COLLISION_OBJECT_GHOST,          /*!< The collision object is a ghost. */
-    COLLISION_OBJECT_ACTOR,          /*!< The collision object is an actor. */
-    COLLISION_OBJECT_END             /*!< Count of collision object types (probably to be removed). */
+    COLLISION_OBJECT_ACTOR          /*!< The collision object is an actor. */
   };
 
   typedef short CollisionGroupMask;

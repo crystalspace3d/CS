@@ -44,9 +44,8 @@ class csBulletSoftBody : public scfImplementationExt2<
   friend class BulletSoftClothFactory;
   friend class BulletSoftMeshFactory;
 
-  using csPhysicalBody::Enable;
-  using csPhysicalBody::Disable;
-  using csPhysicalBody::IsEnabled;
+  using csPhysicalBody::SetEnabled;
+  using csPhysicalBody::GetEnabled;
   using csPhysicalBody::GetLinearVelocity;
   using csPhysicalBody::SetLinearVelocity;
 
@@ -215,11 +214,11 @@ public:
 
   // iUpdatable
   /// Update the softbody before a simulation step
-  virtual void PreStep (csScalar dt);
+  virtual void PreStep (float dt);
   void UpdateAnchorInternalTick (btScalar timeStep);
   
   /// Update the softbody after a simulation step
-  virtual void PostStep (csScalar dt) {}
+  virtual void PostStep (float dt) {}
 
   /// We don't want the AddUpdatable method to add this object again when adding it as an updatable
   virtual CS::Collisions::iCollisionObject* GetCollisionObject() { return nullptr; }

@@ -69,11 +69,11 @@ namespace CS
       /**
        * Method is called before every step, given "dt" seconds have passed since the beginning of the last step.
        */
-      virtual void PreStep (csScalar dt) = 0;
+      virtual void PreStep (float dt) = 0;
       /**
        * Method is called after every step, given "dt" seconds have passed since the beginning of the last step.
        */
-      virtual void PostStep (csScalar dt) = 0;
+      virtual void PostStep (float dt) = 0;
 
       /// The collision object associated with this updatable (if any)
       virtual CS::Collisions::iCollisionObject* GetCollisionObject () = 0;

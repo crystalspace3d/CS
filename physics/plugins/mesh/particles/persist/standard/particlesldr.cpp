@@ -780,17 +780,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
           //        it might have to check against collisions in all of them
           iSector* sect = movable->GetSectors()->Get(0);
           
-          // get iCollisionSector from iSector
-          iCollisionSector* colSect = colSys->GetCollisionSector (sect);
-          if (colSect)
-          {
-            // create particles that respect physical boundaries
-            csRef<iParticleBuiltinEffectorForce> forceWithColl(
-              csRef<iParticleBuiltinEffectorForceWithCollisions>(
+          // Find or create the iCollisionSector associated to the iSector
+          iCollisionSector* colSect = colSys->FindCollisionSector (sect);
+          if (!colSect)
+	  {
+	    colSect = colSys->CreateCollisionSector ();
+	    colSect->SetSector (sect);
+	  }
+
+	  // create particles that respect physical boundaries
+	  csRef<iParticleBuiltinEffectorForce> forceWithColl(
+	    csRef<iParticleBuiltinEffectorForceWithCollisions>(
               factory->CreateForceWithCollisions(colSect)));
             
-            forceEffector = csPtr<iParticleBuiltinEffectorForce>(forceWithColl);
-          }
+	  forceEffector = csPtr<iParticleBuiltinEffectorForce>(forceWithColl);
         }
       }
     }

@@ -22,6 +22,7 @@
 #include "csgeom/transfrm.h"
 #include "csgeom/quaternion.h"
 #include "csgeom/vector3.h"
+#include "iengine/scenenode.h"
 #include "iutil/strset.h"
 
 // Bullet includes.
@@ -64,8 +65,8 @@ void csBulletSoftBody::RebuildObject ()
 CS::Collisions::HitBeamResult csBulletSoftBody::HitBeam (const csVector3& start, const csVector3& end)
 {
   CS::Collisions::HitBeamResult result;
-  btVector3 rayFrom = CSToBullet (start, system->getInternalScale ());
-  btVector3 rayTo = CSToBullet (end, system->getInternalScale ());
+  btVector3 rayFrom = CSToBullet (start, system->GetInternalScale ());
+  btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
   btSoftBody::sRayCast ray;
 
   btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
@@ -74,9 +75,9 @@ CS::Collisions::HitBeamResult csBulletSoftBody::HitBeam (const csVector3& start,
     result.hasHit = true;
     result.object = QueryCollisionObject ();
     result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-      system->getInverseInternalScale ());
+      system->GetInverseInternalScale ());
     result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-      system->getInverseInternalScale ());	
+      system->GetInverseInternalScale ());	
     
     btVector3 impact = rayFrom + (rayTo - rayFrom) * ray.fraction;
     switch (ray.feature)
@@ -152,21 +153,21 @@ void csBulletSoftBody::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
   btVector3 bmin, bmax;
   btBody->getAabb(bmin, bmax);
 
-  aabbMin = BulletToCS(bmin, system->getInverseInternalScale ());
-  aabbMax = BulletToCS(bmax, system->getInverseInternalScale ());
+  aabbMin = BulletToCS(bmin, system->GetInverseInternalScale ());
+  aabbMax = BulletToCS(bmax, system->GetInverseInternalScale ());
 }
 
 void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
 {
   CS_ASSERT(btObject);
 
-  btTransform btTrans = CSToBullet (trans, system->getInternalScale ());
+  btTransform btTrans = CSToBullet (trans, system->GetInternalScale ());
   
-  iMovable* movable = GetAttachedMovable();
-  if (movable)
+  iSceneNode* sceneNode = GetAttachedSceneNode ();
+  if (sceneNode)
   {
-    movable->SetFullTransform (trans);
-    movable->UpdateMove ();
+    sceneNode->GetMovable ()->SetFullTransform (trans);
+    sceneNode->GetMovable ()->UpdateMove ();
   }
 
   if (camera)
@@ -206,13 +207,13 @@ float csBulletSoftBody::GetVolume () const
 void csBulletSoftBody::AddForce (const csVector3& force)
 {
   CS_ASSERT (btBody);
-  btBody->addForce (CSToBullet (force, system->getInternalScale ()));
+  btBody->addForce (CSToBullet (force, system->GetInternalScale ()));
 }
 
 void csBulletSoftBody::SetLinearVelocity (const csVector3& vel)
 {
   CS_ASSERT (btBody);
-  btBody->setVelocity (CSToBullet (vel, system->getInternalScale ()));
+  btBody->setVelocity (CSToBullet (vel, system->GetInternalScale ()));
 }
 
 csVector3 csBulletSoftBody::GetLinearVelocity () const
@@ -225,14 +226,14 @@ csVector3 csBulletSoftBody::GetLinearVelocity () const
   {
     vel += btBody->m_nodes[i].m_v * btBody->getMass(i);
   }
-  return BulletToCS (vel / GetMass(), system->getInverseInternalScale ());
+  return BulletToCS (vel / GetMass(), system->GetInverseInternalScale ());
 }
 
 csVector3 csBulletSoftBody::GetLinearVelocity (size_t index /* = 0 */) const
 {
   CS_ASSERT ( btBody && index < (size_t) btBody->m_nodes.size ());
 
-  return BulletToCS (btBody->m_nodes[int (index)].m_v, system->getInverseInternalScale ());
+  return BulletToCS (btBody->m_nodes[int (index)].m_v, system->GetInverseInternalScale ());
 }
 
 void csBulletSoftBody::SetFriction (float friction)
@@ -265,7 +266,7 @@ size_t csBulletSoftBody::GetVertexCount ()
 csVector3 csBulletSoftBody::GetVertexPosition (size_t index) const
 {
   CS_ASSERT(btBody && index < (size_t) btBody->m_nodes.size ());
-  return BulletToCS (btBody->m_nodes[int (index)].m_x, system->getInverseInternalScale ());
+  return BulletToCS (btBody->m_nodes[int (index)].m_x, system->GetInverseInternalScale ());
 }
 
 void csBulletSoftBody::AnchorVertex (size_t vertexIndex)
@@ -305,7 +306,7 @@ void csBulletSoftBody::UpdateAnchor (size_t vertexIndex, csVector3& position)
     {
       this->btBody->m_anchors[i].m_local =
         this->btBody->m_anchors[i].m_body->getInterpolationWorldTransform ().inverse ()
-        * CSToBullet (position, system->getInternalScale ());
+        * CSToBullet (position, system->GetInternalScale ());
       return;
     }
 }
@@ -363,20 +364,20 @@ void csBulletSoftBody::SetRigidity (float rigidity)
 void csBulletSoftBody::SetLinearVelocity (size_t vertexIndex, const csVector3& velocity)
 {
   CS_ASSERT (vertexIndex < (size_t) btBody->m_nodes.size ());
-  btBody->addVelocity (CSToBullet (velocity, system->getInternalScale ()) - btBody->m_nodes[int (vertexIndex)].m_v, int (vertexIndex));
+  btBody->addVelocity (CSToBullet (velocity, system->GetInternalScale ()) - btBody->m_nodes[int (vertexIndex)].m_v, int (vertexIndex));
 }
 
 void csBulletSoftBody::SetWindVelocity (const csVector3& velocity)
 {
   CS_ASSERT (btBody);
-  btVector3 velo = CSToBullet (velocity, system->getInternalScale ());
+  btVector3 velo = CSToBullet (velocity, system->GetInternalScale ());
   btBody->setWindVelocity (velo);
 }
 
 const csVector3 csBulletSoftBody::GetWindVelocity () const
 {
   CS_ASSERT (btBody);
-  csVector3 velo = BulletToCS (btBody->getWindVelocity (), system->getInternalScale ());
+  csVector3 velo = BulletToCS (btBody->getWindVelocity (), system->GetInternalScale ());
   return velo;
 }
 
@@ -384,7 +385,7 @@ void csBulletSoftBody::AddForce (const csVector3& force, size_t vertexIndex)
 {
   CS_ASSERT (vertexIndex < (size_t) btBody->m_nodes.size());
   //TODO: in softbodies.cpp the force was multiplied by 100, why?
-  btBody->addForce (CSToBullet (force, system->getInternalScale () * system->getInternalScale ()),
+  btBody->addForce (CSToBullet (force, system->GetInternalScale () * system->GetInternalScale ()),
     int (vertexIndex));
 }
 
@@ -417,7 +418,7 @@ void csBulletSoftBody::DebugDraw (iView* rView)
 {
   if (!sector->debugDraw)
   {
-    sector->debugDraw = new csBulletDebugDraw (system->getInverseInternalScale ());
+    sector->debugDraw = new csBulletDebugDraw (system->GetInverseInternalScale ());
     sector->bulletWorld->setDebugDrawer (sector->debugDraw);
   }
 
@@ -666,7 +667,7 @@ size_t csBulletSoftBody::GetNodeCount() const
   return size_t(btBody->m_nodes.size ()); 
 }
 
-void csBulletSoftBody::PreStep (csScalar dt)
+void csBulletSoftBody::PreStep (float dt)
 {
   CS_ASSERT (btBody);
 
@@ -686,7 +687,7 @@ void csBulletSoftBody::PreStep (csScalar dt)
   for (csArray<AnimatedAnchor>::Iterator it = animatedAnchors.GetIterator (); it.HasNext (); )
   {
     AnimatedAnchor& anchor = it.Next ();
-    anchor.position = CSToBullet (anchor.controller->GetAnchorPosition (), system->getInternalScale ());
+    anchor.position = CSToBullet (anchor.controller->GetAnchorPosition (), system->GetInternalScale ());
   }
 }
 

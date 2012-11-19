@@ -252,7 +252,7 @@ void PhysDemo::RotateActor()
       csVector3 camDir3 = camTrans.GetT2O().Col3();
       float currentPitchCos = camDir3[UpAxis];
 
-      csScalar pitch = 0;
+      float pitch = 0;
       if (kbd->GetKeyState (KeyUp))
       {
         if (currentPitchCos + turnAmount < MaxPitchCos) pitch -= turnAmount;
@@ -308,13 +308,13 @@ void PhysDemo::MoveCamera()
       csVector3 pos = camTrans.GetOrigin();
 
       // camera follows the actor, looking over the shoulder
-      csScalar camDistFactor = cameraMode == CameraMode3rdPersonFar ? 3 : 1;
-      csScalar camDistance = 2 * camDistFactor * ActorDimensions.Norm();
+      float camDistFactor = cameraMode == CameraMode3rdPersonFar ? 3 : 1;
+      float camDistance = 2 * camDistFactor * ActorDimensions.Norm();
 
       targetPos -= camDistance * actorTrans.GetT2O() * csVector3(0, -1, 1); // * (1 / SQRT2)
 
       // interpolate between current pos and target pos
-      static const csScalar targetWeight = csScalar(0.1);
+      static const float targetWeight = 0.1;
       targetPos = targetWeight * targetPos + (1 - targetWeight) * pos;
       camTrans.SetOrigin(targetPos);
 
@@ -325,7 +325,7 @@ void PhysDemo::MoveCamera()
     else
     {
       // Move camera eye level (~ 0.9 * actorheight)
-      camTrans.SetOrigin(targetPos + csVector3(0, csScalar(.4) * ActorDimensions.y, 0));
+      camTrans.SetOrigin(targetPos + csVector3(0, .4f * ActorDimensions.y, 0));
     }
   }
 }
@@ -357,14 +357,14 @@ void PhysDemo::UpdateHUD()
 
   if (actorVehicle || player.GetObject()->QueryPhysicalBody())
   {
-    csScalar speed;
+    float speed;
     if (actorVehicle)
     {
       speed = actorVehicle->GetSpeedKMH();
     }
     else
     {
-      speed = csScalar(3.6) * player.GetObject()->QueryPhysicalBody()->GetLinearVelocity().Norm();
+      speed = 3.6f * player.GetObject()->QueryPhysicalBody()->GetLinearVelocity().Norm();
     }
     txt.Format ("Speed : %.3f km/h", speed);
     hudManager->GetStateDescriptions()->Push (txt);

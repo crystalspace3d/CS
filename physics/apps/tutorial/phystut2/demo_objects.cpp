@@ -37,7 +37,7 @@ using namespace CS::Physics;
 using namespace CS::Geometry;
 
 csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody(const char* name, const csOrthoTransform& trans,
-  csScalar friction, csScalar density)
+  float friction, float density)
 { 
   csRef<iRigidBodyFactory> factory = physDemo.physicalSystem->CreateRigidBodyFactory(Collider, name);
   factory->SetDensity (density);
@@ -74,7 +74,7 @@ void PhysDemo::CreateBoxMeshColliderPair(RenderMeshColliderPair& pair, const csV
 csRef<CS::Physics::iRigidBody> PhysDemo::SpawnBox (bool setVelocity /* = true */)
 {
   csVector3 extents(0.4f, 0.8f, 0.4f);
-  csVector3 pos = view->GetCamera()->GetTransform().GetOrigin() + csScalar(1.5) * GetCameraDirection();
+  csVector3 pos = view->GetCamera()->GetTransform().GetOrigin() + 1.5f * GetCameraDirection();
   return SpawnBox(extents, pos, setVelocity);
 }
 
@@ -87,7 +87,7 @@ csRef<CS::Physics::iRigidBody> PhysDemo::SpawnBox (const csVector3& extents, con
 }
 
 csRef<CS::Physics::iRigidBody> PhysDemo::SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos,
-  const char* name, csScalar friction, csScalar density, bool setVelocity)
+  const char* name, float friction, float density, bool setVelocity)
 {
   //static csRandomFloatGen randGen;
 
@@ -151,7 +151,7 @@ void PhysDemo::CreateGhostCylinder()
 
   // It won't work for ghost and actor.
   ghostObject->QueryObject()->SetName("ghostObject");
-  ghostObject->Rotate(csVector3(0, 1, 0), PI/2.0);
+  //ghostObject->Rotate(csVector3(0, 1, 0), PI/2.0);
   //ghostObject->AddCollider (cylinder, trans)
 
   GetCurrentSector()->AddCollisionObject (ghostObject);
@@ -185,10 +185,9 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
 
   // We do a hardtransform here to make sure our sphere has an artificial
   // offset. That way we can test if the physics engine supports that.
-  csMatrix3 m;
-  csVector3 artificialOffset (0, 0, 0);
-  csReversibleTransform t = csReversibleTransform (m, artificialOffset);
-  ballFact->HardTransform (t);
+  csReversibleTransform artificialTransform =
+    csReversibleTransform (csMatrix3 (), csVector3 (1, 1, 1));
+  //ballFact->HardTransform (artificialTransform);
 
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (ballFact, "ball"));
@@ -215,8 +214,13 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
-  
-  rb->SetAttachedSceneNode(mesh->QuerySceneNode());
+
+  iSceneNode* meshNode = mesh->QuerySceneNode ();
+  // TODO: collider transform
+  //meshNode->GetMovable ()->SetTransform (artificialTransform);//.GetInverse ());
+  //meshNode->GetMovable ()->UpdateMove ();
+  rb->SetAttachedSceneNode (meshNode);
+
   csOrthoTransform trans = tc;
   trans.SetOrigin (pos);
   rb->SetTransform (trans);
@@ -575,7 +579,9 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
 
 CS::Physics::iJoint* PhysDemo::SpawnJointed()
 {
-#define SOFT_ANGULAR
+  // TODO: provide some runtime options about that
+//#define SOFT_ANGULAR
+#define P2P
 
 #ifdef P2P
   // Create and position two rigid bodies
@@ -1171,12 +1177,12 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth()
   GetCurrentSector()->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
-  // If it's a double-side soft body like cloth, you have to call SetSoftBody (body, true);
-  /*csRef<iGeneralMeshState> meshState =
+  // If it's a double-sided mesh like this cloth, you have to call SetSoftBody (body, true);
+  csRef<iGeneralMeshState> meshState =
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject());
   csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
     scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl());
-  animationControl->SetSoftBody (body, true);*/
+  animationControl->SetSoftBody (body, true);
 
   return body;
 }
@@ -1275,7 +1281,7 @@ void PhysDemo::SpawnBoxStacks(int stackNum, int stackHeight, float boxLen, float
   csVector2 hdistDir = dist * dir2;                               // horizontal stack distance in dir
   csVector2 hdistOrth = dist * dirOrth2;                          // horizontal stack distance orthogonal to dir
   
-  int numDir = int(sqrt(float(stackNum)) + 0.99999f);             // amount of stacks in dir direction
+  int numDir = int(sqrt(stackNum)) + 0.99999f;             // amount of stacks in dir direction
   int numOrth = int(stackNum / numDir + 1);                       // amount of stacks in orth direction
 
   float halfWidth = .5f * (numOrth - 1) * (boxLen + hspace);      // half the width of the OBB that covers all box centers

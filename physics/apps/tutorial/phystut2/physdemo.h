@@ -40,9 +40,9 @@
 struct iCameraPosition;
 
 // Some global variables
-static const csScalar DefaultDensity(300);
-static const csScalar DefaultFriction(.5);
-static const csScalar DefaultElasticity(0.1f);
+static const float DefaultDensity(300);
+static const float DefaultFriction(.5);
+static const float DefaultElasticity(0.1f);
 
 static const int UpAxis = 1;
 static const int HorizontalAxis1 = 0;
@@ -126,7 +126,7 @@ public:
   /// Creates a new RigidBody from the given collider and render mesh
   csPtr<CS::Physics::iRigidBody> SpawnRigidBody
     (const char* name, const csOrthoTransform& trans,
-     csScalar friction = 1, csScalar density = 30);
+     float friction = 1, float density = 30);
 };
 
 //static const csVector3 ActorDimensions(0.8);
@@ -213,6 +213,8 @@ public:
   csString currentMap;
   csRef<iMeshWrapper> walls;
 
+  size_t selectedIndex;
+
 private:
   void Frame();
   bool OnKeyboard (iEvent &event);
@@ -255,10 +257,10 @@ public:
   /**
    * Room is the inside of a cuboid of the given size, and wall thickness
    */
-  void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), csScalar wallThickness = 5);
+  void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), float wallThickness = 5);
 
   /// Create the default box room with a given side-length
-  void CreateBoxRoom(csScalar size = 100);
+  void CreateBoxRoom(float size = 50.0f);
   
   /// Load a scene from file
   bool LoadLevel(const char* filepath, bool convexDecomp = false);
@@ -268,7 +270,7 @@ public:
 
   /// Creates a new rigid body, places it at the given pos and, optionally, gives it some initial momentum
   csRef<CS::Physics::iRigidBody> SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos, 
-    const char* name, csScalar friction = 1, csScalar density = 30, bool setVelocity = false);
+    const char* name, float friction = 1, float density = 30, bool setVelocity = false);
 
 
   // particles
@@ -301,7 +303,7 @@ public:
   /**
    * The location where the actor stands
    */
-  csVector3 GetActorFeetPos() const { return GetActorPos() - csVector3(0, csScalar(.5) * ActorDimensions.y, 0); }
+  csVector3 GetActorFeetPos() const { return GetActorPos() - csVector3(0, .5f * ActorDimensions.y, 0); }
 
   /**
    * Position of the camera
@@ -347,7 +349,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Geometry utilities
 
-  csPtr<iMeshWrapper> CreateCylinderYMesh(csScalar length, csScalar radius, const char* materialName = "objtexture", const char* meshName = "cylinder");
+  csPtr<iMeshWrapper> CreateCylinderYMesh(float length, float radius, const char* materialName = "objtexture", const char* meshName = "cylinder");
 
   csPtr<iMeshWrapper> CreateBoxMesh(const csVector3& extents, const char* materialName = "objtexture", const char* meshName = "box");
   
@@ -414,13 +416,13 @@ public:
   csVector3 GetInputDirection();
 
   /// 0 or 1, depending on whether the forward key is currently pressed (possibly values in between, depending on input device)
-  csScalar GetForward();
+  float GetForward();
   
   /// 0 or 1, depending on whether the backward key is currently pressed (possibly values in between, depending on input device)
-  csScalar GetBackward();
+  float GetBackward();
   
   /// 0 or 1, depending on whether the left/right keys are currently pressed (possibly values in between, depending on input device)
-  csScalar GetLeftRight();
+  float GetLeftRight();
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

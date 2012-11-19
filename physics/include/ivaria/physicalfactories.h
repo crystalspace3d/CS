@@ -74,11 +74,9 @@ namespace Physics
   */
   enum PhysicalObjectType
   {
-    // TODO: remove that initialization
-    PHYSICAL_OBJECT_RIGIDBODY = 0,// = CS::Collisions::COLLISION_OBJECT_END,
+    PHYSICAL_OBJECT_RIGIDBODY = 0,
     PHYSICAL_OBJECT_SOFTYBODY,
-    PHYSICAL_OBJECT_DYNAMICACTOR,
-    PHYSICAL_OBJECT_END
+    PHYSICAL_OBJECT_DYNAMICACTOR
   };
 
   /**

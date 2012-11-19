@@ -115,15 +115,11 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
    */
   virtual bool IsDynamic () const = 0;
 
-  /// Disable this collision object.
-  // TODO: Set/GetEnabled
-  virtual bool Disable () = 0;
+  /// Set the enabled state of this body
+  virtual void SetEnabled (bool enabled) = 0;
 
-  /// Enable this collision object.
-  virtual bool Enable () = 0;
-
-  /// Check if the collision object is enabled.
-  virtual bool IsEnabled () = 0;
+  /// Get the enabled state of this body
+  virtual bool GetEnabled () const = 0;
 
   /// Set the total mass of this body.
   virtual void SetMass (float mass) = 0;
@@ -197,8 +193,7 @@ struct iRigidBody : public virtual iPhysicalBody
   virtual RigidBodyState GetState () const = 0;
   
   /// Set the current state of the body.
-  // TODO: return void
-  virtual bool SetState (RigidBodyState state) = 0;
+  virtual void SetState (RigidBodyState state) = 0;
   
   /// Get the elasticity of this rigid body.
   virtual float GetElasticity () = 0;
@@ -247,13 +242,11 @@ struct iRigidBody : public virtual iPhysicalBody
   virtual void AddRelForceAtRelPos (const csVector3& force,
       const csVector3& pos) = 0;
 
-  /// Get total force (world space).
-  // TODO: remove? GetTotalForce?
-  virtual csVector3 GetForce () const = 0;
+  /// Get the total force currently applied on this body (in world space).
+  virtual csVector3 GetTotalForce () const = 0;
 
-  /// Get total torque (world space).
-  // TODO: remove?
-  virtual csVector3 GetTorque () const = 0;
+  /// Get the total torque currently applied on this body (in world space).
+  virtual csVector3 GetTotalTorque () const = 0;
 
   /**
    * Set the callback to be used to update the transform of the kinematic body.
@@ -843,6 +836,7 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   /**
    * Create a new physical sector
    */
+  // TODO: redundant with the one from iCollisionSector?
   virtual csPtr<iPhysicalSector> CreatePhysicalSector () = 0;
 
   /// Create a general 6DOF joint.
@@ -942,6 +936,7 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 
 
   /// Resets the entire system and deletes all sectors
+  // TODO: move in iCollisionSector and/or iCollisionSystem
   virtual void DeleteAll () = 0;
 };
 
@@ -976,11 +971,11 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * range of iterations is from 4 (low quality, good performance) to 20 (good
    * quality, less but still reasonable performance). Default value is 10. 
    */
-  virtual void SetStepParameters (csScalar timeStep, size_t maxSteps,
+  virtual void SetStepParameters (float timeStep, size_t maxSteps,
     size_t iterations) = 0;  
 
   /// Step the simulation forward by the given duration, in second
-  virtual void Step (csScalar duration) = 0;
+  virtual void Step (float duration) = 0;
 
   /**
    * Set the global linear Damping. The dampening correspond to how
@@ -991,12 +986,12 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * The default value is 0.
    * \sa CS::Physics::iRigidBody::SetLinearDamping ()
    */
-  virtual void SetLinearDamping (csScalar d) = 0;
+  virtual void SetLinearDamping (float d) = 0;
 
   /**
    * Get the global linear Damping setting.
    */
-  virtual csScalar GetLinearDamping () const = 0;
+  virtual float GetLinearDamping () const = 0;
 
   /**
    * Set the global angular Damping. The dampening correspond to how
@@ -1007,10 +1002,10 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * The default value is 0.
    * \sa CS::Physics::iRigidBody::SetAngularDamping()
    */
-  virtual void SetAngularDamping (csScalar d) = 0;
+  virtual void SetAngularDamping (float d) = 0;
 
   /// Get the global angular damping value
-  virtual csScalar GetAngularDamping () const = 0;
+  virtual float GetAngularDamping () const = 0;
   
   /**
    * Set the parameters for AutoDisable.

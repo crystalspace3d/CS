@@ -590,7 +590,7 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
   if (!isPlaying || boneData->state == CS::Animation::STATE_INACTIVE)
   {
     if (boneData->rigidBody)
-      boneData->rigidBody->Disable ();
+      boneData->rigidBody->SetEnabled (false);
 
     return;
   }

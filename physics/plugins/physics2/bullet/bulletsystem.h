@@ -98,12 +98,6 @@ class csBulletSystem : public scfImplementationExt2<
 
 private:
   iObjectRegistry* object_reg;
-  /*csRefArrayObject<CS::Collisions::iCollider> colliders;
-  csRefArrayObject<csBulletCollisionObject> objects;
-  csRefArrayObject<csBulletRigidBody> rigidBodies;
-  csRefArrayObject<csBulletSoftBody> softBodies;
-  csRefArrayObject<csBulletJoint> joints;
-  csRefArrayObject<iCollisionActor> actors;*/
   csRefArrayObject<csBulletSector> collSectors;
   btSoftBodyWorldInfo* defaultInfo;
   float internalScale;
@@ -122,11 +116,12 @@ public:
 
   // iCollisionSystem
   virtual void SetInternalScale (float scale);
-  virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound ( );
+  virtual float GetInternalScale () const { return internalScale; }
+  virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound ();
   virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* mesh, bool simplify = false);
   virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh);
   virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
-      (CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale);
+      (CS::Collisions::iColliderConcaveMesh* collider, const csVector3& scale);
   virtual csPtr<CS::Collisions::iColliderCylinder> CreateColliderCylinder (float length, float radius);
   virtual csPtr<CS::Collisions::iColliderBox> CreateColliderBox (const csVector3& size);
   virtual csPtr<CS::Collisions::iColliderSphere> CreateColliderSphere (float radius);
@@ -138,14 +133,14 @@ public:
 
   
   virtual CS::Collisions::iCollisionSector* CreateCollisionSector ();
-  virtual CS::Collisions::iCollisionSector* GetOrCreateCollisionSector (iSector* sector);
   virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize (); }
-  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) 
   {
-    return csRef<CS::Collisions::iCollisionSector>(scfQueryInterface<CS::Collisions::iCollisionSector>(collSectors.Get (index)));
+    return csRef<CS::Collisions::iCollisionSector>
+      (scfQueryInterface<CS::Collisions::iCollisionSector>(collSectors.Get (index)));
   }
-  virtual CS::Collisions::iCollisionSector* GetCollisionSector (const iSector* sceneSector);
+  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
+  virtual CS::Collisions::iCollisionSector* FindCollisionSector (const iSector* sceneSector);
 
   //iPhysicalSystem
   virtual csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector () 
@@ -153,8 +148,7 @@ public:
     return csPtr<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(
       csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector ())));
   }
-  
-  
+
   // Factories
   virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory
     (CS::Collisions::iCollider *collider, const char* name = "CollisionObject");
@@ -175,7 +169,6 @@ public:
   virtual csPtr<CS::Physics::iSoftClothFactory> CreateSoftClothFactory () ;
   virtual csPtr<CS::Physics::iSoftMeshFactory> CreateSoftMeshFactory ();
 
-
   // Joints & Constraints
 
   virtual csPtr<CS::Physics::iJoint> CreateJoint ();
@@ -189,8 +182,6 @@ public:
   virtual csPtr<CS::Physics::iJoint> CreateSoftLinearJoint (const csVector3 position);
   virtual csPtr<CS::Physics::iJoint> CreateSoftAngularJoint (int axis);
   virtual csPtr<CS::Physics::iJoint> CreateRigidPivotJoint (CS::Physics::iRigidBody* body, const csVector3 position);
-
-
 
   // Vehicles
   
@@ -225,8 +216,7 @@ public:
 
   // Internal stuff
   btSoftBodyWorldInfo* GetSoftBodyWorldInfo () const { return defaultInfo; }
-  float getInverseInternalScale () {return inverseInternalScale;}
-  float getInternalScale () {return internalScale;}
+  float GetInverseInternalScale () {return inverseInternalScale;}
   void ReportWarning (const char* msg, ...);
   
   btTriangleMesh* CreateBulletTriMesh (iTriangleMesh* triMesh);

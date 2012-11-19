@@ -240,7 +240,7 @@ public:
 
   void RemoveSceneNodeFromSector (iSceneNode* sceneNode);
 
-  inline csScalar GetWorldTimeStep() const { return worldTimeStep; }
+  inline float GetWorldTimeStep() const { return worldTimeStep; }
 
 
   /**

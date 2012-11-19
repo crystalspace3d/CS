@@ -45,9 +45,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       body->btObject->setInterpolationWorldTransform (initialTransform);
 
     /*csOrthoTransform tr = BulletToCS (initialTransform * inversePrincipalAxis,
-				      body->system->getInverseInternalScale ());
+				      body->system->GetInverseInternalScale ());
 */
-    //iMovable* movable = body->GetAttachedMovable ();
+    //iMovable* movable = body->GetAttachedSceneNode ()->GetMovable ();
     //if (movable)
     //{
     //  // Update movable
@@ -77,14 +77,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       return;*/
 
     csOrthoTransform tr = BulletToCS (trans * inversePrincipalAxis,
-				      body->system->getInverseInternalScale ());
+				      body->system->GetInverseInternalScale ());
 
-    iMovable* movable = body->GetAttachedMovable ();
-    if (movable)
+    iSceneNode* sceneNode = body->GetAttachedSceneNode ();
+    if (sceneNode)
     {
       // Update movable
-      movable->SetFullTransform (tr);
-      movable->UpdateMove ();
+      sceneNode->GetMovable ()->SetFullTransform (tr);
+      sceneNode->GetMovable ()->UpdateMove ();
     }
     iCamera* camera = body->GetAttachedCamera ();
     if (camera)
@@ -106,7 +106,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   (csBulletCollisionObject* body, const btTransform& initialTransform,
    const btTransform& principalAxis)
     : csBulletMotionState (body, initialTransform, principalAxis),
-      principalAxis (BulletToCS (principalAxis, body->system->getInverseInternalScale ()))
+      principalAxis (BulletToCS (principalAxis, body->system->GetInverseInternalScale ()))
   {
   }
 
@@ -120,7 +120,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csOrthoTransform transform;
     
     rb->kinematicCb->GetBodyTransform (rb, transform);
-    trans = CSToBullet (principalAxis * transform, body->system->getInternalScale ());
+    trans = CSToBullet (principalAxis * transform, body->system->GetInternalScale ());
     
   }
 

@@ -81,8 +81,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (sceneNode) 
     {
       // add new movable to sector
-      sceneNode->QueryMesh()->GetMovable()->SetFullTransform(GetTransform()); 
-      sceneNode->QueryMesh()->GetMovable()->UpdateMove ();
+      sceneNode->GetMovable()->SetFullTransform(GetTransform()); 
+      sceneNode->GetMovable()->UpdateMove ();
       if (sector)
       {
         sector->AddSceneNodeToSector(sceneNode); 
@@ -90,12 +90,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
   
-  iMovable* csBulletCollisionObject::GetAttachedMovable () const
-  {
-    if (!sceneNode) return nullptr;
-    return sceneNode->QueryMesh()->GetMovable();
-  }
-
   void csBulletCollisionObject::SetCollider (CS::Collisions::iCollider* newCollider)
   {
     if (newCollider)
@@ -110,13 +104,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     CS_ASSERT(btObject);
 
-    btTransform btTrans = CSToBullet (trans, system->getInternalScale ());
+    btTransform btTrans = CSToBullet (trans, system->GetInternalScale ());
 
-    iMovable* movable = GetAttachedMovable();
-    if (movable)
+    iSceneNode* sceneNode = GetAttachedSceneNode ();
+    if (sceneNode)
     {
-      movable->SetFullTransform (trans);
-      movable->UpdateMove ();
+      sceneNode->GetMovable ()->SetFullTransform (trans);
+      sceneNode->GetMovable ()->UpdateMove ();
     }
 
     if (camera)
@@ -129,9 +123,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csOrthoTransform csBulletCollisionObject::GetTransform () const
   {
-    //float inverseScale = system->getInverseInternalScale ();
+    //float inverseScale = system->GetInverseInternalScale ();
     CS_ASSERT(btObject);
-    return BulletToCS (btObject->getWorldTransform(), system->getInverseInternalScale ());
+    return BulletToCS (btObject->getWorldTransform(), system->GetInverseInternalScale ());
   }
 
   void csBulletCollisionObject::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
@@ -139,8 +133,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btVector3 bmin, bmax;
     collider->GetOrCreateBulletShape()->getAabb(btObject->getWorldTransform(), bmin, bmax);
     
-    aabbMin = BulletToCS(bmin, system->getInverseInternalScale ());
-    aabbMax = BulletToCS(bmax, system->getInverseInternalScale ());
+    aabbMin = BulletToCS(bmin, system->GetInverseInternalScale ());
+    aabbMax = BulletToCS(bmax, system->GetInverseInternalScale ());
   }
   
   void csBulletCollisionObject::SetCollisionGroup (const char* name)
@@ -152,7 +146,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     this->collGroup = group;
 
-    if (btObject && IsInWorld())
+    if (btObject && insideWorld)
     {
       btObject->getBroadphaseHandle ()->m_collisionFilterGroup = group.value;
       btObject->getBroadphaseHandle ()->m_collisionFilterMask = group.mask;
@@ -266,31 +260,16 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletCollisionObject::SetRotation (const csMatrix3& rot)
   {
-    iMovable* movable = GetAttachedMovable();
-    if (movable)
-      movable->GetTransform().SetT2O(rot);
+    iSceneNode* sceneNode = GetAttachedSceneNode ();
+    if (sceneNode)
+      sceneNode->GetMovable ()->GetTransform().SetT2O(rot);
     if (camera)
       camera->GetTransform().SetT2O(rot);
     if (btObject)
     {
       csOrthoTransform trans = GetTransform ();
       trans.SetT2O (rot);
-      btObject->setWorldTransform(CSToBullet (trans, system->getInternalScale ()));
-    }
-  }
-
-  void csBulletCollisionObject::Rotate (const csVector3& v, float angle)
-  {
-    iMovable* movable = GetAttachedMovable();
-    if (movable)
-      movable->GetTransform().RotateThis (v, angle);
-    if (camera)
-      camera->GetTransform().RotateThis (v, angle);
-    if (btObject)
-    {
-      csOrthoTransform trans = GetTransform ();
-      trans.RotateThis (v, angle);
-      btObject->setWorldTransform(CSToBullet (trans, system->getInternalScale ()));
+      btObject->setWorldTransform(CSToBullet (trans, system->GetInternalScale ()));
     }
   }
 

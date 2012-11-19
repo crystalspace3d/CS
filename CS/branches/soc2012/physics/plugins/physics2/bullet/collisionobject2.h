@@ -81,19 +81,12 @@ public:
   virtual CS::Collisions::iActor* QueryActor () {return nullptr;}
 
   virtual CS::Collisions::iCollisionSystem* GetSystem() const { return system; }
-
-  /// Returns the sector to which is this object has been added or nullptr, if not in world
   virtual CS::Collisions::iCollisionSector* GetSector () const { return sector; }
-
-  /// Whether this object is currently added to the world
-  virtual bool IsInWorld () const { return insideWorld; }
 
   virtual CS::Collisions::CollisionObjectType GetObjectType () const = 0;
 
   virtual void SetAttachedSceneNode (iSceneNode* newSceneNode);
   virtual iSceneNode* GetAttachedSceneNode () const { return sceneNode; }
-
-  virtual iMovable* GetAttachedMovable () const;
 
   virtual void SetAttachedCamera (iCamera* camera) 
   { 
@@ -110,7 +103,6 @@ public:
   virtual void SetTransform (const csOrthoTransform& trans);
   virtual csOrthoTransform GetTransform () const;
   virtual void SetRotation (const csMatrix3& rot);
-  virtual void Rotate (const csVector3& v, float angle);
   
   /// Returns the AABB of this object, centered at it's center of mass
   virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
@@ -137,9 +129,9 @@ public:
   bool TestOnGround();
 
   /// Whether this object may be excluded from deactivation.
-  virtual bool GetMayBeDeactivated() const { return btObject->getActivationState() == DISABLE_DEACTIVATION; }
+  virtual bool GetDeactivable () const { return btObject->getActivationState() == DISABLE_DEACTIVATION; }
   /// Whether this object may be excluded from deactivation.
-  virtual void SetMayBeDeactivated(bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
+  virtual void SetDeactivable (bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
 
   /// Clone this object
   virtual btCollisionObject* CreateBulletObject()

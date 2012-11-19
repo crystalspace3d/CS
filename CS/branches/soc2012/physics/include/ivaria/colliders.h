@@ -113,7 +113,7 @@ struct iCollider : public virtual iBase
 
   /// Add a child collider, fixed relative to this collider.
   // TODO: Add/RemoveChild?
-  virtual void AddCollider (iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ()) = 0;
+  virtual void AddCollider (iCollider* collider, const csOrthoTransform& transform = csOrthoTransform ()) = 0;
 
   /// Remove the given collider from this collider.
   virtual void RemoveCollider (iCollider* collider) = 0;
@@ -125,9 +125,10 @@ struct iCollider : public virtual iBase
   virtual iCollider* GetCollider (size_t index) = 0; 
 
   /// Get the collider and it's relative transformation at the given index.
-  virtual void GetCollider (size_t index, iCollider*& collider, csOrthoTransform& trans) = 0;
+  virtual void GetCollider (size_t index, iCollider*& collider, csOrthoTransform& transform) = 0;
 
   /// Get the count of colliders in this collider (including self).
+  // TODO: const
   virtual size_t GetColliderCount () = 0;
 
   /// Returns the AABB of this shape, centered at it's center of mass (assuming uniform density)
@@ -172,7 +173,7 @@ struct iColliderBox : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderBox, 1, 0, 0);
 
   /// Get the box geometry of this collider.
-  virtual csVector3 GetBoxGeometry ()  = 0;
+  virtual const csVector3& GetBoxGeometry () const = 0;
 };
 
 /**
@@ -192,7 +193,7 @@ struct iColliderSphere : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderSphere, 1, 0, 0);
 
   /// Get the sphere geometry of this collider.
-  virtual float GetSphereGeometry () = 0;
+  virtual float GetSphereGeometry () const = 0;
 };
 
 /**
@@ -212,7 +213,7 @@ struct iColliderCylinder : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderCylinder, 1, 0, 0);
 
   /// Get the cylinder geometry of this collider.
-  virtual void GetCylinderGeometry (float& length, float& radius) = 0;
+  virtual void GetCylinderGeometry (float& length, float& radius) const = 0;
 };
 
 /**
@@ -232,7 +233,7 @@ struct iColliderCapsule : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderCapsule, 1, 0, 0);
 
   /// Get the capsule geometry of this collider.
-  virtual void GetCapsuleGeometry (float& length, float& radius) = 0;
+  virtual void GetCapsuleGeometry (float& length, float& radius) const = 0;
 };
 
 /**
@@ -252,7 +253,7 @@ struct iColliderCone : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderCone, 1, 0, 0);
 
   /// Get the cone geometry of this collider.
-  virtual void GetConeGeometry (float& length, float& radius) = 0;
+  virtual void GetConeGeometry (float& length, float& radius) const = 0;
 };
 
 /**
@@ -272,7 +273,7 @@ struct iColliderPlane : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderPlane, 1, 0, 0);
 
   /// Get the plane geometry of this collider.
-  virtual csPlane3 GetPlaneGeometry () = 0;
+  virtual const csPlane3& GetPlaneGeometry () const = 0;
 };
 
 /**
@@ -292,7 +293,7 @@ struct iColliderConvexMesh : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderConvexMesh, 1, 0, 0);
 
   /// Get the triangle mesh of this collider.
-  virtual iTriangleMesh* GetMesh () = 0;
+  virtual iTriangleMesh* GetMesh () const = 0;
 };
 
 /**
@@ -312,7 +313,7 @@ struct iColliderConcaveMesh : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderConcaveMesh, 1, 0, 0);
 
   /// Get the mesh factory of this collider.
-  virtual iTriangleMesh* GetMesh () = 0;
+  virtual iTriangleMesh* GetMesh () const = 0;
 };
 
 /**
@@ -332,8 +333,10 @@ struct iColliderConcaveMeshScaled : public virtual iCollider
   SCF_INTERFACE (CS::Collisions::iColliderConcaveMeshScaled, 1, 0, 0);
 
   /// Get the concave collider scaled by this collider.
-  virtual iColliderConcaveMesh* GetCollider () = 0;
-  // TODO: Get/SetScale()
+  virtual iColliderConcaveMesh* GetCollider () const = 0;
+
+  /// Get the scale of this collider.
+  virtual const csVector3& GetScale () const = 0;
 };
 
 /**

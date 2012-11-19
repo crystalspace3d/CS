@@ -37,7 +37,7 @@ using namespace CS::Collisions;
 using namespace CS::Geometry;
 
 
-csPtr<iMeshWrapper> PhysDemo::CreateCylinderYMesh(csScalar length, csScalar radius, const char* materialName, const char* meshName)
+csPtr<iMeshWrapper> PhysDemo::CreateCylinderYMesh(float length, float radius, const char* materialName, const char* meshName)
 {
   csRef<iMeshFactoryWrapper> cylinderFact = engine->CreateMeshFactory("crystalspace.mesh.object.genmesh", "cylinderFact");
   if (!cylinderFact)

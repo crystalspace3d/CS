@@ -220,7 +220,7 @@ void PhysDemo::TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosi
   
   // set sector
   iSector* isector = engine->FindSector(pos->GetSector());
-  iCollisionSector* collSector = physicalSystem->GetOrCreateCollisionSector(isector);
+  iCollisionSector* collSector = physicalSystem->FindCollisionSector (isector);
   CS_ASSERT(collSector);
   collSector->AddCollisionObject(obj);
 }

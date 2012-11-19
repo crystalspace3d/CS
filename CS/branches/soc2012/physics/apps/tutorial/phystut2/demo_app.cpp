@@ -137,6 +137,7 @@ bool PhysDemo::Application()
 
   if (ItemMgr::Instance->GetTemplateCount ())
     selectedItem = player.GetInventory().GetItem (0);
+  selectedIndex = 0;
 
   // Load specified scene
   csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
@@ -409,12 +410,12 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         //csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
         csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
         csRef<iDynamicActorFactory> factory = physicalSystem->CreateDynamicActorFactory(collider);
-        factory->SetMass(csScalar(80.));
-        factory->SetElasticity(csScalar(0));
-        factory->SetFriction(csScalar(.1));
+        factory->SetMass(80.);
+        factory->SetElasticity(0);
+        factory->SetFriction(.1);
 
         factory->SetAirControlFactor(actorAirControl);
-        factory->SetStepHeight(csScalar(0.2));
+        factory->SetStepHeight(0.2);
 
         dynamicActor = factory->CreateDynamicActor();
       }
@@ -439,7 +440,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(collider);
         factory->SetAirControlFactor(actorAirControl);
         factory->SetJumpSpeed(moveSpeed);
-        factory->SetStepHeight(csScalar(0.2));
+        factory->SetStepHeight(0.2);
 
         kinematicActor = factory->CreateCollisionActor();
       }
@@ -468,7 +469,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
       lastActorObj->GetSector()->AddCollisionObject(player.GetObject());
     }
     player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
-    //SetGravity (csVector3 (0.0f, -9.81f, 0.0f));
+    SetGravity (csVector3 (0.0f, -9.81f, 0.0f));
   }
   else
   {

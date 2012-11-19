@@ -61,8 +61,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     (iPortal* portal, const csOrthoTransform& meshTrans, csBulletSector* sourceSector)
     : portal (portal), sourceSector (sourceSector)
   {
-    // set sector
-    targetSector = dynamic_cast<csBulletSector*>(sourceSector->sys->GetCollisionSector(portal->GetSector()));
+    // Set the sector
+    targetSector = dynamic_cast<csBulletSector*>
+      (sourceSector->sys->FindCollisionSector (portal->GetSector()));
 
     // Create a ghost collisder for the portal
     ghostPortal = new btGhostObject ();
@@ -100,10 +101,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     
     csOrthoTransform realTrans;                         // no rotation necessary, since we already rotated everything
     realTrans.SetOrigin(portalPos + meshTrans.GetOrigin() + centerDist);
-    ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->getInternalScale ()));
+    ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->sys->GetInternalScale ()));
 
     // give the portal it's shape and add it to the world
-    btCollisionShape* shape = new btBoxShape (CSToBullet (size, sourceSector->sys->getInternalScale ()));
+    btCollisionShape* shape = new btBoxShape (CSToBullet (size, sourceSector->sys->GetInternalScale ()));
 
     ghostPortal->setCollisionShape (shape);
     ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
@@ -181,7 +182,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (!targetSector)
     {
       // Lookup targetSector if the portal uses lazy sector lookup
-      targetSector = dynamic_cast<csBulletSector*>(sourceSector->sys->GetCollisionSector(portal->GetSector()));
+      targetSector = dynamic_cast<csBulletSector*>
+	(sourceSector->sys->FindCollisionSector (portal->GetSector()));
 
       if (!targetSector)
       {
@@ -289,7 +291,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         // Setup clone object for first-time use:
 
         // Never put to sleep
-        cloneObj->SetMayBeDeactivated(false);
+        cloneObj->SetDeactivable (false);
 
         // Disable gravity (TODO: Fix fail OOP)
         if (cloneObj->QueryPhysicalBody())
@@ -586,7 +588,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //        btVector3 bodyCenter = (aabbMin + aabbMax)/2.0f;
   //        btVector3 dis = ghostPortal->getWorldTransform ().getOrigin () - bodyCenter;
 
-  //        //csVector3 center = BulletToCS (dis * 2.0f, sys->getInverseInternalScale ());
+  //        //csVector3 center = BulletToCS (dis * 2.0f, sys->GetInverseInternalScale ());
   //        // Do not use SetTransform...Use transform in btSoftBody.
   //        btVector3 norm = CSToBullet (portal->GetObjectPlane ().GetNormal (), 1.0f);
 
@@ -604,7 +606,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //          targetSector->AddCollisionObject (sb);
   //        }
   //        sb->SetLinearVelocity (warpTrans.GetT2O () * sb->GetLinearVelocity ());
-  //        tr = CSToBullet (warpTrans, sector->sys->getInternalScale ()) * tr;
+  //        tr = CSToBullet (warpTrans, sector->sys->GetInternalScale ()) * tr;
   //        sb->btBody->transform (tr);
   //        continue;
   //      }
@@ -705,7 +707,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //              }
   //            }
 
-  //            csVector3 offset = BulletToCS (dis, sector->sys->getInverseInternalScale ());
+  //            csVector3 offset = BulletToCS (dis, sector->sys->GetInverseInternalScale ());
   //            for (size_t l = 0; l < rbs.GetSize (); l++)
   //            {
   //              csOrthoTransform trans = rbs[l]->GetTransform ();
@@ -853,7 +855,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   //  csOrthoTransform trans = obj->GetTransform () * warpTrans;
 
-  //  btTransform btTrans = CSToBullet (trans.GetInverse (), sourceSector->sys->getInternalScale ());
+  //  btTransform btTrans = CSToBullet (trans.GetInverse (), sourceSector->sys->GetInternalScale ());
 
   //  if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //  {

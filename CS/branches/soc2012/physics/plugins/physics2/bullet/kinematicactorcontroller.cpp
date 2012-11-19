@@ -51,7 +51,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   csKinematicActorController::csKinematicActorController (btPairCachingGhostObject* ghostObject,btConvexShape* convexShape,btScalar stepHeight, int upAxis)
   {
     m_upAxis = upAxis;
-    m_addedMargin = csScalar(0.02);
+    m_addedMargin = 0.02f;
     m_walkDirection.setValue(0,0,0);
     m_useGhostObjectSweepTest = true;
     m_ghostObject = ghostObject;
@@ -62,7 +62,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     m_velocityTimeInterval = 0.0;
     m_verticalVelocity = 0.0;
     m_verticalOffset = 0.0;
-    m_gravity = csScalar(9.8 * 3) ; // 3G acceleration.
+    m_gravity = 9.8 * 3 ; // 3G acceleration. hu?
     m_jumpSpeed = 10.0; // ?
     m_wasOnGround = false;
     m_wasJumping = false;

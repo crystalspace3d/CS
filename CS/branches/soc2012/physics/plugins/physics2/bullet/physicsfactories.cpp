@@ -144,8 +144,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   csPtr<CS::Physics::iSoftBody> BulletSoftRopeFactory::CreateSoftBody()
   { 
     btSoftBody* body = btSoftBodyHelpers::CreateRope
-      (*system->GetSoftBodyWorldInfo(), CSToBullet (GetStart(), system->getInternalScale()),
-      CSToBullet (GetEnd(), system->getInternalScale()), int (GetNodeCount()) - 1, 0);
+      (*system->GetSoftBodyWorldInfo(), CSToBullet (GetStart(), system->GetInternalScale()),
+      CSToBullet (GetEnd(), system->GetInternalScale()), int (GetNodeCount()) - 1, 0);
 
     //hard-coded parameters for hair ropes
     body->m_cfg.kDP = 0.08f; // damping
@@ -164,10 +164,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     GetSegmentCounts(segmentCount1, segmentCount2);
 
     btSoftBody* body = btSoftBodyHelpers::CreatePatch
-      (*system->GetSoftBodyWorldInfo(), CSToBullet (corners[0], system->getInternalScale()),
-      CSToBullet (corners[1], system->getInternalScale()),
-      CSToBullet (corners[2], system->getInternalScale()),
-      CSToBullet (corners[3], system->getInternalScale()), 
+      (*system->GetSoftBodyWorldInfo(), CSToBullet (corners[0], system->GetInternalScale()),
+      CSToBullet (corners[1], system->GetInternalScale()),
+      CSToBullet (corners[2], system->GetInternalScale()),
+      CSToBullet (corners[3], system->GetInternalScale()), 
       int (segmentCount1), 
       int (segmentCount2), 0,
       GetWithDiagonals());
@@ -185,7 +185,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     btScalar* vertices = new btScalar[genmeshFactory->GetVertexCount () * 3];
     for (int i = 0; i < genmeshFactory->GetVertexCount (); i++)
     {
-      csVector3 vertex = genmeshFactory->GetVertices ()[i] * system->getInternalScale();
+      csVector3 vertex = genmeshFactory->GetVertices ()[i] * system->GetInternalScale();
       vertices[i * 3] = vertex[0];
       vertices[i * 3 + 1] = vertex[1];
       vertices[i * 3 + 2] = vertex[2];

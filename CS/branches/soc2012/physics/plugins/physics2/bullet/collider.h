@@ -68,8 +68,9 @@ class csBulletCollider : public scfVirtImplementation1<csBulletCollider, CS::Col
 {
   friend class csBulletCollisionObject;
   friend class csBulletCollisionActor;
-  friend class csBulletRigidBody;
   friend class csBulletGhostCollisionObject;
+  friend class csBulletRigidBody;
+  friend class csBulletSystem;
 
 protected:
   btCollisionShape* shape, *usedShape;

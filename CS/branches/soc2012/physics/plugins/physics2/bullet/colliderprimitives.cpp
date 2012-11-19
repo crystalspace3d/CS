@@ -44,15 +44,14 @@
 #include "collisionobject2.h"
 #include "bulletsystem.h"
 
-#include "csutil/custom_new_enable.h"
+//#include "csutil/custom_new_enable.h"
 
 using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
 
-#include "csutil/custom_new_disable.h"
-
+//#include "csutil/custom_new_disable.h"
 
 // #######################################################################################################
 // Compound
@@ -63,7 +62,6 @@ csBulletColliderCompound::csBulletColliderCompound (csBulletSystem* sys)
   collSystem = sys;
 }
 
-
 // #######################################################################################################
 // Box
 
@@ -71,8 +69,8 @@ csBulletColliderBox::csBulletColliderBox (const csVector3& boxSize, csBulletSyst
   : scfImplementationType (this), boxSize (boxSize)
 {
   collSystem = sys;
-  shape = new btBoxShape (CSToBullet (boxSize*0.5f, collSystem->getInternalScale ()));
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  shape = new btBoxShape (CSToBullet (boxSize*0.5f, collSystem->GetInternalScale ()));
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -86,7 +84,6 @@ float csBulletColliderBox::ComputeShapeVolume() const
   return boxSize.x * boxSize.y * boxSize.z;
 }
 
-
 // #######################################################################################################
 // Sphere
 
@@ -94,8 +91,8 @@ csBulletColliderSphere::csBulletColliderSphere (float radius, csBulletSystem* sy
   : scfImplementationType (this), radius (radius)
 {
   collSystem = sys;
-  shape = new btSphereShape (radius * collSystem->getInternalScale ());
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  shape = new btSphereShape (radius * collSystem->GetInternalScale ());
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -114,7 +111,7 @@ void csBulletColliderSphere::SetMargin (float margin)
   if (margin > 0.0f)
   {
     this->margin = margin;
-    shape->setMargin ((margin + radius)* collSystem->getInternalScale ());
+    shape->setMargin ((margin + radius)* collSystem->GetInternalScale ());
   }
 }
 
@@ -126,13 +123,13 @@ csBulletColliderCylinder::csBulletColliderCylinder (float length, float radius, 
 {
   collSystem = sys;
   
-  shape = new btCylinderShape (btVector3 (radius * collSystem->getInternalScale (),
-    length * collSystem->getInternalScale () * 0.5f,
-    radius * collSystem->getInternalScale ()));
-  /*shape = new btCylinderShapeZ (btVector3 (radius * collSystem->getInternalScale (),
-    radius * collSystem->getInternalScale (),
-    length * collSystem->getInternalScale () * 0.5f));*/
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  shape = new btCylinderShape (btVector3 (radius * collSystem->GetInternalScale (),
+    length * collSystem->GetInternalScale () * 0.5f,
+    radius * collSystem->GetInternalScale ()));
+  /*shape = new btCylinderShapeZ (btVector3 (radius * collSystem->GetInternalScale (),
+    radius * collSystem->GetInternalScale (),
+    length * collSystem->GetInternalScale () * 0.5f));*/
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -146,12 +143,11 @@ float csBulletColliderCylinder::ComputeShapeVolume() const
   return PI * radius * radius * length;
 }
 
-void csBulletColliderCylinder::GetCylinderGeometry (float& length, float& radius)
+void csBulletColliderCylinder::GetCylinderGeometry (float& length, float& radius) const
 {
   length = this->length;
   radius = this->radius;
 }
-
 
 // #######################################################################################################
 // Capsule
@@ -160,9 +156,9 @@ csBulletColliderCapsule::csBulletColliderCapsule (float length, float radius, cs
   : scfImplementationType (this), length (length), radius (radius)
 {
   collSystem = sys;
-  shape = new btCapsuleShapeZ (radius * collSystem->getInternalScale (),
-    length * collSystem->getInternalScale ());
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  shape = new btCapsuleShapeZ (radius * collSystem->GetInternalScale (),
+    length * collSystem->GetInternalScale ());
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -177,13 +173,11 @@ float csBulletColliderCapsule::ComputeShapeVolume() const
     + 1.333333f * PI * radius * radius * radius;
 }
 
-void csBulletColliderCapsule::GetCapsuleGeometry (float& length, float& radius)
+void csBulletColliderCapsule::GetCapsuleGeometry (float& length, float& radius) const
 {
   length = this->length;
   radius = this->radius;
 }
-
-
 
 // #######################################################################################################
 // Cone
@@ -192,9 +186,9 @@ csBulletColliderCone::csBulletColliderCone (float length, float radius, csBullet
   : scfImplementationType (this), length (length), radius (radius)
 {
   collSystem = sys;
-  shape = new btConeShapeZ (radius * collSystem->getInternalScale (),
-    length * collSystem->getInternalScale ());
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  shape = new btConeShapeZ (radius * collSystem->GetInternalScale (),
+    length * collSystem->GetInternalScale ());
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -208,13 +202,11 @@ float csBulletColliderCone::ComputeShapeVolume() const
   return 0.333333f * PI * radius * radius * length;
 }
 
-void csBulletColliderCone::GetConeGeometry (float& length, float& radius)
+void csBulletColliderCone::GetConeGeometry (float& length, float& radius) const
 {
   length = this->length;
   radius = this->radius;
 }
-
-
 
 // #######################################################################################################
 // Plane
@@ -226,8 +218,8 @@ csBulletColliderPlane::csBulletColliderPlane (const csPlane3& plane,
   collSystem = sys;
   csVector3 normal = plane.GetNormal ();
   shape = new btStaticPlaneShape (btVector3 (normal.x,normal.y,normal.z),
-    plane.D () * collSystem->getInternalScale ());
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+    plane.D () * collSystem->GetInternalScale ());
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -246,13 +238,16 @@ float csBulletColliderPlane::ComputeShapeVolume() const
 
 csBulletColliderConvexMesh::csBulletColliderConvexMesh
 (iTriangleMesh* triMesh, btTriangleMesh* btTriMesh, csBulletSystem* sys, bool simplify)
-  : scfImplementationType (this), mesh (mesh)
+  : scfImplementationType (this), mesh (triMesh)
 {
   collSystem = sys;
 
   size_t vertexCount = triMesh->GetVertexCount ();
   if (vertexCount == 0)
+  {
+    delete btTriMesh;
     return;
+  }
 
   btConvexHullShape* convexShape = new btConvexHullShape ();
   
@@ -277,11 +272,11 @@ csBulletColliderConvexMesh::csBulletColliderConvexMesh
   {
     for (size_t i = 0; i < vertexCount; i++)
     {
-      convexShape->addPoint (CSToBullet (c_vertex[i], collSystem->getInternalScale ()));
+      convexShape->addPoint (CSToBullet (c_vertex[i], collSystem->GetInternalScale ()));
     }
   }
   shape = convexShape;
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
 
   delete btTriMesh;
 
@@ -338,7 +333,7 @@ csBulletColliderConcaveMesh::csBulletColliderConcaveMesh (iTriangleMesh* mesh, b
   btBvhTriangleMeshShape* treeShape = new btBvhTriangleMeshShape (triMesh, true);
   treeShape->recalcLocalAabb();
   shape = treeShape;
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
   GetOrCreateBulletShape();
 }
 
@@ -359,7 +354,7 @@ float csBulletColliderConcaveMesh::ComputeShapeVolume() const
   //shape->getAabb (tran, aabbmin, aabbmax);
 
   //btVector3 aabbExtents = aabbmax - aabbmin;
-  //aabbExtents *= collSystem->getInverseInternalScale ();
+  //aabbExtents *= collSystem->GetInverseInternalScale ();
 
   //return aabbExtents.x() * aabbExtents.y() * aabbExtents.z();
   
@@ -389,7 +384,7 @@ float csBulletColliderConcaveMesh::ComputeShapeVolume() const
 }
 
 csBulletColliderConcaveMeshScaled::csBulletColliderConcaveMeshScaled (CS::Collisions::iColliderConcaveMesh* collider,
-                                                                      csVector3 scale, csBulletSystem* sys)
+                                                                      const csVector3& scale, csBulletSystem* sys)
   : scfImplementationType (this)
 {
   collSystem = sys;
@@ -404,7 +399,7 @@ csBulletColliderConcaveMeshScaled::csBulletColliderConcaveMeshScaled (CS::Collis
   else
     csFPrintf  (stderr, "csBulletColliderConcaveMeshScaled: Original collider is not concave mesh.\n");
 
-  margin = 0.04 * collSystem->getInverseInternalScale ();
+  margin = 0.04 * collSystem->GetInverseInternalScale ();
 }
 
 csBulletColliderConcaveMeshScaled::~csBulletColliderConcaveMeshScaled ()

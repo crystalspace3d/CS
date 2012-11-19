@@ -51,29 +51,27 @@ csPhysicalBody::~csPhysicalBody ()
 {
 }
 
-bool csPhysicalBody::Disable ()
+void csPhysicalBody::SetEnabled (bool enabled)
 {
   CS_ASSERT (btObject);
-  SetLinearVelocity (csVector3 (0.0f));
-  SetAngularVelocity (csVector3 (0.0f));
-  btObject->setInterpolationWorldTransform (btObject->getWorldTransform ());
-  btObject->setActivationState (ISLAND_SLEEPING);
-  return true;
+
+  if (enabled)
+    btObject->activate (true);
+
+  else
+  {
+    SetLinearVelocity (csVector3 (0.0f));
+    SetAngularVelocity (csVector3 (0.0f));
+    btObject->setInterpolationWorldTransform (btObject->getWorldTransform ());
+    btObject->setActivationState (ISLAND_SLEEPING);
+  }
 }
 
-bool csPhysicalBody::Enable ()
-{
-  CS_ASSERT (btObject);
-  btObject->activate (true);
-  return true;
-}
-
-bool csPhysicalBody::IsEnabled ()
+bool csPhysicalBody::GetEnabled () const
 {
  CS_ASSERT (btObject);
  return btObject->isActive ();
 }
-
 
 csPtr<CS::Collisions::iCollisionObject> csPhysicalBody::ClonePassivePortalObject () 
 { 

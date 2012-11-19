@@ -47,9 +47,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     friend class BulletDynamicActorFactory;
 
   private:
-    csScalar stepHeight;
-    csScalar walkSpeed, jumpSpeed;
-    csScalar airControlFactor;
+    float stepHeight;
+    float walkSpeed, jumpSpeed;
+    float airControlFactor;
     bool onGround;
     bool kinematicSteps;
 
@@ -75,8 +75,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual CS::Collisions::iActor* QueryActor () { return dynamic_cast<CS::Collisions::iActor*>(this); }
 
     /// Update actor
-    virtual void UpdatePreStep (csScalar delta);
-    virtual void UpdatePostStep (csScalar delta);
+    virtual void UpdatePreStep (float delta);
+    virtual void UpdatePostStep (float delta);
     
     /// Start walking in the given direction. Sets linear velocity. Takes air control into consideration.
     virtual void Walk(csVector3 dir);
@@ -105,24 +105,24 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual bool IsOnGround() const { return onGround; }
 
     /// Get the max vertical threshold that this actor can step over
-    virtual csScalar GetStepHeight () const { return stepHeight; }
+    virtual float GetStepHeight () const { return stepHeight; }
     /// Set the max vertical threshold that this actor can step over
-    virtual void SetStepHeight (csScalar h) { stepHeight = h; }
+    virtual void SetStepHeight (float h) { stepHeight = h; }
 
     /// Get the walk speed
-    virtual csScalar GetWalkSpeed () const { return walkSpeed; }
+    virtual float GetWalkSpeed () const { return walkSpeed; }
     /// Set the walk speed
-    virtual void SetWalkSpeed (csScalar s) { walkSpeed = s; }
+    virtual void SetWalkSpeed (float s) { walkSpeed = s; }
 
     /// Get the jump speed
-    virtual csScalar GetJumpSpeed () const { return jumpSpeed; }
+    virtual float GetJumpSpeed () const { return jumpSpeed; }
     /// Set the jump speed
-    virtual void SetJumpSpeed (csScalar s) { jumpSpeed = s; }
+    virtual void SetJumpSpeed (float s) { jumpSpeed = s; }
 
     /// Determines how much the actor can control movement when free falling
-    virtual csScalar GetAirControlFactor () const { return airControlFactor; }
+    virtual float GetAirControlFactor () const { return airControlFactor; }
     /// Determines how much the actor can control movement when free falling
-    virtual void SetAirControlFactor (csScalar f) { airControlFactor = f; }
+    virtual void SetAirControlFactor (float f) { airControlFactor = f; }
     
     /// Get whether to use a kinematic method for smooth steps
     virtual bool GetUseKinematicSteps() const { return kinematicSteps; }
@@ -142,8 +142,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     inline btConvexShape* GetConvexShape() const;
 
   protected:
-    void stepUp(csScalar dt);
-    void stepDown(csScalar dt);
+    void stepUp(float dt);
+    void stepDown(float dt);
   };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

@@ -44,7 +44,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   BulletVehicleWheelFactory::BulletVehicleWheelFactory(csBulletSystem* sys) : scfImplementationType (this),
     sys(sys),
-    rollInfluence(csScalar(.1))
+    rollInfluence(.1)
   {
   }
 
@@ -68,7 +68,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     csRef<iRigidBody> ichassis = chassisFactory->CreateRigidBody();
     csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*>(&*ichassis);
-    chassis->SetMayBeDeactivated(false);
+    // TODO: really?
+    chassis->SetDeactivable (false);
 
     csRef<BulletVehicle> vehicle = csPtr<BulletVehicle>(new BulletVehicle(sys, chassis));
     
@@ -89,9 +90,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       BulletVehicleWheelFactory* wheelFact = dynamic_cast<BulletVehicleWheelFactory*>(iwheelFact);
 
       vehicle->btVehicle->addWheel(
-        CSToBullet(info->GetWheelPos(), sys->getInternalScale()),
-        CSToBullet(info->GetWheelOrientation(), sys->getInternalScale()),
-        CSToBullet(info->GetAxleOrientation(), sys->getInternalScale()), 
+        CSToBullet(info->GetWheelPos(), sys->GetInternalScale()),
+        CSToBullet(info->GetWheelOrientation(), sys->GetInternalScale()),
+        CSToBullet(info->GetAxleOrientation(), sys->GetInternalScale()), 
         info->GetSuspensionLength(),
         info->GetRadius(),
         wheelFact->tuning,
@@ -148,7 +149,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     delete btVehicle;
   }
 
-  csScalar BulletVehicle::GetEngineForce() const
+  float BulletVehicle::GetEngineForce() const
   {
     for (size_t i = 0; i < wheels.GetSize(); ++i)
     {
@@ -162,7 +163,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return 0;
   }
 
-  void BulletVehicle::SetEngineForce(csScalar f)
+  void BulletVehicle::SetEngineForce(float f)
   {
     f /= GetDrivenWheelCount();   // divide equally among the driving wheels
     for (size_t i = 0; i < wheels.GetSize(); ++i)
@@ -190,10 +191,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return count;
   }
 
-  void BulletVehicle::ApplyBrake(VehicleBrakeInfo* brake, csScalar factor)
+  void BulletVehicle::ApplyBrake(VehicleBrakeInfo* brake, float factor)
   {
     // apply brake
-    csScalar force = factor * brake->GetMaxForce()  / brake->GetAffectedWheelCount();
+    float force = factor * brake->GetMaxForce()  / brake->GetAffectedWheelCount();
     for (size_t i = 0; i < brake->GetAffectedWheelIndices().GetSize(); ++i)
     {
       iVehicleWheel* iwheel = wheels[brake->GetAffectedWheelIndices()[i]];
@@ -204,14 +205,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
   
-  void BulletVehicle::IncrementSteering(VehicleSteeringDevice* steeringWheel, csScalar increment)
+  void BulletVehicle::IncrementSteering(VehicleSteeringDevice* steeringWheel, float increment)
   {
-    csScalar cap = steeringWheel->GetMaxSteering();
+    float cap = steeringWheel->GetMaxSteering();
     iVehicleWheel* iwheel = wheels[steeringWheel->GetAffectedWheelIndices()[0]];
     BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
 
     // compute new steering value for the first wheel
-    csScalar& steering = wheel->btWheel.m_steering;
+    float& steering = wheel->btWheel.m_steering;
     steering += increment;
     if (steering > cap)
       steering = cap;
@@ -227,10 +228,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  void BulletVehicle::PostStep(csScalar dt)
+  void BulletVehicle::PostStep(float dt)
   {
     // update chassis movable to prevent jittering
-    iMovable* movable = chassis->GetAttachedMovable();
+    iMovable* movable = chassis->GetAttachedSceneNode ()->GetMovable ();
     movable->SetFullTransform(chassis->GetTransform());
     movable->UpdateMove();
 
@@ -249,8 +250,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       // update transformation
       if (wheels[i]->GetSceneNode())
       {
-        wheels[i]->GetSceneNode()->QueryMesh()->GetMovable()->SetFullTransform(BulletToCS(wheel->btWheel.m_worldTransform, sys->getInverseInternalScale()));
-        wheels[i]->GetSceneNode()->QueryMesh()->GetMovable()->UpdateMove ();
+        wheels[i]->GetSceneNode()->GetMovable()->SetFullTransform
+	  (BulletToCS(wheel->btWheel.m_worldTransform, sys->GetInverseInternalScale()));
+        wheels[i]->GetSceneNode()->GetMovable()->UpdateMove ();
       }
     }
   }

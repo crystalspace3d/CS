@@ -37,18 +37,17 @@ class csBulletRigidBody : public scfVirtImplementationExt1<csBulletRigidBody,
     csPhysicalBody, 
     CS::Physics::iRigidBody>
 {
-friend class csBulletKinematicMotionState;
-friend class csBulletSoftBody;
-friend class csBulletJoint;
-friend class csBulletSector;
-friend class CollisionPortal;
+  friend class csBulletKinematicMotionState;
+  friend class csBulletSoftBody;
+  friend class csBulletJoint;
+  friend class csBulletSector;
+  friend class CollisionPortal;
   
-using csPhysicalBody::GetFriction;
-using csPhysicalBody::SetFriction;
+  using csPhysicalBody::GetFriction;
+  using csPhysicalBody::SetFriction;
   
-using csPhysicalBody::Enable;
-using csPhysicalBody::Disable;
-using csPhysicalBody::IsEnabled;
+  using csPhysicalBody::SetEnabled;
+  using csPhysicalBody::GetEnabled;
 
 protected:
   btRigidBody* btBody;
@@ -114,7 +113,7 @@ public:
   
   //-- iRigidBody
   virtual CS::Physics::RigidBodyState GetState () const {return physicalState;}
-  virtual bool SetState (CS::Physics::RigidBodyState state);
+  virtual void SetState (CS::Physics::RigidBodyState state);
 
   virtual void SetElasticity (float elasticity);
   virtual float GetElasticity ();
@@ -137,8 +136,8 @@ public:
   virtual void AddRelForceAtRelPos (const csVector3& force,
       const csVector3& pos);
 
-  virtual csVector3 GetForce () const;
-  virtual csVector3 GetTorque () const;
+  virtual csVector3 GetTotalForce () const;
+  virtual csVector3 GetTotalTorque () const;
 
   virtual void SetKinematicCallback (CS::Physics::iKinematicCallback* cb) {kinematicCb = cb;}
   virtual CS::Physics::iKinematicCallback* GetKinematicCallback () {return kinematicCb;}

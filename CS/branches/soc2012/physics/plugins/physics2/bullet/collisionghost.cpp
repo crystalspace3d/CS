@@ -22,6 +22,7 @@
 
 
 #include "cssysdef.h"
+#include "iengine/scenenode.h"
 #include "collisionghost.h"
 
 #include "portal.h"
@@ -63,16 +64,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     // set transform
     btTransform transform = btObject->getWorldTransform();
-    iMovable* movable = GetAttachedMovable();
-    if (movable)
+    iSceneNode* sceneNode = GetAttachedSceneNode ();
+    if (sceneNode)
     {
-      movable->SetFullTransform (BulletToCS(transform, system->getInverseInternalScale ()));
-      movable->UpdateMove ();
+      // Update movable
+      sceneNode->GetMovable ()->SetFullTransform
+	(BulletToCS(transform, system->GetInverseInternalScale ()));
+      sceneNode->GetMovable ()->UpdateMove ();
     }
 
     if (camera)
     {
-      camera->SetTransform (BulletToCS(transform, system->getInverseInternalScale ()));
+      camera->SetTransform (BulletToCS(transform, system->GetInverseInternalScale ()));
     }
 
     // add back to world

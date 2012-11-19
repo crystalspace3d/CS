@@ -77,10 +77,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       CS::Collisions::CollisionData data;
       data.objectA = static_cast<CS::Collisions::iCollisionObject*>(colObj0->getUserPointer ());
       data.objectB = static_cast<CS::Collisions::iCollisionObject*>(colObj1->getUserPointer ());
-      data.penetration = cp.m_distance1 * sys->getInverseInternalScale ();
-      data.positionWorldOnA = BulletToCS (cp.m_positionWorldOnA, sys->getInverseInternalScale ());
-      data.positionWorldOnB = BulletToCS (cp.m_positionWorldOnB, sys->getInverseInternalScale ());
-      data.normalWorldOnB = BulletToCS (cp.m_normalWorldOnB, sys->getInverseInternalScale ());
+      data.penetration = cp.m_distance1 * sys->GetInverseInternalScale ();
+      data.positionWorldOnA = BulletToCS (cp.m_positionWorldOnA, sys->GetInverseInternalScale ());
+      data.positionWorldOnB = BulletToCS (cp.m_positionWorldOnB, sys->GetInverseInternalScale ());
+      data.normalWorldOnB = BulletToCS (cp.m_normalWorldOnB, sys->GetInverseInternalScale ());
       colls.Push (data);
       return 0;
     }
@@ -179,7 +179,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
 
     gravity = v;
-    btVector3 gravity = CSToBullet (v, sys->getInternalScale ());
+    btVector3 gravity = CSToBullet (v, sys->GetInternalScale ());
     bulletWorld->setGravity (gravity);
 
     if (isSoftWorld)
@@ -373,8 +373,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, const csVector3& end)
   {
-    btVector3 rayFrom = CSToBullet (start, sys->getInternalScale ());
-    btVector3 rayTo = CSToBullet (end, sys->getInternalScale ());
+    btVector3 rayFrom = CSToBullet (start, sys->GetInternalScale ());
+    btVector3 rayTo = CSToBullet (end, sys->GetInternalScale ());
 
     btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
     rayCallback.m_collisionFilterMask = sys->collGroups[CollisionGroupTypePortalCopy].mask;
@@ -402,9 +402,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           // this might be of interest to the caller
           result.object = collObject;
           result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-            sys->getInverseInternalScale ());
+            sys->GetInverseInternalScale ());
           result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-            sys->getInverseInternalScale ());
+            sys->GetInverseInternalScale ());
         }
       }
       else if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
@@ -417,9 +417,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         {
           result.object = collObject;
           result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-            sys->getInverseInternalScale ());
+            sys->GetInverseInternalScale ());
           result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-            sys->getInverseInternalScale ());	
+            sys->GetInverseInternalScale ());	
 
           // Find the closest vertex that was hit
           // TODO: there must be something more efficient than a second ray test
@@ -456,9 +456,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         // "normal" object
         result.object = collObject;
         result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-          sys->getInverseInternalScale ());
+          sys->GetInverseInternalScale ());
         result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-          sys->getInverseInternalScale ());
+          sys->GetInverseInternalScale ());
         return result;
       } // not softBody
     } //has hit
@@ -549,10 +549,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             data.objectB = csCOB;
 
             const btManifoldPoint& pt = manifold->getContactPoint(p);
-            data.penetration = pt.m_distance1 * sys->getInverseInternalScale ();
-            data.positionWorldOnA = BulletToCS (pt.m_positionWorldOnA, sys->getInverseInternalScale ());
-            data.positionWorldOnB = BulletToCS (pt.m_positionWorldOnB, sys->getInverseInternalScale ());
-            data.normalWorldOnB = BulletToCS (pt.m_normalWorldOnB, sys->getInverseInternalScale ());
+            data.penetration = pt.m_distance1 * sys->GetInverseInternalScale ();
+            data.positionWorldOnA = BulletToCS (pt.m_positionWorldOnA, sys->GetInverseInternalScale ());
+            data.positionWorldOnB = BulletToCS (pt.m_positionWorldOnB, sys->GetInverseInternalScale ());
+            data.normalWorldOnB = BulletToCS (pt.m_normalWorldOnB, sys->GetInverseInternalScale ());
             collisions.Push (data);
           }
         }
@@ -627,8 +627,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     const csVector3& start,
     const csVector3& end)
   {
-    btVector3 rayFrom = CSToBullet (start, sys->getInternalScale ());
-    btVector3 rayTo = CSToBullet (end, sys->getInternalScale ());
+    btVector3 rayFrom = CSToBullet (start, sys->GetInternalScale ());
+    btVector3 rayTo = CSToBullet (end, sys->GetInternalScale ());
 
     CS::Collisions::HitBeamResult result;
 
@@ -662,9 +662,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             }
 
             result.isect = BulletToCS (node->m_x,
-              sys->getInverseInternalScale ());
+              sys->GetInverseInternalScale ());
             result.normal = BulletToCS (node->m_n,
-              sys->getInverseInternalScale ());	
+              sys->GetInverseInternalScale ());	
             result.vertexIndex = size_t (node - &body->m_nodes[0]);
             break;
           }
@@ -698,9 +698,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         result.hasHit = true;
         result.object = static_cast<csBulletCollisionObject*> (object->getUserPointer ());
         result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-          sys->getInverseInternalScale ());
+          sys->GetInverseInternalScale ());
         result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-          sys->getInverseInternalScale ());
+          sys->GetInverseInternalScale ());
         return result;
       }
     }
@@ -949,7 +949,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   {
     if (!debugDraw)
     {
-      debugDraw = new csBulletDebugDraw (sys->getInverseInternalScale ());
+      debugDraw = new csBulletDebugDraw (sys->GetInverseInternalScale ());
       bulletWorld->setDebugDrawer (debugDraw);
     }
 
@@ -961,7 +961,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   {
     if (!debugDraw && mode)
     {
-      debugDraw = new csBulletDebugDraw (sys->getInverseInternalScale ());
+      debugDraw = new csBulletDebugDraw (sys->GetInverseInternalScale ());
       bulletWorld->setDebugDrawer (debugDraw);
     }
 
@@ -982,7 +982,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     if (!debugDraw)
     {
-      debugDraw = new csBulletDebugDraw (sys->getInverseInternalScale ());
+      debugDraw = new csBulletDebugDraw (sys->GetInverseInternalScale ());
       bulletWorld->setDebugDrawer (debugDraw);
     }
     debugDraw->StartProfile ();
@@ -1019,6 +1019,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::AddSceneNodeToSector (iSceneNode* sceneNode)
   {
+    // TODO: use iMovable::SetSector() instead (same everywhere)
     if (sceneNode && sector)
     {
       iMeshWrapper* mesh = sceneNode->QueryMesh ();

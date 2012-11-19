@@ -45,16 +45,16 @@ static VehicleSteeringDevice SteeringWheel;
 // #######################################################################
 // Default vehicle parameters:
 
-static const csScalar SteeringIncrement(csScalar(.04));
-static const csScalar SteeringMax(csScalar(.3));
+static const float SteeringIncrement(.04);
+static const float SteeringMax(.3);
 
-static const csScalar EngineForce(10000);
+static const float EngineForce(10000);
 
-static const csScalar FrontBrakeForce(100);
-static const csScalar RearBrakeForce(100);
-static const csScalar HandBrakeForce(1000);
+static const float FrontBrakeForce(100);
+static const float RearBrakeForce(100);
+static const float HandBrakeForce(1000);
 
-static const csScalar ChassisMass(800);
+static const float ChassisMass(800);
 
 
 // The Wheels:
@@ -66,13 +66,13 @@ const static int AxleCount(2);
 const static int WheelsPerAxle(2);
 
 /// Length of suspension as factor of the chassis height
-const static csScalar SuspensionLengthFactor(csScalar(1.2));
+const static float SuspensionLengthFactor(1.2);
 
 /// Wheel radius
-const static csScalar WheelRadius(csScalar(.5));
+const static float WheelRadius(.5);
 
 /// Wheel width
-const static csScalar WheelWidth(csScalar(.6));
+const static float WheelWidth(.6);
 
 
 // The Chassis:
@@ -81,28 +81,28 @@ const static csScalar WheelWidth(csScalar(.6));
 const static csVector3 ChassisSizeTop(3, 2, 3);
 
 /// and one bottom box
-const static csVector3 ChassisSizeBottom(csScalar(3), csScalar(.9), csScalar(5));
+const static csVector3 ChassisSizeBottom(3, .9, 5);
 
 
 // The grid of tires:
 
 /// Relative position to chassis of the first wheel on the left side
 const static csVector3 WheelTopLeft(
-  -csScalar(.6), 
-  -csScalar(.7), 
-  csScalar(.45));
+  -.6, 
+  -.7, 
+  .45);
 
 /// Relative position to chassis of the last wheel on the left side
 const static csVector3 WheelBottomLeft(
-  -csScalar(.6), 
-  -csScalar(.7), 
-  -csScalar(.45));
+  -.6, 
+  -.7, 
+  -.45);
 
 /// Relative position to chassis of the first wheel on the right side
 const static csVector3 WheelTopRight(
-  csScalar(.6), 
-  -csScalar(.7), 
-  csScalar(.45));
+  .6, 
+  -.7, 
+  .45);
 
 
 // Actor <-> Vehicle interaction
@@ -113,7 +113,7 @@ const static csVector3 VehicleActorPos(
 );
 
 /// The speed with which the actor moves sideward when jumping out of a vehicle
-const static csScalar ActorBailSideSpeed(3);
+const static float ActorBailSideSpeed(3);
 
 
 
@@ -131,8 +131,8 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
 
   
   // compute dependent parameters
-  csVector3 topPos(0, csScalar(.5) * ChassisSizeTop.y, - csScalar(.5) * (ChassisSizeBottom.z - ChassisSizeTop.z));
-  csVector3 botPos(0, -csScalar(.5) * ChassisSizeBottom.y, 0);
+  csVector3 topPos(0, .5f * ChassisSizeTop.y, - .5f * (ChassisSizeBottom.z - ChassisSizeTop.z));
+  csVector3 botPos(0, -.5f * ChassisSizeBottom.y, 0);
 
   // setup chassis
 
@@ -144,7 +144,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   botPos.y = 0;
   chassisCollider->AddCollider(chassisBottomCollider, csOrthoTransform(csMatrix3(), botPos));
   
-  //csOrthoTransform centerOfMassTransform(csMatrix3(), csVector3(0, -csScalar(.4) * ChassisSizeBottom.y, ChassisSizeBottom.z));
+  //csOrthoTransform centerOfMassTransform(csMatrix3(), csVector3(0, -.4) * ChassisSizeBottom.y, ChassisSizeBottom.z);
   //chassisCollider->SetPrincipalAxisTransform(centerOfMassTransform);
   csRef<iRigidBodyFactory> chassisFact = physicalSystem->CreateRigidBodyFactory(chassisCollider, "chassis");
   chassisFact->SetElasticity(DefaultElasticity);
@@ -157,15 +157,15 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
 
   // setup wheels
   csRef<iVehicleWheelFactory> wheelFact = physicalSystem->CreateVehicleWheelFactory();
-  wheelFact->SetRollInfluence(csScalar(0));
+  wheelFact->SetRollInfluence(0);
   wheelFact->SetFrictionCoefficient(DefaultFriction);
   
   for (int axle = 0; axle < AxleCount; ++axle)
   {
-    csScalar axleFactor = axle / csScalar(AxleCount - 1);
+    float axleFactor = axle / AxleCount - 1;
     for (int inAxleN = 0; inAxleN < WheelsPerAxle; ++inAxleN)
     {
-      csScalar inAxleFactor = inAxleN / csScalar(WheelsPerAxle - 1);
+      float inAxleFactor = inAxleN / WheelsPerAxle - 1;
 
       // place wheels uniformly along the grid of axles
       csVector3 pos(WheelTopLeft);
@@ -239,7 +239,7 @@ void PhysDemo::MoveActorVehicle()
   // actorVehicle != nullptr
 
   // Steering
-  csScalar steering = SteeringIncrement * GetLeftRight();
+  float steering = SteeringIncrement * GetLeftRight();
   actorVehicle->IncrementSteering(&SteeringWheel, steering);
 
   // Acceleration
@@ -250,7 +250,7 @@ void PhysDemo::MoveActorVehicle()
   else 
   {
     // do nothing because engine force is resetted automatically
-    //actorVehicle->SetEngineForce(actorVehicle->GetEngineForce() * csScalar(.99));
+    //actorVehicle->SetEngineForce(actorVehicle->GetEngineForce() * .99);
   }
 
   if (GetBackward())
@@ -321,7 +321,7 @@ void PhysDemo::LeaveCurrentVehicle()
 
   // Place actor beside vehicle to avoid collision
   csOrthoTransform actorTrans = actorObj->GetTransform();
-  csScalar sideDist = ChassisSizeBottom.x / csScalar(1.8) + 2 * ActorDimensions.x;
+  float sideDist = ChassisSizeBottom.x / 1.8 + 2 * ActorDimensions.x;
   actorTrans.Translate(sideDist * sideward);
   csVector3 pos(actorTrans.GetOrigin());
   if (!GetPointOnGroundBeneathPos(pos, pos))

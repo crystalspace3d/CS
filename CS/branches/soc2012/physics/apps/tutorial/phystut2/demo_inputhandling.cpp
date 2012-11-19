@@ -34,7 +34,7 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-csScalar PhysDemo::GetForward()
+float PhysDemo::GetForward()
 {
   if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState(CSKEY_UP))
   {
@@ -43,7 +43,7 @@ csScalar PhysDemo::GetForward()
   return 0;
 }
 
-csScalar PhysDemo::GetBackward()
+float PhysDemo::GetBackward()
 {
   if (kbd->GetKeyState (KeyBack) || kbd->GetKeyState(CSKEY_DOWN))
   {
@@ -52,9 +52,9 @@ csScalar PhysDemo::GetBackward()
   return 0;
 }
 
-csScalar PhysDemo::GetLeftRight()
+float PhysDemo::GetLeftRight()
 {
-  csScalar val = 0;
+  float val = 0;
   if (kbd->GetKeyState (KeyStrafeLeft))
   {
     val -= 1;
@@ -95,6 +95,22 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
     return false;
   }
+
+  else if (code == '+')
+  {
+    selectedIndex = (selectedIndex + 1) % player.GetInventory ().GetItems ().GetSize ();
+    selectedItem = player.GetInventory ().GetItem (selectedIndex);
+    SetupHUD();
+  }
+  else if (code == '-')
+  {
+    if (!selectedIndex)
+      selectedIndex = player.GetInventory ().GetItems ().GetSize () - 1;
+    else selectedIndex--;
+    selectedItem = player.GetInventory ().GetItem (selectedIndex);
+    SetupHUD();
+  }
+
   else if (code >= CSKEY_F1 && code <= CSKEY_F12)
   {
     // F-key has been pressed -> Select tool
@@ -243,7 +259,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       // Remove the body and the mesh from the simulation, and put them in the clipboard
 
       clipboardBody = hitResult.object->QueryPhysicalBody();
-      clipboardMovable = hitResult.object->GetAttachedMovable();
+      clipboardMovable = hitResult.object->GetAttachedSceneNode ()->GetMovable();
 
       if (clipboardBody->QueryRigidBody())
       {

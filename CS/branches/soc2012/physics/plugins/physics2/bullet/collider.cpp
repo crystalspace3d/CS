@@ -114,7 +114,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     {
       // TODO: Fix this
       this->margin = margin;
-      shape->setMargin (margin * collSystem->getInternalScale ());
+      shape->setMargin (margin * collSystem->GetInternalScale ());
     }
   }
 
@@ -187,7 +187,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       {
         iCollider* icoll = children->colliders[i];
         csBulletCollider* coll = dynamic_cast<csBulletCollider*>(icoll);
-        btTransform relaTrans = CSToBullet (children->transforms[i], collSystem->getInternalScale ());
+        btTransform relaTrans = CSToBullet (children->transforms[i], collSystem->GetInternalScale ());
         btCollisionShape* childShape = coll->GetOrCreateBulletShape();
         compound.addChildShape (relaTrans, childShape);
 

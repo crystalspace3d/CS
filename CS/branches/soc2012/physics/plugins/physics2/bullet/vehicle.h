@@ -72,19 +72,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual void SetCollider(CS::Collisions::iCollider* c) { }
 
     /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual csScalar GetSuspensionStiffness() const { return btWheel.m_suspensionStiffness; }
+    virtual float GetSuspensionStiffness() const { return btWheel.m_suspensionStiffness; }
     /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual void SetSuspensionStiffness(csScalar s) { btWheel.m_suspensionStiffness = s; }
+    virtual void SetSuspensionStiffness(float s) { btWheel.m_suspensionStiffness = s; }
 
     /// Suspension with more damping needs more force to be compressed and to relax
-    virtual csScalar GetSuspensionDamping() const { return btWheel.m_wheelsDampingCompression; }
+    virtual float GetSuspensionDamping() const { return btWheel.m_wheelsDampingCompression; }
     /// Suspension with more damping needs more force to be compressed and to relax
-    virtual void SetSuspensionDamping(csScalar s) { btWheel.m_wheelsDampingCompression = btWheel.m_wheelsDampingRelaxation = s; }
+    virtual void SetSuspensionDamping(float s) { btWheel.m_wheelsDampingCompression = btWheel.m_wheelsDampingRelaxation = s; }
 
     /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual csScalar GetMaxSuspensionDisplacementCM() const { return btWheel.m_maxSuspensionTravelCm; }
+    virtual float GetMaxSuspensionDisplacementCM() const { return btWheel.m_maxSuspensionTravelCm; }
     /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual void SetMaxSuspensionDisplacementCM(csScalar s) { btWheel.m_maxSuspensionTravelCm = s; }
+    virtual void SetMaxSuspensionDisplacementCM(float s) { btWheel.m_maxSuspensionTravelCm = s; }
 
     /** 
     * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
@@ -92,24 +92,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     * A greater value reduces the chance of the vehicle slipping.
     * When on a wet or slippery road, the coefficient should be very small.
     */
-    virtual csScalar GetFrictionCoefficient() const { return btWheel.m_frictionSlip; }
+    virtual float GetFrictionCoefficient() const { return btWheel.m_frictionSlip; }
     /** 
     * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
     * It is very similar to muh in Coulomb's law.
     * A greater value reduces the chance of the vehicle slipping.
     * When on a wet or slippery road, the coefficient should be very small.
     */
-    virtual void SetFrictionCoefficient(csScalar s) { btWheel.m_frictionSlip = s; }
+    virtual void SetFrictionCoefficient(float s) { btWheel.m_frictionSlip = s; }
 
     /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual csScalar GetMaxSuspensionForce() const { return btWheel.m_maxSuspensionForce; }
+    virtual float GetMaxSuspensionForce() const { return btWheel.m_maxSuspensionForce; }
     /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual void SetMaxSuspensionForce(csScalar s) { btWheel.m_maxSuspensionForce = s; }
+    virtual void SetMaxSuspensionForce(float s) { btWheel.m_maxSuspensionForce = s; }
 
     /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual csScalar GetRollInfluence() const { return btWheel.m_rollInfluence; }
+    virtual float GetRollInfluence() const { return btWheel.m_rollInfluence; }
     /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual void SetRollInfluence(csScalar infl) { btWheel.m_rollInfluence = infl; }
+    virtual void SetRollInfluence(float infl) { btWheel.m_rollInfluence = infl; }
 
 
     // Geometry & other
@@ -125,37 +125,37 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual void SetIsWheelAffectedByBrake(bool b) { isAffectedByBrake = b; }
 
     /// Length of the suspension in equilibrium
-    virtual csScalar GetSuspensionLength() const { return btWheel.m_suspensionRestLength1; }
+    virtual float GetSuspensionLength() const { return btWheel.m_suspensionRestLength1; }
     /// Length of the suspension in equilibrium
-    virtual void SetSuspensionLength(csScalar s) { btWheel.m_suspensionRestLength1 = s; }
+    virtual void SetSuspensionLength(float s) { btWheel.m_suspensionRestLength1 = s; }
 
     /// Radius of the wheel
-    virtual csScalar GetRadius() const { return btWheel.m_wheelsRadius; }
+    virtual float GetRadius() const { return btWheel.m_wheelsRadius; }
     /// Radius of the wheel
-    virtual void SetRadius(csScalar s) { btWheel.m_wheelsRadius = s; }
+    virtual void SetRadius(float s) { btWheel.m_wheelsRadius = s; }
 
     /// The position of the wheel relative to the chassis
-    csVector3 GetWheelPos() const { return BulletToCS(btWheel.m_chassisConnectionPointCS, sys->getInternalScale()); }
+    csVector3 GetWheelPos() const { return BulletToCS(btWheel.m_chassisConnectionPointCS, sys->GetInternalScale()); }
     /// Value between 0 and 1 that determines how easily the car can roll over its side
-    void SetWheelPos(const csVector3& p)  { btWheel.m_chassisConnectionPointCS = CSToBullet(p, sys->getInverseInternalScale()); }
+    void SetWheelPos(const csVector3& p)  { btWheel.m_chassisConnectionPointCS = CSToBullet(p, sys->GetInverseInternalScale()); }
 
     /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-    csVector3 GetWheelOrientation() const { return BulletToCS(btWheel.m_wheelDirectionCS, sys->getInternalScale()); }
+    csVector3 GetWheelOrientation() const { return BulletToCS(btWheel.m_wheelDirectionCS, sys->GetInternalScale()); }
     /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-    void SetSuspensionOrientation(const csVector3& o) { btWheel.m_wheelDirectionCS = CSToBullet(o, sys->getInverseInternalScale()); }
+    void SetSuspensionOrientation(const csVector3& o) { btWheel.m_wheelDirectionCS = CSToBullet(o, sys->GetInverseInternalScale()); }
 
     /// Unit vector that describes the axle about which the wheel rotates
-    csVector3 GetAxleOrientation() const { return BulletToCS(btWheel.m_wheelAxleCS, sys->getInternalScale()); }
+    csVector3 GetAxleOrientation() const { return BulletToCS(btWheel.m_wheelAxleCS, sys->GetInternalScale()); }
     /// Unit vector that describes the axle about which the wheel rotates
-    void SetAxleOrientation(const csVector3& o) { btWheel.m_wheelAxleCS = CSToBullet(o, sys->getInverseInternalScale()); }
+    void SetAxleOrientation(const csVector3& o) { btWheel.m_wheelAxleCS = CSToBullet(o, sys->GetInverseInternalScale()); }
 
 
     // Run-time parameters
 
     /// Rotation in radians
-    const csScalar GetRotation() const { return btWheel.m_rotation; }
+    const float GetRotation() const { return btWheel.m_rotation; }
     /// Rotation in radians
-    void SetRotation(csScalar r) { btWheel.m_rotation = r; }
+    void SetRotation(float r) { btWheel.m_rotation = r; }
   };
 
   class BulletVehicleWheelFactory : public scfVirtImplementationExt1<
@@ -166,7 +166,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   private:
     csBulletSystem* sys;
     btRaycastVehicle::btVehicleTuning tuning;
-    csScalar rollInfluence;
+    float rollInfluence;
 
   public:
     BulletVehicleWheelFactory(csBulletSystem* sys);
@@ -181,19 +181,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual void SetCollider(CS::Collisions::iCollider* c) { }
 
     /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual csScalar GetSuspensionStiffness() const { return tuning.m_suspensionStiffness; }
+    virtual float GetSuspensionStiffness() const { return tuning.m_suspensionStiffness; }
     /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual void SetSuspensionStiffness(csScalar s) { tuning.m_suspensionStiffness = s; }
+    virtual void SetSuspensionStiffness(float s) { tuning.m_suspensionStiffness = s; }
 
     /// Suspension with more damping needs more force to be compressed and to relax
-    virtual csScalar GetSuspensionDamping() const { return tuning.m_suspensionCompression; }
+    virtual float GetSuspensionDamping() const { return tuning.m_suspensionCompression; }
     /// Suspension with more damping needs more force to be compressed and to relax
-    virtual void SetSuspensionDamping(csScalar s) { tuning.m_suspensionCompression = tuning.m_suspensionDamping = s; }
+    virtual void SetSuspensionDamping(float s) { tuning.m_suspensionCompression = tuning.m_suspensionDamping = s; }
 
     /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual csScalar GetMaxSuspensionDisplacementCM() const { return tuning.m_maxSuspensionTravelCm; }
+    virtual float GetMaxSuspensionDisplacementCM() const { return tuning.m_maxSuspensionTravelCm; }
     /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual void SetMaxSuspensionDisplacementCM(csScalar s) { tuning.m_maxSuspensionTravelCm = s; }
+    virtual void SetMaxSuspensionDisplacementCM(float s) { tuning.m_maxSuspensionTravelCm = s; }
 
     /** 
     * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
@@ -201,24 +201,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     * A greater value reduces the chance of the vehicle slipping.
     * When on a wet or slippery road, the coefficient should be very small.
     */
-    virtual csScalar GetFrictionCoefficient() const { return tuning.m_frictionSlip; }
+    virtual float GetFrictionCoefficient() const { return tuning.m_frictionSlip; }
     /** 
     * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
     * It is very similar to muh in Coulomb's law.
     * A greater value reduces the chance of the vehicle slipping.
     * When on a wet or slippery road, the coefficient should be very small.
     */
-    virtual void SetFrictionCoefficient(csScalar s) { tuning.m_frictionSlip = s; }
+    virtual void SetFrictionCoefficient(float s) { tuning.m_frictionSlip = s; }
 
     /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual csScalar GetMaxSuspensionForce() const { return tuning.m_maxSuspensionForce; }
+    virtual float GetMaxSuspensionForce() const { return tuning.m_maxSuspensionForce; }
     /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual void SetMaxSuspensionForce(csScalar s) { tuning.m_maxSuspensionForce = s; }
+    virtual void SetMaxSuspensionForce(float s) { tuning.m_maxSuspensionForce = s; }
 
     /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual csScalar GetRollInfluence() const { return rollInfluence; }
+    virtual float GetRollInfluence() const { return rollInfluence; }
     /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual void SetRollInfluence(csScalar infl) { rollInfluence = infl; }
+    virtual void SetRollInfluence(float infl) { rollInfluence = infl; }
   };
 
     /**
@@ -229,8 +229,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     {
       csRef<CS::Physics::iVehicleWheelFactory> factory;
       csVector3 pos, wheelOrientation, axleOrientation;
-      csScalar suspensionLength;
-      csScalar radius;
+      float suspensionLength;
+      float radius;
       bool isDriven;
 
     public:
@@ -254,14 +254,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       virtual void SetIsWheelDriven(bool d) { isDriven = d; }
 
       /// Length of the suspension in equilibrium
-      virtual csScalar GetSuspensionLength() const { return suspensionLength; }
+      virtual float GetSuspensionLength() const { return suspensionLength; }
       /// Length of the suspension in equilibrium
-      virtual void SetSuspensionLength(csScalar s) { suspensionLength = s; }
+      virtual void SetSuspensionLength(float s) { suspensionLength = s; }
 
       /// Radius of the wheel
-      virtual csScalar GetRadius() const { return radius; }
+      virtual float GetRadius() const { return radius; }
       /// Radius of the wheel
-      virtual void SetRadius(csScalar r) { radius = r; }
+      virtual void SetRadius(float r) { radius = r; }
 
       /// The position of the wheel relative to the chassis
       const csVector3& GetWheelPos() const { return pos; }
@@ -326,18 +326,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual ~BulletVehicle();
 
     /// The current engine force
-    virtual csScalar GetEngineForce() const;
+    virtual float GetEngineForce() const;
     /// The current engine force
-    virtual void SetEngineForce(csScalar f);
+    virtual void SetEngineForce(float f);
     
       /// Apply the given brake for the next simulation step. Scale it's braking force with the given factor.
-    virtual void ApplyBrake(CS::Physics::VehicleBrakeInfo* brake, csScalar factor = 1);
+    virtual void ApplyBrake(CS::Physics::VehicleBrakeInfo* brake, float factor = 1);
 
     /**
     * Use the given steering device to increase the steering angle of the device-controlled wheels 
     * and clamp to the device's allowed max angle.
     */
-    virtual void IncrementSteering(CS::Physics::VehicleSteeringDevice* steeringWheel, csScalar increment);
+    virtual void IncrementSteering(CS::Physics::VehicleSteeringDevice* steeringWheel, float increment);
 
     /// The amount of wheels that are directly powered by the engine
     virtual size_t GetDrivenWheelCount() const;
@@ -355,10 +355,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     virtual const csRefArray<CS::Physics::iVehicleWheel>& GetWheels() const { return wheels; }
     
     /// Current speed in km/h
-    virtual csScalar GetSpeedKMH() const { return btVehicle->getCurrentSpeedKmHour(); }
+    virtual float GetSpeedKMH() const { return btVehicle->getCurrentSpeedKmHour(); }
 
-    virtual void PreStep(csScalar dt) {}
-    virtual void PostStep(csScalar dt);
+    virtual void PreStep(float dt) {}
+    virtual void PostStep(float dt);
 
     /// Called when updatable is added to the given sector
     virtual void OnAdded(CS::Physics::iPhysicalSector* sector);

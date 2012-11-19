@@ -57,9 +57,8 @@ public:
 
   virtual bool IsDynamic() const { return true; }
 
-  virtual bool Disable ();
-  virtual bool Enable ();
-  virtual bool IsEnabled ();
+  virtual void SetEnabled (bool enabled);
+  virtual bool GetEnabled () const;
 
   virtual void SetFriction (float friction) { btObject->setFriction (friction); }
   virtual float GetFriction () const {return btObject->getFriction ();}

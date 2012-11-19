@@ -127,11 +127,11 @@ public:
   virtual void SetMinimumDistance (const csVector3& dist,
     bool forceUpdate = false);
   virtual csVector3 GetMinimumDistance () const
-  { return BulletToCS (minDist, sys->getInverseInternalScale ()); }
+  { return BulletToCS (minDist, sys->GetInverseInternalScale ()); }
   virtual void SetMaximumDistance (const csVector3& dist,
     bool forceUpdate = false);
   virtual csVector3 GetMaximumDistance () const
-  { return BulletToCS (maxDist, sys->getInverseInternalScale ()); }
+  { return BulletToCS (maxDist, sys->GetInverseInternalScale ()); }
 
   virtual void SetRotConstraints (bool X, 
     bool Y, bool Z, bool forceUpdate = false);

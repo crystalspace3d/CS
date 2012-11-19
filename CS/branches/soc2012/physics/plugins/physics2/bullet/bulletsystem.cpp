@@ -69,7 +69,7 @@ csBulletSystem::csBulletSystem (iBase* iParent)
 {
   defaultInfo = new btSoftBodyWorldInfo;
   
-
+  // TODO: remove or put in a tool class
   static const CollisionGroupMask allFilter = -1;
 
   CollisionGroup defaultGroup ("Default");
@@ -116,14 +116,11 @@ csBulletSystem::csBulletSystem (iBase* iParent)
 csBulletSystem::~csBulletSystem ()
 {
   collSectors.DeleteAll ();
-  //objects.DeleteAll ();
-  //colliders.DeleteAll ();
 }
 
 void csBulletSystem::SetInternalScale (float scale)
 {
   // update parameters
-  // TODO: Update all objects
   internalScale = scale;
   inverseInternalScale = 1.0f / scale;
 }
@@ -134,24 +131,20 @@ bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
   return true;
 }
 
-csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound ( )
+csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound ()
 {
-   csRef<iColliderCompound> collider = csPtr<iColliderCompound>(new csBulletColliderCompound (this));
-
-  //colliders.Push (collider);
-  return csPtr<iColliderCompound>(collider);
+  csRef<iColliderCompound> collider = csPtr<iColliderCompound>
+    (new csBulletColliderCompound (this));
+  return csPtr<iColliderCompound> (collider);
 }
 
 csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (
   iTriangleMesh* triMesh, bool simplify)
 {
   btTriangleMesh* btTriMesh = CreateBulletTriMesh (triMesh);
-  
-  csRef<csBulletColliderConvexMesh> collider = csPtr<csBulletColliderConvexMesh>(
-    new csBulletColliderConvexMesh (triMesh, btTriMesh, this, simplify));
-
-  //colliders.Push (collider);
-  return csPtr<iColliderConvexMesh>(collider);
+  csRef<csBulletColliderConvexMesh> collider;
+  collider.AttachNew (new csBulletColliderConvexMesh (triMesh, btTriMesh, this, simplify));
+  return csPtr<iColliderConvexMesh> (collider);
 }
 
 csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcaveMesh (iTriangleMesh* mesh)
@@ -159,94 +152,72 @@ csPtr<CS::Collisions::iColliderConcaveMesh> csBulletSystem::CreateColliderConcav
   btTriangleMesh* btTriMesh = CreateBulletTriMesh (mesh);
   csRef<csBulletColliderConcaveMesh> collider = csPtr<csBulletColliderConcaveMesh>
     (new csBulletColliderConcaveMesh (mesh, btTriMesh, this));
-
-  //colliders.Push (collider);
-  return csPtr<iColliderConcaveMesh>(collider);
+  return csPtr<iColliderConcaveMesh> (collider);
 }
 
 csPtr<CS::Collisions::iColliderConcaveMeshScaled> csBulletSystem::CreateColliderConcaveMeshScaled (
-  CS::Collisions::iColliderConcaveMesh* collider, csVector3 scale)
+  CS::Collisions::iColliderConcaveMesh* collider, const csVector3& scale)
 {
   csRef<csBulletColliderConcaveMeshScaled> coll = csPtr<csBulletColliderConcaveMeshScaled>
     (new csBulletColliderConcaveMeshScaled (collider, scale, this));
-
-  //colliders.Push (coll);
-  return csPtr<iColliderConcaveMeshScaled>(coll);
+  return csPtr<iColliderConcaveMeshScaled> (coll);
 }
 
 csPtr<CS::Collisions::iColliderCylinder> csBulletSystem::CreateColliderCylinder (float length, float radius)
 {
-  csRef<csBulletColliderCylinder> collider = csPtr<csBulletColliderCylinder>(new csBulletColliderCylinder (length, radius, this));
-
-  //colliders.Push (collider);
-  return csPtr<iColliderCylinder>(collider);
+  csRef<csBulletColliderCylinder> collider = csPtr<csBulletColliderCylinder>
+    (new csBulletColliderCylinder (length, radius, this));
+  return csPtr<iColliderCylinder> (collider);
 }
 
 csPtr<CS::Collisions::iColliderBox> csBulletSystem::CreateColliderBox (const csVector3& size)
 {
-  //csRef<csBulletColliderBox> collider = csPtr<csBulletColliderBox>(new csBulletColliderBox (size, this));
-  csRef<CS::Collisions::iColliderBox> collider = csPtr<CS::Collisions::iColliderBox>(new csBulletColliderBox (size, this));
-
-  //colliders.Push (collider);
-  return csPtr<CS::Collisions::iColliderBox>(collider);
+  csRef<CS::Collisions::iColliderBox> collider = csPtr<CS::Collisions::iColliderBox>
+    (new csBulletColliderBox (size, this));
+  return csPtr<CS::Collisions::iColliderBox> (collider);
 } 
 
 csPtr<CS::Collisions::iColliderSphere> csBulletSystem::CreateColliderSphere (float radius)
 {
-  csRef<csBulletColliderSphere> collider = csPtr<csBulletColliderSphere>(new csBulletColliderSphere (radius, this));
-  return csPtr<CS::Collisions::iColliderSphere>(collider);
+  csRef<csBulletColliderSphere> collider = csPtr<csBulletColliderSphere>
+    (new csBulletColliderSphere (radius, this));
+  return csPtr<CS::Collisions::iColliderSphere> (collider);
 }
 
 csPtr<CS::Collisions::iColliderCapsule> csBulletSystem::CreateColliderCapsule (float length, float radius)
 {
-  csRef<csBulletColliderCapsule> collider = csPtr<csBulletColliderCapsule>(new csBulletColliderCapsule (length, radius, this));
-  
-  //colliders.Push (collider);
-  return csPtr<CS::Collisions::iColliderCapsule>(collider);
+  csRef<csBulletColliderCapsule> collider = csPtr<csBulletColliderCapsule>
+    (new csBulletColliderCapsule (length, radius, this));
+  return csPtr<CS::Collisions::iColliderCapsule> (collider);
 }
 
 csPtr<CS::Collisions::iColliderCone> csBulletSystem::CreateColliderCone (float length, float radius)
 {
-  csRef<csBulletColliderCone> collider = csPtr<csBulletColliderCone>(new csBulletColliderCone (length, radius, this));
-
-  //colliders.Push (collider);
-  return csPtr<iColliderCone>(collider);
+  csRef<csBulletColliderCone> collider = csPtr<csBulletColliderCone>
+    (new csBulletColliderCone (length, radius, this));
+  return csPtr<iColliderCone> (collider);
 }
 
 csPtr<CS::Collisions::iColliderPlane> csBulletSystem::CreateColliderPlane (const csPlane3& plane)
 {
-  csRef<csBulletColliderPlane> collider = csPtr<csBulletColliderPlane>(new csBulletColliderPlane (plane, this));
-
-  //colliders.Push (collider);
-  return csPtr<iColliderPlane>(collider);
+  csRef<csBulletColliderPlane> collider = csPtr<csBulletColliderPlane>
+    (new csBulletColliderPlane (plane, this));
+  return csPtr<iColliderPlane> (collider);
 }
 
 csPtr<CS::Collisions::iCollisionTerrain> csBulletSystem::CreateCollisionTerrain (iTerrainSystem* terrain, 
                                                                float minHeight /* = 0 */, 
                                                                float maxHeight /* = 0 */)
 {
-  csRef<csBulletCollisionTerrain> collider = csPtr<csBulletCollisionTerrain>(new csBulletCollisionTerrain (terrain, minHeight, maxHeight, this));
-
-  //colliders.Push (collider);
-  return csPtr<iCollisionTerrain>(collider);
+  csRef<csBulletCollisionTerrain> collider = csPtr<csBulletCollisionTerrain>
+    (new csBulletCollisionTerrain (terrain, minHeight, maxHeight, this));
+  return csPtr<iCollisionTerrain> (collider);
 }
 
 CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector ()
 {
-  csRef<csBulletSector> collSector = csPtr<csBulletSector>(new csBulletSector (this));
-
+  csRef<csBulletSector> collSector = csPtr<csBulletSector> (new csBulletSector (this));
   collSectors.Push (collSector);
-  return collSector;
-}
-
-CS::Collisions::iCollisionSector* csBulletSystem::GetOrCreateCollisionSector (iSector* sector)
-{
-  iCollisionSector* collSector = GetCollisionSector (sector);
-  if (!collSector)
-  {
-    collSector = CreateCollisionSector ();
-    collSector->SetSector (sector);
-  }
   return collSector;
 }
 
@@ -255,7 +226,7 @@ CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const cha
   return this->collSectors.FindByName (name);
 }
 
-CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSector* sec)
+CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSector* sec)
 {
   for (size_t i = 0; i < collSectors.GetSize (); i++)
   {
@@ -275,14 +246,14 @@ CS::Collisions::iCollisionSector* csBulletSystem::GetCollisionSector (const iSec
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateJoint ()
 {
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 position)
 {
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   csVector3 trans (0.0f,0.0f,0.0f);
   joint->SetMaximumDistance (trans);
@@ -290,7 +261,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 
   joint->SetPosition (position);
   joint->SetType (RIGID_P2P_JOINT);
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoTransform trans,
@@ -299,7 +270,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoT
 {
   if (axis < 0 || axis > 2)
     return csPtr<CS::Physics::iJoint> (nullptr);
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   joint->SetRotConstraints (true, true, true);
   csVector3 minDistant (0.0f, 0.0f, 0.0f);
@@ -316,7 +287,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoT
   joint->SetTransform (trans);
   joint->SetType (RIGID_SLIDE_JOINT);
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector3 position, 
@@ -324,7 +295,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector
 {
   if (axis < 0 || axis > 2)
     return csPtr<CS::Physics::iJoint> (nullptr);
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   csVector3 minDistant (0.0f, 0.0f, 0.0f);
   csVector3 maxDistant (0.0f, 0.0f, 0.0f);
   minDistant[axis] = minAngle;
@@ -335,14 +306,14 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector
   joint->SetType (RIGID_HINGE_JOINT);
   joint->axis = axis;
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOrthoTransform trans, 
                                                                        float swingSpan1,float swingSpan2,
                                                                        float twistSpan) 
 {
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   joint->SetRotConstraints (true, true, true);
 
@@ -356,16 +327,16 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOr
   joint->SetMaximumAngle (maxDistant);
   joint->SetTransform (trans);
   joint->SetType (RIGID_CONETWIST_JOINT);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftLinearJoint (const csVector3 position)
 {
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetPosition (position);
   joint->SetType (SOFT_LINEAR_JOINT);
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
@@ -383,12 +354,12 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
 
   joint->SetType (SOFT_ANGULAR_JOINT);
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* body, const csVector3 position)
 {
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint>(new csBulletJoint (this));
+  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
   csVector3 trans (0.0f,0.0f,0.0f);
   joint->SetMaximumDistance (trans);
@@ -397,7 +368,7 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   joint->SetType (RIGID_PIVOT_JOINT);
   joint->Attach (body, nullptr);
   //joints.Push (joint);
-  return csPtr<CS::Physics::iJoint>(joint);
+  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 
@@ -406,18 +377,18 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
 /// Creates a new factory to produce vehicles
 csPtr<iVehicleFactory> csBulletSystem::CreateVehicleFactory ()
 {
-  return csPtr<iVehicleFactory>(new BulletVehicleFactory (this));
+  return csPtr<iVehicleFactory> (new BulletVehicleFactory (this));
 }
 
 /// Creates a new factory to produce vehicle wheels
 csPtr<iVehicleWheelFactory> csBulletSystem::CreateVehicleWheelFactory ()
 {
-  return csPtr<iVehicleWheelFactory>(new BulletVehicleWheelFactory (this));
+  return csPtr<iVehicleWheelFactory> (new BulletVehicleWheelFactory (this));
 }
 
 csPtr<iVehicleWheelInfo> csBulletSystem::CreateVehicleWheelInfo (iVehicleWheelFactory* factory)
 {
-  return csPtr<iVehicleWheelInfo>(new BulletVehicleWheelInfo (factory));
+  return csPtr<iVehicleWheelInfo> (new BulletVehicleWheelInfo (factory));
 }
 
 iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
@@ -532,9 +503,9 @@ void csBulletSystem::SeparateDisconnectedSubMeshes (iColliderCompound* compoundC
     csOrthoTransform transform;
     compoundCollider->GetCollider (i, ipartialCollider, transform);
 
-    csBulletCollider* partialCollider = dynamic_cast<csBulletCollider*>(ipartialCollider);
+    csBulletCollider* partialCollider = dynamic_cast<csBulletCollider*> (ipartialCollider);
     obj.setCollisionShape (partialCollider->GetOrCreateBulletShape ());
-    obj.setWorldTransform (CSToBullet (transform, getInternalScale ()));
+    obj.setWorldTransform (CSToBullet (transform, GetInternalScale ()));
     bulletWorld->addCollisionObject (&obj);
   }
   
@@ -542,14 +513,14 @@ void csBulletSystem::SeparateDisconnectedSubMeshes (iColliderCompound* compoundC
   bulletWorld->performDiscreteCollisionDetection ();
   
   // TODO: Build islands
-  //btPersistentManifold** manifold = dispatcher->getInternalManifoldPointer ();
+  //btPersistentManifold** manifold = dispatcher->GetInternalManifoldPointer ();
   //int maxNumManifolds = dispatcher->getNumManifolds ();
   //for (i=0;i<maxNumManifolds ;i++)
   //{
   //  btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal (i);
 
-  //  btCollisionObject* colObj0 = static_cast<btCollisionObject*>(manifold->getBody0 ());
-  //  btCollisionObject* colObj1 = static_cast<btCollisionObject*>(manifold->getBody1 ());
+  //  btCollisionObject* colObj0 = static_cast<btCollisionObject*> (manifold->getBody0 ());
+  //  btCollisionObject* colObj1 = static_cast<btCollisionObject*> (manifold->getBody1 ());
 
   //  ///@todo: check sleeping conditions!
   //  if (((colObj0) && colObj0->getActivationState () != ISLAND_SLEEPING) ||
@@ -593,7 +564,7 @@ csPtr<CS::Collisions::iGhostCollisionObjectFactory>
 { 
   BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory (collider, name);
   fact->system = this;
-  return csPtr<iGhostCollisionObjectFactory>(fact); 
+  return csPtr<iGhostCollisionObjectFactory> (fact); 
 }
 
 csPtr<CS::Collisions::iCollisionActorFactory> 
@@ -601,7 +572,7 @@ csPtr<CS::Collisions::iCollisionActorFactory>
 {
   BulletCollisionActorFactory* fact = new BulletCollisionActorFactory (collider, name);
   fact->system = this;
-  return csPtr<iCollisionActorFactory>(fact); 
+  return csPtr<iCollisionActorFactory> (fact); 
 }
 
 csPtr<CS::Physics::iRigidBodyFactory> 
@@ -609,7 +580,7 @@ csPtr<CS::Physics::iRigidBodyFactory>
 {
   BulletRigidBodyFactory* fact = new BulletRigidBodyFactory (collider, name);
   fact->system = this;
-  return csPtr<iRigidBodyFactory>(fact); 
+  return csPtr<iRigidBodyFactory> (fact); 
 }
 
 csPtr<CS::Physics::iDynamicActorFactory> 
@@ -617,28 +588,28 @@ csPtr<CS::Physics::iDynamicActorFactory>
 {
   BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (collider, name);
   fact->system = this;
-  return csPtr<iDynamicActorFactory>(fact);
+  return csPtr<iDynamicActorFactory> (fact);
 }
 
 csPtr<CS::Physics::iSoftRopeFactory> csBulletSystem::CreateSoftRopeFactory ()
 {
   BulletSoftRopeFactory* fact = new BulletSoftRopeFactory ();
   fact->system = this;
-  return csPtr<iSoftRopeFactory>(fact);
+  return csPtr<iSoftRopeFactory> (fact);
 }
 
 csPtr<CS::Physics::iSoftClothFactory> csBulletSystem::CreateSoftClothFactory ()
 {
   BulletSoftClothFactory* fact = new BulletSoftClothFactory ();
   fact->system = this;
-  return csPtr<iSoftClothFactory>(fact);
+  return csPtr<iSoftClothFactory> (fact);
 }
 
 csPtr<CS::Physics::iSoftMeshFactory> csBulletSystem::CreateSoftMeshFactory ()
 {
   BulletSoftMeshFactory* fact = new BulletSoftMeshFactory ();
   fact->system = this;
-  return csPtr<iSoftMeshFactory>(fact);
+  return csPtr<iSoftMeshFactory> (fact);
 }
 
 void csBulletSystem::DeleteAll () 
@@ -656,7 +627,7 @@ btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
   size_t i;
   csTriangle *c_triangle = triMesh->GetTriangles ();
   csVector3 *c_vertex = triMesh->GetVertices ();
-  for (i =0;i<triangleCount;i++)
+  for (i = 0; i < triangleCount; i++)
   {
     int index0 = c_triangle[i].a;
     int index1 = c_triangle[i].b;
@@ -666,12 +637,13 @@ btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
     btVector3 vertex1 (c_vertex[index1].x, c_vertex[index1].y, c_vertex[index1].z);
     btVector3 vertex2 (c_vertex[index2].x, c_vertex[index2].y, c_vertex[index2].z);
 
-    vertex0 *= getInternalScale ();
-    vertex1 *= getInternalScale ();
-    vertex2 *= getInternalScale ();
+    vertex0 *= GetInternalScale ();
+    vertex1 *= GetInternalScale ();
+    vertex2 *= GetInternalScale ();
 
-    btMesh->addTriangle (vertex0,vertex1,vertex2);
+    btMesh->addTriangle (vertex0, vertex1, vertex2);
   }
+
   return btMesh;
 }
 

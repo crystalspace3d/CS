@@ -83,8 +83,14 @@ void CollisionHelper::InitializeCollisionObjects
 void CollisionHelper::InitializeCollisionObjects
 (iSector* sector, iMeshWrapper* mesh, iConvexDecomposer* decomposer)
 {
-  // Get iCollisionSector from iSector
-  iCollisionSector* colSect = collisionSystem->GetOrCreateCollisionSector (sector);
+  // Create the iCollisionSector from the iSector if not yet made
+  iCollisionSector* colSect = collisionSystem->FindCollisionSector (sector);
+  if (!colSect)
+  {
+    colSect = collisionSystem->CreateCollisionSector ();
+    colSect->SetSector (sector);
+  }
+
   iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
 
   // Check if we have a terrain mesh

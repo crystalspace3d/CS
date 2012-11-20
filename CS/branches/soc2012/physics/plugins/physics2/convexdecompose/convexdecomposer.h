@@ -31,6 +31,8 @@ struct iTriangleMesh;
 CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 {
 
+using namespace CS::Collisions;
+
 class ConvexDecomposer :
 public scfImplementation2<ConvexDecomposer, iComponent, iConvexDecomposer>
 {
@@ -43,7 +45,7 @@ public:
 
   bool Initialize (iObjectRegistry* object_reg);
 
-  virtual void Decompose(iTriangleMesh* triMesh, iConvexDecomposedMeshResult* results);
+  virtual void DecomposeMesh (iTriangleMesh* triMesh, csRefArray<iTriangleMesh>& result) const;
 };
 
 }

@@ -62,6 +62,7 @@ using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
 SCF_IMPLEMENT_FACTORY (csBulletSystem)
 
 csBulletSystem::csBulletSystem (iBase* iParent)
@@ -118,6 +119,13 @@ csBulletSystem::~csBulletSystem ()
   collSectors.DeleteAll ();
 }
 
+bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
+{
+  this->object_reg = object_reg;
+  // TODO: register to the registry if not yet made
+  return true;
+}
+
 void csBulletSystem::SetInternalScale (float scale)
 {
   // update parameters
@@ -125,17 +133,9 @@ void csBulletSystem::SetInternalScale (float scale)
   inverseInternalScale = 1.0f / scale;
 }
 
-bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
+csPtr<CS::Collisions::iCollider> csBulletSystem::CreateCollider ()
 {
-  this->object_reg = object_reg;
-  return true;
-}
-
-csPtr<CS::Collisions::iColliderCompound> csBulletSystem::CreateColliderCompound ()
-{
-  csRef<iColliderCompound> collider = csPtr<iColliderCompound>
-    (new csBulletColliderCompound (this));
-  return csPtr<iColliderCompound> (collider);
+  return csPtr<CS::Collisions::iCollider> (new csBulletCollider (this));
 }
 
 csPtr<CS::Collisions::iColliderConvexMesh> csBulletSystem::CreateColliderConvexMesh (
@@ -404,7 +404,7 @@ void csBulletSystem::ReportWarning (const char* msg, ...)
   va_list arg;
   va_start (arg, msg);
   csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
-	     "crystalspace.dynamics.bullet2",
+	     "crystalspace.physics.bullet",
 	     msg, arg);
   va_end (arg);
 }
@@ -467,85 +467,6 @@ bool csBulletSystem::GetGroupCollision (const char* name1,
     return true;
   else
     return false;
-}
-
-bool dummyWorldInit = false;
-void csBulletSystem::SeparateDisconnectedSubMeshes (iColliderCompound* compoundCollider, iColliderCompoundResult* results)
-{
-  // Make sure we have a valid dispatcher
-  static btDefaultCollisionConfiguration* configuration;
-  static btCollisionDispatcher* dispatcher;
-  static btAxisSweep3* broadphase;
-  static btCollisionWorld* bulletWorld;
-  if (!dummyWorldInit)
-  {
-    // init dummy world
-    dummyWorldInit = true;
-    configuration = new btDefaultCollisionConfiguration ();
-    dispatcher = new btCollisionDispatcher (configuration);
-
-    btVector3 worldAabbMin (-WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS);
-    btVector3 worldAabbMax (WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS);
-
-    const int maxProxies = 32766;   // TODO: Tune this down for the dummy world?
-    broadphase = new btAxisSweep3 (worldAabbMin, worldAabbMax, maxProxies);
-
-    bulletWorld = new btCollisionWorld (dispatcher, broadphase, configuration);
-  }
-
-  // Add all partial colliders as objects to the collision world
-  CS_ALLOC_STACK_ARRAY (btCollisionObject, objs, compoundCollider->GetColliderCount ());
-  for (size_t i = 0; i < compoundCollider->GetColliderCount (); ++i)
-  {
-    btCollisionObject& obj = objs[i];
-
-    CS::Collisions::iCollider* ipartialCollider;
-    csOrthoTransform transform;
-    compoundCollider->GetCollider (i, ipartialCollider, transform);
-
-    csBulletCollider* partialCollider = dynamic_cast<csBulletCollider*> (ipartialCollider);
-    obj.setCollisionShape (partialCollider->GetOrCreateBulletShape ());
-    obj.setWorldTransform (CSToBullet (transform, GetInternalScale ()));
-    bulletWorld->addCollisionObject (&obj);
-  }
-  
-  // Test all partial colliders against each other
-  bulletWorld->performDiscreteCollisionDetection ();
-  
-  // TODO: Build islands
-  //btPersistentManifold** manifold = dispatcher->GetInternalManifoldPointer ();
-  //int maxNumManifolds = dispatcher->getNumManifolds ();
-  //for (i=0;i<maxNumManifolds ;i++)
-  //{
-  //  btPersistentManifold* manifold = dispatcher->getManifoldByIndexInternal (i);
-
-  //  btCollisionObject* colObj0 = static_cast<btCollisionObject*> (manifold->getBody0 ());
-  //  btCollisionObject* colObj1 = static_cast<btCollisionObject*> (manifold->getBody1 ());
-
-  //  ///@todo: check sleeping conditions!
-  //  if (((colObj0) && colObj0->getActivationState () != ISLAND_SLEEPING) ||
-  //    ((colObj1) && colObj1->getActivationState () != ISLAND_SLEEPING))
-  //  {
-
-  //    //kinematic objects don't merge islands, but wake up all connected objects
-  //    if (colObj0->isKinematicObject () && colObj0->getActivationState () != ISLAND_SLEEPING)
-  //    {
-  //      if (colObj0->hasContactResponse ())
-  //        colObj1->activate ();
-  //    }
-  //    if (colObj1->isKinematicObject () && colObj1->getActivationState () != ISLAND_SLEEPING)
-  //    {
-  //      if (colObj1->hasContactResponse ())
-  //        colObj0->activate ();
-  //    }
-  //    if (m_splitIslands)
-  //    { 
-  //      //filtering for response
-  //      if (dispatcher->needsResponse (colObj0,colObj1))
-  //        m_islandmanifold.push_back (manifold);
-  //    }
-  //  }
-  //}
 }
 
 // Factory

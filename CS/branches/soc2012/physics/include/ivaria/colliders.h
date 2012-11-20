@@ -72,7 +72,7 @@ COLLIDER_CONVEX_MESH,              /*!< The collider is a convex mesh. */
 COLLIDER_CONCAVE_MESH,             /*!< The collider is a concave mesh. */
 COLLIDER_CONCAVE_MESH_SCALED,      /*!< The collider is a scaled concave mesh. */
 COLLIDER_TERRAIN,                  /*!< The collider is a terrain. */
-COLLIDER_COMPOUND                  /*!< The collider is a compound collider. TODO: to be removed? */
+COLLIDER_COMPOUND                  /*!< The collider is an empty (hence supposedly compound) collider. */
 };
 
 /**
@@ -92,12 +92,6 @@ struct iCollider : public virtual iBase
   /// Get the scale along the X/Y/Z axes.
   virtual csVector3 GetLocalScale () const = 0;
   
-  /// Set the margin of this collider
-  virtual void SetMargin (float margin) = 0;
-
-  /// Get the margin of this collider
-  virtual float GetMargin () const = 0; 
-
   /// Get the volume of this collider
   virtual float GetVolume () const = 0;
 
@@ -105,55 +99,23 @@ struct iCollider : public virtual iBase
   // TODO: remove?
   virtual bool IsDynamic () const = 0;
 
-  /// Get the frame of reference
-  // TODO: remove!
-  virtual csOrthoTransform GetPrincipalAxisTransform () const = 0;
-  /// Set the frame of reference
-  virtual void SetPrincipalAxisTransform (const csOrthoTransform& trans) = 0;
+  /// Add a child collider, with a fixed relative transform regarding this collider.
+  virtual void AddChild (iCollider* collider, const csOrthoTransform& transform = csOrthoTransform ()) = 0;
 
-  /// Add a child collider, fixed relative to this collider.
-  // TODO: Add/RemoveChild?
-  virtual void AddCollider (iCollider* collider, const csOrthoTransform& transform = csOrthoTransform ()) = 0;
+  /// Remove the given child collider from this collider.
+  virtual void RemoveChild (iCollider* collider) = 0;
 
-  /// Remove the given collider from this collider.
-  virtual void RemoveCollider (iCollider* collider) = 0;
-
-  /// Remove the collider with the given index from this collider.
-  virtual void RemoveCollider (size_t index) = 0;
+  /// Remove the child collider with the given index from this collider.
+  virtual void RemoveChild (size_t index) = 0;
 
   /// Get the collider with the given index.
-  virtual iCollider* GetCollider (size_t index) = 0; 
+  virtual iCollider* GetChild (size_t index) = 0; 
 
   /// Get the collider and it's relative transformation at the given index.
-  virtual void GetCollider (size_t index, iCollider*& collider, csOrthoTransform& transform) = 0;
+  virtual void GetChild (size_t index, iCollider*& collider, csOrthoTransform& transform) = 0;
 
-  /// Get the count of colliders in this collider (including self).
-  // TODO: const
-  virtual size_t GetColliderCount () = 0;
-
-  /// Returns the AABB of this shape, centered at it's center of mass (assuming uniform density)
-  // TODO: remove? or use csBox at least
-  virtual void GetAABB (csVector3& aabbMin, csVector3& aabbMax) const = 0;
-};
-
-
-/**
- * A compound collider. Does not have a root shape, but only children.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionSystem::CreateColliderCompound()
- * 
- * Main ways to get pointers to this interface:
- * - iCollider::GetCollider()
- * 
- * Main users of this interface:
- * - iCollider
- * - iCollisionObject
- */
-// TODO: remove?
-struct iColliderCompound : public virtual iCollider
-{
-  SCF_INTERFACE (CS::Collisions::iColliderCompound, 1, 0, 0);
+  /// Get the count of child colliders in this collider
+  virtual size_t GetChildrenCount () const = 0;
 };
 
 /**

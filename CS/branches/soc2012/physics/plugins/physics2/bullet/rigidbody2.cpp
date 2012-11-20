@@ -66,7 +66,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // construct bullet object
     btCollisionShape* shape = collider->GetOrCreateBulletShape ();
     btRigidBody::btRigidBodyConstructionInfo infos
-      (mass, CreateMotionState (collider->GetBtPrincipalAxisTransform ()), shape, mass * collider->GetLocalInertia ());
+      (mass, CreateMotionState (collider->GetPrincipalAxisTransform ()), shape, mass * collider->GetLocalInertia ());
 
     infos.m_friction = props->GetFriction ();
     infos.m_restitution = props->GetElasticity ();
@@ -106,7 +106,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletMotionState* csBulletRigidBody::CreateMotionState (const btTransform& trans)
   {
-    return motionState = new csBulletMotionState (this, trans, collider->GetBtPrincipalAxisTransform ());
+    return motionState = new csBulletMotionState (this, trans, collider->GetPrincipalAxisTransform ());
   }
 
   bool csBulletRigidBody::RemoveBulletObject ()
@@ -336,7 +336,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
           delete motionState;
 
-          trans *= collider->GetBtPrincipalAxisTransform ();
+          trans *= collider->GetPrincipalAxisTransform ();
           motionState = CreateMotionState (trans);
           btBody->setMotionState (motionState);
         }
@@ -584,7 +584,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     btCollisionShape* shape = collider->GetOrCreateBulletShape ();
     btScalar mass = GetMass ();
-    trans *= collider->GetBtPrincipalAxisTransform ();
+    trans *= collider->GetPrincipalAxisTransform ();
 
     btRigidBody::btRigidBodyConstructionInfo infos (mass, CreateMotionState (trans), shape, mass * collider->GetLocalInertia ());
 

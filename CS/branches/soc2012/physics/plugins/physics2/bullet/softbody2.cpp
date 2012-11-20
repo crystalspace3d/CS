@@ -148,15 +148,6 @@ bool csBulletSoftBody::AddBulletObject ()
   return true;
 }
 
-void csBulletSoftBody::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
-{
-  btVector3 bmin, bmax;
-  btBody->getAabb(bmin, bmax);
-
-  aabbMin = BulletToCS(bmin, system->GetInverseInternalScale ());
-  aabbMax = BulletToCS(bmax, system->GetInverseInternalScale ());
-}
-
 void csBulletSoftBody::SetTransform (const csOrthoTransform& trans)
 {
   CS_ASSERT(btObject);

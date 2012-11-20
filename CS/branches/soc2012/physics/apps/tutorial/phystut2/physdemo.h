@@ -26,7 +26,6 @@
 #include "collisionhelper.h"
 
 #include "ivaria/collisions.h"
-#include "ivaria/convexdecompose.h"
 #include "ivaria/physics.h"
 #include "ivaria/vehicle.h"
 
@@ -138,9 +137,9 @@ class PhysDemo : public CS::Utility::DemoApplication
   friend class RenderMeshColliderPair;
 
 public:
-  CollisionHelper collisionHelper;
+  CS::Collisions::CollisionHelper collisionHelper;
   csRef<CS::Physics::iPhysicalSystem> physicalSystem;
-  csRef<iConvexDecomposer> convexDecomposer;
+  csRef<CS::Collisions::iConvexDecomposer> convexDecomposer;
 
   csRef<CS::Animation::iSoftBodyAnimationControlType> softBodyAnimationType;
 
@@ -450,12 +449,13 @@ public:
   // Level setup & management
   
   /// Create new iPhysicalSector for the given iSector
-  csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector(iSector* sector);
+  CS::Physics::iPhysicalSector* CreatePhysicalSector(iSector* sector);
   
-  inline void SetCurrentSector(CS::Physics::iPhysicalSector* sector) { sector->AddCollisionObject(player.GetObject()); }
+  inline void SetCurrentSector(CS::Physics::iPhysicalSector* sector)
+  { sector->AddCollisionObject(player.GetObject()); }
   inline CS::Physics::iPhysicalSector* GetCurrentSector() const 
   { 
-    return csRef<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(player.GetObject()->GetSector()));
+    return player.GetObject()->GetSector()->QueryPhysicalSector ();
   }
 
   /// Clears & deletes the scene

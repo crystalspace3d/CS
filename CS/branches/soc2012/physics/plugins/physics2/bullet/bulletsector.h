@@ -132,19 +132,24 @@ class csBulletSector : public scfVirtImplementationExt2<
   void UpdateCollisionPortalsPostStep ();
 
   void AddCollisionActor (CS::Collisions::iCollisionActor* actor);
-
-  virtual void AddRigidBody (CS::Physics::iRigidBody* body);
-
-  virtual void AddSoftBody (CS::Physics::iSoftBody* body);
+  void AddRigidBody (CS::Physics::iRigidBody* body);
+  void AddSoftBody (CS::Physics::iSoftBody* body);
 
 public:
   csBulletSector (csBulletSystem* sys);
   virtual ~csBulletSector ();
   
+  //-- iCollisionSector
   virtual CS::Collisions::iCollisionSystem* GetSystem();
 
-  virtual iObject* QueryObject () {return (iObject*) this;}
-  //iCollisionSector
+  virtual iObject* QueryObject ()
+  { return (iObject*) this; }
+
+  virtual CS::Collisions::CollisionObjectType GetSectorType () const
+  { return CS::Collisions::COLLISION_OBJECT_PHYSICAL; }
+  virtual iPhysicalSector* QueryPhysicalSector () const
+  { return (iPhysicalSector*) this; }
+
   virtual void SetGravity (const csVector3& v);
   virtual csVector3 GetGravity () const {return gravity;}
 
@@ -180,7 +185,7 @@ public:
   /*virtual MoveResult MoveTest (iCollisionObject* object,
     const csOrthoTransform& fromWorld, const csOrthoTransform& toWorld);*/
 
-  //iPhysicalSector
+  //-- iPhysicalSector
   virtual void SetSimulationSpeed (float speed);
   virtual void SetStepParameters (float timeStep,
     size_t maxSteps, size_t iterations);
@@ -221,9 +226,7 @@ public:
   virtual CS::Physics::DebugMode GetDebugMode ();
 
   virtual void StartProfile ();
-
   virtual void StopProfile ();
-
   virtual void DumpProfile (bool resetProfile = true);
 
   bool BulletCollide (btCollisionObject* objectA,
@@ -237,21 +240,12 @@ public:
   void UpdateSoftBodies (float timeStep);
 
   void AddSceneNodeToSector (iSceneNode* sceneNode);
-
   void RemoveSceneNodeFromSector (iSceneNode* sceneNode);
 
   inline float GetWorldTimeStep() const { return worldTimeStep; }
 
-
-  /**
-   * Will cause the step function to be called on this updatable every step
-   */
   virtual void AddUpdatable(CS::Physics::iUpdatable* u);
-  
-  /**
-   * Removes the given updatable
-   */
-  virtual void RemoveUpdatable(CS::Physics::iUpdatable* u);
+    virtual void RemoveUpdatable(CS::Physics::iUpdatable* u);
 };
 }
 CS_PLUGIN_NAMESPACE_END(Bullet2)

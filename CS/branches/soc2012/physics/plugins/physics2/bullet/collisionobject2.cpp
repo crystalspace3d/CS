@@ -123,20 +123,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csOrthoTransform csBulletCollisionObject::GetTransform () const
   {
-    //float inverseScale = system->GetInverseInternalScale ();
     CS_ASSERT(btObject);
     return BulletToCS (btObject->getWorldTransform(), system->GetInverseInternalScale ());
   }
 
-  void csBulletCollisionObject::GetAABB(csVector3& aabbMin, csVector3& aabbMax) const
-  {
-    btVector3 bmin, bmax;
-    collider->GetOrCreateBulletShape()->getAabb(btObject->getWorldTransform(), bmin, bmax);
-    
-    aabbMin = BulletToCS(bmin, system->GetInverseInternalScale ());
-    aabbMax = BulletToCS(bmax, system->GetInverseInternalScale ());
-  }
-  
   void csBulletCollisionObject::SetCollisionGroup (const char* name)
   {
     SetCollisionGroup(system->FindCollisionGroup(name));

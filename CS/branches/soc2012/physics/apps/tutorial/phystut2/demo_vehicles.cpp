@@ -136,13 +136,13 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
 
   // setup chassis
 
-  csRef<iColliderCompound> chassisCollider = physicalSystem->CreateColliderCompound();
+  csRef<CS::Collisions::iCollider> chassisCollider = physicalSystem->CreateCollider();
   csRef<iColliderBox> chassisTopCollider = physicalSystem->CreateColliderBox(ChassisSizeTop);
   csRef<iColliderBox> chassisBottomCollider = physicalSystem->CreateColliderBox(ChassisSizeBottom);
   // TODO: Figure out meshes of arbitrary compound colliders
-  //chassisCollider->AddCollider(chassisTopCollider, csOrthoTransform(csMatrix3(), topPos));
+  //chassisCollider->AddChild(chassisTopCollider, csOrthoTransform(csMatrix3(), topPos));
   botPos.y = 0;
-  chassisCollider->AddCollider(chassisBottomCollider, csOrthoTransform(csMatrix3(), botPos));
+  chassisCollider->AddChild(chassisBottomCollider, csOrthoTransform(csMatrix3(), botPos));
   
   //csOrthoTransform centerOfMassTransform(csMatrix3(), csVector3(0, -.4) * ChassisSizeBottom.y, ChassisSizeBottom.z);
   //chassisCollider->SetPrincipalAxisTransform(centerOfMassTransform);

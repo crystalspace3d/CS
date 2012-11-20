@@ -111,13 +111,13 @@ public:
   csBulletSystem (iBase* iParent);
   virtual ~csBulletSystem ();
 
-  // iComponent
+  //-- iComponent
   virtual bool Initialize (iObjectRegistry* object_reg);
 
-  // iCollisionSystem
+  //-- iCollisionSystem
   virtual void SetInternalScale (float scale);
   virtual float GetInternalScale () const { return internalScale; }
-  virtual csPtr<CS::Collisions::iColliderCompound> CreateColliderCompound ();
+  virtual csPtr<CS::Collisions::iCollider> CreateCollider ();
   virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* mesh, bool simplify = false);
   virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh);
   virtual csPtr<CS::Collisions::iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled
@@ -142,12 +142,7 @@ public:
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const iSector* sceneSector);
 
-  //iPhysicalSystem
-  virtual csPtr<CS::Physics::iPhysicalSector> CreatePhysicalSector () 
-  { 
-    return csPtr<CS::Physics::iPhysicalSector>(scfQueryInterface<CS::Physics::iPhysicalSector>(
-      csRef<CS::Collisions::iCollisionSector>(CreateCollisionSector ())));
-  }
+  //-- iPhysicalSystem
 
   // Factories
   virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory
@@ -185,16 +180,10 @@ public:
 
   // Vehicles
   
-  /// Creates a new factory to produce vehicles
   virtual csPtr<CS::Physics::iVehicleFactory> CreateVehicleFactory ();
-
-  /// Creates a new factory to produce vehicle wheels
   virtual csPtr<CS::Physics::iVehicleWheelFactory> CreateVehicleWheelFactory ();
-
-  /// Creates a new factory to produce a new iVehicleWheelInfo object which defines a wheel factory and wheel geometry.
-  virtual csPtr<CS::Physics::iVehicleWheelInfo> CreateVehicleWheelInfo (CS::Physics::iVehicleWheelFactory* factory);
-  
-  /// Returns the vehicle that the given object is a part of, or nullptr
+  virtual csPtr<CS::Physics::iVehicleWheelInfo> CreateVehicleWheelInfo
+    (CS::Physics::iVehicleWheelFactory* factory);
   virtual CS::Physics::iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj);
 
   csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap () { return vehicleMap; }
@@ -210,8 +199,6 @@ public:
   virtual bool GetGroupCollision (const char* name1,
     const char* name2);
   
-  virtual void SeparateDisconnectedSubMeshes (CS::Collisions::iColliderCompound* mesh, CS::Collisions::iColliderCompoundResult* results);
-
   void DeleteAll ();
 
   // Internal stuff

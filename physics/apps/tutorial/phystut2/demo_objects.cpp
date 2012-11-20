@@ -543,9 +543,16 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
 
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (meshFact, "mesh"));
 
-  // perform convex decomposition
-  csRef<iColliderCompound> rootCollider = collisionHelper.PerformConvexDecomposition
-    (convexDecomposer, collisionHelper.FindCollisionMesh (mesh));
+  // Perform the convex decomposition of the mesh
+  csRef<CS::Collisions::iCollider> rootCollider;
+  if (convexDecomposer)
+  {
+    rootCollider = csRef<CS::Collisions::iCollider> (physicalSystem->CreateCollider ());
+    collisionHelper.DecomposeConcaveMesh (mesh, rootCollider, convexDecomposer);
+  }
+  else rootCollider = csRef<CS::Collisions::iColliderConcaveMesh>
+	 (physicalSystem->CreateColliderConcaveMesh
+	  (collisionHelper.FindCollisionMesh (mesh)));
 
   // Create a body
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(rootCollider, "compound");

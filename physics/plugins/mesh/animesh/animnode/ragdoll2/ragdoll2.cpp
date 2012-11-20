@@ -603,7 +603,7 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
   {
     previousBody = false;
 
-    csRef<CS::Collisions::iColliderCompound> rootCollider = collisionSystem->CreateColliderCompound();
+    csRef<CS::Collisions::iCollider> rootCollider = collisionSystem->CreateCollider();
     csRef<CS::Physics::iRigidBodyFactory> rbFact = physicalSystem->CreateRigidBodyFactory(rootCollider, "bone");
     CS::Animation::iBodyBoneProperties* boneProps = bodyBone->GetBoneProperties ();
     if (boneProps)
@@ -634,7 +634,7 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
       }
       else
       {
-        rootCollider->AddCollider(rbCollider, boneCollider->GetTransform());
+        rootCollider->AddChild (rbCollider, boneCollider->GetTransform());
       }
     }
 

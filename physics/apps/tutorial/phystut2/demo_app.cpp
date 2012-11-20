@@ -25,6 +25,7 @@
 #include "imesh/genmesh.h"
 #include "imesh/terrain2.h"
 
+#include "ivaria/convexdecompose.h"
 #include "ivaria/engseq.h"
 
 #include "cstool/genmeshbuilder.h"
@@ -72,16 +73,15 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
   
   // Load the Physics plugin
-  physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet2");
-  if (!physicalSystem) return ReportError ("Could not load the bullet2 plugin!");
+  physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet");
+  if (!physicalSystem) return ReportError ("Could not load the Bullet plugin!");
 
   // Load Convex Decomposition plugin
-  // TODO: rename that plugin
-  convexDecomposer = csLoadPlugin<iConvexDecomposer> (plugmgr, "crystalspace.hacd");
+  convexDecomposer = csLoadPlugin<iConvexDecomposer> (plugmgr, "crystalspace.mesh.convexdecompose.hacd");
   if (!convexDecomposer) 
   {
     // It is not vital to the operation of this demo
-    ReportWarning ("Could not load the HACD plugin!");
+    ReportWarning ("Could not load the convex decomposition plugin!");
   }
   
   // Initialize the collision helper
@@ -347,16 +347,17 @@ void PhysDemo::SetupHUD()
 }
 
 
-csPtr<iPhysicalSector> PhysDemo::CreatePhysicalSector(iSector* isector)
+iPhysicalSector* PhysDemo::CreatePhysicalSector(iSector* isector)
 {
-  csRef<iPhysicalSector> sector = physicalSystem->CreatePhysicalSector();
+  iPhysicalSector* sector =
+    physicalSystem->CreateCollisionSector ()->QueryPhysicalSector ();
   sector->SetSector(isector);
   sector->SetDebugMode (debugMode);
   if (isSoftBodyWorld)
   {
     sector->SetSoftBodyEnabled (true);
   }
-  return csPtr<iPhysicalSector>(sector);
+  return sector;
 }
 
 
@@ -434,7 +435,7 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
 
         /*csOrthoTransform trans;
         trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
-        csRef<CS::Collisions::iColliderCompound> parent = physicalSystem->CreateColliderCompound ();
+        csRef<CS::Collisions::iCollider> parent = physicalSystem->CreateCollider ();
         parent->AddCollider(collider, trans);
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(parent);*/
         csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(collider);

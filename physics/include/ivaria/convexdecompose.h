@@ -22,36 +22,28 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 * Convex decomposition tools
 */
 
+#include "csutil/refarr.h"
 #include "csutil/scf.h"
 #include "csutil/scf_interface.h"
 
 struct iTriangleMesh;
 
-// This is not actually related to collisions - Convex decomposition is a mesh operation
-//namespace CS
-//{
-//  namespace Collisions
-//  {
-//
-    struct iConvexDecomposedMeshResult
-    {
-      /// Yields the next convex part. The given mesh is ensured to be convex.
-      virtual void YieldMesh(iTriangleMesh* convexMeshPart) = 0;
-    };
+// TODO: move to CS::Mesh
+namespace CS {
+namespace Collisions {
 
-    /**
-    * Performs flavored convex decomposition on a concave mesh.
-    * This class is needed because concave meshes are a lot harder to deal with.
-    */
-    struct iConvexDecomposer : public virtual iBase
-    {
-      SCF_INTERFACE (iConvexDecomposer, 1, 0, 0);
+/**
+ * Performs a convex decomposition on a concave mesh.
+ */
+struct iConvexDecomposer : public virtual iBase
+{
+  SCF_INTERFACE (iConvexDecomposer, 1, 0, 0);
 
-      /// Performs convex decomposition on a (possibly) concave mesh.
-      virtual void Decompose(iTriangleMesh* triMesh, iConvexDecomposedMeshResult* results) = 0;
-    };
-//
-//  }
-//}
+  /// Performs a convex decomposition on a (possibly) concave mesh.
+  virtual void DecomposeMesh (iTriangleMesh* triMesh, csRefArray<iTriangleMesh>& result) const = 0;
+};
+
+} // namespace Collisions
+} // namespace CS
 
 #endif // __IVARIA_CONVEXDECOMPOSE__

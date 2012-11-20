@@ -54,15 +54,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 //#include "csutil/custom_new_disable.h"
 
 // #######################################################################################################
-// Compound
-
-csBulletColliderCompound::csBulletColliderCompound (csBulletSystem* sys)
-  : scfImplementationType (this)
-{
-  collSystem = sys;
-}
-
-// #######################################################################################################
 // Box
 
 csBulletColliderBox::csBulletColliderBox (const csVector3& boxSize, csBulletSystem* sys)

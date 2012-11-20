@@ -89,7 +89,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletMotionState* csBulletDynamicActor::CreateMotionState(const btTransform& trans)
   {
-    return motionState = new csBulletActorMotionState(this, trans, collider->GetBtPrincipalAxisTransform());
+    return motionState = new csBulletActorMotionState
+      (this, trans, collider->GetPrincipalAxisTransform());
   }
 
   bool csBulletDynamicActor::AddBulletObject()

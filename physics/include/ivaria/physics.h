@@ -55,10 +55,9 @@ struct iCollisionObject;
 }
 }
 
-namespace CS 
-{ 
-namespace Physics 
-{
+namespace CS { 
+namespace Physics {
+
 struct iJoint;
 struct iObject;
 struct iRigidBody;
@@ -833,12 +832,6 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 {
   SCF_INTERFACE (CS::Physics::iPhysicalSystem, 1, 0, 0);
   
-  /**
-   * Create a new physical sector
-   */
-  // TODO: redundant with the one from iCollisionSector?
-  virtual csPtr<iPhysicalSector> CreatePhysicalSector () = 0;
-
   /// Create a general 6DOF joint.
   virtual csPtr<iJoint> CreateJoint () = 0;
 
@@ -1142,4 +1135,5 @@ struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions:
 
 }
 }
+
 #endif

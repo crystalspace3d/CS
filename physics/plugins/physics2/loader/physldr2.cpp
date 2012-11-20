@@ -91,7 +91,7 @@ SCF_IMPLEMENT_FACTORY (csPhysicsLoader2)
 
 
 csPhysicsLoader2::csPhysicsLoader2 (iBase* pParent) :
-scfImplementationType(this, pParent)
+scfImplementationType (this, pParent)
 {
 }
 
@@ -205,7 +205,7 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
   csRef<CS::Physics::iPhysicalSector> physSector = 
     scfQueryInterface<CS::Physics::iPhysicalSector> (collSector);
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
-  iCollisionSystem* collSys = collSector->GetSystem();
+  iCollisionSystem* collSys = collSector->GetSystem ();
   while (it->HasNext ())
   {
     csRef<iDocumentNode> child = it->Next ();
@@ -276,17 +276,17 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       {
         csRef<CS::Collisions::iCollisionObject> obj;
         
-        csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
+        csRef<CS::Collisions::iCollider> rootCollider = csRef<CS::Collisions::iCollider>(physicalSystem->CreateCollider ());
         
         csRef<iCollisionObjectFactory> factory;
 
         if (child->GetAttribute ("ghost"))
         {
-          factory = csRef<iGhostCollisionObjectFactory>(physicalSystem->CreateGhostCollisionObjectFactory(rootCollider));
+          factory = csRef<iGhostCollisionObjectFactory>(physicalSystem->CreateGhostCollisionObjectFactory (rootCollider));
         }
         else
         {
-          factory = physicalSystem->CreateCollisionObjectFactory(rootCollider);
+          factory = physicalSystem->CreateCollisionObjectFactory (rootCollider);
         }
         
         obj = factory->CreateCollisionObject ();
@@ -297,10 +297,10 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       }
     case XMLTOKEN_RIGIDBODY:
       {
-        csRef<CS::Collisions::iColliderCompound> rootCollider = csRef<CS::Collisions::iColliderCompound>(physicalSystem->CreateColliderCompound());
+        csRef<CS::Collisions::iCollider> rootCollider = csRef<CS::Collisions::iCollider>(physicalSystem->CreateCollider ());
 
-        csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory(rootCollider);
-        csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody();
+        csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (rootCollider);
+        csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody ();
         if (!ParseRigidBody (child, rb, collSector, ldr_context))
           return false;
         break;
@@ -332,7 +332,7 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
                                              iLoaderContext* ldr_context)
 {
   const char *name = node->GetAttributeValue ("name");
-  object->QueryObject()->SetName (name);
+  object->QueryObject ()->SetName (name);
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -350,7 +350,7 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
           csRef<iMeshWrapper> m = ldr_context->FindMeshObject (child->GetContentsValue ());
           if (m)
           {
-            object->SetAttachedSceneNode (m->QuerySceneNode());
+            object->SetAttachedSceneNode (m->QuerySceneNode ());
           }
           else
           {
@@ -511,15 +511,15 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
           iGeneralFactoryState> (m->GetMeshObjectFactory ());
         
         csRef<CS::Physics::iSoftMeshFactory> factory = physicalSystem->CreateSoftMeshFactory ();
-        factory->SetGenmeshFactory(gmstate);
-        body = factory->CreateSoftBody();
+        factory->SetGenmeshFactory (gmstate);
+        body = factory->CreateSoftBody ();
       }
       break;
     }
   }
 
   const char *name = node->GetAttributeValue ("name");
-  body->QueryObject()->SetName (name);
+  body->QueryObject ()->SetName (name);
 
   if (node->GetAttributeValue ("mass"))
     body->SetMass ( node->GetAttributeValueAsFloat ("mass"));
@@ -592,7 +592,7 @@ bool csPhysicsLoader2::ParseColliderBox (iDocumentNode *node, CS::Collisions::iC
   ParseTransform (node, trans);
 
   csRef<CS::Collisions::iColliderBox> box = collisionSystem->CreateColliderBox (v);
-  object->GetCollider()->AddCollider (box, trans);
+  object->GetCollider ()->AddChild (box, trans);
   return true;
 }
 
@@ -605,7 +605,7 @@ bool csPhysicsLoader2::ParseColliderSphere (iDocumentNode *node, CS::Collisions:
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->GetCollider()->AddCollider (sp, trans);
+  object->GetCollider ()->AddChild (sp, trans);
   return true;
 }
 
@@ -619,7 +619,7 @@ bool csPhysicsLoader2::ParseColliderCylinder (iDocumentNode *node, CS::Collision
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->GetCollider()->AddCollider (cy, trans);
+  object->GetCollider ()->AddChild (cy, trans);
   return true;
 }
 
@@ -633,7 +633,7 @@ bool csPhysicsLoader2::ParseColliderCapsule (iDocumentNode *node, CS::Collisions
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->GetCollider()->AddCollider (ca, trans);
+  object->GetCollider ()->AddChild (ca, trans);
   return true;
 }
 
@@ -647,7 +647,7 @@ bool csPhysicsLoader2::ParseColliderCone (iDocumentNode *node, CS::Collisions::i
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->GetCollider()->AddCollider (co, trans);
+  object->GetCollider ()->AddChild (co, trans);
   return true;
 }
 
@@ -666,7 +666,7 @@ bool csPhysicsLoader2::ParseColliderPlane (iDocumentNode *node, CS::Collisions::
   trans.Identity ();
   ParseTransform (node, trans);
 
-  object->GetCollider()->AddCollider (pl, trans);
+  object->GetCollider ()->AddChild (pl, trans);
   return true;
 }
 
@@ -688,7 +688,7 @@ bool csPhysicsLoader2::ParseColliderConvexMesh (iDocumentNode *node, CS::Collisi
     trans.Identity ();
     ParseTransform (node, trans);
 
-    object->GetCollider()->AddCollider (conv, trans);
+    object->GetCollider ()->AddChild (conv, trans);
     return true;
 */
     return false;
@@ -719,7 +719,7 @@ bool csPhysicsLoader2::ParseColliderConcaveMesh (iDocumentNode *node, CS::Collis
     trans.Identity ();
     ParseTransform (node, trans);
 
-    object->GetCollider()->AddCollider (conc, trans);
+    object->GetCollider ()->AddChild (conc, trans);
     return true;
 */
     return false;

@@ -322,10 +322,10 @@ bool PhysDemo::LoadLevel(const char* pathname, bool convexDecomp)
   }
   VFS->PopDir();
   
-  // create physical world from render world
-  collisionHelper.InitializeCollisionObjects (engine, convexDecomp ? &*convexDecomposer : nullptr);
+  // Initialize the physical world from the content of the engine
+  collisionHelper.InitializeCollisionObjects (engine);
 
-  // Set default sector
+  // Set the default sector
   room = engine->GetSectors()->Get(0);
 
   CS_ASSERT(room && "Invalid level - Has no sectors.");

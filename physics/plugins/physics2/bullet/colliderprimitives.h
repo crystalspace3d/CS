@@ -53,22 +53,6 @@ class csBulletSector;
 class csBulletSystem;
 class csBulletCollider;
 
-class csBulletColliderCompound : 
-  public scfVirtImplementationExt1<csBulletColliderCompound,
-  csBulletCollider, CS::Collisions::iColliderCompound>
-{
-protected:
-  virtual float ComputeShapeVolume() const { return 0; }
-
-public:
-  csBulletColliderCompound (csBulletSystem* sys);
-
-  virtual CS::Collisions::ColliderType GetColliderType () const
-  {
-    return CS::Collisions::COLLIDER_COMPOUND;
-  }
-};
-
 class csBulletColliderBox: 
   public scfVirtImplementationExt1<csBulletColliderBox,
   csBulletCollider, CS::Collisions::iColliderBox>

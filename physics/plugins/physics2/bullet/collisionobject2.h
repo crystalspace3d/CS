@@ -104,9 +104,6 @@ public:
   virtual csOrthoTransform GetTransform () const;
   virtual void SetRotation (const csMatrix3& rot);
   
-  /// Returns the AABB of this object, centered at it's center of mass
-  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
-
   virtual void RebuildObject () = 0;
   
   virtual void SetCollisionGroup (const char* name);

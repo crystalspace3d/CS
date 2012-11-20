@@ -4,7 +4,7 @@
   <scf>
     <classes>
       <class>
-        <name>crystalspace.hacd</name>
+        <name>crystalspace.mesh.convexdecompose.hacd</name>
         <implementation>ConvexDecomposer</implementation>
         <description>Decompose concave meshes in a convex set</description>
       </class>

@@ -34,7 +34,7 @@ struct iTerrainSystem;
 struct iTriangleMesh;
 
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
 class csBulletSector;
@@ -53,8 +53,8 @@ struct csColliderCollection
   csRefArray<csBulletCollider> colliders;
   csArray<csOrthoTransform> transforms;
 
-  csColliderCollection() :
-    staticColliderCount(0)
+  csColliderCollection () :
+    staticColliderCount (0)
   {
   }
 };
@@ -83,13 +83,13 @@ protected:
   float volume;
   btVector3 localInertia;
   btTransform principalAxisTransform;
-  bool customPrincipalAxis;
 
-  virtual float ComputeShapeVolume() const = 0;
+  virtual float ComputeShapeVolume () const
+  { return 0.f; }
 
-  bool IsDirty() const;
+  bool IsDirty () const;
 
-  inline csColliderCollection* GetOrCreateChildren() 
+  inline csColliderCollection* GetOrCreateChildren () 
   {
     if (!children)
     {
@@ -100,8 +100,11 @@ protected:
 
 public:
   csBulletCollider ();
-  virtual ~csBulletCollider();
-  virtual CS::Collisions::ColliderType GetColliderType () const = 0;
+  csBulletCollider (csBulletSystem* system);
+  virtual ~csBulletCollider ();
+
+  virtual CS::Collisions::ColliderType GetColliderType () const
+  { return CS::Collisions::COLLIDER_COMPOUND; }
   virtual void SetLocalScale (const csVector3& scale);
   virtual csVector3 GetLocalScale () const;
 
@@ -112,46 +115,32 @@ public:
   /**
    * Whether this collider (and all its children) can be used in a dynamic environment
    */
-  virtual bool IsDynamic() const;
+  virtual bool IsDynamic () const;
 
-  /// Returns the AABB of this collider, centered at it's center of mass (assuming uniform density)
-  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
+  virtual void AddChild (CS::Collisions::iCollider* collider,
+			    const csOrthoTransform& relaTrans = csOrthoTransform ());
+  virtual void RemoveChild (CS::Collisions::iCollider* collider);
+  virtual void RemoveChild (size_t index);
 
-  virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans = csOrthoTransform ());
-  virtual void RemoveCollider (CS::Collisions::iCollider* collider);
-  virtual void RemoveCollider (size_t index);
-
-  virtual CS::Collisions::iCollider* GetCollider (size_t index) ;
-  virtual void GetCollider (size_t index, iCollider*& collider, csOrthoTransform& trans);
-  virtual size_t GetColliderCount () {return 1 + children ? children->colliders.GetSize () : 0;}
+  virtual CS::Collisions::iCollider* GetChild (size_t index) ;
+  virtual void GetChild (size_t index, iCollider*& collider, csOrthoTransform& trans);
+  virtual size_t GetChildrenCount () const
+  { return children->colliders.GetSize (); }
   
-  btCollisionShape* GetOrCreateBulletShape();
+  btCollisionShape* GetOrCreateBulletShape ();
 
-  inline const btVector3& GetLocalInertia() const 
+  // TODO: remove?
+  inline const btVector3& GetLocalInertia () const 
   { 
-    //return btVector3(0, 0, 0); 
     return localInertia; 
   }
 
-  inline const btTransform& GetBtPrincipalAxisTransform() const 
+  inline const btTransform& GetPrincipalAxisTransform () const 
   {
     return principalAxisTransform; 
-  }
-  
-  /// Get the frame of reference
-  virtual csOrthoTransform GetPrincipalAxisTransform() const
-  {
-    return BulletToCS(principalAxisTransform, 1);
-  }
-
-  /// Set the frame of reference
-  virtual void SetPrincipalAxisTransform(const csOrthoTransform& trans)
-  {
-    principalAxisTransform = CSToBullet(trans, 1);
-    customPrincipalAxis = true;
   }
 };
 
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)
 #endif

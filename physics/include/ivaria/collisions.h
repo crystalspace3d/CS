@@ -51,6 +51,7 @@ namespace CS
 namespace Physics
 {
 struct iPhysicalBody;
+struct iPhysicalSector;
 }
 }
 
@@ -142,16 +143,6 @@ struct iCollisionCallback : public virtual iBase
 };
 
 /**
- * Used by iCollisionSystem to yield disconnected mesh parts
- * \todo To be removed
- */
-struct iColliderCompoundResult
-{
-  /// Yields the next disconnected collider
-  virtual void YieldMesh (iColliderCompound* mesh) = 0;
-};
-
-/**
  * This is the interface of a collision object. 
  *It contains the collision information of the object.
  * 
@@ -174,10 +165,10 @@ struct iCollisionObject : public virtual iBase
   /// Return the collision object pointer.
   virtual iCollisionObject* QueryCollisionObject () = 0;
 
-  /// Return the physical body pointer if it's a physical body, or NULL.
+  /// Return the physical body pointer if it's a physical body, or nullptr.
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () = 0;
 
-  /// Return the actor pointer if it's an actor, or NULL.
+  /// Return the actor pointer if it's an actor, or nullptr.
   virtual iActor* QueryActor () = 0;
 
   /**
@@ -222,9 +213,6 @@ struct iCollisionObject : public virtual iBase
    * If a camera is used, set it to camera too.
    */
   virtual void SetRotation (const csMatrix3& rot) = 0;
-
-  /// Returns the AABB of this object, centered at it's center of mass
-  virtual void GetAABB (csVector3& aabbMin, csVector3& aabbMax) const = 0;
 
   /// Rebuild this collision object.
   virtual void RebuildObject () = 0;
@@ -285,7 +273,6 @@ struct iCollisionObject : public virtual iBase
  * This can be used as a test for collisions, or to implement any sort of object that does not entirely play by the laws 
  * of ridig body or soft body dynamics.
  */
-// TODO: rename? iCollisionGhost?
 struct iGhostCollisionObject : public virtual iCollisionObject
 {
   SCF_INTERFACE (CS::Collisions::iGhostCollisionObject, 1, 0, 0);
@@ -432,6 +419,19 @@ struct iCollisionSector : public virtual iBase
   /// Return the underlying object
   virtual iObject *QueryObject (void) = 0;
 
+  /**
+   * Return the type of this sector, that is either CS::Collisions::COLLISION_OBJECT_PHYSICAL
+   * For sectors that can be upcast to a iPhysicalSector, or CS::Collisions::COLLISION_OBJECT_SIMPLE
+   * for sectors that cannot be upcast to a iPhysicalSector.
+   */
+  virtual CollisionObjectType GetSectorType () const = 0;
+
+  /**
+   * Return a reference to the physical interface of this sector if its type is
+   * CS::Collisions::COLLISION_OBJECT_PHYSICAL, or nullptr otherwise.
+   */
+  virtual CS::Physics::iPhysicalSector* QueryPhysicalSector () const = 0;
+
   /// Set the global gravity.
   virtual void SetGravity (const csVector3& v) = 0;
 
@@ -545,13 +545,14 @@ struct iCollisionSystem : public virtual iBase
    */
   virtual float GetInternalScale () const = 0;
 
-  /// Creates an empty compound collider (does not have a root shape, but only children)
-  virtual csPtr<iColliderCompound> CreateColliderCompound () = 0;
+  /// Create an empty compound collider (does not have a root shape, but only children)
+  virtual csPtr<iCollider> CreateCollider () = 0;
 
   /// Create a convex mesh collider.
   virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, bool simplify = false) = 0;
 
   /// Create a static concave mesh collider.
+  // TODO: to be kept?
   virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh) = 0;
 
   /// Create a scaled concave mesh collider.
@@ -607,15 +608,6 @@ struct iCollisionSystem : public virtual iBase
 
   /// Get true if the two groups collide with each other.
   virtual bool GetGroupCollision (const char* name1, const char* name2) = 0;
-
-  /**
-   * Takes the given collider and cuts it into several colliders that are disconnected
-   * from each other. Can be used on iColliderCompound objects that are consisting of
-   * disconnected parts, e.g. the results of a Convex Decomposition operation.
-   */
-  // TODO: move in convex decompose
-  virtual void SeparateDisconnectedSubMeshes
-    (iColliderCompound* compoundCollider, iColliderCompoundResult* results) = 0;
 
   // Factory
 

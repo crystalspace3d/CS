@@ -81,7 +81,6 @@ public:
   virtual void RebuildObject ();
 
   virtual void SetTransform (const csOrthoTransform& trans);
-  virtual void GetAABB(csVector3& aabbMin, csVector3& aabbMax) const;
 
   // btSoftBody don't use collision shape.
   virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans

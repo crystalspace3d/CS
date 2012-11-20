@@ -53,7 +53,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
     return true;
   }
 
-  void ConvexDecomposer::Decompose(iTriangleMesh* triMesh, iConvexDecomposedMeshResult* results)
+  void ConvexDecomposer::DecomposeMesh (iTriangleMesh* triMesh, csRefArray<iTriangleMesh>& result) const
   {
     //-----------------------------------------------
     // HACD
@@ -65,88 +65,88 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 
     {
       // Copy Vertices
-      csVector3* nextVert = triMesh->GetVertices();
-      for(size_t i=0; i < triMesh->GetVertexCount(); ++i, ++nextVert ) 
+      csVector3* nextVert = triMesh->GetVertices ();
+      for (size_t i=0; i < triMesh->GetVertexCount (); ++i, ++nextVert ) 
       {
-        HACD::Vec3<HACD::Real> vertex(nextVert->x, nextVert->y, nextVert->z);
-        hacdVerts.push_back(vertex);
+        HACD::Vec3<HACD::Real> vertex (nextVert->x, nextVert->y, nextVert->z);
+        hacdVerts.push_back (vertex);
       }
 
       // Copy triangles
-      csTriangle* nextTri = triMesh->GetTriangles();
-      for(size_t i=0; i < triMesh->GetTriangleCount(); ++i, ++nextTri)
+      csTriangle* nextTri = triMesh->GetTriangles ();
+      for (size_t i=0; i < triMesh->GetTriangleCount (); ++i, ++nextTri)
       {
-        HACD::Vec3<long> triangle(nextTri->a, nextTri->b, nextTri->c);
-        hacdTris.push_back(triangle);
+        HACD::Vec3<long> triangle (nextTri->a, nextTri->b, nextTri->c);
+        hacdTris.push_back (triangle);
       }
     }
 
     // Set parameters
     HACD::HACD hacder;
-    hacder.SetPoints(&hacdVerts[0]);
-    hacder.SetNPoints(hacdVerts.size());
-    hacder.SetTriangles(&hacdTris[0]);
-    hacder.SetNTriangles(hacdTris.size());
-    hacder.SetCompacityWeight(0.1);
-    hacder.SetVolumeWeight(0.0);
+    hacder.SetPoints (&hacdVerts[0]);
+    hacder.SetNPoints (hacdVerts.size ());
+    hacder.SetTriangles (&hacdTris[0]);
+    hacder.SetNTriangles (hacdTris.size ());
+    hacder.SetCompacityWeight (0.1);
+    hacder.SetVolumeWeight (0.0);
 
     // Recommended parameters: 2 100 0 0 0 0
     size_t nClusters = 2;
     double concavity = 100;
-    bool invert = false;
+    //bool invert = false;
     bool addExtraDistPoints = false;
     bool addNeighboursDistPoints = false;
     bool addFacesPoints = false;       
 
-    hacder.SetNClusters(nClusters);                     // minimum number of clusters
-    hacder.SetNVerticesPerCH(100);                      // max of 100 vertices per convex-hull
-    hacder.SetConcavity(concavity);                     // maximum concavity
-    hacder.SetAddExtraDistPoints(addExtraDistPoints);   
-    hacder.SetAddNeighboursDistPoints(addNeighboursDistPoints);   
-    hacder.SetAddFacesPoints(addFacesPoints); 
+    hacder.SetNClusters (nClusters);                     // minimum number of clusters
+    hacder.SetNVerticesPerCH (100);                      // max of 100 vertices per convex-hull
+    hacder.SetConcavity (concavity);                     // maximum concavity
+    hacder.SetAddExtraDistPoints (addExtraDistPoints);   
+    hacder.SetAddNeighboursDistPoints (addNeighboursDistPoints);   
+    hacder.SetAddFacesPoints (addFacesPoints); 
 
     // Decompose
-    hacder.Compute();
+    hacder.Compute ();
 
     // Produce convex trimeshes from the result
-    nClusters = hacder.GetNClusters();
-    for (size_t c=0;c<nClusters;c++)
+    nClusters = hacder.GetNClusters ();
+    for (size_t c = 0; c < nClusters; c++)
     {
       // Get the data
-      size_t nPoints = hacder.GetNPointsCH(c);
-      size_t nTriangles = hacder.GetNTrianglesCH(c);
+      size_t nPoints = hacder.GetNPointsCH (c);
+      size_t nTriangles = hacder.GetNTrianglesCH (c);
 
-      float* vertices = new float[nPoints*3];
-      unsigned int* triangles = new unsigned int[nTriangles*3];
+      //float* vertices = new float[nPoints*3];
+      //unsigned int* triangles = new unsigned int[nTriangles*3];
 
       HACD::Vec3<HACD::Real> * nextVertex = new HACD::Vec3<HACD::Real>[nPoints];
       HACD::Vec3<long> * nextTri = new HACD::Vec3<long>[nTriangles];
 
-      //hacder.DenormalizeData();               // Move vertices back to where they were
-      hacder.GetCH(c, nextVertex, nextTri);   // copy mesh data
+      //hacder.DenormalizeData ();               // Move vertices back to where they were
+      hacder.GetCH (c, nextVertex, nextTri);   // copy mesh data
 
       // Create trimesh
-      csRef<csTriangleMesh> triMesh = csRef<csTriangleMesh>(new csTriangleMesh);
+      csRef<csTriangleMesh> triMesh;
+      triMesh.AttachNew (new csTriangleMesh);
 
       // Copy vertices
       for (unsigned int i=0; i < nPoints; ++i, ++nextVertex)
       {
-        csVector3 vertex(nextVertex->X(), nextVertex->Y(), nextVertex->Z());
+        csVector3 vertex (nextVertex->X (), nextVertex->Y (), nextVertex->Z ());
         /*vertex *= localScaling;
         vertex -= centroid;*/
-        triMesh->AddVertex(vertex);
+        triMesh->AddVertex (vertex);
       }
 
       // Copy indices
       for (size_t i=0; i < nTriangles; ++i, ++nextTri)
       {
-        triMesh->AddTriangle(nextTri->X(), nextTri->Y(), nextTri->Z());
+        triMesh->AddTriangle (nextTri->X (), nextTri->Y (), nextTri->Z ());
       }
       
       // Yield result
-      results->YieldMesh(triMesh);
+      result.Push (triMesh);
     }
-
   }
 
 }

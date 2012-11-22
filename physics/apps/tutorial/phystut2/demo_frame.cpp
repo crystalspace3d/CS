@@ -186,6 +186,7 @@ void PhysDemo::MoveActor()
 
 void PhysDemo::DoStep()
 {
+  // TODO: use iPhysicalSystem::SetSimulationSpeed()
   csTicks elapsed_time = vc->GetElapsedTicks();
   const float timeMs = elapsed_time / 1000.0;
 
@@ -193,7 +194,7 @@ void PhysDemo::DoStep()
   {
     player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
   }
-  CallOnAllSectors(Step (timeMs * dynamicStepFactor));
+  physicalSystem->Step (elapsed_time * dynamicStepFactor);
   if (player.GetActor())
   {
     player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);
@@ -207,7 +208,6 @@ void PhysDemo::RotateActor()
   const float timeMs = elapsed_time / 1000.0;
 
   static const float MaxPitchCos = .965f;      // can't get closer than 15 degrees to UpAxis to prevent gimbal lock
-
 
   iCamera* cam = view->GetCamera();
   csOrthoTransform& camTrans = cam->GetTransform();
@@ -241,6 +241,7 @@ void PhysDemo::RotateActor()
       actorDir2.Rotate(yaw);
       actorDir3.Set(actorDir2.x, 0, actorDir2.y);
       actorTrans.LookAt(actorDir3, UpVector);
+      // TODO: Ouch!!! Remove that!!!
       player.GetObject()->SetTransform(actorTrans);
     }
 
@@ -404,7 +405,7 @@ void PhysDemo::UpdateHUD()
 void PhysDemo::DoDebugDraw()
 {
   if (do_bullet_debug)
-    GetCurrentSector()->DebugDraw (view);
+    physicalSystem->DebugDraw (view);
   else if (isSoftBodyWorld && do_soft_debug)
     for (size_t i = 0; i < GetCurrentSector()->GetSoftBodyCount(); i++)
     {

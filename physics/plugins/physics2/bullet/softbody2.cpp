@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -407,21 +411,16 @@ csVector3 csBulletSoftBody::GetVertexNormal (size_t index) const
 
 void csBulletSoftBody::DebugDraw (iView* rView)
 {
-  if (!sector->debugDraw)
-  {
-    sector->debugDraw = new csBulletDebugDraw (system->GetInverseInternalScale ());
-    sector->bulletWorld->setDebugDrawer (sector->debugDraw);
-  }
-
-  btSoftBodyHelpers::Draw (btBody, sector->debugDraw);
-  sector->debugDraw->DebugDraw (rView);
+  system->InitDebugDraw ();
+  btSoftBodyHelpers::Draw (btBody, system->debugDraw);
+  system->debugDraw->DebugDraw (rView);
 }
 
 void csBulletSoftBody::SetLinearStiff (float stiff)
 {
   if (stiff >= 0.0f && stiff <= 1.0f)
   {
-    btSoftBody::Material*	pm=btBody->m_materials[0];
+    btSoftBody::Material* pm = btBody->m_materials[0];
     pm->m_kLST = stiff;
   }
 }
@@ -431,7 +430,7 @@ void csBulletSoftBody::SetAngularStiff (float stiff)
   CS_ASSERT (btBody);
   if (stiff >= 0.0f && stiff <= 1.0f)
   {
-    btSoftBody::Material*	pm=btBody->m_materials[0];
+    btSoftBody::Material* pm = btBody->m_materials[0];
     pm->m_kAST = stiff;
   }
 }
@@ -441,7 +440,7 @@ void csBulletSoftBody::SetVolumeStiff (float stiff)
   CS_ASSERT (btBody);
   if (stiff >= 0.0f && stiff <= 1.0f)
   {
-    btSoftBody::Material*	pm=btBody->m_materials[0];
+    btSoftBody::Material* pm = btBody->m_materials[0];
     pm->m_kVST = stiff;
   }
 }
@@ -456,9 +455,9 @@ void csBulletSoftBody::SetClusterCollisionRS (bool cluster)
 {
   CS_ASSERT (btBody);
   if (cluster)
-    btBody->m_cfg.collisions	+=	btSoftBody::fCollision::CL_RS;
+    btBody->m_cfg.collisions += btSoftBody::fCollision::CL_RS;
   else
-    btBody->m_cfg.collisions	+=	btSoftBody::fCollision::SDF_RS;
+    btBody->m_cfg.collisions += btSoftBody::fCollision::SDF_RS;
 }
 
 bool csBulletSoftBody::GetClusterCollisionRS ()
@@ -669,7 +668,7 @@ void csBulletSoftBody::PreStep (float dt)
     {
       // apply the exact opposite of gravity (since it cannot simply be disabled or set)
       // this is how gravity is applied in btSoftBody.cpp
-      btVector3 minusGravity = -(btBody->m_cfg.timescale * sector->GetWorldTimeStep()) * btBody->m_worldInfo->m_gravity;
+      btVector3 minusGravity = -(btBody->m_cfg.timescale * system->GetWorldTimeStep()) * btBody->m_worldInfo->m_gravity;
       btBody->addVelocity(minusGravity);
     }
   }

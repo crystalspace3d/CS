@@ -30,13 +30,11 @@
 #include "igeom/trimesh.h"
 #include "imesh/objmodel.h"
 #include "imesh/terrain2.h"
-#include "iutil/plugin.h"
 #include "ivaria/convexdecompose.h"
 #include "ivaria/collisions.h"
 #include "ivaria/reporter.h"
 
 using namespace CS::Collisions;
-//using namespace CS::Physics;
 
 void CollisionHelper::ReportError (const char* msg, ...)
 {
@@ -57,20 +55,7 @@ bool CollisionHelper::Initialize
   this->objectRegistry = objectRegistry;
   this->collisionSystem = collisionSystem;
   this->decomposer = decomposer;
-/*
-  // Load the convex decomposer if it has not been specified by the user
-  if (!this->decomposer)
-  {
-    csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (objectRegistry);
-    this->decomposer = csLoadPlugin<iConvexDecomposer>
-      (plugmgr, "crystalspace.mesh.convexdecompose.hacd");
-    if (!this->decomposer)
-    {
-      ReportError ("Could not find any plugin for convex decomposition");
-      return false;
-    }
-  }
-*/
+
   // Initialize the ID's for the collision models of the meshes
   csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet>
     (objectRegistry, "crystalspace.shared.stringset");
@@ -114,10 +99,7 @@ void CollisionHelper::InitializeCollisionObjects
   // Create the iCollisionSector from the iSector if not yet made
   iCollisionSector* colSect = collisionSystem->FindCollisionSector (sector);
   if (!colSect)
-  {
-    colSect = collisionSystem->CreateCollisionSector ();
-    colSect->SetSector (sector);
-  }
+    colSect = collisionSystem->CreateCollisionSector (sector);
 
   iObjectModel* objModel = mesh->GetMeshObject ()->GetObjectModel ();
 

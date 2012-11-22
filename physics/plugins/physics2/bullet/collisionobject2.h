@@ -60,6 +60,7 @@ protected:
   btQuaternion portalWarp;
 
   csBulletSector* sector;
+  // TODO: why a reference to the system?
   csBulletSystem* system;
 
   PortalTraversalData* portalData;

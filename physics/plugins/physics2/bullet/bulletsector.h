@@ -64,13 +64,13 @@ class csBulletCollider;
 class csBulletJoint;
 class CollisionPortal;
 
+// TODO: what's this?
 struct BulletActionWrapper : public virtual CS::Physics::iUpdatable
 {
   SCF_INTERFACE (CS::Plugin::Bullet2::BulletActionWrapper, 1, 0, 0);
 
-  virtual btActionInterface* GetBulletAction() = 0;
+  virtual btActionInterface* GetBulletAction () = 0;
 };
-
 
 // Also implements iPhysicalSector
 class csBulletSector : public scfVirtImplementationExt2<
@@ -90,15 +90,11 @@ class csBulletSector : public scfVirtImplementationExt2<
   friend class csBulletGhostCollisionObject;
   friend class CollisionPortal;
 
-  csWeakRef<csBulletSystem> sys;
-
-  bool isSoftWorld;
-  csVector3 gravity;
+  csWeakRef<csBulletSystem> system;
 
   // TODO: Get rid of this hitPortal field
   btGhostObject* hitPortal;
 
-  csBulletDebugDraw* debugDraw;
   btDynamicsWorld* bulletWorld;
   btCollisionDispatcher* dispatcher;
   btDefaultCollisionConfiguration* configuration;
@@ -112,8 +108,6 @@ class csBulletSector : public scfVirtImplementationExt2<
   float linearDisableThreshold;
   float angularDisableThreshold;
   float timeDisableThreshold;
-  float worldTimeStep;
-  size_t worldMaxSteps;
 
   csRefArray<csBulletJoint> joints;
   csArray<CollisionPortal*> portals;
@@ -127,7 +121,7 @@ class csBulletSector : public scfVirtImplementationExt2<
 
   csRefArray<CS::Physics::iUpdatable> updatables;
 
-  void CheckCollisions();
+  void CheckCollisions ();
   void UpdateCollisionPortalsPreStep ();
   void UpdateCollisionPortalsPostStep ();
 
@@ -136,11 +130,11 @@ class csBulletSector : public scfVirtImplementationExt2<
   void AddSoftBody (CS::Physics::iSoftBody* body);
 
 public:
-  csBulletSector (csBulletSystem* sys);
+  csBulletSector (csBulletSystem* system);
   virtual ~csBulletSector ();
   
   //-- iCollisionSector
-  virtual CS::Collisions::iCollisionSystem* GetSystem();
+  virtual CS::Collisions::iCollisionSystem* GetSystem ();
 
   virtual iObject* QueryObject ()
   { return (iObject*) this; }
@@ -151,46 +145,39 @@ public:
   { return (iPhysicalSector*) this; }
 
   virtual void SetGravity (const csVector3& v);
-  virtual csVector3 GetGravity () const {return gravity;}
+  virtual csVector3 GetGravity () const;
 
-  inline btDynamicsWorld* GetBulletWorld() const { return bulletWorld; }
+  inline btDynamicsWorld* GetBulletWorld () const { return bulletWorld; }
 
-  virtual void AddCollisionObject(CS::Collisions::iCollisionObject* object);
-  virtual void RemoveCollisionObject(CS::Collisions::iCollisionObject* object);
+  virtual void AddCollisionObject (CS::Collisions::iCollisionObject* object);
+  virtual void RemoveCollisionObject (CS::Collisions::iCollisionObject* object);
 
   virtual size_t GetCollisionObjectCount () {return collisionObjects.GetSize ();}
   virtual CS::Collisions::iCollisionObject* GetCollisionObject (size_t index);
   virtual CS::Collisions::iCollisionObject* FindCollisionObject (const char* name);
 
-  virtual void AddCollisionTerrain(CS::Collisions::iCollisionTerrain* terrain);
-  virtual size_t GetCollisionTerrainCount() const { return terrains.GetSize(); }
-  virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain(size_t index) const;
-  virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain(iTerrainSystem* terrain);
+  virtual void AddCollisionTerrain (CS::Collisions::iCollisionTerrain* terrain);
+  virtual size_t GetCollisionTerrainCount () const { return terrains.GetSize (); }
+  virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain (size_t index) const;
+  virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain (iTerrainSystem* terrain);
 
-  virtual void AddPortal(iPortal* portal, const csOrthoTransform& meshTrans);
-  virtual void RemovePortal(iPortal* portal);
+  virtual void AddPortal (iPortal* portal, const csOrthoTransform& meshTrans);
+  virtual void RemovePortal (iPortal* portal);
 
-  virtual void SetSector(iSector* sector);
-  virtual iSector* GetSector(){return sector;}
+  virtual void SetSector (iSector* sector);
+  virtual iSector* GetSector () { return sector; }
 
-  virtual CS::Collisions::HitBeamResult HitBeam(const csVector3& start, 
+  virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, 
+    const csVector3& end);
+  virtual CS::Collisions::HitBeamResult HitBeamPortal (const csVector3& start, 
     const csVector3& end);
 
-  virtual CS::Collisions::HitBeamResult HitBeamPortal(const csVector3& start, 
-    const csVector3& end);
-
-  virtual bool CollisionTest(CS::Collisions::iCollisionObject* object, 
+  virtual bool CollisionTest (CS::Collisions::iCollisionObject* object, 
     csArray<CS::Collisions::CollisionData>& collisions);
 
-  /*virtual MoveResult MoveTest (iCollisionObject* object,
-    const csOrthoTransform& fromWorld, const csOrthoTransform& toWorld);*/
+  virtual void DeleteAll ();
 
   //-- iPhysicalSector
-  virtual void SetSimulationSpeed (float speed);
-  virtual void SetStepParameters (float timeStep,
-    size_t maxSteps, size_t iterations);
-  virtual void Step (float duration);
-
   virtual void SetLinearDamping (float d);
   virtual float GetLinearDamping () const {return linearDampening;}
 
@@ -211,9 +198,6 @@ public:
   virtual void AddJoint (CS::Physics::iJoint* joint);
   virtual void RemoveJoint (CS::Physics::iJoint* joint);
 
-  virtual void SetSoftBodyEnabled (bool enabled);
-  virtual bool GetSoftBodyEnabled () {return isSoftWorld;}
-
   //Bullet::iPhysicalSector
   //Currently will not use gimpact shape...
   //virtual void SetGimpactEnabled (bool enabled);
@@ -221,33 +205,26 @@ public:
 
   virtual bool SaveWorld (const char* filename);
 
-  virtual void DebugDraw (iView* rview);
-  virtual void SetDebugMode (CS::Physics::DebugMode mode);
-  virtual CS::Physics::DebugMode GetDebugMode ();
-
-  virtual void StartProfile ();
-  virtual void StopProfile ();
-  virtual void DumpProfile (bool resetProfile = true);
-
   bool BulletCollide (btCollisionObject* objectA,
     btCollisionObject* objectB,
     csArray<CS::Collisions::CollisionData>& data);
 
-  CS::Collisions::HitBeamResult RigidHitBeam(btCollisionObject* object, 
+  CS::Collisions::HitBeamResult RigidHitBeam (btCollisionObject* object, 
 			     const csVector3& start,
 			     const csVector3& end);
 
+  virtual void AddUpdatable (CS::Physics::iUpdatable* u);
+  virtual void RemoveUpdatable (CS::Physics::iUpdatable* u);
+
+  // Internal methods
+  void Step (float duration);
   void UpdateSoftBodies (float timeStep);
 
   void AddSceneNodeToSector (iSceneNode* sceneNode);
   void RemoveSceneNodeFromSector (iSceneNode* sceneNode);
-
-  inline float GetWorldTimeStep() const { return worldTimeStep; }
-
-  virtual void AddUpdatable(CS::Physics::iUpdatable* u);
-    virtual void RemoveUpdatable(CS::Physics::iUpdatable* u);
 };
+
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)
 
 #endif

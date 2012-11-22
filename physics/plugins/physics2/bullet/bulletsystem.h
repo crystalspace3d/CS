@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -94,7 +98,7 @@ class csBulletSystem : public scfImplementationExt2<
   friend class csBulletSector;
   friend class CollisionPortal;
   friend class csBulletRigidBody;
-
+  friend class csBulletSoftBody;
 
 private:
   iObjectRegistry* object_reg;
@@ -107,6 +111,22 @@ private:
   size_t systemFilterCount;
   csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*> vehicleMap;
 
+  float simulationSpeed;
+  float worldTimeStep;
+  int worldMaxSteps;
+  int stepIterations;
+
+  bool isSoftWorld;
+
+  float linearDampening;
+  float angularDampening;
+
+  float linearDisableThreshold;
+  float angularDisableThreshold;
+  float timeDisableThreshold;
+
+  csBulletDebugDraw* debugDraw;
+
 public:
   csBulletSystem (iBase* iParent);
   virtual ~csBulletSystem ();
@@ -115,8 +135,6 @@ public:
   virtual bool Initialize (iObjectRegistry* object_reg);
 
   //-- iCollisionSystem
-  virtual void SetInternalScale (float scale);
-  virtual float GetInternalScale () const { return internalScale; }
   virtual csPtr<CS::Collisions::iCollider> CreateCollider ();
   virtual csPtr<CS::Collisions::iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* mesh, bool simplify = false);
   virtual csPtr<CS::Collisions::iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh);
@@ -132,7 +150,7 @@ public:
       float minHeight = 0, float maxHeight = 0);
 
   
-  virtual CS::Collisions::iCollisionSector* CreateCollisionSector ();
+  virtual CS::Collisions::iCollisionSector* CreateCollisionSector (iSector* sector = nullptr);
   virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize (); }
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) 
   {
@@ -143,6 +161,24 @@ public:
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const iSector* sceneSector);
 
   //-- iPhysicalSystem
+  virtual void SetSimulationSpeed (float speed);
+  virtual void SetStepParameters (float timeStep, size_t maxSteps, size_t iterations);
+  virtual void Step (csTicks duration);
+
+  virtual void SetSoftBodyEnabled (bool enabled);
+  virtual bool GetSoftBodyEnabled () { return isSoftWorld; }
+
+  virtual void SetInternalScale (float scale);
+  virtual float GetInternalScale () const { return internalScale; }
+
+  virtual void SetLinearDamping (float d);
+  virtual float GetLinearDamping () const { return linearDampening; }
+
+  virtual void SetAngularDamping (float d);
+  virtual float GetAngularDamping () const { return angularDampening; }
+
+  virtual void SetAutoDisableParams (float linear,
+    float angular, float time);
 
   // Factories
   virtual csPtr<CS::Collisions::iCollisionObjectFactory> CreateCollisionObjectFactory
@@ -201,12 +237,23 @@ public:
   
   void DeleteAll ();
 
+  virtual void InitDebugDraw ();
+  virtual void DebugDraw (iView* rview);
+  virtual void SetDebugMode (CS::Physics::DebugMode mode);
+  virtual CS::Physics::DebugMode GetDebugMode ();
+
+  virtual void StartProfile ();
+  virtual void StopProfile ();
+  virtual void DumpProfile (bool resetProfile = true);
+
   // Internal stuff
-  btSoftBodyWorldInfo* GetSoftBodyWorldInfo () const { return defaultInfo; }
-  float GetInverseInternalScale () {return inverseInternalScale;}
-  void ReportWarning (const char* msg, ...);
-  
+  inline btSoftBodyWorldInfo* GetSoftBodyWorldInfo () const { return defaultInfo; }
+  inline float GetInverseInternalScale () {return inverseInternalScale;}
+  inline float GetWorldTimeStep() const { return worldTimeStep; }
+
   btTriangleMesh* CreateBulletTriMesh (iTriangleMesh* triMesh);
+
+  void ReportWarning (const char* msg, ...);
 };
 
 }

@@ -44,7 +44,7 @@ enum
   XMLTOKEN_INTERNALSCALE,
   XMLTOKEN_COLLISIONSECTOR,
   XMLTOKEN_GRAVITY,
-  XMLTOKEN_DAMPENER,
+  XMLTOKEN_DAMPING,
   XMLTOKEN_GROUP,
   XMLTOKEN_SECTOR,
   XMLTOKEN_STEPPARAS,
@@ -108,7 +108,7 @@ bool csPhysicsLoader2::Initialize (iObjectRegistry* object_reg)
   xmltokens.Register ("scale", XMLTOKEN_INTERNALSCALE);
   xmltokens.Register ("collisionsector", XMLTOKEN_COLLISIONSECTOR);
   xmltokens.Register ("gravity", XMLTOKEN_GRAVITY);
-  xmltokens.Register ("dampener", XMLTOKEN_DAMPENER);
+  xmltokens.Register ("dampener", XMLTOKEN_DAMPING);
   xmltokens.Register ("group", XMLTOKEN_GROUP);
   xmltokens.Register ("sector", XMLTOKEN_SECTOR);
   xmltokens.Register ("stepparas", XMLTOKEN_STEPPARAS);
@@ -172,7 +172,9 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
     if (child->GetType () != CS_NODE_ELEMENT) continue;
     const char* value = child->GetValue ();
     csStringID id = xmltokens.Request (value);
-    if (id == XMLTOKEN_COLLISIONSECTOR)
+    switch (id)
+    {
+    case XMLTOKEN_COLLISIONSECTOR:
     {
       csRef<iDocumentAttribute> attr = child->GetAttribute ("name");
       csRef<CS::Collisions::iCollisionSector> collisionSector;
@@ -191,9 +193,39 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
         synldr->ReportBadToken (child);
         return 0;
       }
+      break;
     }
-    else if (id == XMLTOKEN_INTERNALSCALE)
+    case XMLTOKEN_INTERNALSCALE:
+    {
       collisionSystem->SetInternalScale (child->GetAttributeValueAsFloat ("scale"));
+      break;
+    }
+    case XMLTOKEN_SIMULATIONSPEED:
+    {
+      float speed = child->GetAttributeValueAsFloat ("speed");
+      physicalSystem->SetSimulationSpeed (speed);
+      break;
+    }
+    case XMLTOKEN_STEPPARAS:
+    {
+      float timeStep = child->GetAttributeValueAsFloat ("timestep", 0.0166f);
+      int maxStep = child->GetAttributeValueAsInt ("maxstep", 1);
+      int iteration = child->GetAttributeValueAsInt ("iteration", 10);
+      physicalSystem->SetStepParameters (timeStep, maxStep, iteration);
+      break;
+    }
+    case XMLTOKEN_DAMPING:
+    {
+      float angular = child->GetAttributeValueAsFloat ("angular", 0.1f);
+      float linear = child->GetAttributeValueAsFloat ("linear", 0.1f);
+      physicalSystem->SetAngularDamping (angular);
+      physicalSystem->SetLinearDamping (linear);
+      break;
+    }
+    default:
+      synldr->ReportBadToken (child);
+      return csPtr<iBase> (nullptr);
+    }
   }
   return csPtr<iBase> (collisionSystem);
 }
@@ -250,27 +282,13 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
         }
         break;
       }
-    case XMLTOKEN_DAMPENER:
+    case XMLTOKEN_DAMPING:
       {
-	// TODO: use default values
-        float angular = child->GetAttributeValueAsFloat ("angular");
-        float linear = child->GetAttributeValueAsFloat ("linear");
+        float angular = child->GetAttributeValueAsFloat ("angular", 0.1f);
+        float linear = child->GetAttributeValueAsFloat ("linear", 0.1f);
         physSector->SetAngularDamping (angular);
         physSector->SetLinearDamping (linear);
         break;
-      }
-    case XMLTOKEN_SIMULATIONSPEED:
-      {
-        float speed = child->GetAttributeValueAsFloat ("speed");
-        physSector->SetSimulationSpeed (speed);
-        break;
-      }
-    case XMLTOKEN_STEPPARAS:
-      {
-        float timeStep = child->GetAttributeValueAsFloat ("timestep", 0.0166f);
-        int maxStep = child->GetAttributeValueAsInt ("maxstep", 1);
-        int iteration = child->GetAttributeValueAsInt ("iteration", 10);
-	physSector->SetStepParameters (timeStep, maxStep, iteration);
       }
     case XMLTOKEN_COLLISIONOBJECT:
       {
@@ -450,7 +468,7 @@ bool csPhysicsLoader2::ParseRigidBody (iDocumentNode *node,
     if (child->GetType () != CS_NODE_ELEMENT) continue;
     const char *value = child->GetValue ();
     csStringID id = xmltokens.Request (value);
-    if (id == XMLTOKEN_DAMPENER)
+    if (id == XMLTOKEN_DAMPING)
     {
       float angular = child->GetAttributeValueAsFloat ("angular");
       float linear = child->GetAttributeValueAsFloat ("linear");

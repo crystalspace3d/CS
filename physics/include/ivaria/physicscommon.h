@@ -69,6 +69,7 @@ namespace CS
       /**
        * Method is called before every step, given "dt" seconds have passed since the beginning of the last step.
        */
+      // TODO: csTicks
       virtual void PreStep (float dt) = 0;
       /**
        * Method is called after every step, given "dt" seconds have passed since the beginning of the last step.

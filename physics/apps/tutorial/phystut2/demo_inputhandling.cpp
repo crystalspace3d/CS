@@ -170,6 +170,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
   else if (code == 'p')
   {
+    // TODO: use iPhysicalSystem::SetSimulationSpeed()
     // Toggle pause mode for dynamic simulation
     pauseDynamic = !pauseDynamic;
     if (pauseDynamic)
@@ -181,6 +182,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
   else if (code == 'o')
   {
+    // TODO: use iPhysicalSystem::SetSimulationSpeed()
     // Toggle speed of dynamic simulation
     if (dynamicStepFactor - 0.025 < EPSILON)
     {
@@ -215,7 +217,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
         debugMode = CS::Physics::DEBUG_NOTHING;
         break;
       }
-      CallOnAllSectors(SetDebugMode (debugMode));
+      physicalSystem->SetDebugMode (debugMode);
     }
     return true;
   }
@@ -319,11 +321,12 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // Update the display of the dynamics debugger
     //dynamicsDebugger->UpdateDisplay();
   }
+  // TODO: move in tool options in order to free keyboard keys
   else if (csKeyEventHelper::GetRawCode (&event) == 'i'
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Starting profile...\n");
-    GetCurrentSector()->StartProfile();
+    physicalSystem->StartProfile();
     return true;
   }
 
@@ -331,14 +334,14 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Stopping profile...\n");
-    GetCurrentSector()->StopProfile();
+    physicalSystem->StopProfile();
     return true;
   }
 
   else if (csKeyEventHelper::GetRawCode (&event) == 'p'
     && kbd->GetKeyState (CSKEY_CTRL))
   {
-    GetCurrentSector()->DumpProfile();
+    physicalSystem->DumpProfile();
     return true;
   }
   

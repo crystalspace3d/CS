@@ -400,7 +400,6 @@ csBulletColliderConcaveMeshScaled::~csBulletColliderConcaveMeshScaled ()
 
 float csBulletColliderConcaveMeshScaled::ComputeShapeVolume() const 
 {
-  // TODO: This is very wrong
   return originalCollider->GetVolume () * scale.x * scale.y * scale.z;
 }
 

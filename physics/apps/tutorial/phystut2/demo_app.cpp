@@ -92,6 +92,8 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
 
   // Check whether the soft bodies are enabled or not
   isSoftBodyWorld = clp->GetBoolOption ("soft", true);
+  if (isSoftBodyWorld)
+    physicalSystem->SetSoftBodyEnabled (true);
 
   // Load the soft body animation control plugin & factory
   if (isSoftBodyWorld)
@@ -350,13 +352,7 @@ void PhysDemo::SetupHUD()
 iPhysicalSector* PhysDemo::CreatePhysicalSector(iSector* isector)
 {
   iPhysicalSector* sector =
-    physicalSystem->CreateCollisionSector ()->QueryPhysicalSector ();
-  sector->SetSector(isector);
-  sector->SetDebugMode (debugMode);
-  if (isSoftBodyWorld)
-  {
-    sector->SetSoftBodyEnabled (true);
-  }
+    physicalSystem->CreateCollisionSector (isector)->QueryPhysicalSector ();
   return sector;
 }
 

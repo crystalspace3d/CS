@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -108,9 +112,10 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
   virtual iSoftBody* QuerySoftBody () = 0;
 
   /**
-   * Get whether this object is dynamic, that is if it is either a dynamic actor,
-   * a soft body, or a dynamic rigid body. The only objects that are not dynamic
-   * are the rigid bodies that are either in static or kinematic state.
+   * Get whether this object is currently animated dynamically by the physical
+   * simulation, that is if it is either a dynamic actor, a soft body, or a
+   * dynamic rigid body. The only objects that are not dynamic are the rigid
+   * bodies that are either in static or kinematic state.
    */
   virtual bool IsDynamic () const = 0;
 
@@ -594,6 +599,33 @@ struct SoftBodyHelper
 };
 
 /**
+ * \todo This class should have a common base interface with iCollisionActor
+ * 
+ * This is the interface for a Dynamic Actor.
+ * It allows the user to easily navigate a physical object on ground.
+ * The actual RigidBody that represents the actor always floats <step height> above the ground to be able to
+ * move smoothly over terrain and small obstacles.
+ * The air control factor determines whether and how well the actor can be controlled while not touching the ground.
+ * Air control is always 100% when gravity is off.
+ *
+ * Main creators of instances implementing this interface:
+ * - iPhysicalSystem::CreateDynamicActor()
+ * 
+ * Main users of this interface:
+ * - iPhysicalSector
+ * \todo All actor classes should be merged around a common abstract interface
+ */
+struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions::iActor
+{
+  SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
+
+  /// Get whether to use a kinematic method for smooth steps
+  virtual bool GetUseKinematicSteps () const = 0;
+  /// Set whether to use a kinematic method for smooth steps
+  virtual void SetUseKinematicSteps (bool u) = 0;
+};
+
+/**
  * A joint that can constrain the relative motion between two iPhysicalBody.
  * For instance if all motion in along the local X axis is constrained
  * then the bodies will stay motionless relative to each other
@@ -604,6 +636,7 @@ struct SoftBodyHelper
  * 
  * Main users of this interface:
  * - iPhysicalSector
+ * \todo Joint factories
  */
 struct iJoint : public virtual iBase
 {
@@ -814,6 +847,103 @@ struct iKinematicCallback : public virtual iBase
 };
 
 /**
+ * This is the interface for the physical sector.
+ * It manage all physical bodies.
+ *
+ * \sa CS::Collisions::iCollisionSector CS::Physics::iPhysicalSector
+ */
+struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
+{
+  SCF_INTERFACE (CS::Physics::iPhysicalSector, 1, 0, 0);
+
+  /**
+   * Set the parameters for auto disabling the computation of forces on the
+   * physical objects in this sector.
+   * \param linear Maximum linear movement to disable a body. Default value is 0.8.
+   * \param angular Maximum angular movement to disable a body. Default value is 1.0.
+   * \param steps Minimum number of steps the body meets linear and angular
+   * requirements before it is disabled. Default value is 0.
+   * \param time Minimum time the body needs to meet linear and angular
+   * movement requirements before it is disabled. Default value is 0.0.
+   * \remark With the Bullet plugin, the 'steps' parameter is ignored.
+   * \remark With the Bullet plugin, calling this method will not affect bodies already
+   * created.
+   */
+  virtual void SetAutoDisableParams (float linear, float angular, float time) = 0;
+
+  /**
+   * Set the default linear damping for all objects in this sector. The dampening
+   * correspond to how much the movements of the objects will be reduced. It is a
+   * value between 0 and 1, giving the ratio of speed that will be reduced
+   * in one second. 0 means that the movement will not be reduced, while
+   * 1 means that the object will not move.
+   * The default value is 0.1f.
+   * \sa CS::Physics::iRigidBody::SetLinearDamping ()
+   */
+  virtual void SetLinearDamping (float damping) = 0;
+
+  /**
+   * Get the default linear damping for all objects in this sector.
+   */
+  virtual float GetLinearDamping () const = 0;
+
+  /**
+   * Set the default angular damping for all objects in this sector. The dampening
+   * correspond to how much the movements of the objects will be reduced. It is a
+   * value between 0 and 1, giving the ratio of speed that will be reduced
+   * in one second. 0 means that the movement will not be reduced, while
+   * 1 means that the object will not move.
+   * The default value is 0.1f.
+   * \sa CS::Physics::iRigidBody::SetAngularDamping()
+   */
+  virtual void SetAngularDamping (float damping) = 0;
+
+  /// Get the default angular damping for all objects in this sector.
+  virtual float GetAngularDamping () const = 0;
+  
+  /// Get the count of rigid bodies.
+  virtual size_t GetRigidBodyCount () = 0;
+
+  /// Get the rigid body by index.
+  virtual iRigidBody* GetRigidBody (size_t index) = 0;
+
+  /// Find the rigid body in this sector.
+  virtual iRigidBody* FindRigidBody (const char* name) = 0;
+
+  /// Get the count of soft bodies.
+  virtual size_t GetSoftBodyCount () = 0;
+
+  /// Get the soft body by index.
+  virtual iSoftBody* GetSoftBody (size_t index) = 0;
+
+  /// Find  the soft body in this setor.
+  virtual iSoftBody* FindSoftBody (const char* name) = 0;
+
+  /// Add a joint to the sector. The joint must have attached two physical bodies.
+  virtual void AddJoint (iJoint* joint) = 0;
+
+  /// Remove a joint by pointer.
+  virtual void RemoveJoint (iJoint* joint) = 0;
+
+  /**
+   * Save the current state of the dynamic world in a file.
+   * \return True if the operation succeeds, false otherwise.
+   */
+  virtual bool SaveWorld (const char* filename) = 0;
+
+  /**
+   * Will cause the step function to be called on this updatable every step
+   */
+  // TODO: remove or move in iPhysicalSystem?
+  virtual void AddUpdatable (iUpdatable* u) = 0;
+  
+  /**
+   * Removes the given updatable
+   */
+  virtual void RemoveUpdatable (iUpdatable* u) = 0;
+};
+
+/**
  * This is the interface for the actual plugin.
  * It is responsible for creating iPhysicalSector.
  *
@@ -828,9 +958,116 @@ struct iKinematicCallback : public virtual iBase
  *
  * \sa CS::Collisions::iCollisionSystem
  */
+// TODO: step callback
 struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 {
   SCF_INTERFACE (CS::Physics::iPhysicalSystem, 1, 0, 0);
+  
+  /**
+   * Set the simulation speed. A value of 0 means that the simulation is not made
+   * automatically (but it can still be made manually through Step())
+   */
+  virtual void SetSimulationSpeed (float speed) = 0;
+
+  /**
+   * Set the parameters of the constraint solver. Use this if you want to find a
+   * compromise between accuracy of the simulation and performance cost.
+   * \param timeStep The internal, constant, time step of the simulation, in seconds.
+   * A smaller value gives better accuracy. Default value is 1/60 s (ie 0.0166 s).
+   * \param maxSteps Maximum number of steps that Bullet is allowed to take each
+   * time you call iPhysicalSector::Step(). If you pass a very small time step as
+   * the first parameter, then you must increase the number of maxSteps to
+   * compensate for this, otherwise your simulation is 'losing' time. Default value
+   * is 1. If you pass maxSteps=0 to the function, then it will assume a variable
+   * tick rate. Don't do it.
+   * \param iterations Number of iterations of the constraint solver. A reasonable
+   * range of iterations is from 4 (low quality, good performance) to 20 (good
+   * quality, less but still reasonable performance). Default value is 10. 
+   */
+  virtual void SetStepParameters (float timeStep, size_t maxSteps,
+    size_t iterations) = 0;  
+
+  /// Step the simulation forward by the given duration, in second
+  virtual void Step (csTicks duration) = 0;
+
+  /**
+   * Set whether or not this physical system can handle soft bodies. The default
+   * value is true.
+   * \warning You have to call this method before creating any collision sectors.
+   */
+  virtual void SetSoftBodyEnabled (bool enabled) = 0; 
+
+  /**
+   * Return whether or not this physical system can handle soft bodies.
+   */
+  virtual bool GetSoftBodyEnabled () = 0;
+
+  /**
+   * Set the internal scale to be applied to the whole dynamic world. Use this
+   * to put back the range of dimensions you use for your objects to the one
+   * Bullet was designed for.
+   * 
+   * Bullet does not work well if the dimensions of your objects are smaller
+   * than 0.1 to 1.0 units or bigger than 10 to 100 units. Use this method to
+   * fix the problem.
+   * 
+   * \warning You have to call this method before adding any objects in the
+   * world, otherwise the objects won't have the same scale.
+   */
+  virtual void SetInternalScale (float scale) = 0;
+
+  /**
+   * Get the internal scale to be applied to the whole dynamic world.
+   */
+  virtual float GetInternalScale () const = 0;
+
+  /**
+   * Set the parameters for AutoDisable.
+   * \param linear Maximum linear movement to disable a body. Default value is 0.8.
+   * \param angular Maximum angular movement to disable a body. Default value is 1.0.
+   * \param steps Minimum number of steps the body meets linear and angular
+   * requirements before it is disabled. Default value is 0.
+   * \param time Minimum time the body needs to meet linear and angular
+   * movement requirements before it is disabled. Default value is 0.0.
+   * \remark With the Bullet plugin, the 'steps' parameter is ignored.
+   * \remark With the Bullet plugin, calling this method will not affect bodies already
+   * created.
+   */
+  virtual void SetAutoDisableParams (float linear, float angular, float time) = 0;
+
+  /**
+   * Set the global linear damping of the whole system, that is for all
+   * subsequent collision sectors that will be created.
+   * The dampening correspond to how
+   * much the movements of the objects will be reduced. It is a value
+   * between 0 and 1, giving the ratio of speed that will be reduced
+   * in one second. 0 means that the movement will not be reduced, while
+   * 1 means that the object will not move.
+   * The default value is 0.1f.
+   * \sa CS::Physics::iRigidBody::SetLinearDamping ()
+   */
+  virtual void SetLinearDamping (float damping) = 0;
+
+  /**
+   * Get the global linear damping.
+   */
+  virtual float GetLinearDamping () const = 0;
+
+  /**
+   * Set the global angular damping of the whole system, that is for all
+   * subsequent collision sectors that will be created.
+   * The dampening correspond to how
+   * much the movements of the objects will be reduced. It is a value
+   * between 0 and 1, giving the ratio of speed that will be reduced
+   * in one second. 0 means that the movement will not be reduced, while
+   * 1 means that the object will not move.
+   * The default value is 0.1f.
+   * \sa CS::Physics::iRigidBody::SetAngularDamping()
+   */
+  virtual void SetAngularDamping (float damping) = 0;
+
+  /// Get the global angular damping.
+  virtual float GetAngularDamping () const = 0;
   
   /// Create a general 6DOF joint.
   virtual csPtr<iJoint> CreateJoint () = 0;
@@ -891,7 +1128,6 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
    */
   virtual csPtr<iJoint> CreateRigidPivotJoint
     (iRigidBody* body, const csVector3 position) = 0;
-  
 
   // Factories
   
@@ -911,151 +1147,20 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
 
   /// Create a soft mesh factory
   virtual csPtr<iSoftMeshFactory> CreateSoftMeshFactory () = 0;
-  
 
   // Vehicles
 
-  /// Creates a new factory to produce vehicles
+  /// Create a new factory to produce vehicles
   virtual csPtr<iVehicleFactory> CreateVehicleFactory () = 0;
   
-  /// Creates a new factory to produce vehicle wheels
+  /// Create a new factory to produce vehicle wheels
   virtual csPtr<iVehicleWheelFactory> CreateVehicleWheelFactory () = 0;
   
-  /// Creates a new factory to produce vehicle wheels
+  /// Create a new factory to produce vehicle wheels
   virtual csPtr<iVehicleWheelInfo> CreateVehicleWheelInfo (iVehicleWheelFactory* factory) = 0;
 
-  /// Returns the vehicle that the given object is a part of, or nullptr
+  /// Return the vehicle that the given object is a part of, or nullptr
   virtual iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj) = 0;
-
-
-  /// Resets the entire system and deletes all sectors
-  // TODO: move in iCollisionSector and/or iCollisionSystem
-  virtual void DeleteAll () = 0;
-};
-
-/**
- * This is the interface for the physical sector.
- * It manage all physical bodies.
- *
- * \sa CS::Collisions::iCollisionSector CS::Physics::iPhysicalSector
- */
-struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
-{
-  SCF_INTERFACE (CS::Physics::iPhysicalSector, 1, 0, 0);
-
-  /**
-   * Set the simulation speed. A value of 0 means that the simulation is not made
-   * automatically (but it can still be made manually through Step())
-   */
-  virtual void SetSimulationSpeed (float speed) = 0;
-
-  /**
-   * Set the parameters of the constraint solver. Use this if you want to find a
-   * compromise between accuracy of the simulation and performance cost.
-   * \param timeStep The internal, constant, time step of the simulation, in seconds.
-   * A smaller value gives better accuracy. Default value is 1/60 s (ie 0.0166 s).
-   * \param maxSteps Maximum number of steps that Bullet is allowed to take each
-   * time you call iPhysicalSector::Step(). If you pass a very small time step as
-   * the first parameter, then you must increase the number of maxSteps to
-   * compensate for this, otherwise your simulation is 'losing' time. Default value
-   * is 1. If you pass maxSteps=0 to the function, then it will assume a variable
-   * tick rate. Don't do it.
-   * \param iterations Number of iterations of the constraint solver. A reasonable
-   * range of iterations is from 4 (low quality, good performance) to 20 (good
-   * quality, less but still reasonable performance). Default value is 10. 
-   */
-  virtual void SetStepParameters (float timeStep, size_t maxSteps,
-    size_t iterations) = 0;  
-
-  /// Step the simulation forward by the given duration, in second
-  virtual void Step (float duration) = 0;
-
-  /**
-   * Set the global linear Damping. The dampening correspond to how
-   * much the movements of the objects will be reduced. It is a value
-   * between 0 and 1, giving the ratio of speed that will be reduced
-   * in one second. 0 means that the movement will not be reduced, while
-   * 1 means that the object will not move.
-   * The default value is 0.
-   * \sa CS::Physics::iRigidBody::SetLinearDamping ()
-   */
-  virtual void SetLinearDamping (float d) = 0;
-
-  /**
-   * Get the global linear Damping setting.
-   */
-  virtual float GetLinearDamping () const = 0;
-
-  /**
-   * Set the global angular Damping. The dampening correspond to how
-   * much the movements of the objects will be reduced. It is a value
-   * between 0 and 1, giving the ratio of speed that will be reduced
-   * in one second. 0 means that the movement will not be reduced, while
-   * 1 means that the object will not move.
-   * The default value is 0.
-   * \sa CS::Physics::iRigidBody::SetAngularDamping()
-   */
-  virtual void SetAngularDamping (float d) = 0;
-
-  /// Get the global angular damping value
-  virtual float GetAngularDamping () const = 0;
-  
-  /**
-   * Set the parameters for AutoDisable.
-   * \param linear Maximum linear movement to disable a body. Default value is 0.8.
-   * \param angular Maximum angular movement to disable a body. Default value is 1.0.
-   * \param steps Minimum number of steps the body meets linear and angular
-   * requirements before it is disabled. Default value is 0.
-   * \param time Minimum time the body needs to meet linear and angular
-   * movement requirements before it is disabled. Default value is 0.0.
-   * \remark With the Bullet plugin, the 'steps' parameter is ignored.
-   * \remark With the Bullet plugin, calling this method will not affect bodies already
-   * created.
-   */
-  virtual void SetAutoDisableParams (float linear, float angular, float time) = 0;
-
-  /// Get the count of rigid bodies.
-  virtual size_t GetRigidBodyCount () = 0;
-
-  /// Get the rigid body by index.
-  virtual iRigidBody* GetRigidBody (size_t index) = 0;
-
-  /// Find the rigid body in this sector.
-  virtual iRigidBody* FindRigidBody (const char* name) = 0;
-
-
-  /// Get the count of soft bodies.
-  virtual size_t GetSoftBodyCount () = 0;
-
-  /// Get the soft body by index.
-  virtual iSoftBody* GetSoftBody (size_t index) = 0;
-
-  /// Find  the soft body in this setor.
-  virtual iSoftBody* FindSoftBody (const char* name) = 0;
-
-  /// Add a joint to the sector. The joint must have attached two physical bodies.
-  virtual void AddJoint (iJoint* joint) = 0;
-
-  /// Remove a joint by pointer.
-  virtual void RemoveJoint (iJoint* joint) = 0;
-
-  /**
-   * Set whether this dynamic world can handle soft bodies or not.
-   * \warning You have to call this method before adding any objects in the
-   * dynamic world.
-   */
-  virtual void SetSoftBodyEnabled (bool enabled) = 0; 
-
-  /**
-   * Return whether this dynamic world can handle soft bodies or not.
-   */
-  virtual bool GetSoftBodyEnabled () = 0;
-
-  /**
-   * Save the current state of the dynamic world in a file.
-   * \return True if the operation succeeds, false otherwise.
-   */
-  virtual bool SaveWorld (const char* filename) = 0;
 
   /**
    * Draw the debug informations of the dynamic system. This has to be called
@@ -1094,43 +1199,6 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * the dumping.
    */
   virtual void DumpProfile (bool resetProfile = true) = 0;
-
-  /**
-   * Will cause the step function to be called on this updatable every step
-   */
-  virtual void AddUpdatable (iUpdatable* u) = 0;
-  
-  /**
-   * Removes the given updatable
-   */
-  virtual void RemoveUpdatable (iUpdatable* u) = 0;
-};
-
-/**
- * \todo This class should have a common base interface with iCollisionActor
- * 
- * This is the interface for a Dynamic Actor.
- * It allows the user to easily navigate a physical object on ground.
- * The actual RigidBody that represents the actor always floats <step height> above the ground to be able to
- * move smoothly over terrain and small obstacles.
- * The air control factor determines whether and how well the actor can be controlled while not touching the ground.
- * Air control is always 100% when gravity is off.
- *
- * Main creators of instances implementing this interface:
- * - iPhysicalSystem::CreateDynamicActor()
- * 
- * Main users of this interface:
- * - iPhysicalSector
- * \todo All actor classes should be merged around a common abstract interface
- */
-struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions::iActor
-{
-  SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
-
-  /// Get whether to use a kinematic method for smooth steps
-  virtual bool GetUseKinematicSteps () const = 0;
-  /// Set whether to use a kinematic method for smooth steps
-  virtual void SetUseKinematicSteps (bool u) = 0;
 };
 
 }

@@ -62,6 +62,7 @@ void csPhysicalBody::SetEnabled (bool enabled)
   {
     SetLinearVelocity (csVector3 (0.0f));
     SetAngularVelocity (csVector3 (0.0f));
+    // TODO: why the following line?
     btObject->setInterpolationWorldTransform (btObject->getWorldTransform ());
     btObject->setActivationState (ISLAND_SLEEPING);
   }
@@ -75,7 +76,11 @@ bool csPhysicalBody::GetEnabled () const
 
 csPtr<CS::Collisions::iCollisionObject> csPhysicalBody::ClonePassivePortalObject () 
 { 
-  csRef<iPhysicalBody> obj = scfQueryInterface<iPhysicalBody>(csRef<iCollisionObject>(CloneObject ()));
+  csRef<iCollisionObject> clone (CloneObject ());
+  // TODO: cloning not working for soft bodies
+  if (!clone) return csPtr<CS::Collisions::iCollisionObject> (nullptr);
+
+  csRef<iPhysicalBody> obj = scfQueryInterface<iPhysicalBody> (clone);
 
   if (obj)
   {

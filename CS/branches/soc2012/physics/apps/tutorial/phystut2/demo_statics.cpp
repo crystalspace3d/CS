@@ -114,7 +114,9 @@ void PhysDemo::CreateBoxRoom(float size)
 { 
   // Create and setup sector
   room = engine->CreateSector (DefaultSectorName);
-  SetCurrentSector(csRef<iPhysicalSector>(CreatePhysicalSector(room)));
+  iPhysicalSector* sector =
+    physicalSystem->CreateCollisionSector (room)->QueryPhysicalSector ();
+  SetCurrentSector (sector);
 
   // Add cam pos
   iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Center");

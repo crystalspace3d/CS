@@ -128,7 +128,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (IsFreeFalling())
     {
       // cannot entirely control movement mid-air
-      float realAirFactor = airControlFactor * sector->GetWorldTimeStep();
+      float realAirFactor = airControlFactor * system->GetWorldTimeStep();
       newVel = realAirFactor * newVel;
       newVel += (1.f - realAirFactor) * vel;
     }
@@ -145,7 +145,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (IsFreeFalling())
     {
       // cannot entirely control movement mid-air
-      float realAirFactor = airControlFactor * sector->GetWorldTimeStep();
+      float realAirFactor = airControlFactor * system->GetWorldTimeStep();
       newVel2 = realAirFactor * newVel2;
       newVel2 += (1.f - realAirFactor) * csVector2 (vel.x, vel.z);
     }

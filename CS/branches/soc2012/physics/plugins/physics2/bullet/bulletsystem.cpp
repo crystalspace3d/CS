@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -65,8 +69,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
 SCF_IMPLEMENT_FACTORY (csBulletSystem)
 
+// TODO: listen to the 'Frame' event in order to step automatically the simulation
+
 csBulletSystem::csBulletSystem (iBase* iParent)
-  : scfImplementationType (this, iParent), internalScale (1.0f), inverseInternalScale (1.0f)
+  : scfImplementationType (this, iParent), internalScale (1.0f), inverseInternalScale (1.0f),
+  simulationSpeed (1.0f), worldTimeStep (1.0f / 60.0f), worldMaxSteps (1),
+  stepIterations (10), isSoftWorld (true), linearDampening (0.1f), angularDampening (0.1f),
+  linearDisableThreshold (0.8f), angularDisableThreshold (1.0f),
+  timeDisableThreshold (0.0f), debugDraw (nullptr)
 {
   defaultInfo = new btSoftBodyWorldInfo;
   
@@ -117,13 +127,47 @@ csBulletSystem::csBulletSystem (iBase* iParent)
 csBulletSystem::~csBulletSystem ()
 {
   collSectors.DeleteAll ();
+  delete debugDraw;
 }
 
 bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
 {
   this->object_reg = object_reg;
-  // TODO: register to the registry if not yet made
+  // TODO: register to the registry if not yet made? to be done in the tool class?
   return true;
+}
+
+void csBulletSystem::SetSimulationSpeed (float speed)
+{
+  simulationSpeed = speed;
+}
+
+void csBulletSystem::SetStepParameters (float timeStep,
+					size_t maxSteps,
+					size_t iterations)
+{
+  worldTimeStep = timeStep;
+  worldMaxSteps = maxSteps;
+  stepIterations = (int) iterations;
+
+  for (size_t i = 0; i < collSectors.GetSize (); i++)
+  {
+    btContactSolverInfo& info = collSectors[i]->bulletWorld->getSolverInfo ();
+    info.m_numIterations = (int) iterations;
+  }
+}
+
+void csBulletSystem::Step (csTicks duration)
+{
+  float fduration = duration * simulationSpeed * 0.001f;
+  for (size_t i = 0; i < collSectors.GetSize (); i++)
+    collSectors[i]->Step (fduration);
+}
+
+void csBulletSystem::SetSoftBodyEnabled (bool enabled)
+{
+  CS_ASSERT (!collSectors.GetSize ());
+  isSoftWorld = enabled;
 }
 
 void csBulletSystem::SetInternalScale (float scale)
@@ -131,6 +175,24 @@ void csBulletSystem::SetInternalScale (float scale)
   // update parameters
   internalScale = scale;
   inverseInternalScale = 1.0f / scale;
+}
+
+void csBulletSystem::SetLinearDamping (float damping)
+{
+  linearDampening = damping;
+}
+
+void csBulletSystem::SetAngularDamping (float damping)
+{
+  angularDampening = damping;
+}
+
+void csBulletSystem::SetAutoDisableParams (float linear, float angular,
+					   float time)
+{
+  linearDisableThreshold = linear;
+  angularDisableThreshold = angular;
+  timeDisableThreshold = time;
 }
 
 csPtr<CS::Collisions::iCollider> csBulletSystem::CreateCollider ()
@@ -214,9 +276,10 @@ csPtr<CS::Collisions::iCollisionTerrain> csBulletSystem::CreateCollisionTerrain 
   return csPtr<iCollisionTerrain> (collider);
 }
 
-CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector ()
+CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector (iSector* sector)
 {
   csRef<csBulletSector> collSector = csPtr<csBulletSector> (new csBulletSector (this));
+  if (sector) collSector->SetSector (sector);
   collSectors.Push (collSector);
   return collSector;
 }
@@ -237,7 +300,6 @@ CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSe
   }
   return nullptr;
 }
-
 // ###############################################################################################################
 // Physical Objects
 
@@ -399,16 +461,6 @@ iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
 
 // Misc
 
-void csBulletSystem::ReportWarning (const char* msg, ...)
-{
-  va_list arg;
-  va_start (arg, msg);
-  csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
-	     "crystalspace.physics.bullet",
-	     msg, arg);
-  va_end (arg);
-}
-
 CS::Collisions::CollisionGroup& csBulletSystem::CreateCollisionGroup (const char* name)
 {
   size_t groupCount = collGroups.GetSize ();
@@ -538,6 +590,66 @@ void csBulletSystem::DeleteAll ()
   collSectors.DeleteAll ();
 }
 
+void csBulletSystem::InitDebugDraw ()
+{
+  if (!debugDraw)
+  {
+    debugDraw = new csBulletDebugDraw (inverseInternalScale);
+    for (size_t i = 0; i < collSectors.GetSize (); i++)
+      collSectors[i]->bulletWorld->setDebugDrawer (debugDraw);
+  }
+}
+
+void csBulletSystem::DebugDraw (iView* rview)
+{
+  InitDebugDraw ();
+  for (size_t i = 0; i < collSectors.GetSize (); i++)
+    collSectors[i]->bulletWorld->debugDrawWorld ();
+  debugDraw->DebugDraw (rview);
+}
+
+void csBulletSystem::SetDebugMode (CS::Physics::DebugMode mode)
+{
+  if (!debugDraw && mode)
+    InitDebugDraw ();
+  debugDraw->SetDebugMode (mode);
+}
+
+CS::Physics::DebugMode csBulletSystem::GetDebugMode ()
+{
+  if (!debugDraw)
+    return CS::Physics::DEBUG_NOTHING;
+
+  return debugDraw->GetDebugMode ();
+}
+
+void csBulletSystem::StartProfile ()
+{
+  CProfileManager::Start_Profile ("Crystal Space scene");
+  InitDebugDraw ();
+  debugDraw->StartProfile ();
+}
+
+void csBulletSystem::StopProfile ()
+{
+  CProfileManager::Stop_Profile ();
+  debugDraw->StopProfile ();
+}
+
+void csBulletSystem::DumpProfile (bool resetProfile /* = true */)
+{
+  printf ("\n");
+  printf ("==========================================================\n");
+  printf ("====           Bullet dynamic scene profile           ====\n");
+  printf ("==========================================================\n");
+  CProfileManager::dumpAll ();
+  printf ("==========================================================\n");
+  printf ("\n");
+
+  if (resetProfile)
+    CProfileManager::Reset ();
+}
+
 btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
 {
   btTriangleMesh* btMesh = new btTriangleMesh ();
@@ -566,6 +678,16 @@ btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
   }
 
   return btMesh;
+}
+
+void csBulletSystem::ReportWarning (const char* msg, ...)
+{
+  va_list arg;
+  va_start (arg, msg);
+  csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
+	     "crystalspace.physics.bullet",
+	     msg, arg);
+  va_end (arg);
 }
 
 }

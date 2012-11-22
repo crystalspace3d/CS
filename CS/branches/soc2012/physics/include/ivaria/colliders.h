@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -95,12 +99,16 @@ struct iCollider : public virtual iBase
   /// Get the volume of this collider
   virtual float GetVolume () const = 0;
 
-  /// Whether this collider (and all its children) can be used for dynamic simulation
-  // TODO: remove?
+  /**
+   * Whether this collider (and all its children) can potentially be animated dynamically
+   * by the physical simulation. All colliders are potentially dynamic, excepted the
+   * concave and scaled concave meshes, the planes, and the terrains.
+   */
   virtual bool IsDynamic () const = 0;
 
   /// Add a child collider, with a fixed relative transform regarding this collider.
-  virtual void AddChild (iCollider* collider, const csOrthoTransform& transform = csOrthoTransform ()) = 0;
+  virtual void AddChild (iCollider* collider,
+			 const csOrthoTransform& transform = csOrthoTransform ()) = 0;
 
   /// Remove the given child collider from this collider.
   virtual void RemoveChild (iCollider* collider) = 0;

@@ -63,59 +63,120 @@ const float COLLISION_THRESHOLD = 0.01f;
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+  //----------------------------------- PointContactResult -----------------------------------
+
   struct PointContactResult : public btCollisionWorld::ContactResultCallback
   {
-    csArray<CS::Collisions::CollisionData>& colls;
-    csBulletSystem* sys;
-    PointContactResult(csBulletSystem* sys, csArray<CS::Collisions::CollisionData>& collisions) : colls(collisions), sys(sys) 
+    csArray<CS::Collisions::CollisionData>& collisions;
+    csBulletSystem* system;
+
+    PointContactResult (csBulletSystem* system, csArray<CS::Collisions::CollisionData>& collisions)
+      : collisions (collisions), system (system) 
     {
     }
-    virtual	btScalar	addSingleResult (btManifoldPoint& cp,	const btCollisionObject* colObj0, int partId0,int index0,const btCollisionObject* colObj1,int partId1,int index1)
+
+    virtual btScalar addSingleResult (btManifoldPoint& cp, const btCollisionObject* colObj0,
+				      int partId0, int index0, const btCollisionObject* colObj1,
+				      int partId1, int index1)
     {
       CS::Collisions::CollisionData data;
       data.objectA = static_cast<CS::Collisions::iCollisionObject*>(colObj0->getUserPointer ());
       data.objectB = static_cast<CS::Collisions::iCollisionObject*>(colObj1->getUserPointer ());
-      data.penetration = cp.m_distance1 * sys->GetInverseInternalScale ();
-      data.positionWorldOnA = BulletToCS (cp.m_positionWorldOnA, sys->GetInverseInternalScale ());
-      data.positionWorldOnB = BulletToCS (cp.m_positionWorldOnB, sys->GetInverseInternalScale ());
-      data.normalWorldOnB = BulletToCS (cp.m_normalWorldOnB, sys->GetInverseInternalScale ());
-      colls.Push (data);
+      data.penetration = cp.m_distance1 * system->GetInverseInternalScale ();
+      data.positionWorldOnA = BulletToCS (cp.m_positionWorldOnA, system->GetInverseInternalScale ());
+      data.positionWorldOnB = BulletToCS (cp.m_positionWorldOnB, system->GetInverseInternalScale ());
+      data.normalWorldOnB = BulletToCS (cp.m_normalWorldOnB, system->GetInverseInternalScale ());
+      collisions.Push (data);
       return 0;
     }
   };
 
-  csBulletSector::csBulletSector (csBulletSystem* sys)
-    :scfImplementationType (this), sys (sys), isSoftWorld (false),
-    hitPortal (nullptr), debugDraw (nullptr), softWorldInfo (nullptr),
-    linearDampening (0.1f), angularDampening (0.1f),
-    linearDisableThreshold (0.8f), angularDisableThreshold (1.0f),
-    timeDisableThreshold (0.0f), worldTimeStep (1.0f / 60.0f), worldMaxSteps (1)
+  //----------------------------------- csBulletSector -----------------------------------
+
+  void PreTickCallback (btDynamicsWorld* world, btScalar timeStep)
   {
-    configuration = new btDefaultCollisionConfiguration ();
-    dispatcher = new btCollisionDispatcher (configuration);
-    solver = new btSequentialImpulseConstraintSolver;
+    csBulletSector* sector = (csBulletSector*) (world->getWorldUserInfo ());
+    sector->UpdateSoftBodies (timeStep);
+  }
 
+  csBulletSector::csBulletSector (csBulletSystem* system)
+    : scfImplementationType (this), system (system), hitPortal (nullptr), softWorldInfo (nullptr),
+    linearDampening (system->linearDampening), angularDampening (system->angularDampening),
+    linearDisableThreshold (system->linearDisableThreshold),
+    angularDisableThreshold (system->angularDisableThreshold),
+    timeDisableThreshold (system->timeDisableThreshold)
+  {
+    solver = new btSequentialImpulseConstraintSolver ();
+
+    // TODO: those dimensions will not fit every worlds
     const int maxProxies = 32766;
-
     btVector3 worldAabbMin (-WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS, -WORLD_AABB_DIMENSIONS);
     btVector3 worldAabbMax (WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS, WORLD_AABB_DIMENSIONS);
     broadphase = new btAxisSweep3 (worldAabbMin, worldAabbMax, maxProxies);
+    broadphase->getOverlappingPairCache ()->setInternalGhostPairCallback (new btGhostPairCallback ());
 
-    bulletWorld = new btDiscreteDynamicsWorld (dispatcher, broadphase, solver, configuration);
+    csVector3 v (0.0f, -9.81f, 0.0f);
+    btVector3 gravity = CSToBullet (v, system->GetInternalScale ());
 
-    broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+    if (system->isSoftWorld)
+    {
+      configuration = new btSoftBodyRigidBodyCollisionConfiguration ();
+      dispatcher = new btCollisionDispatcher (configuration);
+      bulletWorld = new btSoftRigidDynamicsWorld
+        (dispatcher, broadphase, solver, configuration);
 
-    SetGravity (csVector3 (0.0f, -9.81f, 0.0f));
+      softWorldInfo = new btSoftBodyWorldInfo ();
+      softWorldInfo->m_broadphase = broadphase;
+      softWorldInfo->m_dispatcher = dispatcher;
+      softWorldInfo->m_gravity = gravity;
+      softWorldInfo->air_density = 1.2f;
+      softWorldInfo->water_density = 0.0f;
+      softWorldInfo->water_offset = 0.0f;
+      softWorldInfo->water_normal = btVector3 (0.0f, 1.0f, 0.0f);
+      softWorldInfo->m_sparsesdf.Initialize ();
+    }
+    else
+    {
+      configuration = new btDefaultCollisionConfiguration ();
+      dispatcher = new btCollisionDispatcher (configuration);
+      bulletWorld = new btDiscreteDynamicsWorld
+        (dispatcher, broadphase, solver, configuration);
+    }
+
+    btContactSolverInfo& info = bulletWorld->getSolverInfo ();
+    info.m_numIterations = system->stepIterations;
+
+    bulletWorld->setGravity (gravity);
+
+    if (system->debugDraw)
+      bulletWorld->setDebugDrawer (system->debugDraw);
+
+    // Register a pre-tick callback
+    // TODO: remove?
+    if (system->isSoftWorld)
+      bulletWorld->setInternalTickCallback (PreTickCallback, this, true);
   }
 
   csBulletSector::~csBulletSector ()
   {
+    DeleteAll ();
+
+    delete bulletWorld;
+    delete dispatcher;
+    delete configuration;
+    delete solver;
+    delete softWorldInfo;
+    delete broadphase;
+  }
+
+  void csBulletSector::DeleteAll ()
+  {
     // remove updatables
-    while (updatables.GetSize())
+    while (updatables.GetSize ())
     {
-      RemoveUpdatable(updatables[updatables.GetSize() - 1]);
+      RemoveUpdatable (updatables[updatables.GetSize () - 1]);
     }
 
     // remove portals
@@ -127,96 +188,88 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     // remove collision objects
     for (size_t i = 0; i < collisionObjects.GetSize (); ++i)
     {
-      collisionObjects[i]->RemoveBulletObject();
+      collisionObjects[i]->RemoveBulletObject ();
     }
 
     // remove constraints
-    for (size_t i = 0; i < joints.GetSize(); ++i)
+    for (size_t i = 0; i < joints.GetSize (); ++i)
     {
-      joints[i]->RemoveBulletJoint();
+      joints[i]->RemoveBulletJoint ();
     }
 
     // remove terrains
-    for (size_t i = 0; i < terrains.GetSize(); ++i)
+    for (size_t i = 0; i < terrains.GetSize (); ++i)
     {
-      terrains[i]->RemoveRigidBodies();
+      terrains[i]->RemoveRigidBodies ();
     }
-    terrains.DeleteAll();
+    terrains.DeleteAll ();
 
     joints.DeleteAll ();
     softBodies.DeleteAll ();
     rigidBodies.DeleteAll ();
     collisionObjects.DeleteAll ();
     portals.DeleteAll ();
-
-    delete bulletWorld;
-    delete dispatcher;
-    delete configuration;
-    delete solver;
-    if (debugDraw)
-    {
-      delete debugDraw;
-    }
-    if (softWorldInfo)
-    {
-      delete softWorldInfo;
-    }
-    delete broadphase;
   }
 
-  CS::Collisions::iCollisionSystem* csBulletSector::GetSystem() { return sys; }
+  CS::Collisions::iCollisionSystem* csBulletSector::GetSystem () { return system; }
 
   void csBulletSector::SetGravity (const csVector3& v)
   {
     // first re-activate all objects
-    for (size_t i = 0; i < collisionObjects.GetSize(); ++i)
+    for (size_t i = 0; i < collisionObjects.GetSize (); ++i)
     {
       if (collisionObjects[i]->GetObjectType () == COLLISION_OBJECT_PHYSICAL
 	  && collisionObjects[i]->QueryPhysicalBody ()->IsDynamic ())
       {
-        collisionObjects[i]->btObject->activate(true);
+        collisionObjects[i]->btObject->activate (true);
       }
     }
 
-    gravity = v;
-    btVector3 gravity = CSToBullet (v, sys->GetInternalScale ());
+    btVector3 gravity = CSToBullet (v, system->GetInternalScale ());
     bulletWorld->setGravity (gravity);
 
-    if (isSoftWorld)
+    if (softWorldInfo)
       softWorldInfo->m_gravity = gravity;
+  }
+
+  csVector3 csBulletSector::GetGravity () const
+  {
+    btVector3 gravity = bulletWorld->getGravity ();
+    return BulletToCS (gravity, system->GetInverseInternalScale ());
   }
 
   void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* object)
   {
-    if (object->GetSector())
+    if (object->GetSector ())
     {
-      object->GetSector()->RemoveCollisionObject(object);
+      object->GetSector ()->RemoveCollisionObject (object);
     }
 
     csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
 
 #ifdef _DEBUG
-    printf("Adding object \"%s\" (0x%lx) to sector: 0x%lx\n", object->QueryObject()->GetName(), obj->btObject, this);
+    printf ("Adding object \"%s\" (0x%lx) to sector: 0x%lx\n", object->QueryObject ()->GetName (), obj->btObject, this);
 #endif
 
     switch (obj->GetObjectType ())
     {
     case CS::Collisions::COLLISION_OBJECT_ACTOR:
       {
-        AddCollisionActor(static_cast<csBulletCollisionActor*>(obj));
+        AddCollisionActor (static_cast<csBulletCollisionActor*>(obj));
       }
       break;
     case CS::Collisions::COLLISION_OBJECT_PHYSICAL:
       {
-        iPhysicalBody* phyBody = obj->QueryPhysicalBody();
-        //int cflags = obj->btObject->getCollisionFlags();
-        //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
-        if (phyBody->QueryRigidBody())
+        iPhysicalBody* phyBody = obj->QueryPhysicalBody ();
+        //int cflags = obj->btObject->getCollisionFlags ();
+        //obj->btObject->setCollisionFlags (obj->btObject->getCollisionFlags () | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+        if (phyBody->QueryRigidBody ())
         {
           AddRigidBody (phyBody->QueryRigidBody ());
         }
         else
         {
+	  CS_ASSERT (system->isSoftWorld);
           AddSoftBody (phyBody->QuerySoftBody ());
         }
       }
@@ -225,14 +278,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       {
         // Ghost objects
         obj->sector = this;
-        //obj->btObject->setCollisionFlags(obj->btObject->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+        //obj->btObject->setCollisionFlags (obj->btObject->getCollisionFlags () | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
 
         obj->AddBulletObject ();
       }
       break;
     }
 
-    AddSceneNodeToSector (object->GetAttachedSceneNode());
+    AddSceneNodeToSector (object->GetAttachedSceneNode ());
 
     // add all objects to the collisionObjects list
     collisionObjects.Push (obj);
@@ -248,18 +301,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     if (removed)
     {
       collisionObjects.Delete (collObject);
-      RemoveSceneNodeFromSector (object->GetAttachedSceneNode());
+      RemoveSceneNodeFromSector (object->GetAttachedSceneNode ());
 
       iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
-      if (phyBody->QueryRigidBody())
+      if (phyBody->QueryRigidBody ())
       {
-	rigidBodies.Delete(dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
+	rigidBodies.Delete (dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
       }
       else
       {
 	csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ());
-	softBodies.Delete(btBody);
-	RemoveUpdatable(btBody);
+	softBodies.Delete (btBody);
+	RemoveUpdatable (btBody);
       }
     }
   }
@@ -276,28 +329,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  void csBulletSector::AddCollisionTerrain(CS::Collisions::iCollisionTerrain* terrain)
+  void csBulletSector::AddCollisionTerrain (CS::Collisions::iCollisionTerrain* terrain)
   {
     csBulletCollisionTerrain* btTerrain = dynamic_cast<csBulletCollisionTerrain*>(terrain);
 
-    btTerrain->RemoveRigidBodies();
-    btTerrain->AddRigidBodies(this);
+    btTerrain->RemoveRigidBodies ();
+    btTerrain->AddRigidBodies (this);
 
-    terrains.Push(btTerrain);
+    terrains.Push (btTerrain);
   }
   
-  CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain(size_t index) const 
+  CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain (size_t index) const 
   { 
-    return csRef<CS::Collisions::iCollisionTerrain>(scfQueryInterface<CS::Collisions::iCollisionTerrain>(terrains.Get(index)));
+    return csRef<CS::Collisions::iCollisionTerrain>(scfQueryInterface<CS::Collisions::iCollisionTerrain>(terrains.Get (index)));
   }
 
-  CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain(iTerrainSystem* terrain) 
+  CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain (iTerrainSystem* terrain) 
   {
-    for (size_t i = 0; i < terrains.GetSize(); ++i)
+    for (size_t i = 0; i < terrains.GetSize (); ++i)
     {
-      if (terrains.Get(i)->GetTerrain() == terrain)
+      if (terrains.Get (i)->GetTerrain () == terrain)
       {
-        return terrains.Get(i);
+        return terrains.Get (i);
       }
     }
     return nullptr;
@@ -320,7 +373,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     {
       if (portals[i]->portal == portal)
       {
-        portals[i]->RemoveFromSector();
+        portals[i]->RemoveFromSector ();
         portals.DeleteIndexFast (i);
         return;
       }
@@ -338,7 +391,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       // sector is set
 
       // set name
-      QueryObject()->SetName(sector->QueryObject()->GetName());
+      // TODO: remove?
+      QueryObject ()->SetName (sector->QueryObject ()->GetName ());
 
       // add portal meshes
       /*const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
@@ -361,7 +415,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       for (size_t i = 0; i < collisionObjects.GetSize (); i++)
       {
         iCollisionObject* obj = collisionObjects[i];
-        AddSceneNodeToSector(obj->GetAttachedSceneNode());
+        AddSceneNodeToSector (obj->GetAttachedSceneNode ());
       }
     }
     else
@@ -373,17 +427,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, const csVector3& end)
   {
-    btVector3 rayFrom = CSToBullet (start, sys->GetInternalScale ());
-    btVector3 rayTo = CSToBullet (end, sys->GetInternalScale ());
+    btVector3 rayFrom = CSToBullet (start, system->GetInternalScale ());
+    btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
 
     btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
-    rayCallback.m_collisionFilterMask = sys->collGroups[CollisionGroupTypePortalCopy].mask;
-    rayCallback.m_collisionFilterGroup = sys->collGroups[CollisionGroupTypeDefault].value;
+    rayCallback.m_collisionFilterMask = system->collGroups[CollisionGroupTypePortalCopy].mask;
+    rayCallback.m_collisionFilterGroup = system->collGroups[CollisionGroupTypeDefault].value;
     bulletWorld->rayTest (rayFrom, rayTo, rayCallback);
 
     CS::Collisions::HitBeamResult result;
 
-    if(rayCallback.hasHit ())
+    if (rayCallback.hasHit ())
     {
       CS::Collisions::iCollisionObject* collObject = static_cast<CS::Collisions::iCollisionObject*> (
         rayCallback.m_collisionObject->getUserPointer ());
@@ -402,9 +456,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           // this might be of interest to the caller
           result.object = collObject;
           result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-            sys->GetInverseInternalScale ());
+            system->GetInverseInternalScale ());
           result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-            sys->GetInverseInternalScale ());
+            system->GetInverseInternalScale ());
         }
       }
       else if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
@@ -417,9 +471,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         {
           result.object = collObject;
           result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-            sys->GetInverseInternalScale ());
+            system->GetInverseInternalScale ());
           result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-            sys->GetInverseInternalScale ());	
+            system->GetInverseInternalScale ());	
 
           // Find the closest vertex that was hit
           // TODO: there must be something more efficient than a second ray test
@@ -456,9 +510,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         // "normal" object
         result.object = collObject;
         result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-          sys->GetInverseInternalScale ());
+          system->GetInverseInternalScale ());
         result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-          sys->GetInverseInternalScale ());
+          system->GetInverseInternalScale ());
         return result;
       } // not softBody
     } //has hit
@@ -510,11 +564,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csArray<CS::Collisions::CollisionData>& collisions)
   {
 
-    if (!object || object->IsPassive())
+    if (!object || object->IsPassive ())
       return false;
 
     size_t length = collisions.GetSize ();
-    PointContactResult result(sys, collisions);
+    PointContactResult result (system, collisions);
 
     csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
     if (collObject->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
@@ -525,44 +579,44 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     {
       btPairCachingGhostObject* ghost = static_cast<btPairCachingGhostObject*> (btGhostObject::upcast (collObject->btObject));
 
-      bulletWorld->getDispatcher()->dispatchAllCollisionPairs(ghost->getOverlappingPairCache(), bulletWorld->getDispatchInfo(), bulletWorld->getDispatcher());
+      bulletWorld->getDispatcher ()->dispatchAllCollisionPairs (ghost->getOverlappingPairCache (), bulletWorld->getDispatchInfo (), bulletWorld->getDispatcher ());
 
-      for (int i = 0; i < ghost->getOverlappingPairCache()->getNumOverlappingPairs(); i++)
+      for (int i = 0; i < ghost->getOverlappingPairCache ()->getNumOverlappingPairs (); i++)
       {
         btManifoldArray manifoldArray;
-        btBroadphasePair* collisionPair = &ghost->getOverlappingPairCache()->getOverlappingPairArray()[i];
+        btBroadphasePair* collisionPair = &ghost->getOverlappingPairCache ()->getOverlappingPairArray ()[i];
 
         if (collisionPair->m_algorithm)
-          collisionPair->m_algorithm->getAllContactManifolds(manifoldArray);
+          collisionPair->m_algorithm->getAllContactManifolds (manifoldArray);
 
-        for (int j=0;j<manifoldArray.size();j++)
+        for (int j=0;j<manifoldArray.size ();j++)
         {
           btPersistentManifold* manifold = manifoldArray[j];
           btCollisionObject* objA = static_cast<btCollisionObject*> (manifold->getBody0 ());
           btCollisionObject* objB = static_cast<btCollisionObject*> (manifold->getBody1 ());
           CS::Collisions::iCollisionObject* csCOA = static_cast<CS::Collisions::iCollisionObject*>(objA->getUserPointer ());
           CS::Collisions::iCollisionObject* csCOB = static_cast<CS::Collisions::iCollisionObject*>(objB->getUserPointer ());
-          for (int p=0;p<manifold->getNumContacts();p++)
+          for (int p=0;p<manifold->getNumContacts ();p++)
           {
             CS::Collisions::CollisionData data;
             data.objectA = csCOA;
             data.objectB = csCOB;
 
-            const btManifoldPoint& pt = manifold->getContactPoint(p);
-            data.penetration = pt.m_distance1 * sys->GetInverseInternalScale ();
-            data.positionWorldOnA = BulletToCS (pt.m_positionWorldOnA, sys->GetInverseInternalScale ());
-            data.positionWorldOnB = BulletToCS (pt.m_positionWorldOnB, sys->GetInverseInternalScale ());
-            data.normalWorldOnB = BulletToCS (pt.m_normalWorldOnB, sys->GetInverseInternalScale ());
+            const btManifoldPoint& pt = manifold->getContactPoint (p);
+            data.penetration = pt.m_distance1 * system->GetInverseInternalScale ();
+            data.positionWorldOnA = BulletToCS (pt.m_positionWorldOnA, system->GetInverseInternalScale ());
+            data.positionWorldOnB = BulletToCS (pt.m_positionWorldOnB, system->GetInverseInternalScale ());
+            data.normalWorldOnB = BulletToCS (pt.m_normalWorldOnB, system->GetInverseInternalScale ());
             collisions.Push (data);
           }
         }
       }
     }
 
-    if (collObject->GetPortalData() && collObject->GetPortalData()->OtherObject)
+    if (collObject->GetPortalData () && collObject->GetPortalData ()->OtherObject)
     {
       // Object is traversing a portal and thus has a clone that is in symbiosis with itself
-      csBulletCollisionObject* portalClone = collObject->GetPortalData()->OtherObject;
+      csBulletCollisionObject* portalClone = collObject->GetPortalData ()->OtherObject;
       csArray<CS::Collisions::CollisionData> copyData;
       portalClone->sector->CollisionTest (portalClone, copyData);
       for (size_t i = 0; i < copyData.GetSize (); i++)
@@ -604,9 +658,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   void csBulletSector::AddCollisionActor (CS::Collisions::iCollisionActor* actor)
   {
     csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*>(actor));
-    collisionObjects.Push(obj);
+    collisionObjects.Push (obj);
     obj->sector = this;
-    obj->collGroup = sys->collGroups[CollisionGroupTypeActor]; // Actor Group.
+    obj->collGroup = system->collGroups[CollisionGroupTypeActor]; // Actor Group.
     obj->AddBulletObject ();
   }
 
@@ -615,7 +669,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csArray<CS::Collisions::CollisionData>& data)
   {
     //contactPairTest
-    PointContactResult result(sys, data);
+    PointContactResult result (system, data);
     bulletWorld->contactPairTest (objectA, objectB, result);
     if (data.IsEmpty ())
       return false;
@@ -627,8 +681,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     const csVector3& start,
     const csVector3& end)
   {
-    btVector3 rayFrom = CSToBullet (start, sys->GetInternalScale ());
-    btVector3 rayTo = CSToBullet (end, sys->GetInternalScale ());
+    btVector3 rayFrom = CSToBullet (start, system->GetInternalScale ());
+    btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
 
     CS::Collisions::HitBeamResult result;
 
@@ -662,9 +716,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
             }
 
             result.isect = BulletToCS (node->m_x,
-              sys->GetInverseInternalScale ());
+              system->GetInverseInternalScale ());
             result.normal = BulletToCS (node->m_n,
-              sys->GetInverseInternalScale ());	
+              system->GetInverseInternalScale ());	
             result.vertexIndex = size_t (node - &body->m_nodes[0]);
             break;
           }
@@ -683,43 +737,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       btTransform	rayFromTrans;
       btTransform	rayToTrans;
 
-      rayFromTrans.setIdentity();
-      rayFromTrans.setOrigin(rayFrom);
-      rayToTrans.setIdentity();
-      rayToTrans.setOrigin(rayTo);
+      rayFromTrans.setIdentity ();
+      rayFromTrans.setOrigin (rayFrom);
+      rayToTrans.setIdentity ();
+      rayToTrans.setOrigin (rayTo);
 
       bulletWorld->rayTestSingle (rayFromTrans, rayToTrans, object,
-        object->getCollisionShape(),
-        object->getWorldTransform(),
+        object->getCollisionShape (),
+        object->getWorldTransform (),
         rayCallback);
 
-      if(rayCallback.hasHit ())
+      if (rayCallback.hasHit ())
       {
         result.hasHit = true;
         result.object = static_cast<csBulletCollisionObject*> (object->getUserPointer ());
         result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-          sys->GetInverseInternalScale ());
+          system->GetInverseInternalScale ());
         result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-          sys->GetInverseInternalScale ());
+          system->GetInverseInternalScale ());
         return result;
       }
     }
     return result;
-  }
-
-  void csBulletSector::SetSimulationSpeed (float speed)
-  {
-    //TODO
-  }
-
-  void csBulletSector::SetStepParameters (float timeStep,
-    size_t maxSteps,
-    size_t interations)
-  {
-    worldTimeStep = timeStep;
-    worldMaxSteps = maxSteps;
-    btContactSolverInfo& info = bulletWorld->getSolverInfo ();
-    info.m_numIterations = (int)interations;
   }
 
   void csBulletSector::Step (float duration)
@@ -727,24 +766,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     // Call updatable steps
     for (size_t i = 0; i < updatables.GetSize (); i++)
     {
-      updatables[i]->PreStep(duration);
+      updatables[i]->PreStep (duration);
     }
 
     // Update traversing objects before simulation
     UpdateCollisionPortalsPreStep ();
 
     // Step the simulation
-    bulletWorld->stepSimulation (duration, (int)worldMaxSteps, worldTimeStep);
+    bulletWorld->stepSimulation (duration, system->worldMaxSteps, system->worldTimeStep);
     
     // Update traversing objects after simulation
     UpdateCollisionPortalsPostStep ();
 
     // Check for collisions
-    //CheckCollisions();
+    //CheckCollisions ();
 
     for (size_t i = 0; i < updatables.GetSize (); i++)
     {
-      updatables[i]->PostStep(duration);
+      updatables[i]->PostStep (duration);
     }
   }
 
@@ -774,8 +813,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     bulletBody->sector = this;
 
     // TODO: Body might have set its own damping
-    bulletBody->SetLinearDamping(linearDampening);
-    bulletBody->SetAngularDamping(angularDampening);
+    bulletBody->SetLinearDamping (linearDampening);
+    bulletBody->SetAngularDamping (angularDampening);
     bulletBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
     bulletBody->btBody->setDeactivationTime (timeDisableThreshold);
     bulletBody->AddBulletObject ();
@@ -793,9 +832,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::AddSoftBody (CS::Physics::iSoftBody* body)
   {
+    CS_ASSERT (system->isSoftWorld);
+
     csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*>(body));
     softBodies.Push (btBody);
-    AddUpdatable(btBody);
+    AddUpdatable (btBody);
 
     btBody->sector = this;
     btBody->AddBulletObject ();
@@ -833,7 +874,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   void csBulletSector::AddJoint (CS::Physics::iJoint* joint)
   {
     csBulletJoint* btJoint = dynamic_cast<csBulletJoint*> (joint);
-    CS_ASSERT(btJoint);
+    CS_ASSERT (btJoint);
     btJoint->sector = this;
     btJoint->AddBulletJoint ();
     joints.Push (btJoint);
@@ -842,85 +883,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   void csBulletSector::RemoveJoint (CS::Physics::iJoint* joint)
   {
     csBulletJoint* btJoint = dynamic_cast<csBulletJoint*> (joint);
-    CS_ASSERT(btJoint);
+    CS_ASSERT (btJoint);
 
     // re-activate the now free bodies
     if (btJoint->bodies[0])
     {
-      dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[0])->btObject->activate(true);
+      dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[0])->btObject->activate (true);
     }
     if (btJoint->bodies[1])
     {
-      dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[1])->btObject->activate(true);
+      dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[1])->btObject->activate (true);
     }
 
     btJoint->RemoveBulletJoint ();
     joints.Delete (btJoint);
   }
 
-  void PreTickCallback (btDynamicsWorld* world, btScalar timeStep)
-  {
-    csBulletSector* sector = (csBulletSector*) (world->getWorldUserInfo ());
-    sector->UpdateSoftBodies (timeStep);
-  }
-
-  void csBulletSector::SetSoftBodyEnabled (bool enabled)
-  {
-    CS_ASSERT(!rigidBodies.GetSize ()
-      && !collisionObjects.GetSize ()
-      && !softBodies.GetSize ());
-
-    if (enabled == isSoftWorld)
-      return;
-
-    isSoftWorld = enabled;
-    // re-create configuration, dispatcher & dynamics world
-    btVector3 gra = bulletWorld->getGravity ();
-    delete bulletWorld;
-    delete dispatcher;
-    delete configuration;
-
-    if (isSoftWorld)
-    {
-      configuration = new btSoftBodyRigidBodyCollisionConfiguration ();
-      dispatcher = new btCollisionDispatcher (configuration);
-      bulletWorld = new btSoftRigidDynamicsWorld
-        (dispatcher, broadphase, solver, configuration);
-
-      softWorldInfo = new btSoftBodyWorldInfo ();
-      softWorldInfo->m_broadphase = broadphase;
-      softWorldInfo->m_dispatcher = dispatcher;
-      softWorldInfo->m_gravity = gra;
-      softWorldInfo->air_density = 1.2f;
-      softWorldInfo->water_density = 0.0f;
-      softWorldInfo->water_offset = 0.0f;
-      softWorldInfo->water_normal = btVector3 (0.0f, 1.0f, 0.0f);
-      softWorldInfo->m_sparsesdf.Initialize ();
-    }
-    else
-    {
-      configuration = new btDefaultCollisionConfiguration ();
-      dispatcher = new btCollisionDispatcher (configuration);
-      bulletWorld = new btDiscreteDynamicsWorld
-        (dispatcher, broadphase, solver, configuration);
-
-      if (softWorldInfo)
-      {
-        delete softWorldInfo;
-        softWorldInfo = nullptr;
-      }
-    }
-
-    bulletWorld->setGravity (gra);
-    bulletWorld->setDebugDrawer (debugDraw);
-
-    // Register a pre-tick callback
-    bulletWorld->setInternalTickCallback (PreTickCallback, this, true);
-  }
-
   bool csBulletSector::SaveWorld (const char* filename)
   {
-    //What's this?
+    // Check that the version of the Bullet library can handle serialization.
 #ifndef CS_HAVE_BULLET_SERIALIZER
     return false;
 #else
@@ -938,74 +919,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       != 1)
       return false;
 
-    if (fclose(file) == EOF) return false;
+    if (fclose (file) == EOF) return false;
 
     return true;
 
 #endif
-  }
-
-  void csBulletSector::DebugDraw (iView* rview)
-  {
-    if (!debugDraw)
-    {
-      debugDraw = new csBulletDebugDraw (sys->GetInverseInternalScale ());
-      bulletWorld->setDebugDrawer (debugDraw);
-    }
-
-    bulletWorld->debugDrawWorld ();
-    debugDraw->DebugDraw (rview);
-  }
-
-  void csBulletSector::SetDebugMode (CS::Physics::DebugMode mode)
-  {
-    if (!debugDraw && mode)
-    {
-      debugDraw = new csBulletDebugDraw (sys->GetInverseInternalScale ());
-      bulletWorld->setDebugDrawer (debugDraw);
-    }
-
-    debugDraw->SetDebugMode (mode);
-  }
-
-  CS::Physics::DebugMode csBulletSector::GetDebugMode ()
-  {
-    if (!debugDraw)
-      return CS::Physics::DEBUG_NOTHING;
-
-    return debugDraw->GetDebugMode ();
-  }
-
-  void csBulletSector::StartProfile ()
-  {
-    CProfileManager::Start_Profile ("Crystal Space scene");
-
-    if (!debugDraw)
-    {
-      debugDraw = new csBulletDebugDraw (sys->GetInverseInternalScale ());
-      bulletWorld->setDebugDrawer (debugDraw);
-    }
-    debugDraw->StartProfile ();
-  }
-
-  void csBulletSector::StopProfile ()
-  {
-    CProfileManager::Stop_Profile ();
-    debugDraw->StopProfile ();
-  }
-
-  void csBulletSector::DumpProfile (bool resetProfile /* = true */)
-  {
-    printf ("\n");
-    printf ("==========================================================\n");
-    printf ("====           Bullet dynamic scene profile           ====\n");
-    printf ("==========================================================\n");
-    CProfileManager::dumpAll ();
-    printf ("==========================================================\n");
-    printf ("\n");
-
-    if (resetProfile)
-      CProfileManager::Reset ();
   }
 
   void csBulletSector::UpdateSoftBodies (float timeStep)
@@ -1019,18 +937,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::AddSceneNodeToSector (iSceneNode* sceneNode)
   {
-    // TODO: use iMovable::SetSector() instead (same everywhere)
+    // TODO: use iMovable::SetSector () instead (same everywhere)
     if (sceneNode && sector)
     {
       iMeshWrapper* mesh = sceneNode->QueryMesh ();
       iLight* light = sceneNode->QueryLight ();
 
-      if (mesh && size_t(sector->GetMeshes()->Find(mesh)) == csArrayItemNotFound)
+      if (mesh && size_t (sector->GetMeshes ()->Find (mesh)) == csArrayItemNotFound)
       {
         sector->GetMeshes ()->Add (mesh);
       }
 
-      if (light && size_t(sector->GetLights()->Find(light)) == csArrayItemNotFound)
+      if (light && size_t (sector->GetLights ()->Find (light)) == csArrayItemNotFound)
       {
         sector->GetLights ()->Add (light);
       }
@@ -1052,7 +970,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   void csBulletSector::CheckCollisions ()
   {
-    int numManifolds = bulletWorld->getDispatcher()->getNumManifolds();
+    int numManifolds = bulletWorld->getDispatcher ()->getNumManifolds ();
 
     for (size_t i = 0; i < collisionObjects.GetSize (); i++)
       collisionObjects[i]->contactObjects.Empty ();
@@ -1104,45 +1022,45 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   /**
    * Will cause the step function to be called on this updatable every step
    */
-  void csBulletSector::AddUpdatable(iUpdatable* u)
+  void csBulletSector::AddUpdatable (iUpdatable* u)
   {
-    updatables.Push(u);
+    updatables.Push (u);
 
-    if (u->GetCollisionObject())
+    if (u->GetCollisionObject ())
     {
-      AddCollisionObject(u->GetCollisionObject());
+      AddCollisionObject (u->GetCollisionObject ());
     }
 
     csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
-    if (wrapper && wrapper->GetBulletAction())
+    if (wrapper && wrapper->GetBulletAction ())
     {
       // It was an internal action that also defines a bullet action
-      bulletWorld->addAction(wrapper->GetBulletAction());
+      bulletWorld->addAction (wrapper->GetBulletAction ());
     }
 
-    u->OnAdded(this);
+    u->OnAdded (this);
   }
   
   /**
    * Removes the given updatable
    */
-  void csBulletSector::RemoveUpdatable(iUpdatable* u)
+  void csBulletSector::RemoveUpdatable (iUpdatable* u)
   {
-    if (u->GetCollisionObject())
+    if (u->GetCollisionObject ())
     {
-      RemoveCollisionObject(u->GetCollisionObject());
+      RemoveCollisionObject (u->GetCollisionObject ());
     }
 
     csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
-    if (wrapper && wrapper->GetBulletAction())
+    if (wrapper && wrapper->GetBulletAction ())
     {
-      bulletWorld->removeAction(wrapper->GetBulletAction());
+      bulletWorld->removeAction (wrapper->GetBulletAction ());
     }
     
-    u->OnRemoved(this);
+    u->OnRemoved (this);
 
-    updatables.Delete(u);   // delete last because that might be the last hard reference
+    updatables.Delete (u);   // delete last because that might be the last hard reference
   }
 
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)

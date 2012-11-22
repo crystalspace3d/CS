@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -413,13 +417,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletRigidBody::SetLinearVelocity (const csVector3& vel)
   {
-    CS_ASSERT (physicalState == STATE_DYNAMIC);
+    if (!btBody || physicalState != STATE_DYNAMIC)
+      return; 
     if (!QueryActor ())
     {
       SetEnabled (true);
     }
     btBody->setLinearVelocity (CSToBullet (vel, system->GetInternalScale ()));
-    SetEnabled (true);
+    btBody->activate ();
   }
 
   csVector3 csBulletRigidBody::GetLinearVelocity () const
@@ -430,13 +435,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletRigidBody::SetAngularVelocity (const csVector3& vel)
   {
-    if (!btBody)
+    if (!btBody || physicalState != STATE_DYNAMIC)
       return; 
-    if (physicalState == STATE_DYNAMIC)
-    {
-      btBody->setAngularVelocity (CSToBullet (vel, 1));
-      btBody->activate ();
-    }
+    btBody->setAngularVelocity (CSToBullet (vel, 1));
+    btBody->activate ();
   }
 
   csVector3 csBulletRigidBody::GetAngularVelocity () const

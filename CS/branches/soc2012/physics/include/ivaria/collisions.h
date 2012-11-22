@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
     Copyright (C) 2011 by Liu Lu
 
@@ -229,6 +233,8 @@ struct iCollisionObject : public virtual iBase
   /**
    * Set a callback to be executed when this body collides with another.
    * If 0, no callback is executed.
+   * \todo This method is not implemented and no callback will be triggered
+   * unless the test method Collide() is used.
    */
   virtual void SetCollisionCallback (iCollisionCallback* cb) = 0;
 
@@ -236,7 +242,7 @@ struct iCollisionObject : public virtual iBase
   virtual iCollisionCallback* GetCollisionCallback () = 0;
 
   /// Test collision with another collision objects.
-  // TODO: return also the collision data
+  // TODO: return explicitely the collision data
   virtual bool Collide (iCollisionObject* otherObject) = 0;
 
   /// Follow a beam from start to end and return whether this body was hit.
@@ -273,6 +279,7 @@ struct iCollisionObject : public virtual iBase
  * This can be used as a test for collisions, or to implement any sort of object that does not entirely play by the laws 
  * of ridig body or soft body dynamics.
  */
+// TODO: remove?
 struct iGhostCollisionObject : public virtual iCollisionObject
 {
   SCF_INTERFACE (CS::Collisions::iGhostCollisionObject, 1, 0, 0);
@@ -303,6 +310,7 @@ struct iCollisionTerrain : public virtual iBase
 
 /**
  * \todo Document me + all actor classes should be merged around a common abstract interface
+ * \todo Put back the API closer to the one of csColliderActor?
  */
 struct iActor : public virtual iBase
 {
@@ -311,6 +319,7 @@ struct iActor : public virtual iBase
   virtual iCollisionObject* QueryCollisionObject () = 0;
 
   /// Take care of actor-specific stuff, before the simulation step
+  // TODO: remove
   virtual void UpdatePreStep (float delta) = 0;
   
   /// Take care of actor-specific stuff, after the simulation step
@@ -365,6 +374,7 @@ struct iActor : public virtual iBase
   virtual void SetAirControlFactor (float f) = 0;
 
   /// Whether this object is subject to the constant gravitational forces of its sector
+  // TODO: working?
   virtual bool GetGravityEnabled () const = 0;
   /// Whether this object is subject to the constant gravitational forces of its sector
   virtual void SetGravityEnabled (bool g) = 0;
@@ -506,6 +516,11 @@ struct iCollisionSector : public virtual iBase
    * it reports one or more contact points for every overlapping object
    */
   virtual bool CollisionTest (iCollisionObject* object, csArray<CollisionData>& collisions) = 0;
+
+  /// Delete all objects in this collision sector.
+  // TODO: mask for selecting the type of the objects to be removed?
+  // TODO: flag indicating whether the attached iSceneNode should be removed from the engine?
+  virtual void DeleteAll () = 0;
 };
 
 /**
@@ -527,35 +542,18 @@ struct iCollisionSystem : public virtual iBase
   SCF_INTERFACE (CS::Collisions::iCollisionSystem, 2, 0, 0);
 
   /**
-   * Set the internal scale to be applied to the whole dynamic world. Use this
-   * to put back the range of dimensions you use for your objects to the one
-   * Bullet was designed for.
-   * 
-   * Bullet does not work well if the dimensions of your objects are smaller
-   * than 0.1 to 1.0 units or bigger than 10 to 100 units. Use this method to
-   * fix the problem.
-   * 
-   * \warning You have to call this method before adding any objects in the
-   * world, otherwise the objects won't have the same scale.
+   * Create an empty collider (it does not have a root shape, but only potentially
+   * children). The collider type of this object is CS::Collisions::COLLIDER_COMPOUND.
    */
-  virtual void SetInternalScale (float scale) = 0;
-
-  /**
-   * Get the internal scale to be applied to the whole dynamic world.
-   */
-  virtual float GetInternalScale () const = 0;
-
-  /// Create an empty compound collider (does not have a root shape, but only children)
   virtual csPtr<iCollider> CreateCollider () = 0;
 
   /// Create a convex mesh collider.
   virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, bool simplify = false) = 0;
 
   /// Create a static concave mesh collider.
-  // TODO: to be kept?
   virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh) = 0;
 
-  /// Create a scaled concave mesh collider.
+  /// Create a static, scaled concave mesh collider.
   virtual csPtr<iColliderConcaveMeshScaled> CreateColliderConcaveMeshScaled (
     iColliderConcaveMesh* collider, const csVector3& scale) = 0;
 
@@ -582,7 +580,8 @@ struct iCollisionSystem : public virtual iBase
       float minHeight = 0, float maxHeight = 0) = 0;
 
   /// Creates a new collision sector and adds it to the system's set
-  virtual iCollisionSector* CreateCollisionSector () = 0;
+  // TODO: iSector param
+  virtual iCollisionSector* CreateCollisionSector (iSector* sector = nullptr) = 0;
   
   /// Return the amount of sectors in this system
   virtual size_t GetCollisionSectorCount () const = 0;
@@ -622,6 +621,9 @@ struct iCollisionSystem : public virtual iBase
   /// Creates a iCollisionActorFactory
   virtual csPtr<iCollisionActorFactory> CreateCollisionActorFactory
     (CS::Collisions::iCollider* collider = nullptr, const char* name = "") = 0;
+
+  /// Reset the entire system and delete all sectors
+  virtual void DeleteAll () = 0;
 };
 
 } }

@@ -289,7 +289,7 @@ void PhysDemo::EnterTargetVehicle()
   {
     player.GetObject()->QueryPhysicalBody()->QueryRigidBody()->SetState(STATE_KINEMATIC);
   }
-  player.GetObject()->SetCollisionGroup("None");
+  //player.GetObject()->SetCollisionGroup("None");
 
   // switch to 3rd person mode
   cameraMode = CameraMode3rdPersonFar;
@@ -308,7 +308,7 @@ void PhysDemo::LeaveCurrentVehicle()
   {
     player.GetObject()->QueryPhysicalBody()->QueryRigidBody()->SetState(STATE_DYNAMIC);
   }
-  player.GetObject()->SetCollisionGroup("Default");
+  //player.GetObject()->SetCollisionGroup("Default");
   
   // unset vehicle
   actorVehicle = nullptr;

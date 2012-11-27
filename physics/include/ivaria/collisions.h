@@ -63,12 +63,24 @@ namespace CS
 {
 namespace Collisions
 {
-struct csConvexResult;
 struct iCollisionCallback;
 struct iCollisionObject;
 struct iActor;
 struct iCollisionSector;
 struct iCollisionSystem;
+
+/**
+ * The type of a collision object.
+ */
+enum CollisionObjectType
+{
+  COLLISION_OBJECT_SIMPLE = 0,     /*!< The collision object is a simple static collision object.
+				     It can never be upcast to a iPhysicalObject.*/
+  COLLISION_OBJECT_PHYSICAL,       /*!< The collision object is a physical object and can be
+				     upcast to a iPhysicalObject. */
+  COLLISION_OBJECT_GHOST,          /*!< The collision object is a ghost. */
+  COLLISION_OBJECT_ACTOR           /*!< The collision object is an actor. */
+};
 
 /**
  * A structure used to return the result of hit beam.
@@ -147,6 +159,53 @@ struct iCollisionCallback : public virtual iBase
 };
 
 /**
+ * Collision groups allow to filter the collisions occuring between the objects in
+ * the system. Each iCollisionObject is associated with a collision group, and the
+ * user can define whether or not the objects from one group will collide with the
+ * objects of another.
+ *
+ * There is a maximum of 16 collision groups that can be created in total, and those
+ * groups cannot (currently) be removed once created. You should therefore be careful
+ * when defining and managing your set of collision groups.
+ *
+ * The collision system will always create one default collision group named "Default".
+ * This collision group is associated by default to all collision objects without any
+ * valid group.
+ * 
+ * Main creators of instances implementing this interface:
+ * - iCollisionSystem::CreateCollisionGroup()
+ * 
+ * Main ways to get pointers to this interface:
+ * - iCollisionSystem::FindCollisionGroup()
+ * 
+ * Main users of this interface:
+ * - iCollisionSystem, iCollisionObject
+ */
+struct iCollisionGroup : public virtual iBase
+{
+  /// Get the name of this collision group
+  virtual const char* GetName () const = 0;
+
+  /**
+   * Set whether or not the objects from this group will collide with the objects of
+   * the group \a other. By default, all groups will collide with all others.
+   *
+   * Note that it is valid to use the same group as the parameter and the one being
+   * called. This defines whether or not the objects of the group will collide together.
+   *
+   * \param other The other group that will or not collide with this one.
+   * \param enabled Whether or not the collisions are enabled between the two groups.
+   */
+  virtual void SetCollisionEnabled (iCollisionGroup* other, bool enabled) = 0;
+
+  /**
+   * Get whether or not the objects from this group will collide with the objects of
+   * the group \a other.
+   */
+  virtual bool GetCollisionEnabled (iCollisionGroup* other) = 0;
+};
+
+/**
  * This is the interface of a collision object. 
  *It contains the collision information of the object.
  * 
@@ -221,14 +280,11 @@ struct iCollisionObject : public virtual iBase
   /// Rebuild this collision object.
   virtual void RebuildObject () = 0;
 
-  /// Set the collision group this object belongs to by name
-  virtual void SetCollisionGroup (const char* name) = 0;
-  
   /// Set the collision group of this object
-  virtual void SetCollisionGroup (const CollisionGroup& group) = 0;
+  virtual void SetCollisionGroup (iCollisionGroup* group) = 0;
 
   /// Get the collision group of this object
-  virtual const CollisionGroup& GetCollisionGroup () const = 0;
+  virtual iCollisionGroup* GetCollisionGroup () const = 0;
 
   /**
    * Set a callback to be executed when this body collides with another.
@@ -262,7 +318,7 @@ struct iCollisionObject : public virtual iBase
 
   /// Creates a new object that has all the properties of this one, except for transformation and movable and camera
   // TODO: remove? factories should be used instead
-  virtual csPtr<iCollisionObject> CloneObject () = 0;
+  //virtual csPtr<iCollisionObject> CloneObject () = 0;
   
   /**
    * Passive objects, such as portal clones, are not supposed to be tempered with 
@@ -518,7 +574,7 @@ struct iCollisionSector : public virtual iBase
   virtual bool CollisionTest (iCollisionObject* object, csArray<CollisionData>& collisions) = 0;
 
   /// Delete all objects in this collision sector.
-  // TODO: mask for selecting the type of the objects to be removed?
+  // TODO: mask for selecting the type/state/collgroup of the objects to be removed?
   // TODO: flag indicating whether the attached iSceneNode should be removed from the engine?
   virtual void DeleteAll () = 0;
 };
@@ -590,23 +646,29 @@ struct iCollisionSystem : public virtual iBase
   virtual iCollisionSector* GetCollisionSector (size_t index) = 0; 
   
   /// Find a collision sector by name, or nullptr if it has not been found.
+  // TODO: remove
   virtual iCollisionSector* FindCollisionSector (const char* name) = 0; 
 
   /// Find a collision sector by its associated iSector, or nullptr if it has not been found
   virtual iCollisionSector* FindCollisionSector (const iSector* sceneSector) = 0;
 
-  /// Create a collision group.
-  virtual CollisionGroup& CreateCollisionGroup (const char* name) = 0;
+  /**
+   * Create a collision group of the given name. Return nullptr if the group could
+   * not be created. If a group with the given name already exists, then return a
+   * reference to this group.
+   * \warning You cannot create more than 16 collision groups in total.
+   * \warning Collision groups cannot be removed once created.
+   */
+  virtual iCollisionGroup* CreateCollisionGroup (const char* name) = 0;
 
-  /// Find a collision group by name.
-  virtual CollisionGroup& FindCollisionGroup (const char* name) = 0;
+  /// Find the collision group of the given name, or return nullptr if it has not been found.
+  virtual iCollisionGroup* FindCollisionGroup (const char* name) const = 0;
 
-  /// Set whether the two groups collide with each other.
-  virtual void SetGroupCollision (const char* name1,
-    const char* name2, bool collide) = 0;
+  /// Get the count of collision groups in this system
+  virtual size_t GetCollisionGroupCount () const = 0;
 
-  /// Get true if the two groups collide with each other.
-  virtual bool GetGroupCollision (const char* name1, const char* name2) = 0;
+  /// Get a collision group by its index
+  virtual iCollisionGroup* GetCollisionGroup (size_t index) const = 0;
 
   // Factory
 

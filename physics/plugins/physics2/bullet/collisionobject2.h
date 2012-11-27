@@ -26,17 +26,14 @@
 
 struct iSceneNode;
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-class PortalTraversalData;
 
-//struct CS::Physics::iPhysicalBody;
+class PortalTraversalData;
 
 class csBulletCollisionObject: public scfVirtImplementationExt1<
   csBulletCollisionObject, csObject,
-  CS::Collisions::iCollisionObject
-  //,CS::Collisions::iCollisionObjectFactory
->
+  CS::Collisions::iCollisionObject>
 {
   friend class csBulletSector;
   friend class csBulletSystem;
@@ -52,7 +49,8 @@ protected:
   csRef<csBulletCollider> collider;
   csRefArray<csBulletCollisionObject> contactObjects;
   csArray<CS::Physics::iJoint*> joints;
-  CS::Collisions::CollisionGroup collGroup;
+  // TODO: this does not allow to switch an object from one system to another
+  CollisionGroup* group;
   csRef<iSceneNode> sceneNode;
   csWeakRef<iCamera> camera;
   csRef<CS::Collisions::iCollisionCallback> collCb;
@@ -66,10 +64,11 @@ protected:
   PortalTraversalData* portalData;
   
   btCollisionObject* btObject;
-  
+
+  // TODO: this is redundant with the system
   bool insideWorld;
 
-  void CreateCollisionObject(CS::Collisions::iCollisionObjectFactory* props);
+  void CreateCollisionObject (CS::Collisions::iCollisionObjectFactory* props);
 
 public:
   csBulletCollisionObject (csBulletSystem* sys);
@@ -81,7 +80,7 @@ public:
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return nullptr;}
   virtual CS::Collisions::iActor* QueryActor () {return nullptr;}
 
-  virtual CS::Collisions::iCollisionSystem* GetSystem() const { return system; }
+  virtual CS::Collisions::iCollisionSystem* GetSystem () const { return system; }
   virtual CS::Collisions::iCollisionSector* GetSector () const { return sector; }
 
   virtual CS::Collisions::CollisionObjectType GetObjectType () const = 0;
@@ -91,7 +90,7 @@ public:
 
   virtual void SetAttachedCamera (iCamera* camera) 
   { 
-    this->camera = camera; if (camera) camera->SetTransform(GetTransform());
+    this->camera = camera; if (camera) camera->SetTransform (GetTransform ());
   }
   virtual iCamera* GetAttachedCamera () const {return camera;}
 
@@ -107,9 +106,8 @@ public:
   
   virtual void RebuildObject () = 0;
   
-  virtual void SetCollisionGroup (const char* name);
-  virtual void SetCollisionGroup (const CS::Collisions::CollisionGroup& group);
-  virtual const CS::Collisions::CollisionGroup& GetCollisionGroup () const { return collGroup; }
+  virtual void SetCollisionGroup (CS::Collisions::iCollisionGroup* group);
+  virtual CS::Collisions::iCollisionGroup* GetCollisionGroup () const;
 
   virtual void SetCollisionCallback (CS::Collisions::iCollisionCallback* cb) {collCb = cb;}
   virtual CS::Collisions::iCollisionCallback* GetCollisionCallback () {return collCb;}
@@ -124,21 +122,21 @@ public:
   virtual bool RemoveBulletObject () = 0;
   virtual bool AddBulletObject () = 0;
 
-  bool TestOnGround();
+  bool TestOnGround ();
 
   /// Whether this object may be excluded from deactivation.
-  virtual bool GetDeactivable () const { return btObject->getActivationState() == DISABLE_DEACTIVATION; }
+  virtual bool GetDeactivable () const { return btObject->getActivationState () == DISABLE_DEACTIVATION; }
   /// Whether this object may be excluded from deactivation.
-  virtual void SetDeactivable (bool d) { btObject->setActivationState(d ? 0 : DISABLE_DEACTIVATION); }
+  virtual void SetDeactivable (bool d) { btObject->setActivationState (d ? 0 : DISABLE_DEACTIVATION); }
 
   /// Clone this object
-  virtual btCollisionObject* CreateBulletObject()
+  virtual btCollisionObject* CreateBulletObject ()
   {
     return nullptr;
   }
   
   /// Clone this object
-  virtual csPtr<CS::Collisions::iCollisionObject> CloneObject() 
+  virtual csPtr<CS::Collisions::iCollisionObject> CloneObject () 
   { 
     return csPtr<CS::Collisions::iCollisionObject>(nullptr); 
   }
@@ -147,17 +145,17 @@ public:
    * Clone this object for use with portals.
    * Might adjust some object properties necessary for an accurate portal simulation.
    */
-  virtual csPtr<CS::Collisions::iCollisionObject> ClonePassivePortalObject() 
+  virtual csPtr<CS::Collisions::iCollisionObject> ClonePassivePortalObject () 
   { 
-    return CloneObject();
+    return CloneObject ();
   }
 
   /**
    * Passive objects, such as portal clones, are not supposed to be tempered with
    */
-  virtual bool IsPassive() const;
+  virtual bool IsPassive () const;
 
-  inline PortalTraversalData* GetPortalData() const
+  inline PortalTraversalData* GetPortalData () const
   {
     return portalData;
   }

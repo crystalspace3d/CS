@@ -40,7 +40,7 @@ namespace CS
 { 
 namespace Collisions 
 {
-  struct csConvexResult;
+  struct iCollider;
   struct iCollisionCallback;
   struct iCollisionObject;
   struct iCollisionSector;
@@ -49,9 +49,8 @@ namespace Collisions
   struct iGhostCollisionObject;
   struct iCollisionActor;
 
-  struct iCollider;
-
-  struct CollisionGroup;
+  //struct CollisionGroup;
+  struct iCollisionGroup;
 
   /**
    * \todo Document me
@@ -70,16 +69,16 @@ namespace Collisions
     // TODO: rename into CreateInstance()?
     virtual csPtr<iCollisionObject> CreateCollisionObject () = 0;
 
-    /// Get the collider of all objects that will be constructed with these properties
-    virtual iCollider* GetCollider () const = 0;
-    /// Set the collider of all objects that will be constructed with these properties
+    /// Set the collider of this factory
     // TODO: need a root transform
     virtual void SetCollider (iCollider* value)  = 0;
+    /// Get the collider of this factory
+    virtual iCollider* GetCollider () const = 0;
 
-    /// Get the collision group of all objects that will be constructed with these properties
-    virtual const CollisionGroup& GetCollisionGroup () const = 0;
-    /// Set the collision group of all objects that will be constructed with these properties
-    virtual void SetCollisionGroup (const CollisionGroup& value)  = 0;
+    /// Set the collision group of this factory
+    virtual void SetCollisionGroup (iCollisionGroup* group) = 0;
+    /// Get the collision group of this factory
+    virtual iCollisionGroup* GetCollisionGroup () const = 0;
   };
 
   /**

@@ -64,10 +64,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletDynamicActor::CreateDynamicActor(iDynamicActorFactory* props)
   {
-    if (!props->GetCollisionGroup().name.Length())
-    {
-      props->SetCollisionGroup(system->FindCollisionGroup("Actor"));
-    }
+    group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
     CreateRigidBodyObject(props);
 
     SetStepHeight(props->GetStepHeight());
@@ -267,8 +264,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //end.setOrigin (m_targetPosition);
 
     //csKinematicClosestNotMeConvexResultCallback callback (btObject, -BTUpVector, DefaultGroundAngleCosThresh);
-    //callback.m_collisionFilterGroup = collGroup.value;
-    //callback.m_collisionFilterMask = collGroup.mask;
+    //callback.m_collisionFilterGroup = group->value;
+    //callback.m_collisionFilterMask = group->mask;
     //
     //sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback);
 
@@ -308,8 +305,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     end.setOrigin (targetPosition);
 
     csKinematicClosestNotMeConvexResultCallback callback (btObject, BTUpVector, DefaultGroundAngleCosThresh);
-    callback.m_collisionFilterGroup = collGroup.value;
-    callback.m_collisionFilterMask = collGroup.mask;
+    callback.m_collisionFilterGroup = group->value;
+    callback.m_collisionFilterMask = group->mask;
 
     sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback, sector->GetBulletWorld()->getDispatchInfo().m_allowedCcdPenetration);
 

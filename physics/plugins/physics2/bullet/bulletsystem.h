@@ -49,10 +49,9 @@ class btDynamicsWorld;
 class btCollisionDispatcher;
 class btDefaultCollisionConfiguration;
 class btSequentialImpulseConstraintSolver;
-class btBroadphaseInterface;
 struct btSoftBodyWorldInfo;
+class btBroadphaseInterface;
 class btTriangleMesh;
-//class btGhostObject;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -71,21 +70,27 @@ class csBulletCollisionActor;
 class csBulletCollider;
 class csBulletJoint;
 
-
-class CollisionGroupVector : public csArray<CS::Collisions::CollisionGroup>
+class CollisionGroup : public scfImplementation1<CollisionGroup,
+  CS::Collisions::iCollisionGroup>
 {
+private:
+  csString name;
+  char index;
+
 public:
-  CollisionGroupVector () : csArray<CS::Collisions::CollisionGroup> () {}
-  static int CompareKey (CS::Collisions::CollisionGroup const& item,
-    char const* const& key)
-  {
-    return strcmp (item.name.GetData (), key);
-  }
-  static csArrayCmp<CS::Collisions::CollisionGroup, char const*>
-    KeyCmp (char const* k)
-  {
-    return csArrayCmp<CS::Collisions::CollisionGroup, char const*> (k,CompareKey);
-  }
+  /// The value of the group.
+  int value;
+
+  /// The mask of the group.
+  int mask;
+
+  CollisionGroup (const char* name, char index);
+
+   virtual const char* GetName () const
+   { return name.GetData (); }
+
+   virtual void SetCollisionEnabled (iCollisionGroup* other, bool enabled);
+   virtual bool GetCollisionEnabled (iCollisionGroup* other);
 };
 
 class csBulletSystem : public scfImplementationExt2<
@@ -102,14 +107,16 @@ class csBulletSystem : public scfImplementationExt2<
 
 private:
   iObjectRegistry* object_reg;
-  csRefArrayObject<csBulletSector> collSectors;
   btSoftBodyWorldInfo* defaultInfo;
+
   float internalScale;
   float inverseInternalScale;
-  
-  CollisionGroupVector collGroups;
-  size_t systemFilterCount;
+
+  csRefArrayObject<csBulletSector> collSectors;
   csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*> vehicleMap;
+
+  CollisionGroup* defaultGroup;
+  csHash< csRef<CollisionGroup>, const char*> collisionGroups;
 
   float simulationSpeed;
   float worldTimeStep;
@@ -159,6 +166,11 @@ public:
   }
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const char* name);
   virtual CS::Collisions::iCollisionSector* FindCollisionSector (const iSector* sceneSector);
+
+  virtual CS::Collisions::iCollisionGroup* CreateCollisionGroup (const char* name);
+  virtual CS::Collisions::iCollisionGroup* FindCollisionGroup (const char* name) const;
+  virtual size_t GetCollisionGroupCount () const;
+  virtual CS::Collisions::iCollisionGroup* GetCollisionGroup (size_t index) const;
 
   //-- iPhysicalSystem
   virtual void SetSimulationSpeed (float speed);
@@ -224,9 +236,9 @@ public:
 
   csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap () { return vehicleMap; }
 
-
   // Misc
 
+/*
   virtual CS::Collisions::CollisionGroup& CreateCollisionGroup (const char* name);
   virtual CS::Collisions::CollisionGroup& FindCollisionGroup (const char* name);
 
@@ -234,7 +246,7 @@ public:
     const char* name2, bool collide);
   virtual bool GetGroupCollision (const char* name1,
     const char* name2);
-  
+*/  
   void DeleteAll ();
 
   virtual void InitDebugDraw ();
@@ -247,6 +259,8 @@ public:
   virtual void DumpProfile (bool resetProfile = true);
 
   // Internal stuff
+  inline CollisionGroup* GetDefaultGroup () const { return defaultGroup; }
+  // TODO: remove that
   inline btSoftBodyWorldInfo* GetSoftBodyWorldInfo () const { return defaultInfo; }
   inline float GetInverseInternalScale () {return inverseInternalScale;}
   inline float GetWorldTimeStep() const { return worldTimeStep; }

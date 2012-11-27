@@ -34,19 +34,13 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csBulletCollisionObject::CreateCollisionObject(iCollisionObjectFactory* props)
+  // TODO: factory in constructor
+  void csBulletCollisionObject::CreateCollisionObject (iCollisionObjectFactory* props)
   {
-    collider = dynamic_cast<csBulletCollider*>(props->GetCollider());
-    SetName(props->QueryObject()->GetName());
-
-    if (props->GetCollisionGroup().name.Length())
-    {
-      SetCollisionGroup(props->GetCollisionGroup());
-    }
-    else
-    {
-      SetCollisionGroup(system->FindCollisionGroup("Default"));
-    }
+    collider = dynamic_cast<csBulletCollider*>(props->GetCollider ());
+    // TODO: remove name assignations
+    SetName (props->QueryObject ()->GetName ());
+    group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
   }
 
   csBulletCollisionObject::csBulletCollisionObject (csBulletSystem* sys)
@@ -63,7 +57,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (portalData)
     {
       // must not still be traversing
-      CS_ASSERT(!portalData->Portal);
+      CS_ASSERT (!portalData->Portal);
       delete portalData;
     }
   }
@@ -75,17 +69,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (sceneNode)
     {
       // remove old SceneNode from sector
-      if (sector) sector->RemoveSceneNodeFromSector(sceneNode); 
+      if (sector) sector->RemoveSceneNodeFromSector (sceneNode); 
     }
     sceneNode = newSceneNode; 
     if (sceneNode) 
     {
       // add new movable to sector
-      sceneNode->GetMovable()->SetFullTransform(GetTransform()); 
-      sceneNode->GetMovable()->UpdateMove ();
+      sceneNode->GetMovable ()->SetFullTransform (GetTransform ()); 
+      sceneNode->GetMovable ()->UpdateMove ();
       if (sector)
       {
-        sector->AddSceneNodeToSector(sceneNode); 
+        sector->AddSceneNodeToSector (sceneNode); 
       }
     }
   }
@@ -96,13 +90,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       collider = dynamic_cast<csBulletCollider*>(newCollider);
 
-      RebuildObject();
+      RebuildObject ();
     }
   }
 
   void csBulletCollisionObject::SetTransform (const csOrthoTransform& trans)
   {
-    CS_ASSERT(btObject);
+    CS_ASSERT (btObject);
 
     btTransform btTrans = CSToBullet (trans, system->GetInternalScale ());
 
@@ -118,18 +112,31 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       camera->SetTransform (trans);
     }
 
-    btObject->setWorldTransform(btTrans);
+    btObject->setWorldTransform (btTrans);
   }
 
   csOrthoTransform csBulletCollisionObject::GetTransform () const
   {
-    CS_ASSERT(btObject);
-    return BulletToCS (btObject->getWorldTransform(), system->GetInverseInternalScale ());
+    CS_ASSERT (btObject);
+    return BulletToCS (btObject->getWorldTransform (), system->GetInverseInternalScale ());
   }
 
+  void csBulletCollisionObject::SetCollisionGroup (iCollisionGroup* group)
+  {
+    // TODO: fallback to the factory value
+    this->group = dynamic_cast<CollisionGroup*> (group);
+    if (!this->group) this->group = system->GetDefaultGroup ();
+  }
+
+  iCollisionGroup* csBulletCollisionObject::GetCollisionGroup () const
+  {
+    return group;
+  }
+
+/*
   void csBulletCollisionObject::SetCollisionGroup (const char* name)
   {
-    SetCollisionGroup(system->FindCollisionGroup(name));
+    SetCollisionGroup (system->FindCollisionGroup (name));
   }
 
   void csBulletCollisionObject::SetCollisionGroup (const CollisionGroup& group)
@@ -142,11 +149,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       btObject->getBroadphaseHandle ()->m_collisionFilterMask = group.mask;
 
       // re-add object
-      RemoveBulletObject();
-      AddBulletObject();
+      RemoveBulletObject ();
+      AddBulletObject ();
     }
   }
-
+*/
   bool csBulletCollisionObject::Collide (CS::Collisions::iCollisionObject* otherObject)
   {
     csArray<CS::Collisions::CollisionData> data;
@@ -171,7 +178,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   size_t csBulletCollisionObject::GetContactObjectsCount ()
   {
-    if (IsPassive()) return 0;
+    if (IsPassive ()) return 0;
 
     size_t result = 0;
     if (GetObjectType () == COLLISION_OBJECT_PHYSICAL)
@@ -197,7 +204,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   CS::Collisions::iCollisionObject* csBulletCollisionObject::GetContactObject (size_t index)
   {
-    if (IsPassive()) return nullptr;
+    if (IsPassive ()) return nullptr;
 
     // TODO: Fix this method and split it up into the corresponding sub-classes
     if (GetObjectType () == COLLISION_OBJECT_PHYSICAL)
@@ -252,24 +259,24 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     iSceneNode* sceneNode = GetAttachedSceneNode ();
     if (sceneNode)
-      sceneNode->GetMovable ()->GetTransform().SetT2O(rot);
+      sceneNode->GetMovable ()->GetTransform ().SetT2O (rot);
     if (camera)
-      camera->GetTransform().SetT2O(rot);
+      camera->GetTransform ().SetT2O (rot);
     if (btObject)
     {
       csOrthoTransform trans = GetTransform ();
       trans.SetT2O (rot);
-      btObject->setWorldTransform(CSToBullet (trans, system->GetInternalScale ()));
+      btObject->setWorldTransform (CSToBullet (trans, system->GetInternalScale ()));
     }
   }
 
-  bool csBulletCollisionObject::TestOnGround()
+  bool csBulletCollisionObject::TestOnGround ()
   { 
     static const float groundAngleCosThresh = .7f;
 
     // Find any objects that can at least remotely support the object
     csArray<CollisionData> collisions;
-    sector->CollisionTest(this, collisions);
+    sector->CollisionTest (this, collisions);
 
     //int objBeneathCount = 0;
     for (size_t i = 0; i < collisions.GetSize (); ++i)
@@ -287,8 +294,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return false;
   }
 
-  
-  bool csBulletCollisionObject::IsPassive() const
+  bool csBulletCollisionObject::IsPassive () const
   {
     return portalData != nullptr && !portalData->IsOriginal;
   }

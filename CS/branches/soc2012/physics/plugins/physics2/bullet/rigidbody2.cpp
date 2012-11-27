@@ -84,15 +84,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool isStatic = density == 0;
     SetState (isStatic ? STATE_STATIC : STATE_DYNAMIC);
 
-    // Set collision group
-    if (props->GetCollisionGroup ().name.Length ())
-    {
-      SetCollisionGroup (props->GetCollisionGroup ());
-    }
-    else
-    {
-      SetCollisionGroup (IsDynamic () ? system->FindCollisionGroup ("Default") : system->FindCollisionGroup ("Static"));
-    }
+    group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
   }
 
   csBulletRigidBody::csBulletRigidBody (csBulletSystem* phySys)
@@ -143,10 +135,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   bool csBulletRigidBody::AddBulletObject ()
   {
+    // TODO: what's this method for?
     if (insideWorld)
       RemoveBulletObject ();
     
-    sector->bulletWorld->addRigidBody (btBody, collGroup.value, collGroup.mask);
+    sector->bulletWorld->addRigidBody (btBody, group->value, group->mask);
 
     //if (GetName () && strcmp (GetName (), "Actor") == 0)
     //{
@@ -258,7 +251,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     if (insideWorld)
     {
-      sector->bulletWorld->addRigidBody (btRigidBody::upcast (btObject), collGroup.value, collGroup.mask);
+      sector->bulletWorld->addRigidBody (btRigidBody::upcast (btObject), group->value, group->mask);
     }
     
     iSceneNode* sceneNode = GetAttachedSceneNode ();
@@ -610,7 +603,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     csBulletRigidBody* clone = new csBulletRigidBody (system);
     clone->collider = collider;
-    clone->collGroup = collGroup;
+    clone->group = group;
 
     btTransform trans;
     trans.setIdentity ();

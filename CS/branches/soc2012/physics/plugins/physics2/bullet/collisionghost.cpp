@@ -91,7 +91,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       RemoveBulletObject ();
     
     sector->broadphase->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
-    sector->GetBulletWorld()->addCollisionObject (btObject, collGroup.value, collGroup.mask);
+    sector->GetBulletWorld()->addCollisionObject (btObject, group->value, group->mask);
     insideWorld = true;
     return true;
   }

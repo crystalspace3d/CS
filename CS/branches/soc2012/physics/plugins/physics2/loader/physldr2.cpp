@@ -197,7 +197,7 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
     }
     case XMLTOKEN_INTERNALSCALE:
     {
-      collisionSystem->SetInternalScale (child->GetAttributeValueAsFloat ("scale"));
+      physicalSystem->SetInternalScale (child->GetAttributeValueAsFloat ("scale"));
       break;
     }
     case XMLTOKEN_SIMULATIONSPEED:
@@ -222,6 +222,17 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
       physicalSystem->SetLinearDamping (linear);
       break;
     }
+    case XMLTOKEN_GROUP:
+    {
+      const char* name = child->GetAttributeValue ("name");
+      CS::Collisions::iCollisionGroup* group = collisionSystem->CreateCollisionGroup (name);
+      if (!group)
+	synldr->Report ("crystalspace.dynamics.loader", CS_REPORTER_SEVERITY_WARNING,
+			child, "Could not create the collision group '%s' "
+			"because the maximum count of groups has been reached",
+			CS::Quote::Single (name));
+      break;
+    }
     default:
       synldr->ReportBadToken (child);
       return csPtr<iBase> (nullptr);
@@ -231,13 +242,12 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
 }
 
 bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node, 
-                                             CS::Collisions::iCollisionSector* collSector,
+                                             CS::Collisions::iCollisionSector* collisionSector,
                                              iLoaderContext* ldr_context)
 {
   csRef<CS::Physics::iPhysicalSector> physSector = 
-    scfQueryInterface<CS::Physics::iPhysicalSector> (collSector);
+    scfQueryInterface<CS::Physics::iPhysicalSector> (collisionSector);
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
-  iCollisionSystem* collSys = collSector->GetSystem ();
   while (it->HasNext ())
   {
     csRef<iDocumentNode> child = it->Next ();
@@ -256,16 +266,7 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
             child, "Error processing gravity token");
           return false;
         }
-        collSector->SetGravity (v);
-        break;
-      }
-    case XMLTOKEN_GROUP:
-      {
-        const char* name = child->GetAttributeValue ("name");
-        if (collSys->FindCollisionGroup (name).name.Compare (name))
-        {
-          collSys->CreateCollisionGroup (name);
-        }
+        collisionSector->SetGravity (v);
         break;
       }
     case XMLTOKEN_SECTOR:
@@ -273,7 +274,7 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
         const char* name = child->GetAttributeValue ("name");
         iSector* sec = engine->FindSector (name);
         if (sec)
-          collSector->SetSector (sec);
+          collisionSector->SetSector (sec);
         else
         {
           synldr->ReportError ("crystalspace.dynamics.loader",
@@ -309,7 +310,7 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
         
         obj = factory->CreateCollisionObject ();
         
-        if (!ParseCollisionObject (child, obj, collSector, ldr_context))
+        if (!ParseCollisionObject (child, obj, collisionSector, ldr_context))
           return false;
         break;
       }
@@ -319,7 +320,7 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
 
         csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (rootCollider);
         csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody ();
-        if (!ParseRigidBody (child, rb, collSector, ldr_context))
+        if (!ParseRigidBody (child, rb, collisionSector, ldr_context))
           return false;
         break;
       }
@@ -346,11 +347,12 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
 
 bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node, 
                                              CS::Collisions::iCollisionObject* object, 
-                                             CS::Collisions::iCollisionSector* collSector, 
+                                             CS::Collisions::iCollisionSector* collisionSector, 
                                              iLoaderContext* ldr_context)
 {
   const char *name = node->GetAttributeValue ("name");
   object->QueryObject ()->SetName (name);
+  iCollisionSystem* collisionSystem = collisionSector->GetSystem ();
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -433,10 +435,25 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
           return false;
         break;
       }
+    case XMLTOKEN_GROUP:
+      {
+	const char* name = node->GetAttributeValue ("name");
+	CS::Collisions::iCollisionGroup* group = collisionSystem->FindCollisionGroup (name);
+	if (!group)
+	{
+	  synldr->ReportError ("crystalspace.dynamics.loader", child,
+			       "Could not find the collision group '%s'",
+			       CS::Quote::Single (name));
+	  return false;
+	}
+	object->SetCollisionGroup (group);
+	break;
+      }
     }
   }
+
   object->RebuildObject ();
-  collSector->AddCollisionObject (object);
+  collisionSector->AddCollisionObject (object);
 
   csOrthoTransform trans;
   ParseTransform (node, trans);
@@ -447,7 +464,7 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
 
 bool csPhysicsLoader2::ParseRigidBody (iDocumentNode *node, 
                                        CS::Physics::iRigidBody* body,
-                                       CS::Collisions::iCollisionSector* collSector,
+                                       CS::Collisions::iCollisionSector* collisionSector,
                                        iLoaderContext* ldr_context)
 {
   if (node->GetAttributeValue ("mass"))
@@ -498,7 +515,7 @@ bool csPhysicsLoader2::ParseRigidBody (iDocumentNode *node,
     }
   }
 
-  return ParseCollisionObject (node, body->QueryCollisionObject (), collSector, ldr_context);
+  return ParseCollisionObject (node, body->QueryCollisionObject (), collisionSector, ldr_context);
 }
 
 bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node, 

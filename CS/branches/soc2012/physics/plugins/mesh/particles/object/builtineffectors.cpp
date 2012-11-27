@@ -579,6 +579,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     ParticlesMeshObject* meshObject = dynamic_cast<ParticlesMeshObject*> (system);
     iMovable* meshMovable = meshObject->GetMeshWrapper ()->GetMovable ();
     iSectorList* meshSectors = meshMovable->GetSectors ();
+    // TODO: find the collision system from the object registry, then the collision sector
+    // from the first sector of the list
 
     if (!engine)
       engine = csQueryRegistry<iEngine> (meshObject->factory->objectType->object_reg);

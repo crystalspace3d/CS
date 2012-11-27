@@ -431,8 +431,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
 
     btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
-    rayCallback.m_collisionFilterMask = system->collGroups[CollisionGroupTypePortalCopy].mask;
-    rayCallback.m_collisionFilterGroup = system->collGroups[CollisionGroupTypeDefault].value;
     bulletWorld->rayTest (rayFrom, rayTo, rayCallback);
 
     CS::Collisions::HitBeamResult result;
@@ -660,7 +658,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*>(actor));
     collisionObjects.Push (obj);
     obj->sector = this;
-    obj->collGroup = system->collGroups[CollisionGroupTypeActor]; // Actor Group.
     obj->AddBulletObject ();
   }
 

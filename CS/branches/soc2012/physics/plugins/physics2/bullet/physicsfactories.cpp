@@ -61,6 +61,25 @@ using namespace CS::Physics;
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
 
+  BulletCollisionObjectFactory::BulletCollisionObjectFactory
+    (csBulletSystem* system, CS::Collisions::iCollider* collider, const char* name)
+    : scfImplementationType (this), system (system), collider (collider),
+    group (system->GetDefaultGroup ())
+  {
+    SetName (name);
+  }
+
+  void BulletCollisionObjectFactory::SetCollisionGroup (CS::Collisions::iCollisionGroup* group)
+  {
+    this->group = dynamic_cast<CollisionGroup*> (group);
+    if (!this->group) this->group = system->GetDefaultGroup ();
+  }
+
+  CS::Collisions::iCollisionGroup* BulletCollisionObjectFactory::GetCollisionGroup () const
+  {
+    return group;
+  }
+
   csPtr<CS::Collisions::iGhostCollisionObject> BulletGhostCollisionObjectFactory::CreateGhostCollisionObject ()
   {
     csBulletGhostCollisionObject* object = new csBulletGhostCollisionObject (system);

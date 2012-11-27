@@ -69,6 +69,39 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
 SCF_IMPLEMENT_FACTORY (csBulletSystem)
 
+//--------------------------------- CollisionGroup ---------------------------------
+
+CollisionGroup::CollisionGroup (const char* name, char index)
+  : scfImplementationType (this), name (name), index (index)
+{
+  value = 1 << index;
+  //mask = ~value;
+  mask = -1;
+}
+
+void CollisionGroup::SetCollisionEnabled (iCollisionGroup* other, bool enabled)
+{
+  CollisionGroup* group = dynamic_cast<CollisionGroup*> (other);
+  if (enabled)
+  {
+    mask |= 1 << group->index;
+    group->mask |= 1 << index;
+  }
+  else
+  {
+    mask &= ~(1 << group->index);
+    group->mask &= ~(1 << index);
+  }
+}
+
+bool CollisionGroup::GetCollisionEnabled (iCollisionGroup* other)
+{
+  CollisionGroup* group = dynamic_cast<CollisionGroup*> (other);
+  return mask & (1 << group->index);
+}
+
+//--------------------------------- csBulletSystem ---------------------------------
+
 // TODO: listen to the 'Frame' event in order to step automatically the simulation
 
 csBulletSystem::csBulletSystem (iBase* iParent)
@@ -79,54 +112,18 @@ csBulletSystem::csBulletSystem (iBase* iParent)
   timeDisableThreshold (0.0f), debugDraw (nullptr)
 {
   defaultInfo = new btSoftBodyWorldInfo;
-  
-  // TODO: remove or put in a tool class
-  static const CollisionGroupMask allFilter = -1;
 
-  CollisionGroup defaultGroup ("Default");
-  defaultGroup.value = CollisionGroupMaskValueDefault;
-  defaultGroup.mask = allFilter;
-  collGroups.Push (defaultGroup);
-
-  CS::Collisions::CollisionGroup staticGroup ("Static");
-  staticGroup.value = CollisionGroupMaskValueStatic;
-  staticGroup.mask = allFilter ^ CollisionGroupMaskValueStatic;
-  collGroups.Push (staticGroup);
-
-  CS::Collisions::CollisionGroup kinematicGroup ("Kinematic");
-  kinematicGroup.value = CollisionGroupMaskValueKinematic;
-  kinematicGroup.mask = allFilter ^ CollisionGroupMaskValueKinematic;
-  collGroups.Push (kinematicGroup);
-
-  CS::Collisions::CollisionGroup portalGroup ("Portal");
-  portalGroup.value = CollisionGroupMaskValuePortal;
-  portalGroup.mask = allFilter;     // all
-  collGroups.Push (portalGroup);
-
-  CS::Collisions::CollisionGroup copyGroup ("PortalCopy");
-  copyGroup.value = CollisionGroupMaskValuePortalCopy;
-  copyGroup.mask = allFilter ^ CollisionGroupMaskValuePortalCopy;
-  collGroups.Push (copyGroup);
-
-  CS::Collisions::CollisionGroup characterGroup ("Actor");
-  characterGroup.value = CollisionGroupMaskValueActor;
-  characterGroup.mask = allFilter;
-  collGroups.Push (characterGroup);
-
-  CS::Collisions::CollisionGroup noneGroup ("None");
-  noneGroup.value = CollisionGroupMaskValueNone;    
-  noneGroup.mask = CollisionGroupMaskValuePortal; // only intersect with portals
-  collGroups.Push (noneGroup);
-  
-  SetGroupCollision ("PortalCopy", "Static", false);
-  SetGroupCollision ("Portal", "PortalCopy", false);
-
-  systemFilterCount = 6;
+  // Create the default collision group
+  csRef<CollisionGroup> group;
+  group.AttachNew (new CollisionGroup ("Default", 0));
+  defaultGroup = collisionGroups.Put ("Default", group);
 }
 
 csBulletSystem::~csBulletSystem ()
 {
   collSectors.DeleteAll ();
+  collisionGroups.DeleteAll ();
+  // TODO: delete vehicle map
   delete debugDraw;
 }
 
@@ -300,9 +297,9 @@ CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSe
   }
   return nullptr;
 }
+
 // ###############################################################################################################
 // Physical Objects
-
 
 // Joints
 
@@ -433,7 +430,6 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-
 // Vehicles
 
 /// Creates a new factory to produce vehicles
@@ -458,67 +454,44 @@ iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
   return vehicleMap.Get (obj, nullptr);
 }
 
+// Groups
 
-// Misc
-
-CS::Collisions::CollisionGroup& csBulletSystem::CreateCollisionGroup (const char* name)
+CS::Collisions::iCollisionGroup* csBulletSystem::CreateCollisionGroup (const char* name)
 {
-  size_t groupCount = collGroups.GetSize ();
-  if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
-    return collGroups[CollisionGroupTypeDefault];
+  csRef<CollisionGroup>* group = collisionGroups.GetElementPointer (name);
+  if (group) return *group;
 
-  CS::Collisions::CollisionGroup newGroup (name);
-  newGroup.value = 1 << groupCount;
-  newGroup.mask = ~newGroup.value;
-  collGroups.Push (newGroup);
-  return collGroups[groupCount];
+  size_t groupCount = collisionGroups.GetSize ();
+  // It is safer to use 16 as the global lower bound limit
+  //if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
+  if (groupCount >= 16)
+    return nullptr;
+
+  csRef<CollisionGroup> newGroup;
+  newGroup.AttachNew (new CollisionGroup (name, groupCount));
+  collisionGroups.Put (name, newGroup);
+  return newGroup;
 }
 
-CS::Collisions::CollisionGroup& csBulletSystem::FindCollisionGroup (const char* name)
+CS::Collisions::iCollisionGroup* csBulletSystem::FindCollisionGroup (const char* name) const
 {
-  size_t index = collGroups.FindKey (CollisionGroupVector::KeyCmp (name));
-  if (index == csArrayItemNotFound)
-    return collGroups[CollisionGroupTypeDefault];
-  else
-    return collGroups[index];
+  const csRef<CollisionGroup>* group = collisionGroups.GetElementPointer (name);
+  if (group) return *group;
+  else return nullptr;
 }
 
-void csBulletSystem::SetGroupCollision (const char* name1,
-                                        const char* name2,
-                                        bool collide)
+size_t csBulletSystem::GetCollisionGroupCount () const
 {
-  size_t index1 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name1));
-  size_t index2 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name2));
-  if (index1 == csArrayItemNotFound || index2 == csArrayItemNotFound)
-    return;
-  if (!collide)
-  {
-    if (index1 >= systemFilterCount)
-      collGroups[index1].mask &= ~(1 << index2);
-    if (index2 >= systemFilterCount)
-      collGroups[index2].mask &= ~(1 << index1);
-  }
-  else
-  {
-    if (index1 >= systemFilterCount)
-      collGroups[index1].mask |= 1 << index2;
-    if (index2 >= systemFilterCount)
-      collGroups[index2].mask |= 1 << index1;
-  }
+  return collisionGroups.GetSize ();
 }
 
-bool csBulletSystem::GetGroupCollision (const char* name1,
-                                        const char* name2)
+iCollisionGroup* csBulletSystem::GetCollisionGroup (size_t index) const
 {
-  size_t index1 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name1));
-  size_t index2 = collGroups.FindKey (CollisionGroupVector::KeyCmp (name2));
-  if (index1 == csArrayItemNotFound || index2 == csArrayItemNotFound)
-    return false;
-  if ((collGroups[index1].mask & (1 << index2)) != 0 
-    || (collGroups[index2].mask & (1 << index1)) != 0)
-    return true;
-  else
-    return false;
+  CS_ASSERT (index < collisionGroups.GetSize ());
+  csHash< csRef<CollisionGroup>, const char*>::ConstGlobalIterator it =
+    collisionGroups.GetIterator ();
+  for (int i = 0; i < ((int) index) - 1; i++) it.Next ();
+  return it.Next ();
 }
 
 // Factory
@@ -526,7 +499,7 @@ bool csBulletSystem::GetGroupCollision (const char* name1,
 csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory
   (CS::Collisions::iCollider *collider, const char* name)
 {
-  BulletRigidBodyFactory* factory = new BulletRigidBodyFactory (collider, name);
+  BulletRigidBodyFactory* factory = new BulletRigidBodyFactory (this, collider, name);
   factory->system = this;
   factory->SetState (STATE_STATIC);
   return csPtr<iCollisionObjectFactory> (factory);
@@ -535,7 +508,7 @@ csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory
 csPtr<CS::Collisions::iGhostCollisionObjectFactory> 
   csBulletSystem::CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider, const char* name) 
 { 
-  BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory (collider, name);
+  BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory (this, collider, name);
   fact->system = this;
   return csPtr<iGhostCollisionObjectFactory> (fact); 
 }
@@ -543,7 +516,7 @@ csPtr<CS::Collisions::iGhostCollisionObjectFactory>
 csPtr<CS::Collisions::iCollisionActorFactory> 
   csBulletSystem::CreateCollisionActorFactory (CS::Collisions::iCollider* collider, const char* name) 
 {
-  BulletCollisionActorFactory* fact = new BulletCollisionActorFactory (collider, name);
+  BulletCollisionActorFactory* fact = new BulletCollisionActorFactory (this, collider, name);
   fact->system = this;
   return csPtr<iCollisionActorFactory> (fact); 
 }
@@ -551,7 +524,7 @@ csPtr<CS::Collisions::iCollisionActorFactory>
 csPtr<CS::Physics::iRigidBodyFactory> 
   csBulletSystem::CreateRigidBodyFactory (CS::Collisions::iCollider* collider, const char* name)
 {
-  BulletRigidBodyFactory* fact = new BulletRigidBodyFactory (collider, name);
+  BulletRigidBodyFactory* fact = new BulletRigidBodyFactory (this, collider, name);
   fact->system = this;
   return csPtr<iRigidBodyFactory> (fact); 
 }
@@ -559,28 +532,28 @@ csPtr<CS::Physics::iRigidBodyFactory>
 csPtr<CS::Physics::iDynamicActorFactory> 
   csBulletSystem::CreateDynamicActorFactory (CS::Collisions::iCollider* collider, const char* name)
 {
-  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (collider, name);
+  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (this, collider, name);
   fact->system = this;
   return csPtr<iDynamicActorFactory> (fact);
 }
 
 csPtr<CS::Physics::iSoftRopeFactory> csBulletSystem::CreateSoftRopeFactory ()
 {
-  BulletSoftRopeFactory* fact = new BulletSoftRopeFactory ();
+  BulletSoftRopeFactory* fact = new BulletSoftRopeFactory (this);
   fact->system = this;
   return csPtr<iSoftRopeFactory> (fact);
 }
 
 csPtr<CS::Physics::iSoftClothFactory> csBulletSystem::CreateSoftClothFactory ()
 {
-  BulletSoftClothFactory* fact = new BulletSoftClothFactory ();
+  BulletSoftClothFactory* fact = new BulletSoftClothFactory (this);
   fact->system = this;
   return csPtr<iSoftClothFactory> (fact);
 }
 
 csPtr<CS::Physics::iSoftMeshFactory> csBulletSystem::CreateSoftMeshFactory ()
 {
-  BulletSoftMeshFactory* fact = new BulletSoftMeshFactory ();
+  BulletSoftMeshFactory* fact = new BulletSoftMeshFactory (this);
   fact->system = this;
   return csPtr<iSoftMeshFactory> (fact);
 }

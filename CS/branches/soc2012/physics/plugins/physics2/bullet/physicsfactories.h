@@ -39,6 +39,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   class csBulletSystem;
   class BulletSector;
+  class CollisionGroup;
 
   /**
    * Base class for all object properties
@@ -49,38 +50,33 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     friend class csBulletSystem;
 
   protected:
-    csRef<CS::Collisions::iCollider> collider;
-    CS::Collisions::CollisionGroup collGroup;
     // TODO: really used?
     csBulletSystem* system;
+    csRef<CS::Collisions::iCollider> collider;
+    CollisionGroup* group;
 
   public:
-    BulletCollisionObjectFactory (CS::Collisions::iCollider* collider, const char* name = "")
-      : scfImplementationType (this), collider (collider)
-    {
-      SetName (name);
-    }
+    BulletCollisionObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider, const char* name = "");
 
     /// Return the underlying object
     virtual iObject *QueryObject (void) { return this; }
 
     /// Return the system to which the factory belongs
-    virtual CS::Collisions::iCollisionSystem* GetSystem() const { return nullptr; }//(CS::Collisions::iCollisionSystem*)system; }
+    virtual CS::Collisions::iCollisionSystem* GetSystem() const
+    { return (CS::Collisions::iCollisionSystem*) system; }
 
     /// Create a new object
     // TODO: create a real object
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject()
-    { return csPtr<CS::Collisions::iCollisionObject>(nullptr); }
+    { return csPtr<CS::Collisions::iCollisionObject> (nullptr); }
 
     /// Get the collider of all objects that will be constructed with this factory
     virtual CS::Collisions::iCollider* GetCollider() const { return collider; }
     /// Set the collider of all objects that will be constructed with this factory
     virtual void SetCollider(CS::Collisions::iCollider* value) { collider = value; }
 
-    /// Get the collision group of all objects that will be constructed with this factory
-    virtual const CS::Collisions::CollisionGroup& GetCollisionGroup() const { return collGroup; }
-    /// Set the collision group of all objects that will be constructed with this factory
-    virtual void SetCollisionGroup(const CS::Collisions::CollisionGroup& value) { collGroup = value; }
+    virtual void SetCollisionGroup (CS::Collisions::iCollisionGroup* group);
+    virtual CS::Collisions::iCollisionGroup* GetCollisionGroup () const;
   };
 
   class BulletGhostCollisionObjectFactory : public scfVirtImplementationExt1<
@@ -88,8 +84,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
   public:
     BulletGhostCollisionObjectFactory
-      (CS::Collisions::iCollider* collider = nullptr, const char* name = "GhostObject")
-      : scfImplementationType (this, collider)
+      (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "GhostObject")
+      : scfImplementationType (this, system, collider)
     {
     }
     
@@ -110,8 +106,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   public:
     BulletCollisionActorFactory
-      (CS::Collisions::iCollider* collider = nullptr, const char* name = "CollisionActor") :
-        scfImplementationType (this, collider),
+      (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "CollisionActor") :
+      scfImplementationType (this, system, collider),
       stepHeight(.5f),
       walkSpeed(10.f),
       jumpSpeed(10.f),
@@ -158,8 +154,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool gravityEnabled;
 
   public:
-    BulletPhysicalObjectFactory (CS::Collisions::iCollider* collider = nullptr, const char* name = "") : 
-    scfImplementationType (this, collider, name),
+    BulletPhysicalObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "") : 
+    scfImplementationType (this, system, collider, name),
         density(0), mass(0),     // static objects
         friction(10), gravityEnabled(true)
     {}
@@ -217,8 +213,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
 
   public:
-    BulletRigidBodyFactory(CS::Collisions::iCollider* collider = nullptr, const char* name = "RigidBody") : 
-        scfImplementationType (this, collider, name), state (CS::Physics::STATE_DYNAMIC),
+    BulletRigidBodyFactory(csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "RigidBody") : 
+    scfImplementationType (this, system, collider, name), state (CS::Physics::STATE_DYNAMIC),
       elasticity(0.1f), linearDamping(0.01f), angularDamping(0.01f)
     {
     }
@@ -234,9 +230,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     /// Set the elasticity of this rigid body.
     virtual void SetElasticity (float value) { elasticity = value; }
-
     /// Get the elasticity of this rigid body.
     virtual float GetElasticity () const { return elasticity; }
+
     /**
     * Set the linear Damping for this rigid body. The damping correspond to
     * how much the movements of the objects will be reduced. It is a value
@@ -274,7 +270,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   protected:
 
   public:
-    BulletSoftBodyFactory() : scfImplementationType (this)
+  BulletSoftBodyFactory(csBulletSystem* system) : scfImplementationType (this, system)
     {
       SetName("SoftBody");
       SetFriction(float(.2));    // between 0 and 1
@@ -298,7 +294,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     size_t nodeCount;
 
   public:
-    BulletSoftRopeFactory() : scfImplementationType (this),
+  BulletSoftRopeFactory(csBulletSystem* system) : scfImplementationType (this, system),
       start(0), end(0),
       nodeCount(10)
     {
@@ -332,7 +328,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool withDiagonals;
 
   public:
-    BulletSoftClothFactory() : scfImplementationType (this),
+  BulletSoftClothFactory(csBulletSystem* system) : scfImplementationType (this, system),
       withDiagonals(false)
     {
       for (size_t i = 0; i < 4; ++i) corners[i] = csVector3(i);
@@ -367,7 +363,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     iGeneralFactoryState* factory;
 
   public:
-    BulletSoftMeshFactory() : scfImplementationType (this)
+  BulletSoftMeshFactory(csBulletSystem* system) : scfImplementationType (this, system)
     {
     }
 
@@ -389,8 +385,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool kinematicSteps;
 
   public:
-    BulletDynamicActorFactory(CS::Collisions::iCollider* collider = nullptr, const char* name = "DynamicActor") : 
-        scfImplementationType (this, collider, name),
+  BulletDynamicActorFactory(csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "DynamicActor") : 
+    scfImplementationType (this, system, collider, name),
       stepHeight(.1f),
       walkSpeed(10.f),
       jumpSpeed(10.f),

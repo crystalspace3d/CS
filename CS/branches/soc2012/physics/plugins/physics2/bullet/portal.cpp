@@ -109,7 +109,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     ghostPortal->setCollisionShape (shape);
     ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     
-    sourceSector->bulletWorld->addCollisionObject (ghostPortal, sourceSector->system->collGroups[CollisionGroupTypePortal].value, sourceSector->system->collGroups[CollisionGroupTypePortal].mask);
+    sourceSector->bulletWorld->addCollisionObject (ghostPortal);
+/*
+    sourceSector->bulletWorld->addCollisionObject
+      (ghostPortal,
+       sourceSector->system->collGroups[CollisionGroupTypePortal].value,
+       sourceSector->system->collGroups[CollisionGroupTypePortal].mask);
+*/
   }
 
   CollisionPortal::~CollisionPortal ()
@@ -304,10 +310,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         }
 
         // No collisions with static objects
+	// TODO: why not?
+	// TODO: this is a hack with heavy side effects
+/*
         CollisionGroup collGroup(cloneObj->GetCollisionGroup());
         collGroup.mask &= ~CollisionGroupMaskValueStatic;
         cloneObj->SetCollisionGroup(collGroup);
-
+*/
         // Add clone
         targetSector->AddCollisionObject(cloneObj);
 

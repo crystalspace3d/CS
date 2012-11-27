@@ -145,7 +145,7 @@ bool csBulletSoftBody::AddBulletObject ()
     btSoftRigidDynamicsWorld* softWorld =
       static_cast<btSoftRigidDynamicsWorld*> (sector->bulletWorld);
 
-    softWorld->addSoftBody (btBody, collGroup.value, collGroup.mask);
+    softWorld->addSoftBody (btBody, group->value, group->mask);
     btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
     insideWorld = true;
   }

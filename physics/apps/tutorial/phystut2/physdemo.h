@@ -39,14 +39,14 @@
 struct iCameraPosition;
 
 // Some global variables
-static const float DefaultDensity(300);
-static const float DefaultFriction(.5);
-static const float DefaultElasticity(0.1f);
+static const float DefaultDensity (300);
+static const float DefaultFriction (.5);
+static const float DefaultElasticity (0.1f);
 
 static const int UpAxis = 1;
 static const int HorizontalAxis1 = 0;
 static const int HorizontalAxis2 = 2;
-static const csVector3 UpVector(0, 1, 0);
+static const csVector3 UpVector (0, 1, 0);
 
 // Actor/Camera modes
 enum ActorMode
@@ -95,7 +95,7 @@ static const int KeyHandbrake = CSKEY_SPACE;
 class PhysDemo;
 
 /// Retreives folder and file information from a full (unix-style) path
-inline void GetFolderAndFile(const char* _path, csString& folder, csString& filename)
+inline void GetFolderAndFile (const char* _path, csString& folder, csString& filename)
 {
   const csString path (_path);
   size_t index = path.FindLast ('/');
@@ -108,7 +108,7 @@ inline void GetFolderAndFile(const char* _path, csString& folder, csString& file
   {
     folder = "";
     filename = path;
-    filename.Trim();
+    filename.Trim ();
   }
 }
 
@@ -128,9 +128,9 @@ public:
      float friction = 1, float density = 30);
 };
 
-//static const csVector3 ActorDimensions(0.8);
-//static const csVector3 ActorDimensions(0.1f, 0.6f, 0.1f);
-static const csVector3 ActorDimensions(0.3f, 1.8f, 0.3f);
+//static const csVector3 ActorDimensions (0.8);
+//static const csVector3 ActorDimensions (0.1f, 0.6f, 0.1f);
+static const csVector3 ActorDimensions (0.3f, 1.8f, 0.3f);
 
 class PhysDemo : public CS::Utility::DemoApplication
 {
@@ -215,7 +215,7 @@ public:
   size_t selectedIndex;
 
 private:
-  void Frame();
+  void Frame ();
   bool OnKeyboard (iEvent &event);
 
   bool OnMouseDown (iEvent &event);
@@ -223,10 +223,10 @@ private:
 
 public:
   // Camera
-  void UpdateActorMode(ActorMode newActorMode);
+  void UpdateActorMode (ActorMode newActorMode);
 
   // Spawning objects
-  bool SpawnStarCollider();
+  bool SpawnStarCollider ();
 
   void CreateBoxCollider (csRef<CS::Collisions::iColliderBox>& colliderPtr, csRef<iMeshWrapper>& meshPtr, const csVector3& extents);
 
@@ -237,35 +237,35 @@ public:
   CS::Physics::iRigidBody* SpawnSphere (const csVector3& pos, float radius, bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCone (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCylinder (bool setVelocity = true);
-  CS::Physics::iRigidBody* SpawnCapsule (float length = rand() % 3 / 50.f + .7f,
-    float radius = rand() % 10 / 50.f + .2f, bool setVelocity = true);
-  CS::Collisions::iCollisionObject* SpawnConcaveMesh();
+  CS::Physics::iRigidBody* SpawnCapsule (float length = rand () % 3 / 50.f + .7f,
+    float radius = rand () % 10 / 50.f + .2f, bool setVelocity = true);
+  CS::Collisions::iCollisionObject* SpawnConcaveMesh ();
   CS::Physics::iRigidBody* SpawnConvexMesh (bool setVelocity = true);
   CS::Physics::iRigidBody* SpawnCompound (bool setVelocity = true);
-  CS::Physics::iJoint* SpawnJointed();
-  void SpawnChain();
-  void LoadFrankieRagdoll();
-  void LoadKrystalRagdoll();
-  void SpawnFrankieRagdoll();
-  void SpawnKrystalRagdoll();
-  void SpawnRope();
-  CS::Physics::iSoftBody* SpawnCloth();
+  CS::Physics::iJoint* SpawnJointed ();
+  void SpawnChain ();
+  void LoadFrankieRagdoll ();
+  void LoadKrystalRagdoll ();
+  void SpawnFrankieRagdoll ();
+  void SpawnKrystalRagdoll ();
+  void SpawnRope ();
+  CS::Physics::iSoftBody* SpawnCloth ();
   CS::Physics::iSoftBody* SpawnSoftBody (bool setVelocity = true);
-  void SpawnBoxStacks(int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
+  void SpawnBoxStacks (int stackNum = 4, int stackHeight = 4, float boxLen = .5f, float mass = 20.f);
 
   /**
    * Room is the inside of a cuboid of the given size, and wall thickness
    */
-  void CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos = csVector3(0), float wallThickness = 5);
+  void CreateBoxRoom (const csVector3& roomExtents, const csVector3& pos = csVector3 (0), float wallThickness = 5);
 
   /// Create the default box room with a given side-length
-  void CreateBoxRoom(float size = 50.0f);
+  void CreateBoxRoom (float size = 50.0f);
   
   /// Load a scene from file
-  bool LoadLevel(const char* filepath, bool convexDecomp = false);
+  bool LoadLevel (const char* filepath, bool convexDecomp = false);
 
-  void CreateGhostCylinder();
-  void ApplyGhostSlowEffect();
+  void CreateGhostCylinder ();
+  void ApplyGhostSlowEffect ();
 
   /// Creates a new rigid body, places it at the given pos and, optionally, gives it some initial momentum
   csRef<CS::Physics::iRigidBody> SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos, 
@@ -273,20 +273,20 @@ public:
 
 
   // particles
-  void AddParticles(const csVector3& origin, float yFactor = 1, int num = 256);
+  void AddParticles (const csVector3& origin, float yFactor = 1, int num = 256);
 
   // removes everything and resets things
-  void ResetCurrentLevel();
+  void ResetCurrentLevel ();
 
 public:
-  PhysDemo();
-  virtual ~PhysDemo();
+  PhysDemo ();
+  virtual ~PhysDemo ();
 
-  void PrintHelp();
+  void PrintHelp ();
   bool OnInitialize (int argc, char* argv[]);
-  bool Application();
+  bool Application ();
 
-  void SetupHUD();
+  void SetupHUD ();
 
   friend class MouseAnchorAnimationControl;
   csRef<CS::Physics::iAnchorAnimationControl> grabAnimationControl;
@@ -297,190 +297,190 @@ public:
   /**
    * The location of the actor's head, i.e. the location of the camera
    */
-  csVector3 GetActorPos() const { return player.GetObject()->GetTransform().GetOrigin(); }
+  csVector3 GetActorPos () const { return player.GetObject ()->GetTransform ().GetOrigin (); }
 
   /**
    * The location where the actor stands
    */
-  csVector3 GetActorFeetPos() const { return GetActorPos() - csVector3(0, .5f * ActorDimensions.y, 0); }
+  csVector3 GetActorFeetPos () const { return GetActorPos () - csVector3 (0, .5f * ActorDimensions.y, 0); }
 
   /**
    * Position of the camera
    */
-  csVector3 GetCameraPosition() const { return view->GetCamera()->GetTransform().GetOrigin(); }
+  csVector3 GetCameraPosition () const { return view->GetCamera ()->GetTransform ().GetOrigin (); }
 
   /**
    * Normalized direction of the camera
    */
-  csVector3 GetCameraDirection() const { return view->GetCamera()->GetTransform().GetT2O() * csVector3(0, 0, 1); }
+  csVector3 GetCameraDirection () const { return view->GetCamera ()->GetTransform ().GetT2O () * csVector3 (0, 0, 1); }
 
   /**
    * Normalized direction of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetCameraDirectionXZ() const { csVector3 dist = view->GetCamera()->GetTransform().GetT2O() * csVector3(0, 0, 1); dist.y = 0; dist.Normalize(); return dist; }
+  csVector3 GetCameraDirectionXZ () const { csVector3 dist = view->GetCamera ()->GetTransform ().GetT2O () * csVector3 (0, 0, 1); dist.y = 0; dist.Normalize (); return dist; }
 
   /**
    * Point in the given distance in front of the camera
    */
-  csVector3 GetPointInFront(float distance) const { return GetActorPos() + (GetCameraDirection() * distance); }
+  csVector3 GetPointInFront (float distance) const { return GetActorPos () + (GetCameraDirection () * distance); }
 
   /**
    * Point in the given distance in front of the actor's feet
    */
-  csVector3 GetPointInFrontOfFeet(float distance) const { return GetActorFeetPos() + (GetCameraDirection() * distance); }
+  csVector3 GetPointInFrontOfFeet (float distance) const { return GetActorFeetPos () + (GetCameraDirection () * distance); }
 
   /**
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetPointInFrontXZ(float distance) const { return GetActorPos() + (GetCameraDirectionXZ() * distance); }
+  csVector3 GetPointInFrontXZ (float distance) const { return GetActorPos () + (GetCameraDirectionXZ () * distance); }
 
   /**
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetPointInFrontOfFeetXZ(float distance) const { return GetActorFeetPos() + (GetCameraDirectionXZ() * distance); }
+  csVector3 GetPointInFrontOfFeetXZ (float distance) const { return GetActorFeetPos () + (GetCameraDirectionXZ () * distance); }
 
   /// Find the ground contact point beneath pos
-  bool GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const;
+  bool GetPointOnGroundBeneathPos (const csVector3& pos, csVector3& groundPos) const;
 
   /// Find the ground contact point above pos
-  bool GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundPos) const;
+  bool GetPointOnGroundAbovePos (const csVector3& pos, csVector3& groundPos) const;
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Geometry utilities
 
-  csPtr<iMeshWrapper> CreateCylinderYMesh(float length, float radius, const char* materialName = "objtexture", const char* meshName = "cylinder");
+  csPtr<iMeshWrapper> CreateCylinderYMesh (float length, float radius, const char* materialName = "objtexture", const char* meshName = "cylinder");
 
-  csPtr<iMeshWrapper> CreateBoxMesh(const csVector3& extents, const char* materialName = "objtexture", const char* meshName = "box");
+  csPtr<iMeshWrapper> CreateBoxMesh (const csVector3& extents, const char* materialName = "objtexture", const char* meshName = "box");
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Object & Actor utilities
 
   /// Pick the object that is under the cursor
-  bool PickCursorObject(CS::Collisions::HitBeamResult& result);
+  bool PickCursorObject (CS::Collisions::HitBeamResult& result);
 
   /// Get the owning entity of the given collision object (actor, vehicle, etc)
-  ::iBase* GetOwner(CS::Collisions::iCollisionObject* obj);
+  ::iBase* GetOwner (CS::Collisions::iCollisionObject* obj);
 
   /// Teleport given object to given location
-  void TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos);
+  void TeleportObject (CS::Collisions::iCollisionObject* obj, iCameraPosition* pos);
 
   /// Test whether there are any objects beneath obj (that obj can collide with)
-  bool TestOnGround(CS::Collisions::iCollisionObject* obj);
+  bool TestOnGround (CS::Collisions::iCollisionObject* obj);
 
-  bool IsActor(CS::Collisions::iCollisionObject* obj) const;
+  bool IsActor (CS::Collisions::iCollisionObject* obj) const;
   
   /// Adds a force to the given object that pulls it toward the actor. If not given, picks currently targeted object.
-  void PullObject(CS::Collisions::iCollisionObject* obj = nullptr);
+  void PullObject (CS::Collisions::iCollisionObject* obj = nullptr);
 
   /// Toggles between DYNAMIC/STATIC state of the given object. If not given, picks currently targeted object.
-  void ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj = nullptr);
+  void ToggleObjectDynamic (CS::Collisions::iCollisionObject* obj = nullptr);
 
   /// Deletes the given object. If not given, picks currently targeted object.
-  void DeleteObject(CS::Collisions::iCollisionObject* obj = nullptr);
+  void DeleteObject (CS::Collisions::iCollisionObject* obj = nullptr);
   
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Items
 
-  void CreateItemTemplates();
+  void CreateItemTemplates ();
 
-  void UpdateCameraManager();
+  void UpdateCameraManager ();
   
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Mesh & Collider Utilities
 
-  void CreateBoxMeshColliderPair(RenderMeshColliderPair& pair, const csVector3& extents);
+  void CreateBoxMeshColliderPair (RenderMeshColliderPair& pair, const csVector3& extents);
     
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Vehicles
   
-  csPtr<CS::Physics::iVehicle> CreateVehicle();
+  csPtr<CS::Physics::iVehicle> CreateVehicle ();
 
-  void EnterTargetVehicle();
-  void LeaveCurrentVehicle();
+  void EnterTargetVehicle ();
+  void LeaveCurrentVehicle ();
 
-  void SpawnVehicle();
-  void DeleteTargetVehicle();
+  void SpawnVehicle ();
+  void DeleteTargetVehicle ();
 
-  void AccelerateTargetVehicle();
+  void AccelerateTargetVehicle ();
 
-  CS::Physics::iVehicle* GetTargetVehicle();
+  CS::Physics::iVehicle* GetTargetVehicle ();
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Input Tools
 
-  csVector3 GetInputDirection();
+  csVector3 GetInputDirection ();
 
   /// 0 or 1, depending on whether the forward key is currently pressed (possibly values in between, depending on input device)
-  float GetForward();
+  float GetForward ();
   
   /// 0 or 1, depending on whether the backward key is currently pressed (possibly values in between, depending on input device)
-  float GetBackward();
+  float GetBackward ();
   
   /// 0 or 1, depending on whether the left/right keys are currently pressed (possibly values in between, depending on input device)
-  float GetLeftRight();
+  float GetLeftRight ();
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Frame
 
-  void DoStep();
+  void DoStep ();
 
-  void MoveActor();
-  void MoveActorVehicle();
+  void MoveActor ();
+  void MoveActorVehicle ();
 
-  void UpdateVehiclePassengers();
+  void UpdateVehiclePassengers ();
 
-  void RotateActor();
+  void RotateActor ();
 
-  void MoveCamera();
+  void MoveCamera ();
 
-  void UpdateDragging();
+  void UpdateDragging ();
 
-  void UpdateHUD();
+  void UpdateHUD ();
 
-  void DoDebugDraw();
+  void DoDebugDraw ();
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Level setup & management
   
   /// Create new iPhysicalSector for the given iSector
-  CS::Physics::iPhysicalSector* CreatePhysicalSector(iSector* sector);
+  CS::Physics::iPhysicalSector* CreatePhysicalSector (iSector* sector);
   
-  inline void SetCurrentSector(CS::Physics::iPhysicalSector* sector)
-  { sector->AddCollisionObject(player.GetObject()); }
-  inline CS::Physics::iPhysicalSector* GetCurrentSector() const 
+  inline void SetCurrentSector (CS::Physics::iPhysicalSector* sector)
+  { sector->AddCollisionObject (player.GetObject ()); }
+  inline CS::Physics::iPhysicalSector* GetCurrentSector () const 
   { 
-    return player.GetObject()->GetSector()->QueryPhysicalSector ();
+    return player.GetObject ()->GetSector ()->QueryPhysicalSector ();
   }
 
   /// Clears & deletes the scene
-  void Reset();
+  void Reset ();
 
   /// Reset the current scene and setup the given level
-  bool SetLevel(PhysDemoLevel level, bool convexDecomp = false);
+  bool SetLevel (PhysDemoLevel level, bool convexDecomp = false);
   /// Reset the current scene and setup the given level
-  bool SetLevel(const char* pathname, bool convexDecomp = false);
+  bool SetLevel (const char* pathname, bool convexDecomp = false);
 
   /// Get the iModifiableDataFeeder of the first terrain that has one in the given sector (if any)
-  iModifiableDataFeeder* GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector);
+  iModifiableDataFeeder* GetFirstTerrainModDataFeeder (CS::Collisions::iCollisionSector* sector);
 
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Physics stuff
 
-  bool IsDynamic(CS::Collisions::iCollisionObject* obj) const;
+  bool IsDynamic (CS::Collisions::iCollisionObject* obj) const;
 
-  void SetGravity(const csVector3& g);
+  void SetGravity (const csVector3& g);
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Other
 
-  bool IsGravityOff() { return GetCurrentSector()->GetGravity().SquaredNorm() == 0; }
+  bool IsGravityOff () { return GetCurrentSector ()->GetGravity ().SquaredNorm () == 0; }
 };
 
 class MouseAnchorAnimationControl : public scfImplementation1
@@ -490,7 +490,7 @@ public:
   MouseAnchorAnimationControl (PhysDemo* simple)
     : scfImplementationType (this), simple (simple) {}
 
-  csVector3 GetAnchorPosition() const;
+  csVector3 GetAnchorPosition () const;
 
 private:
   PhysDemo* simple;
@@ -499,7 +499,7 @@ private:
 extern PhysDemo physDemo;
 
 /// Utility: Component-wise vector multiplication
-inline csVector3 ScaleVector3(const csVector3& v1, const csVector3& v2)
+inline csVector3 ScaleVector3 (const csVector3& v1, const csVector3& v2)
 {
   csVector3 v3;
   v3.x = v1.x * v2.x;
@@ -509,10 +509,10 @@ inline csVector3 ScaleVector3(const csVector3& v1, const csVector3& v2)
 }
 
 // TODO: Replace with CS' equivalent of std::bind and std::function
-#define CallOnAllSectors(code) \
-  for (size_t iiiii = 0; iiiii < physDemo.physicalSystem->GetCollisionSectorCount(); ++iiiii) \
+#define CallOnAllSectors (code) \
+  for (size_t iiiii = 0; iiiii < physDemo.physicalSystem->GetCollisionSectorCount (); ++iiiii) \
   { \
-    csRef<iPhysicalSector>(scfQueryInterface<iPhysicalSector>(physDemo.physicalSystem->GetCollisionSector(iiiii)))->code; \
+    csRef<iPhysicalSector>(scfQueryInterface<iPhysicalSector>(physDemo.physicalSystem->GetCollisionSector (iiiii)))->code; \
   }
 
 #endif

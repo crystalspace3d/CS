@@ -31,7 +31,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   // Wheel 
   BulletVehicleWheel::BulletVehicleWheel(csBulletSystem* sys, btWheelInfo& btWheel) : scfImplementationType(this),
     sys(sys),
-    btWheel(btWheel)
+    btWheel(btWheel),
+    isDriven (true), isAffectedByBrake (true)
   {
   }
 
@@ -69,6 +70,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csRef<iRigidBody> ichassis = chassisFactory->CreateRigidBody();
     csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*>(&*ichassis);
     // TODO: really?
+    chassis->SetMass (100.0f);
+    chassis->SetState (STATE_DYNAMIC);
     chassis->SetDeactivable (false);
 
     csRef<BulletVehicle> vehicle = csPtr<BulletVehicle>(new BulletVehicle(sys, chassis));

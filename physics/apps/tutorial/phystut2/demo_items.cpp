@@ -54,7 +54,7 @@ ItemTemplate* camMgr;
   { \
   class ItemFunctionClassName(name) : public ItemFunction { \
   public: ItemFunctionClassName(name)() : ItemFunction(desc) {} \
-  bool Use(Item* item) { code; return true; } \
+  bool Use (Item* item) { code; return true; } \
   }; \
   templ.Add##kind##Function(new ItemFunctionClassName(name)); \
   } 
@@ -62,77 +62,77 @@ ItemTemplate* camMgr;
 
 // TODO: Cache-friendly storage of polymorphic objects
 
-void PhysDemo::CreateItemTemplates()
+void PhysDemo::CreateItemTemplates ()
 {
   {
     // Primitive Object Spawner
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Primitive Object Spawner");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Primitive Object Spawner");
     
-    AddItemFunction(Secondary, SpawnSphere, "Spawn Sphere", physDemo.SpawnSphere());
-    AddItemFunction(Secondary, SpawnBox, "Spawn Box", physDemo.SpawnBox());
-    AddItemFunction(Secondary, SpawnCapsule, "Spawn Capsule", physDemo.SpawnCapsule());
-    AddItemFunction(Secondary, SpawnCylinder, "Spawn Cylinder", physDemo.SpawnCylinder());
-    AddItemFunction(Secondary, SpawnCone, "Spawn Cone", physDemo.SpawnCone());
-    AddItemFunction(Secondary, SpawnBoxStacks, "Spawn Box Stacks", physDemo.SpawnBoxStacks(10, 5, .5, 80));
+    AddItemFunction (Secondary, SpawnSphere, "Spawn Sphere", physDemo.SpawnSphere ());
+    AddItemFunction (Secondary, SpawnBox, "Spawn Box", physDemo.SpawnBox ());
+    AddItemFunction (Secondary, SpawnCapsule, "Spawn Capsule", physDemo.SpawnCapsule ());
+    AddItemFunction (Secondary, SpawnCylinder, "Spawn Cylinder", physDemo.SpawnCylinder ());
+    AddItemFunction (Secondary, SpawnCone, "Spawn Cone", physDemo.SpawnCone ());
+    AddItemFunction (Secondary, SpawnBoxStacks, "Spawn Box Stacks", physDemo.SpawnBoxStacks (10, 5, .5, 80));
   }
 
   {
     // Complex Object Spawner
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Complex Object Spawner");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Complex Object Spawner");
     
-    AddItemFunction(Secondary, SpawnCompound, "Spawn Compound", physDemo.SpawnCompound());
-    AddItemFunction(Secondary, SpawnConcaveMesh, "Spawn Concave Mesh", physDemo.SpawnConcaveMesh());
-    AddItemFunction(Secondary, SpawnJointed, "Spawn Jointed", physDemo.SpawnJointed());
-    AddItemFunction(Secondary, SpawnChain, "Spawn Chain", physDemo.SpawnChain());
-    AddItemFunction(Secondary, SpawnKrystalRagdoll, "Spawn Krystal", physDemo.SpawnKrystalRagdoll());
-    AddItemFunction(Secondary, SpawnFrankieRagdoll, "Spawn Frankie", physDemo.SpawnFrankieRagdoll());
+    AddItemFunction (Secondary, SpawnCompound, "Spawn Compound", physDemo.SpawnCompound ());
+    AddItemFunction (Secondary, SpawnConcaveMesh, "Spawn Concave Mesh", physDemo.SpawnConcaveMesh ());
+    AddItemFunction (Secondary, SpawnJointed, "Spawn Jointed", physDemo.SpawnJointed ());
+    AddItemFunction (Secondary, SpawnChain, "Spawn Chain", physDemo.SpawnChain ());
+    AddItemFunction (Secondary, SpawnKrystalRagdoll, "Spawn Krystal", physDemo.SpawnKrystalRagdoll ());
+    AddItemFunction (Secondary, SpawnFrankieRagdoll, "Spawn Frankie", physDemo.SpawnFrankieRagdoll ());
   }
 
   if (isSoftBodyWorld)
   {
     // Softbody Object Spawner spawns softbodies, such as cloth or ropes
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Softbody Object Spawner");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Softbody Object Spawner");
 
-    AddItemFunction(Secondary, SpawnRope, "Spawn Rope", physDemo.SpawnRope());
-    AddItemFunction(Secondary, SpawnCloth, "Spawn Cloth", physDemo.SpawnCloth());
-    AddItemFunction(Secondary, SpawnSoftBody, "Spawn Soft Ball", physDemo.SpawnSoftBody());
+    AddItemFunction (Secondary, SpawnRope, "Spawn Rope", physDemo.SpawnRope ());
+    AddItemFunction (Secondary, SpawnCloth, "Spawn Cloth", physDemo.SpawnCloth ());
+    AddItemFunction (Secondary, SpawnSoftBody, "Spawn Soft Ball", physDemo.SpawnSoftBody ());
   }
   
   {
     // Object & Force Manipulator: Manipulates objects and introduces fun forces
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Object & Force Manipulator");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Object & Force Manipulator");
 
-    AddItemFunction(Secondary, PullObject, "Pull Object", physDemo.PullObject());
-    AddItemFunction(Secondary, DeleteObject, "Delete Object", physDemo.DeleteObject());
-    AddItemFunction(Secondary, ToggleObjectDynamic, "Toggle Dynamic", physDemo.ToggleObjectDynamic());
+    AddItemFunction (Secondary, PullObject, "Pull Object", physDemo.PullObject ());
+    AddItemFunction (Secondary, DeleteObject, "Delete Object", physDemo.DeleteObject ());
+    AddItemFunction (Secondary, ToggleObjectDynamic, "Toggle Dynamic", physDemo.ToggleObjectDynamic ());
   }
 
   {
     // Vehicle Manager
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Vehicle Manager");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Vehicle Manager");
     
-    AddItemFunction(Primary, EnterTargetVehicle, "Enter Target Vehicle", physDemo.EnterTargetVehicle());
-    AddItemFunction(Primary, DeleteTargetVehicle, "Delete Target Vehicle", physDemo.DeleteTargetVehicle());
+    AddItemFunction (Primary, EnterTargetVehicle, "Enter Target Vehicle", physDemo.EnterTargetVehicle ());
+    AddItemFunction (Primary, DeleteTargetVehicle, "Delete Target Vehicle", physDemo.DeleteTargetVehicle ());
     
-    AddItemFunction(Secondary, AccelerateVehicle, "Leave Current Vehicle", physDemo.LeaveCurrentVehicle());
-    AddItemFunction(Secondary, SpawnVehicle, "Spawn New Vehicle", physDemo.SpawnVehicle());
-    AddItemFunction(Secondary, AccelerateVehicle, "Accelerate Target Vehicle", physDemo.AccelerateTargetVehicle());
+    AddItemFunction (Secondary, AccelerateVehicle, "Leave Current Vehicle", physDemo.LeaveCurrentVehicle ());
+    AddItemFunction (Secondary, SpawnVehicle, "Spawn New Vehicle", physDemo.SpawnVehicle ());
+    AddItemFunction (Secondary, AccelerateVehicle, "Accelerate Target Vehicle", physDemo.AccelerateTargetVehicle ());
   }
 
   {
     // Level Manager
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Level Manager");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Level Manager");
     
-    AddItemFunction(Secondary, SwitchToBox, "Go to Box level", physDemo.SetLevel(PhysDemoLevelBox));
-    AddItemFunction(Secondary, SwitchToPortals, "Go to Portals level", physDemo.SetLevel(PhysDemoLevelPortals));
-    AddItemFunction(Secondary, SwitchToTerrain, "Go to Terrain level", physDemo.SetLevel(PhysDemoLevelTerrain));
-    AddItemFunction(Secondary, SwitchToCastle, "Go to Castle level (static)", physDemo.SetLevel(PhysDemoLevelCastle));
-    AddItemFunction(Secondary, SwitchToCastleWithDecomp, "Go to Castle level (dynamic, loads very slowly)", physDemo.SetLevel(PhysDemoLevelCastle, true));
+    AddItemFunction (Secondary, SwitchToBox, "Go to Box level", physDemo.SetLevel (PhysDemoLevelBox));
+    AddItemFunction (Secondary, SwitchToPortals, "Go to Portals level", physDemo.SetLevel (PhysDemoLevelPortals));
+    AddItemFunction (Secondary, SwitchToTerrain, "Go to Terrain level", physDemo.SetLevel (PhysDemoLevelTerrain));
+    AddItemFunction (Secondary, SwitchToCastle, "Go to Castle level (static)", physDemo.SetLevel (PhysDemoLevelCastle));
+    AddItemFunction (Secondary, SwitchToCastleWithDecomp, "Go to Castle level (dynamic, loads very slowly)", physDemo.SetLevel (PhysDemoLevelCastle, true));
   }
 
   {
     // Camera Manager
-    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate("Camera Manager");
+    ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Camera Manager");
     
     // Functions are added dynamically
     camMgr = &templ;
@@ -146,26 +146,26 @@ class TeleToPosFunction : public ItemFunction
   iCameraPosition* pos;
 
 public:
-  TeleToPosFunction(iCameraPosition* pos) : ItemFunction(pos->QueryObject()->GetName()), pos(pos)
+  TeleToPosFunction (iCameraPosition* pos) : ItemFunction (pos->QueryObject ()->GetName ()), pos (pos)
   {
   }
   
-  bool Use(Item* item)
+  bool Use (Item* item)
   { 
-    physDemo.TeleportObject(item->GetInventory()->GetOwner()->GetObject(), pos); 
+    physDemo.TeleportObject (item->GetInventory ()->GetOwner ()->GetObject (), pos); 
     return true;
   }
 };
 
-void PhysDemo::UpdateCameraManager()
+void PhysDemo::UpdateCameraManager ()
 {
-  camMgr->Clear();
+  camMgr->Clear ();
 
-  for (size_t i = 0; i < size_t(engine->GetCameraPositions()->GetCount()); ++i)
+  for (size_t i = 0; i < size_t (engine->GetCameraPositions ()->GetCount ()); ++i)
   {
-    iCameraPosition* pos = engine->GetCameraPositions()->Get(i);
+    iCameraPosition* pos = engine->GetCameraPositions ()->Get (i);
 
-    camMgr->AddSecondaryFunction(new TeleToPosFunction(pos));
+    camMgr->AddSecondaryFunction (new TeleToPosFunction (pos));
   }
 }
 

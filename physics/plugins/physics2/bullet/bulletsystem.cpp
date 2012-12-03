@@ -281,6 +281,12 @@ CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector (iSector
   return collSector;
 }
 
+void csBulletSystem::RemoveCollisionSector (CS::Collisions::iCollisionSector* sector)
+{
+  csBulletSector* collSector = dynamic_cast<csBulletSector*> (sector);
+  collSectors.Delete (collSector);
+}
+
 CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const char* name)
 {
   return this->collSectors.FindByName (name);
@@ -306,11 +312,10 @@ CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSe
 csPtr<CS::Physics::iJoint> csBulletSystem::CreateJoint ()
 {
   csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 position)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateP2PJoint (const csVector3& position)
 {
   csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
@@ -319,11 +324,10 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidP2PJoint (const csVector3 
   joint->SetMinimumDistance (trans);
   joint->SetPosition (position);
   joint->SetType (RIGID_P2P_JOINT);
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoTransform trans,
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateSlideJoint (const csOrthoTransform& trans,
                                                     float minDist, float maxDist, 
                                                     float minAngle, float maxAngle, int axis)
 {
@@ -345,11 +349,10 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidSlideJoint (const csOrthoT
   joint->SetMaximumAngle (maxDistant);
   joint->SetTransform (trans);
   joint->SetType (RIGID_SLIDE_JOINT);
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector3 position, 
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateHingeJoint (const csVector3& position, 
                                                      float minAngle, float maxAngle, int axis)
 {
   if (axis < 0 || axis > 2)
@@ -364,11 +367,10 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidHingeJoint (const csVector
   joint->SetPosition (position);  
   joint->SetType (RIGID_HINGE_JOINT);
   joint->axis = axis;
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOrthoTransform trans, 
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateConeTwistJoint (const csOrthoTransform& trans, 
                                                                        float swingSpan1,float swingSpan2,
                                                                        float twistSpan) 
 {
@@ -389,12 +391,11 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidConeTwistJoint (const csOr
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftLinearJoint (const csVector3 position)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftLinearJoint (const csVector3& position)
 {
   csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetPosition (position);
   joint->SetType (SOFT_LINEAR_JOINT);
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
@@ -412,11 +413,10 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
     joint->SetRotConstraints (false, false, true);
 
   joint->SetType (SOFT_ANGULAR_JOINT);
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
 }
 
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* body, const csVector3 position)
+csPtr<CS::Physics::iJoint> csBulletSystem::CreatePivotJoint (iRigidBody* body, const csVector3& position)
 {
   csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
   joint->SetTransConstraints (true, true, true);
@@ -426,8 +426,123 @@ csPtr<CS::Physics::iJoint> csBulletSystem::CreateRigidPivotJoint (iRigidBody* bo
   joint->SetPosition (position);
   joint->SetType (RIGID_PIVOT_JOINT);
   joint->Attach (body, nullptr);
-  //joints.Push (joint);
   return csPtr<CS::Physics::iJoint> (joint);
+}
+
+// ###############################################################################################################
+// Physical Objects
+
+// Joints
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateJointFactory ()
+{
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateP2PJointFactory ()
+{
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  factory->SetTransConstraints (true, true, true);
+  csVector3 trans (0.0f,0.0f,0.0f);
+  factory->SetMaximumDistance (trans);
+  factory->SetMinimumDistance (trans);
+  factory->SetType (RIGID_P2P_JOINT);
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateSlideJointFactory
+(float minDist, float maxDist, float minAngle, float maxAngle, int axis)
+{
+  if (axis < 0 || axis > 2)
+    return csPtr<CS::Physics::iJointFactory> (nullptr);
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  factory->SetTransConstraints (true, true, true);
+  factory->SetRotConstraints (true, true, true);
+  csVector3 minDistant (0.0f, 0.0f, 0.0f);
+  csVector3 maxDistant (0.0f, 0.0f, 0.0f);
+
+  minDistant[axis] = minDist;
+  maxDistant[axis] = maxDist;
+  factory->SetMinimumDistance (minDistant);
+  factory->SetMaximumDistance (maxDistant);
+  minDistant[axis] = minAngle;
+  maxDistant[axis] = maxAngle;
+  factory->SetMinimumAngle (minDistant);
+  factory->SetMaximumAngle (maxDistant);
+  factory->SetType (RIGID_SLIDE_JOINT);
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateHingeJointFactory
+(float minAngle, float maxAngle, int axis)
+{
+  if (axis < 0 || axis > 2)
+    return csPtr<CS::Physics::iJointFactory> (nullptr);
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  csVector3 minDistant (0.0f, 0.0f, 0.0f);
+  csVector3 maxDistant (0.0f, 0.0f, 0.0f);
+  minDistant[axis] = minAngle;
+  maxDistant[axis] = maxAngle;
+  factory->SetMinimumAngle (minDistant);
+  factory->SetMaximumAngle (maxDistant);
+  factory->SetType (RIGID_HINGE_JOINT);
+  factory->SetAxis (axis);
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateConeTwistJointFactory
+(float swingSpan1, float swingSpan2, float twistSpan) 
+{
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  factory->SetTransConstraints (true, true, true);
+  factory->SetRotConstraints (true, true, true);
+
+  csVector3 minDistant (0.0f, 0.0f, 0.0f);
+  csVector3 maxDistant (0.0f, 0.0f, 0.0f);
+  factory->SetMaximumDistance (minDistant);
+  factory->SetMinimumDistance (maxDistant);
+  minDistant.Set (-twistSpan, -swingSpan2, -swingSpan1);  
+  maxDistant.Set (twistSpan, swingSpan2, swingSpan1); 
+  factory->SetMinimumAngle (minDistant);
+  factory->SetMaximumAngle (maxDistant);
+  factory->SetType (RIGID_CONETWIST_JOINT);
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateSoftLinearJointFactory ()
+{
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  factory->SetType (SOFT_LINEAR_JOINT);
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreateSoftAngularJointFactory (int axis)
+{
+  if (axis < 0 || axis > 2)
+    return csPtr<CS::Physics::iJointFactory> (nullptr);
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  factory = new JointFactory (this);
+  if (axis == 0)
+    factory->SetRotConstraints (false, true, true);
+  else if (axis == 1)
+    factory->SetRotConstraints (true, false, false);
+  else if (axis == 2)
+    factory->SetRotConstraints (false, false, true);
+
+  factory->SetType (SOFT_ANGULAR_JOINT);
+  return csPtr<CS::Physics::iJointFactory> (factory);
+}
+
+csPtr<CS::Physics::iJointFactory> csBulletSystem::CreatePivotJointFactory ()
+{
+  csRef<JointFactory> factory = csPtr<JointFactory> (new JointFactory (this));
+  factory->SetTransConstraints (true, true, true);
+  csVector3 trans (0.0f, 0.0f, 0.0f);
+  factory->SetMaximumDistance (trans);
+  factory->SetMinimumDistance (trans);
+  factory->SetType (RIGID_PIVOT_JOINT);
+  return csPtr<CS::Physics::iJointFactory> (factory);
 }
 
 // Vehicles

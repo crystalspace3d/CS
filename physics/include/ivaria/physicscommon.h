@@ -20,7 +20,7 @@
 #define __CS_IVARIA_PHYSICSCOMMON_H__
 
 /**\file
- * \todo: Document or remove me
+ * \todo: Remove this file
  */
 
 #include "csutil/scf.h"
@@ -31,8 +31,6 @@
 #include "csgeom/transfrm.h"
 #include "iutil/object.h"
 #include "colliders.h"
-
-#include "ivaria/collisionscommon.h"
 
 namespace CS
 {
@@ -48,19 +46,10 @@ namespace CS
   {
     struct iPhysicalSector;
 
-    /**
-     * The type of a rigid body state.
-     */
-    enum RigidBodyState
-    {
-      STATE_STATIC = 0,    /*!< The body is in the static state. */
-      STATE_DYNAMIC,       /*!< The body is in the dynamic state. */
-      STATE_KINEMATIC      /*!< The body is in the kinematic state. */
-    };
-
    /**
-     * Custom code to be called upon every step
-     * \todo Most probably to be removed
+    * Custom code to be called upon every step
+    * \warning This interface will be removed, don't use it.
+    * \todo Remove this interface.
     */
     struct iUpdatable : public virtual iBase
     {

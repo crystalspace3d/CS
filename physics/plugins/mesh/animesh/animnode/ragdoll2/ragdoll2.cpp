@@ -673,7 +673,6 @@ void RagdollNode::UpdateBoneState (BoneData* boneData)
       csOrthoTransform animeshTransform = sceneNode->GetMovable ()->GetFullTransform ();
       csOrthoTransform bodyTransform = boneTransform * animeshTransform;
       boneData->rigidBody->SetTransform (bodyTransform);
-
     }
 
     // prepare for adding a joint

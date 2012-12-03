@@ -55,6 +55,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csBulletSystem* sys;
     csRef<iSceneNode> sceneNode;
     btWheelInfo& btWheel;
+    // TODO: is this used?
     bool isDriven, isAffectedByBrake;
 
   public:
@@ -234,13 +235,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       bool isDriven;
 
     public:
-      BulletVehicleWheelInfo(CS::Physics::iVehicleWheelFactory* f) :
-          scfImplementationType(this),
-          factory(f),
-          suspensionLength(1),
-          radius(.5),
-          isDriven(true)
-      {
+      BulletVehicleWheelInfo(CS::Physics::iVehicleWheelFactory* f)
+	: scfImplementationType(this),
+	factory(f),
+	pos (0.0f),
+	wheelOrientation (1.0f, 0.0f, 0.0f),
+	axleOrientation (0.0f, 1.0f, 0.0f),
+	suspensionLength(1),
+	radius(.5),
+	isDriven(true)
+	{
       }
 
       virtual ~BulletVehicleWheelInfo() {}
@@ -365,8 +369,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
     /// Called when updatable is removed from the given sector
     virtual void OnRemoved(CS::Physics::iPhysicalSector* sector);
-
-    
 
     virtual btActionInterface* GetBulletAction() { return btVehicle; }
   };

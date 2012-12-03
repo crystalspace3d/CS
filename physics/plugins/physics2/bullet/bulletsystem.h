@@ -158,6 +158,7 @@ public:
 
   
   virtual CS::Collisions::iCollisionSector* CreateCollisionSector (iSector* sector = nullptr);
+  virtual void RemoveCollisionSector (CS::Collisions::iCollisionSector* sector);
   virtual size_t GetCollisionSectorCount () const { return collSectors.GetSize (); }
   virtual CS::Collisions::iCollisionSector* GetCollisionSector (size_t index) 
   {
@@ -215,16 +216,28 @@ public:
   // Joints & Constraints
 
   virtual csPtr<CS::Physics::iJoint> CreateJoint ();
-  virtual csPtr<CS::Physics::iJoint> CreateRigidP2PJoint (const csVector3 position);
-  virtual csPtr<CS::Physics::iJoint> CreateRigidSlideJoint (const csOrthoTransform trans,
+  virtual csPtr<CS::Physics::iJoint> CreateP2PJoint (const csVector3& position);
+  virtual csPtr<CS::Physics::iJoint> CreateSlideJoint (const csOrthoTransform& trans,
     float minDist, float maxDist, float minAngle, float maxAngle, int axis);
-  virtual csPtr<CS::Physics::iJoint> CreateRigidHingeJoint (const csVector3 position,
+  virtual csPtr<CS::Physics::iJoint> CreateHingeJoint (const csVector3& position,
     float minAngle, float maxAngle, int axis);
-  virtual csPtr<CS::Physics::iJoint> CreateRigidConeTwistJoint (const csOrthoTransform trans,
-    float swingSpan1,float swingSpan2,float twistSpan);
-  virtual csPtr<CS::Physics::iJoint> CreateSoftLinearJoint (const csVector3 position);
+  virtual csPtr<CS::Physics::iJoint> CreateConeTwistJoint (const csOrthoTransform& trans,
+    float swingSpan1, float swingSpan2, float twistSpan);
+  virtual csPtr<CS::Physics::iJoint> CreateSoftLinearJoint (const csVector3& position);
   virtual csPtr<CS::Physics::iJoint> CreateSoftAngularJoint (int axis);
-  virtual csPtr<CS::Physics::iJoint> CreateRigidPivotJoint (CS::Physics::iRigidBody* body, const csVector3 position);
+  virtual csPtr<CS::Physics::iJoint> CreatePivotJoint (CS::Physics::iRigidBody* body, const csVector3& position);
+
+  virtual csPtr<CS::Physics::iJointFactory> CreateJointFactory ();
+  virtual csPtr<CS::Physics::iJointFactory> CreateP2PJointFactory ();
+  virtual csPtr<CS::Physics::iJointFactory> CreateSlideJointFactory
+    (float minDist, float maxDist, float minAngle, float maxAngle, int axis);
+  virtual csPtr<CS::Physics::iJointFactory> CreateHingeJointFactory
+    (float minAngle, float maxAngle, int axis);
+  virtual csPtr<CS::Physics::iJointFactory> CreateConeTwistJointFactory
+    (float swingSpan1, float swingSpan2, float twistSpan);
+  virtual csPtr<CS::Physics::iJointFactory> CreateSoftLinearJointFactory ();
+  virtual csPtr<CS::Physics::iJointFactory> CreateSoftAngularJointFactory (int axis);
+  virtual csPtr<CS::Physics::iJointFactory> CreatePivotJointFactory ();
 
   // Vehicles
   

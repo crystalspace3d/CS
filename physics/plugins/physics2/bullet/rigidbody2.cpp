@@ -40,7 +40,7 @@ using namespace CS::Collisions;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   // TODO: don't convert to the abstract interface since this method is internal to the plugin
-  // or: move this method to the factory instead
+  // or: move this method to the constructor instead
   void csBulletRigidBody::CreateRigidBodyObject (CS::Physics::iRigidBodyFactory* props)
   {
     //CreatePhysicalBodyObject (props);
@@ -195,7 +195,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletRigidBody::SetMass (btScalar mass)
   {
-    if (collider->GetVolume ())
+    // TODO: don't store those values, compute them only if really needed
+    float volume = collider->GetVolume ();
+    if (volume > EPSILON)
     {
       density = mass / collider->GetVolume ();
     }
@@ -219,7 +221,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   
   void csBulletRigidBody::SetMassInternal (btScalar mass)
   {
-    if (mass == 0)
+    if (mass < SMALL_EPSILON)
     {
       btBody->setMassProps (0.0f, btVector3 (0.0f, 0.0f, 0.0f));
     }
@@ -273,6 +275,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   float csBulletRigidBody::GetMass () const
   {
+    // TODO: don't store those values, compute them only if really needed
     //btScalar mass = btBody->getInvMass ();
     //return mass > 0 ? 1 / mass : 0;
     return density * collider->GetVolume ();
@@ -280,6 +283,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletRigidBody::SetDensity (float newDensity)
   {
+    // TODO: don't store those values, compute them only if really needed
     density = newDensity;
     SetMass (density * collider->GetVolume ());
   }
@@ -288,7 +292,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     return collider->GetVolume ();
   }
-
 
   float csBulletRigidBody::GetElasticity () 
   {

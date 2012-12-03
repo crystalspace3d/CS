@@ -162,10 +162,10 @@ csPtr<iVehicle> PhysDemo::CreateVehicle()
   
   for (int axle = 0; axle < AxleCount; ++axle)
   {
-    float axleFactor = axle / AxleCount - 1;
+    float axleFactor = axle / (AxleCount - 1);
     for (int inAxleN = 0; inAxleN < WheelsPerAxle; ++inAxleN)
     {
-      float inAxleFactor = inAxleN / WheelsPerAxle - 1;
+      float inAxleFactor = inAxleN / (WheelsPerAxle - 1);
 
       // place wheels uniformly along the grid of axles
       csVector3 pos(WheelTopLeft);

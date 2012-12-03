@@ -18,7 +18,6 @@
 */
 
 #include "cssysdef.h"
-//#include "ivaria/reporter.h"
 #include "imesh/softanim.h"
 #include "imesh/animesh.h"
 #include "iengine/scenenode.h"
@@ -896,7 +895,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     joints.Delete (btJoint);
   }
 
-  bool csBulletSector::SaveWorld (const char* filename)
+  bool csBulletSector::Save (const char* filename)
   {
     // Check that the version of the Bullet library can handle serialization.
 #ifndef CS_HAVE_BULLET_SERIALIZER

@@ -27,11 +27,9 @@
 #include "csutil/array.h"
 #include "csutil/scf.h"
 #include "csutil/scf_interface.h"
-#include "iutil/objreg.h"
-#include "iengine/engine.h"
 #include "cstool/primitives.h"
-
-#include "ivaria/collisionscommon.h"
+#include "iengine/engine.h"
+#include "iutil/objreg.h"
 #include "ivaria/physicscommon.h"
 
 namespace CS 
@@ -48,16 +46,15 @@ namespace CS
 {
   namespace Physics 
   {
+    struct iDynamicActor;
     struct iJoint;
     struct iObject;
     struct iRigidBody;
     struct iSoftBody;
-    struct iDynamicActor;
     struct iKinematicCallback;
-    struct iPhysicalSystem;
     struct iPhysicalSector;
+    struct iPhysicalSystem;
     struct iRigidBodyFactory;
-
     struct iVehicle;
     struct iVehicleWheelFactory;
 
@@ -264,6 +261,8 @@ namespace CS
 
     /**
      * TODO: Wrap other array methods, too.
+     * \todo The whole vehicle API should be reworked
+     * \todo: orient the vehicle around the use of an animesh
      */
     struct iVehicleFactory : public virtual iBase
     {
@@ -287,6 +286,7 @@ namespace CS
     /** 
      * A brake acts on a given set of tires with a given amount of force.
      */
+    // TODO: iBase?
     class VehicleBrakeInfo : public scfImplementationExt0<VehicleBrakeInfo, csObject>
     {
       float maxForce;
@@ -317,6 +317,7 @@ namespace CS
     /** 
      * A steering device steers a given set of tires with a given max amount 
      */
+    // TODO: iBase?
     class VehicleSteeringDevice : public scfImplementationExt0<VehicleSteeringDevice, csObject>
     {
       float maxSteering;
@@ -377,6 +378,7 @@ namespace CS
       virtual const csRefArray<iVehicleWheel>& GetWheels() const = 0;
 
       /// Current speed in km/h
+      // TODO: units instead of meters
       virtual float GetSpeedKMH() const = 0;
     };
   }

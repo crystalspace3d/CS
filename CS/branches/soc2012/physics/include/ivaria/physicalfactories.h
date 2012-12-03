@@ -23,19 +23,17 @@
 * Physics factories interfaces
 */
 
+#include "csgeom/tri.h"
+#include "cstool/primitives.h"
 #include "csutil/scf.h"
 #include "csutil/scf_interface.h"
 #include "iutil/objreg.h"
 #include "iengine/mesh.h"
 #include "iengine/engine.h"
 #include "imesh/genmesh.h"
-#include "csgeom/tri.h"
-#include "cstool/primitives.h"
 
-#include "ivaria/physicscommon.h"
-
-#include "ivaria/collisions.h"
 #include "ivaria/collisionfactories.h"
+#include "ivaria/physics.h"
 
 namespace CS 
 { 
@@ -51,7 +49,7 @@ namespace Collisions
 {
   struct iCollisionCallback;
   struct iCollisionObject;
-  struct CollisionGroup;
+  struct iCollisionGroup;
   struct iCollisionObject;
 }
 }
@@ -70,8 +68,18 @@ namespace Physics
   struct iPhysicalSector;
 
   /**
-  * The type of a physical body.
-  */
+   * The state of a rigid body.
+   */
+  enum RigidBodyState
+  {
+    STATE_STATIC = 0,    /*!< The body is in the static state. */
+    STATE_DYNAMIC,       /*!< The body is in the dynamic state. */
+    STATE_KINEMATIC      /*!< The body is in the kinematic state. */
+  };
+
+/**
+ * The type of a physical body.
+ */
   enum PhysicalObjectType
   {
     PHYSICAL_OBJECT_RIGIDBODY = 0,
@@ -87,7 +95,7 @@ namespace Physics
     SCF_INTERFACE (CS::Physics::iPhysicalObjectFactory, 1, 0, 0);
 
     /// Get the PhysicalObjectType of the object whose data is stored in this properties object
-    virtual PhysicalObjectType GetPhysicalObjectType () const = 0;
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const = 0;
 
     /// Get the density of all objects that will be constructed by this factory
     virtual float GetDensity () const = 0;
@@ -137,12 +145,11 @@ namespace Physics
     SCF_INTERFACE (CS::Physics::iRigidBodyFactory, 1, 0, 0);
 
     /// Create a rigid body
-    // TODO: rename into CreateInstance ()
     virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody () = 0;
 
     /// Set the dynamic state of this rigid body factory.
-    virtual void SetState (RigidBodyState state) = 0;
-    virtual RigidBodyState GetState () const = 0;
+    virtual void SetState (CS::Physics::RigidBodyState state) = 0;
+    virtual CS::Physics::RigidBodyState GetState () const = 0;
 
     /// Set the elasticity of this rigid body factory.
     virtual void SetElasticity (float value) = 0;
@@ -190,6 +197,7 @@ namespace Physics
 
   /**
    * Used to create a one-dimensional softbody
+   * \todo Remove that class
    */
   struct iSoftRopeFactory : public virtual iSoftBodyFactory
   {
@@ -213,6 +221,7 @@ namespace Physics
 
   /**
    * Used to create a two-dimensional softbody
+   * \todo Remove that class
    */
   struct iSoftClothFactory : public virtual iSoftBodyFactory
   {
@@ -236,6 +245,7 @@ namespace Physics
   
   /**
    * Used to create an arbitrary softbody defined by a given mesh
+   * \todo Remove that class
    */
   struct iSoftMeshFactory : public virtual iSoftBodyFactory
   {
@@ -251,7 +261,6 @@ namespace Physics
   /**
    * Used to create a dynamic actor
    */
-  // TODO: really needed?
   struct iDynamicActorFactory : public virtual iRigidBodyFactory
   {
     SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
@@ -285,7 +294,168 @@ namespace Physics
     virtual void SetUseKinematicSteps (bool u) = 0;
   };
 
-  // TODO: joint factory
+  /**
+   * A joint that can constrain the relative motion between two iPhysicalBody.
+   * For instance if all motion in along the local X axis is constrained
+   * then the bodies will stay motionless relative to each other
+   * along an x axis rotated and positioned by the joint's transform.
+   *
+   * Main creators of instances implementing this interface:
+   * - iPhysicalSystem::CreateJoint()
+   * 
+   * Main users of this interface:
+   * - iPhysicalSector
+   * \todo Joint factories
+   */
+  struct iJointFactory : public virtual iBase
+  {
+    SCF_INTERFACE (CS::Physics::iJointFactory, 1, 0, 0);
+
+    /// Create a joint instance
+    virtual csPtr<CS::Physics::iJoint> CreateJoint () = 0;
+
+    /**
+     * Set the translation constraints on the 3 axes. If true is
+     * passed for an axis then the Joint will constrain all motion along
+     * that axis (ie no motion will be allowed). If false is passed in then all motion along that
+     * axis is free, but bounded by the minimum and maximum distance
+     * if set. Set force_update to true if you want to apply the changes 
+     * right away.
+     */
+    virtual void SetTransConstraints (bool X, bool Y, bool Z) = 0;
+
+    /// True if this axis' translation is constrained.
+    virtual bool IsXTransConstrained () const = 0;
+
+    /// True if this axis' translation is constrained.
+    virtual bool IsYTransConstrained () const = 0;
+
+    /// True if this axis' translation is constrained.
+    virtual bool IsZTransConstrained () const = 0;
+
+    /**
+     * Set the minimum allowed distance between the two bodies. Set force_update to true if 
+     * you want to apply the changes right away.
+     */
+    virtual void SetMinimumDistance (const csVector3& dist) = 0;
+
+    /// Get the minimum allowed distance between the two bodies.
+    virtual const csVector3& GetMinimumDistance () const = 0;
+
+    /**
+     * Set the maximum allowed distance between the two bodies. Set force_update to true if 
+     * you want to apply the changes right away.
+     */
+    virtual void SetMaximumDistance (const csVector3& dist) = 0;
+
+    /// Get the maximum allowed distance between the two bodies.
+    virtual const csVector3& GetMaximumDistance () const = 0;
+
+    /**
+     * Set the rotational constraints on the 3 axes. If true is
+     * passed for an axis then the Joint will constrain all rotation around
+     * that axis (ie no motion will be allowed). If false is passed in then all rotation around that
+     * axis is free, but bounded by the minimum and maximum angle
+     * if set. Set force_update to true if you want to apply the changes 
+     * right away.
+     */
+    virtual void SetRotConstraints (bool X, bool Y, bool Z) = 0;
+
+    /// True if this axis' rotation is constrained.
+    virtual bool IsXRotConstrained () const = 0;
+
+    /// True if this axis' rotation is constrained.
+    virtual bool IsYRotConstrained () const = 0;
+
+    /// True if this axis' rotation is constrained.
+    virtual bool IsZRotConstrained () const = 0;
+
+    /**
+     * Set the minimum allowed angle between the two bodies, in radian. Set force_update to true if 
+     * you want to apply the changes right away.
+     */
+    virtual void SetMinimumAngle (const csVector3& angle) = 0;
+
+    /// Get the minimum allowed angle between the two bodies (in radian).
+    virtual const csVector3& GetMinimumAngle () const = 0;
+
+    /**
+     * Set the maximum allowed angle between the two bodies (in radian). Set force_update to true if 
+     * you want to apply the changes right away.
+     */
+    virtual void SetMaximumAngle (const csVector3& angle) = 0;
+
+    /// Get the maximum allowed angle between the two bodies (in radian).
+    virtual const csVector3& GetMaximumAngle () const = 0;
+
+    /** 
+     * Set the restitution of the joint's stop point (this is the 
+     * elasticity of the joint when say throwing open a door how 
+     * much it will bounce the door back closed when it hits).
+     */
+    virtual void SetBounce (const csVector3& bounce) = 0;
+
+    /// Get the joint restitution.
+    virtual const csVector3& GetBounce () const = 0;
+
+    /**
+     * Apply a motor velocity to joint (for instance on wheels). Set force_update to true if 
+     * you want to apply the changes right away.
+     */
+    virtual void SetDesiredVelocity (const csVector3& velo) = 0;
+
+    /// Get the desired velocity of the joint motor.
+    virtual const csVector3& GetDesiredVelocity () const = 0;
+
+    /**
+     * Set the maximum force that can be applied by the joint motor to reach the desired velocity.
+     * Set force_update to true if  you want to apply the changes right away.
+     */
+    virtual void SetMaxForce (const csVector3& force) = 0;
+
+    /// Get the maximum force that can be applied by the joint motor to reach the desired velocity.
+    virtual const csVector3& GetMaxForce () const = 0;
+
+    /// Set this joint to a spring joint.
+    virtual void SetSpring (bool isSpring) = 0;
+
+    /// Set the linear stiffness of the spring.
+    virtual void SetLinearStiffness (const csVector3& stiff) = 0;
+
+    /// Get the linear stiffness of the spring.
+    virtual const csVector3& GetLinearStiffness () const = 0;
+
+    /// Set the angular stiffness of the spring.
+    virtual void SetAngularStiffness (const csVector3& stiff) = 0;
+
+    /// Get the angular stiffness of the spring.
+    virtual const csVector3& GetAngularStiffness () const = 0;
+
+    /// Set the linear damping of the spring.
+    virtual void SetLinearDamping (const csVector3& damp) = 0;
+
+    /// Get the linear damping of the spring.
+    virtual const csVector3& GetLinearDamping () const = 0;
+
+    /// Set the angular damping of the spring.
+    virtual void SetAngularDamping (const csVector3& damp) = 0;
+
+    /// Get the angular damping of the spring.
+    virtual const csVector3& GetAngularDamping () const = 0;
+  
+    /// Set the value to an equilibrium point for translation.
+    virtual void SetLinearEquilibriumPoint (const csVector3& point) = 0;
+
+    /// Set the value to an equilibrium point for rotation.
+    virtual void SetAngularEquilibriumPoint (const csVector3& point) = 0;
+
+    /// Set the threshold of a breaking impulse.
+    virtual void SetBreakingImpulseThreshold (float threshold) = 0;
+
+    /// Get the threshold of a breaking impulse.
+    virtual float GetBreakingImpulseThreshold () const = 0;
+  };
+
 }
 }
 #endif

@@ -34,25 +34,25 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-float PhysDemo::GetForward()
+float PhysDemo::GetForward ()
 {
-  if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState(CSKEY_UP))
+  if (kbd->GetKeyState (KeyForward) || kbd->GetKeyState (CSKEY_UP))
   {
     return 1;
   }
   return 0;
 }
 
-float PhysDemo::GetBackward()
+float PhysDemo::GetBackward ()
 {
-  if (kbd->GetKeyState (KeyBack) || kbd->GetKeyState(CSKEY_DOWN))
+  if (kbd->GetKeyState (KeyBack) || kbd->GetKeyState (CSKEY_DOWN))
   {
      return 1;
   }
   return 0;
 }
 
-float PhysDemo::GetLeftRight()
+float PhysDemo::GetLeftRight ()
 {
   float val = 0;
   if (kbd->GetKeyState (KeyStrafeLeft))
@@ -66,15 +66,15 @@ float PhysDemo::GetLeftRight()
   return val;
 }
 
-csVector3 PhysDemo::GetInputDirection()
+csVector3 PhysDemo::GetInputDirection ()
 {
-  return csVector3(GetLeftRight(), 0, GetForward() - GetBackward());
+  return csVector3 (GetLeftRight (), 0, GetForward () - GetBackward ());
 }
 
 bool PhysDemo::OnKeyboard (iEvent &event)
 {
   //DemoApplication::OnKeyboard (event);
-  csKeyEventType eventtype = csKeyEventHelper::GetEventType(&event);
+  csKeyEventType eventtype = csKeyEventHelper::GetEventType (&event);
   if (eventtype != csKeyEventTypeDown) return false;
 
   utf32_char code = csKeyEventHelper::GetCookedCode (&event);
@@ -83,13 +83,13 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     // A number key has been pressed -> Use the tool function
     if (selectedItem)
     {
-      size_t i = size_t(code - '1');
-      if (i < selectedItem->GetTemplate().GetSecondaryFunctions().GetSize())
+      size_t i = size_t (code - '1');
+      if (i < selectedItem->GetTemplate ().GetSecondaryFunctions ().GetSize ())
       {
-        ItemFunction* func = selectedItem->GetTemplate().GetSecondaryFunction(i);
+        ItemFunction* func = selectedItem->GetTemplate ().GetSecondaryFunction (i);
         if (func)
         {
-          return func->Use(selectedItem);
+          return func->Use (selectedItem);
         }
       }
     }
@@ -100,7 +100,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   {
     selectedIndex = (selectedIndex + 1) % player.GetInventory ().GetItems ().GetSize ();
     selectedItem = player.GetInventory ().GetItem (selectedIndex);
-    SetupHUD();
+    SetupHUD ();
   }
   else if (code == '-')
   {
@@ -108,18 +108,18 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       selectedIndex = player.GetInventory ().GetItems ().GetSize () - 1;
     else selectedIndex--;
     selectedItem = player.GetInventory ().GetItem (selectedIndex);
-    SetupHUD();
+    SetupHUD ();
   }
 
   else if (code >= CSKEY_F1 && code <= CSKEY_F12)
   {
     // F-key has been pressed -> Select tool
-    size_t i = size_t(code - CSKEY_F1);
-    if (i < player.GetInventory().GetItems().GetSize())
+    size_t i = size_t (code - CSKEY_F1);
+    if (i < player.GetInventory ().GetItems ().GetSize ())
     {
       // A different item has been selected: Select it and update HUD descriptions
-      selectedItem = player.GetInventory().GetItem(i);
-      SetupHUD();
+      selectedItem = player.GetInventory ().GetItem (i);
+      SetupHUD ();
       return true;
     }
     return false;
@@ -128,7 +128,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else  if (csKeyEventHelper::GetCookedCode (&event) == CSKEY_ESC)
   {
     csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (GetObjectRegistry ()));
-    if (q) q->GetEventOutlet()->Broadcast (csevQuit (GetObjectRegistry ()));
+    if (q) q->GetEventOutlet ()->Broadcast (csevQuit (GetObjectRegistry ()));
     return true;
   }
 
@@ -141,7 +141,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'r')
   {
     // reset
-    physDemo.ResetCurrentLevel();
+    physDemo.ResetCurrentLevel ();
     return true;
   }
   else if (code == 'c' && !actorVehicle)    // don't switch modes while in vehicle
@@ -164,13 +164,13 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       break;
     }
 
-    UpdateActorMode(actorMode);
+    UpdateActorMode (actorMode);
     return true;
   }
 
   else if (code == 'p')
   {
-    // TODO: use iPhysicalSystem::SetSimulationSpeed()
+    // TODO: use iPhysicalSystem::SetSimulationSpeed ()
     // Toggle pause mode for dynamic simulation
     pauseDynamic = !pauseDynamic;
     if (pauseDynamic)
@@ -182,7 +182,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
   else if (code == 'o')
   {
-    // TODO: use iPhysicalSystem::SetSimulationSpeed()
+    // TODO: use iPhysicalSystem::SetSimulationSpeed ()
     // Toggle speed of dynamic simulation
     if (dynamicStepFactor - 0.025 < EPSILON)
     {
@@ -239,7 +239,7 @@ bool PhysDemo::OnKeyboard (iEvent &event)
   else if (code == 'g')
   {
     // Toggle gravity.
-    SetGravity (GetCurrentSector()->GetGravity().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
+    SetGravity (GetCurrentSector ()->GetGravity ().IsZero (EPSILON)? csVector3 (0.0f, -9.81f, 0.0f) : csVector3 (0));
     return true;
   }
 
@@ -248,85 +248,85 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     // Trace a beam to find if a rigid body was under the mouse cursor
-    csRef<iCamera> camera = view->GetCamera();
-    csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+    csRef<iCamera> camera = view->GetCamera ();
+    csVector2 v2d (mouse->GetLastX (), g2d->GetHeight () - mouse->GetLastY ());
     csVector3 v3d = camera->InvPerspective (v2d, 10000);
-    csVector3 startBeam = camera->GetTransform().GetOrigin();
-    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+    csVector3 startBeam = camera->GetTransform ().GetOrigin ();
+    csVector3 endBeam = camera->GetTransform ().This2Other (v3d);
 
     CS::Collisions::HitBeamResult hitResult =
-      GetCurrentSector()->HitBeamPortal (startBeam, endBeam);
-    if (hitResult.hasHit && IsDynamic(hitResult.object))
+      GetCurrentSector ()->HitBeamPortal (startBeam, endBeam);
+    if (hitResult.hasHit && IsDynamic (hitResult.object))
     {
       // Remove the body and the mesh from the simulation, and put them in the clipboard
 
-      clipboardBody = hitResult.object->QueryPhysicalBody();
-      clipboardMovable = hitResult.object->GetAttachedSceneNode ()->GetMovable();
+      clipboardBody = hitResult.object->QueryPhysicalBody ();
+      clipboardMovable = hitResult.object->GetAttachedSceneNode ()->GetMovable ();
 
-      if (clipboardBody->QueryRigidBody())
+      if (clipboardBody->QueryRigidBody ())
       {
-        CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody();
-        if (rigidBody->GetState() == CS::Physics::STATE_DYNAMIC)
+        CS::Physics::iRigidBody* rigidBody = clipboardBody->QueryRigidBody ();
+        if (rigidBody->GetState () == CS::Physics::STATE_DYNAMIC)
         {
-          size_t count = GetCurrentSector()->GetRigidBodyCount();
-          GetCurrentSector()->RemoveCollisionObject (clipboardBody->QueryRigidBody());
-          //room->GetMeshes()->Remove (clipboardMovable->GetSceneNode()->QueryMesh());
-          if (GetCurrentSector()->GetRigidBodyCount() == count)
-            clipboardBody.Invalidate();
+          size_t count = GetCurrentSector ()->GetRigidBodyCount ();
+          GetCurrentSector ()->RemoveCollisionObject (clipboardBody->QueryRigidBody ());
+          //room->GetMeshes ()->Remove (clipboardMovable->GetSceneNode ()->QueryMesh ());
+          if (GetCurrentSector ()->GetRigidBodyCount () == count)
+            clipboardBody.Invalidate ();
         }
       }
       else
       {
-        CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-        GetCurrentSector()->RemoveCollisionObject (softBody);
+        CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody ();
+        GetCurrentSector ()->RemoveCollisionObject (softBody);
       }
 
       // Update the display of the dynamics debugger
-      //dynamicsDebugger->UpdateDisplay();
+      //dynamicsDebugger->UpdateDisplay ();
     }
   }
 
   // Paste operation
   else if (csKeyEventHelper::GetRawCode (&event) == 'v'
     && kbd->GetKeyState (CSKEY_CTRL)
-    && clipboardBody.IsValid())
+    && clipboardBody.IsValid ())
   {
     // Compute the new position of the body
-    csRef<iCamera> camera = view->GetCamera();
-    csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+    csRef<iCamera> camera = view->GetCamera ();
+    csVector2 v2d (mouse->GetLastX (), g2d->GetHeight () - mouse->GetLastY ());
     csVector3 v3d = camera->InvPerspective (v2d, 10000);
-    csVector3 startBeam = camera->GetTransform().GetOrigin();
-    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+    csVector3 startBeam = camera->GetTransform ().GetOrigin ();
+    csVector3 endBeam = camera->GetTransform ().This2Other (v3d);
 
     csVector3 newPosition = endBeam - startBeam;
-    newPosition.Normalize();
-    csOrthoTransform newTransform = camera->GetTransform();
-    newTransform.SetOrigin (newTransform.GetOrigin() + newPosition * 1.5f);
+    newPosition.Normalize ();
+    csOrthoTransform newTransform = camera->GetTransform ();
+    newTransform.SetOrigin (newTransform.GetOrigin () + newPosition * 1.5f);
 
     // Put back the body from the clipboard to the simulation
-    if (clipboardBody->QueryRigidBody())
+    if (clipboardBody->QueryRigidBody ())
     {
       clipboardBody->SetTransform (newTransform);
-      GetCurrentSector()->AddCollisionObject (clipboardBody->QueryRigidBody());
+      GetCurrentSector ()->AddCollisionObject (clipboardBody->QueryRigidBody ());
     }
     else
     {
-      CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody();
-      GetCurrentSector()->AddCollisionObject (softBody);
+      CS::Physics::iSoftBody* softBody = clipboardBody->QuerySoftBody ();
+      GetCurrentSector ()->AddCollisionObject (softBody);
     }
 
     clipboardBody = 0;
     clipboardMovable = 0;
 
     // Update the display of the dynamics debugger
-    //dynamicsDebugger->UpdateDisplay();
+    //dynamicsDebugger->UpdateDisplay ();
   }
   // TODO: move in tool options in order to free keyboard keys
   else if (csKeyEventHelper::GetRawCode (&event) == 'i'
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Starting profile...\n");
-    physicalSystem->StartProfile();
+    physicalSystem->StartProfile ();
     return true;
   }
 
@@ -334,18 +334,18 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     && kbd->GetKeyState (CSKEY_CTRL))
   {
     printf ("Stopping profile...\n");
-    physicalSystem->StopProfile();
+    physicalSystem->StopProfile ();
     return true;
   }
 
   else if (csKeyEventHelper::GetRawCode (&event) == 'p'
     && kbd->GetKeyState (CSKEY_CTRL))
   {
-    physicalSystem->DumpProfile();
+    physicalSystem->DumpProfile ();
     return true;
   }
   
-  csRef<iCamera> cam = view->GetCamera();
+  csRef<iCamera> cam = view->GetCamera ();
   switch (code)
   {
   case ']':
@@ -353,28 +353,28 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     if (!terrainMod)
     {
       // Get feeder
-      moddedTerrainFeeder = GetFirstTerrainModDataFeeder(GetCurrentSector());
+      moddedTerrainFeeder = GetFirstTerrainModDataFeeder (GetCurrentSector ());
       if (moddedTerrainFeeder)
       {
         // Apply new mod
-        csVector3 pos(0);
+        csVector3 pos (0);
 
         float len = 100;
         float height = 100;
 
         // TODO: The cells seem to have a different coordinate system, so "pos" is not in sector coordinates
-        terrainMod = moddedTerrainFeeder->AddModifier(pos, len, height);
+        terrainMod = moddedTerrainFeeder->AddModifier (pos, len, height);
       }
       else
       {
         // Cannot modify terrain
-        ReportWarning("There is no modifiable terrain in this sector!");
+        ReportWarning ("There is no modifiable terrain in this sector!");
       }
     }
     else
     {
       // Remove existing mod
-      moddedTerrainFeeder->RemoveModifier(terrainMod);
+      moddedTerrainFeeder->RemoveModifier (terrainMod);
       terrainMod = nullptr;
     }
     return true;
@@ -386,24 +386,24 @@ bool PhysDemo::OnKeyboard (iEvent &event)
       float height = ActorDimensions.y;
       float colliderRadius = height/6;
 
-      csVector3 pos = GetPointInFrontOfFeetXZ(2 * height);
+      csVector3 pos = GetPointInFrontOfFeetXZ (2 * height);
       csVector3 origin = pos + csVector3 (0, height, 0);
-      //csVector3 origin = cam->GetTransform().GetOrigin() + csVector3 (0, ActorDimensions.y, 2);
+      //csVector3 origin = cam->GetTransform ().GetOrigin () + csVector3 (0, ActorDimensions.y, 2);
 
-      AddParticles(origin, -1);
+      AddParticles (origin, -1);
 
       // add physical object to demonstrate that particles are not penetrating it
-      SpawnSphere(pos + csVector3(0, colliderRadius + EPSILON, 0), colliderRadius, false);
+      SpawnSphere (pos + csVector3 (0, colliderRadius + EPSILON, 0), colliderRadius, false);
       return true;
     }
   case 'v':
     {
     // Update camera follow mode
-    cameraMode = CameraMode(((int)cameraMode + 1) % (int)CameraModeCount);
-    csVector3 dir(cam->GetTransform().GetT2O() * csVector3(0, 0, 1));
+    cameraMode = CameraMode (((int)cameraMode + 1) % (int)CameraModeCount);
+    csVector3 dir (cam->GetTransform ().GetT2O () * csVector3 (0, 0, 1));
     dir[UpAxis] = 0;
-    dir.Normalize();
-    cam->GetTransform().LookAt(dir, UpVector);
+    dir.Normalize ();
+    cam->GetTransform ().LookAt (dir, UpVector);
     return true;
     }
   }
@@ -413,16 +413,16 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
 bool PhysDemo::OnMouseDown (iEvent &event)
 {
-  size_t button = size_t(csMouseEventHelper::GetButton (&event));
+  size_t button = size_t (csMouseEventHelper::GetButton (&event));
   if (selectedItem && 
-    selectedItem->GetTemplate().GetPrimaryFunctions().GetSize() && 
-    button < selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
+    selectedItem->GetTemplate ().GetPrimaryFunctions ().GetSize () && 
+    button < selectedItem->GetTemplate ().GetPrimaryFunctions ().GetSize ())
   {
     // Use tool
-    ItemFunction* func = selectedItem->GetTemplate().GetPrimaryFunction(button);
+    ItemFunction* func = selectedItem->GetTemplate ().GetPrimaryFunction (button);
     if (func)
     {
-      return func->Use(selectedItem);
+      return func->Use (selectedItem);
     }
   }
 
@@ -432,33 +432,33 @@ bool PhysDemo::OnMouseDown (iEvent &event)
     // Find the rigid body that was clicked on
     // Compute the end beam points
     HitBeamResult hitResult;
-    if (PickCursorObject(hitResult) && IsDynamic(hitResult.object))
+    if (PickCursorObject (hitResult) && IsDynamic (hitResult.object))
     {
-      csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
+      csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody ();
 
       // Add a force at the point clicked
-      csVector3 force = hitResult.isect - GetActorPos();
-      force.Normalize();
+      csVector3 force = hitResult.isect - GetActorPos ();
+      force.Normalize ();
 
       force *= 20.f;
-      force *= physicalBody->GetMass();
+      force *= physicalBody->GetMass ();
 
-      if (physicalBody->QueryRigidBody())
+      if (physicalBody->QueryRigidBody ())
       {
-        csOrthoTransform trans = physicalBody->GetTransform();
+        csOrthoTransform trans = physicalBody->GetTransform ();
         // Check if the body hit is not static or kinematic
-        csRef<CS::Physics::iRigidBody> bulletBody = physicalBody->QueryRigidBody();
-        physicalBody->QueryRigidBody()->AddForceAtPos (force, hitResult.isect);
+        csRef<CS::Physics::iRigidBody> bulletBody = physicalBody->QueryRigidBody ();
+        physicalBody->QueryRigidBody ()->AddForceAtPos (force, hitResult.isect);
 
         // This would work too
-        //csOrthoTransform transform (hitResult.body->QueryRigidBody()->GetTransform());
+        //csOrthoTransform transform (hitResult.body->QueryRigidBody ()->GetTransform ());
         //csVector3 relativePosition = transform.Other2This (hitResult.isect);
-        //hitResult.body->QueryRigidBody()->AddForceAtRelPos (force, relativePosition);
+        //hitResult.body->QueryRigidBody ()->AddForceAtRelPos (force, relativePosition);
       }
       else
       {
         force *= 200.f;
-        physicalBody->QuerySoftBody()->AddForce (force, hitResult.vertexIndex);
+        physicalBody->QuerySoftBody ()->AddForce (force, hitResult.vertexIndex);
       }
     }
     else
@@ -471,45 +471,45 @@ bool PhysDemo::OnMouseDown (iEvent &event)
   {
     // Find the rigid body that was clicked on
     // Compute the end beam points
-    csRef<iCamera> camera = view->GetCamera();
-    csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+    csRef<iCamera> camera = view->GetCamera ();
+    csVector2 v2d (mouse->GetLastX (), g2d->GetHeight () - mouse->GetLastY ());
     csVector3 v3d = camera->InvPerspective (v2d, 10000);
-    csVector3 startBeam = camera->GetTransform().GetOrigin();
-    csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+    csVector3 startBeam = camera->GetTransform ().GetOrigin ();
+    csVector3 endBeam = camera->GetTransform ().This2Other (v3d);
 
     // Trace the physical beam
-    CS::Collisions::HitBeamResult hitResult = GetCurrentSector()->HitBeam (startBeam, endBeam);
+    CS::Collisions::HitBeamResult hitResult = GetCurrentSector ()->HitBeam (startBeam, endBeam);
     if (!hitResult.hasHit || !hitResult.object) return false;
 
-    if (IsDynamic(hitResult.object))
+    if (IsDynamic (hitResult.object))
     {
       // Check if we hit a rigid body
-      csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody();
-      if (physicalBody->QueryRigidBody())
+      csRef<CS::Physics::iPhysicalBody> physicalBody = hitResult.object->QueryPhysicalBody ();
+      if (physicalBody->QueryRigidBody ())
       {
         csRef<CS::Physics::iRigidBody> bulletBody = scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
 
         // Create a p2p joint at the point clicked
-        dragJoint = physicalSystem->CreateRigidPivotJoint (bulletBody, hitResult.isect);
-        GetCurrentSector()->AddJoint (dragJoint);
+        dragJoint = physicalSystem->CreatePivotJoint (bulletBody, hitResult.isect);
+        GetCurrentSector ()->AddJoint (dragJoint);
 
         dragging = true;
-        dragDistance = (hitResult.isect - startBeam).Norm();
+        dragDistance = (hitResult.isect - startBeam).Norm ();
 
         // Set some dampening on the rigid body to have a more stable dragging
-        linearDampening = bulletBody->GetLinearDamping();
-        angularDampening = bulletBody->GetAngularDamping();
+        linearDampening = bulletBody->GetLinearDamping ();
+        angularDampening = bulletBody->GetAngularDamping ();
         bulletBody->SetLinearDamping (0.9f);
         bulletBody->SetAngularDamping (0.9f);
       }
       else
       {
         softDragging = true;
-        draggedBody = physicalBody->QuerySoftBody();
+        draggedBody = physicalBody->QuerySoftBody ();
         draggedVertex = hitResult.vertexIndex;
-        dragDistance = (hitResult.isect - startBeam).Norm();
+        dragDistance = (hitResult.isect - startBeam).Norm ();
         grabAnimationControl.AttachNew (new MouseAnchorAnimationControl (this));
-        physicalBody->QuerySoftBody()->AnchorVertex (hitResult.vertexIndex, grabAnimationControl);
+        physicalBody->QuerySoftBody ()->AnchorVertex (hitResult.vertexIndex, grabAnimationControl);
       }
     }
     else 
@@ -534,7 +534,7 @@ bool PhysDemo::OnMouseUp (iEvent &event)
     bulletBody->SetAngularDamping (angularDampening);
 
     // Remove the drag joint
-    GetCurrentSector()->RemoveJoint (dragJoint);
+    GetCurrentSector ()->RemoveJoint (dragJoint);
     dragJoint = nullptr;
     return true;
   }
@@ -552,17 +552,17 @@ bool PhysDemo::OnMouseUp (iEvent &event)
 
 
 // This method updates the position of the dragging for soft bodies
-csVector3 MouseAnchorAnimationControl::GetAnchorPosition() const
+csVector3 MouseAnchorAnimationControl::GetAnchorPosition () const
 {
   // Keep the drag joint at the same distance to the camera
-  csRef<iCamera> camera = simple->view->GetCamera();
-  csVector2 v2d (simple->mouse->GetLastX(), simple->g2d->GetHeight() - simple->mouse->GetLastY());
+  csRef<iCamera> camera = simple->view->GetCamera ();
+  csVector2 v2d (simple->mouse->GetLastX (), simple->g2d->GetHeight () - simple->mouse->GetLastY ());
   csVector3 v3d = camera->InvPerspective (v2d, 10000);
-  csVector3 startBeam = camera->GetTransform().GetOrigin();
-  csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+  csVector3 startBeam = camera->GetTransform ().GetOrigin ();
+  csVector3 endBeam = camera->GetTransform ().This2Other (v3d);
 
   csVector3 newPosition = endBeam - startBeam;
-  newPosition.Normalize();
-  newPosition = camera->GetTransform().GetOrigin() + newPosition * simple->dragDistance;
+  newPosition.Normalize ();
+  newPosition = camera->GetTransform ().GetOrigin () + newPosition * simple->dragDistance;
   return newPosition;
 }

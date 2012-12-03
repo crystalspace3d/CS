@@ -29,15 +29,8 @@
  */
 
 #include "csutil/scf.h"
-#include "csutil/csstring.h"
-#include "csgeom/vector2.h"
-#include "csgeom/vector3.h"
-#include "csgeom/matrix3.h"
-#include "csgeom/transfrm.h"
-#include "csgeom/plane3.h"
-#include "iutil/object.h"
 #include "iutil/strset.h"
-#include "colliders.h"
+#include "ivaria/colliders.h"
 #include "ivaria/collisionfactories.h"
 
 struct iTerrainSystem;
@@ -63,9 +56,9 @@ namespace CS
 {
 namespace Collisions
 {
-struct iCollisionCallback;
-struct iCollisionObject;
+
 struct iActor;
+struct iCollisionObject;
 struct iCollisionSector;
 struct iCollisionSystem;
 
@@ -636,8 +629,10 @@ struct iCollisionSystem : public virtual iBase
       float minHeight = 0, float maxHeight = 0) = 0;
 
   /// Creates a new collision sector and adds it to the system's set
-  // TODO: iSector param
   virtual iCollisionSector* CreateCollisionSector (iSector* sector = nullptr) = 0;
+  
+  /// Remove the given collision sector
+  virtual void RemoveCollisionSector (iCollisionSector* sector) = 0;
   
   /// Return the amount of sectors in this system
   virtual size_t GetCollisionSectorCount () const = 0;

@@ -23,8 +23,6 @@
 * Collision factories interfaces
 */
 
-#include "ivaria/collisionscommon.h"
-
 #include "csutil/scf.h"
 #include "csgeom/vector2.h"
 #include "csgeom/vector3.h"
@@ -35,22 +33,18 @@
 #include "colliders.h"
 #include "csutil/csstring.h"
 
-
 namespace CS 
 { 
 namespace Collisions 
 {
   struct iCollider;
+  struct iCollisionActor;
   struct iCollisionCallback;
+  struct iCollisionGroup;
   struct iCollisionObject;
   struct iCollisionSector;
   struct iCollisionSystem;
-  struct iCollisionObject;
   struct iGhostCollisionObject;
-  struct iCollisionActor;
-
-  //struct CollisionGroup;
-  struct iCollisionGroup;
 
   /**
    * \todo Document me
@@ -66,7 +60,6 @@ namespace Collisions
     virtual iCollisionSystem* GetSystem () const = 0;
 
     /// Create an instance
-    // TODO: rename into CreateInstance()?
     virtual csPtr<iCollisionObject> CreateCollisionObject () = 0;
 
     /// Set the collider of this factory
@@ -89,7 +82,6 @@ namespace Collisions
     SCF_INTERFACE (CS::Collisions::iGhostCollisionObjectFactory, 1, 0, 0);
 
     /// Create an instance
-    // TODO: rename into CreateInstance()
     virtual csPtr<iGhostCollisionObject> CreateGhostCollisionObject () = 0;
   };
 
@@ -101,7 +93,6 @@ namespace Collisions
     SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
 
     /// Create an instance
-    // TODO: rename into CreateInstance()
     virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
 
     /// Get the max vertical threshold that this actor can step over

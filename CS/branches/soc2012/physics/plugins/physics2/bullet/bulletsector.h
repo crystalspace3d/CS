@@ -24,6 +24,7 @@
 #include "ivaria/reporter.h"
 #include "ivaria/collisions.h"
 #include "ivaria/physics.h"
+#include "ivaria/physicscommon.h"
 #include "ivaria/view.h"
 #include "iengine/sector.h"
 #include "iengine/movable.h"
@@ -47,8 +48,6 @@ class btSequentialImpulseConstraintSolver;
 class btBroadphaseInterface;
 struct btSoftBodyWorldInfo;
 class btActionInterface;
-
-//class btGhostObject;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -203,7 +202,7 @@ public:
   //virtual void SetGimpactEnabled (bool enabled);
   //virtual bool GetGimpactEnabled ();
 
-  virtual bool SaveWorld (const char* filename);
+  virtual bool Save (const char* filename);
 
   bool BulletCollide (btCollisionObject* objectA,
     btCollisionObject* objectB,

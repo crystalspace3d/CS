@@ -156,7 +156,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   public:
     BulletPhysicalObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "") : 
     scfImplementationType (this, system, collider, name),
-        density(0), mass(0),     // static objects
+        density(0), mass(0),     // static objects // TODO: really?
         friction(10), gravityEnabled(true)
     {}
 
@@ -425,6 +425,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     /// Set whether to use a kinematic method for smooth steps
     void SetUseKinematicSteps(bool u) { kinematicSteps = u; }
   };
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)
 

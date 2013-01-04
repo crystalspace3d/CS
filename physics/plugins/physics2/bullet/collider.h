@@ -29,10 +29,16 @@
 #include "ivaria/collisions.h"
 #include "common2.h"
 
+#include "csutil/custom_new_disable.h"
+
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
+
+#include "csutil/custom_new_enable.h"
+
 struct csLockedHeightData;
 struct iTerrainSystem;
 struct iTriangleMesh;
-
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
@@ -58,7 +64,6 @@ struct csColliderCollection
   {
   }
 };
-
 
 /**
  * Implementation of iCollider. Supports hierarchy of colliders.
@@ -127,6 +132,9 @@ public:
   virtual size_t GetChildrenCount () const
   { return children->colliders.GetSize (); }
   
+  virtual void SetChildTransform (size_t index, const csOrthoTransform& transform);
+  virtual const csOrthoTransform& GetChildTransform (size_t index) const;
+
   btCollisionShape* GetOrCreateBulletShape ();
 
   // TODO: remove?

@@ -68,22 +68,23 @@ void PhysDemo::CreateItemTemplates ()
     // Primitive Object Spawner
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Primitive Object Spawner");
     
-    AddItemFunction (Secondary, SpawnSphere, "Spawn Sphere", physDemo.SpawnSphere ());
-    AddItemFunction (Secondary, SpawnBox, "Spawn Box", physDemo.SpawnBox ());
-    AddItemFunction (Secondary, SpawnCapsule, "Spawn Capsule", physDemo.SpawnCapsule ());
-    AddItemFunction (Secondary, SpawnCylinder, "Spawn Cylinder", physDemo.SpawnCylinder ());
-    AddItemFunction (Secondary, SpawnCone, "Spawn Cone", physDemo.SpawnCone ());
-    AddItemFunction (Secondary, SpawnBoxStacks, "Spawn Box Stacks", physDemo.SpawnBoxStacks (10, 5, .5, 80));
+    AddItemFunction (Secondary, SpawnSphere, "Spawn sphere", physDemo.SpawnSphere ());
+    AddItemFunction (Secondary, SpawnBox, "Spawn box", physDemo.SpawnBox ());
+    AddItemFunction (Secondary, SpawnCapsule, "Spawn capsule", physDemo.SpawnCapsule ());
+    AddItemFunction (Secondary, SpawnCylinder, "Spawn cylinder", physDemo.SpawnCylinder ());
+    AddItemFunction (Secondary, SpawnCone, "Spawn cone", physDemo.SpawnCone ());
+    AddItemFunction (Secondary, SpawnBoxStacks, "Spawn box stacks", physDemo.SpawnBoxStacks (10, 5, .5, 80));
   }
 
   {
     // Complex Object Spawner
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Complex Object Spawner");
     
-    AddItemFunction (Secondary, SpawnCompound, "Spawn Compound", physDemo.SpawnCompound ());
-    AddItemFunction (Secondary, SpawnConcaveMesh, "Spawn Concave Mesh", physDemo.SpawnConcaveMesh ());
-    AddItemFunction (Secondary, SpawnJointed, "Spawn Jointed", physDemo.SpawnJointed ());
-    AddItemFunction (Secondary, SpawnChain, "Spawn Chain", physDemo.SpawnChain ());
+    AddItemFunction (Secondary, SpawnCompound, "Spawn compound", physDemo.SpawnCompound ());
+    AddItemFunction (Secondary, SpawnConcaveMesh, "Spawn concave mesh", physDemo.SpawnConcaveMesh ());
+    AddItemFunction (Secondary, SpawnJointed, "Spawn jointed", physDemo.SpawnJointed ());
+    AddItemFunction (Secondary, SpawnChain, "Spawn chain", physDemo.SpawnChain ());
+    AddItemFunction (Secondary, SpawnChain, "Spawn particles", physDemo.SpawnParticles ());
     AddItemFunction (Secondary, SpawnKrystalRagdoll, "Spawn Krystal", physDemo.SpawnKrystalRagdoll ());
     AddItemFunction (Secondary, SpawnFrankieRagdoll, "Spawn Frankie", physDemo.SpawnFrankieRagdoll ());
   }
@@ -93,30 +94,30 @@ void PhysDemo::CreateItemTemplates ()
     // Softbody Object Spawner spawns softbodies, such as cloth or ropes
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Softbody Object Spawner");
 
-    AddItemFunction (Secondary, SpawnRope, "Spawn Rope", physDemo.SpawnRope ());
-    AddItemFunction (Secondary, SpawnCloth, "Spawn Cloth", physDemo.SpawnCloth ());
-    AddItemFunction (Secondary, SpawnSoftBody, "Spawn Soft Ball", physDemo.SpawnSoftBody ());
+    AddItemFunction (Secondary, SpawnRope, "Spawn rope", physDemo.SpawnRope ());
+    AddItemFunction (Secondary, SpawnCloth, "Spawn cloth", physDemo.SpawnCloth ());
+    AddItemFunction (Secondary, SpawnSoftBody, "Spawn soft ball", physDemo.SpawnSoftBody ());
   }
   
   {
     // Object & Force Manipulator: Manipulates objects and introduces fun forces
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Object & Force Manipulator");
 
-    AddItemFunction (Secondary, PullObject, "Pull Object", physDemo.PullObject ());
-    AddItemFunction (Secondary, DeleteObject, "Delete Object", physDemo.DeleteObject ());
-    AddItemFunction (Secondary, ToggleObjectDynamic, "Toggle Dynamic", physDemo.ToggleObjectDynamic ());
+    AddItemFunction (Secondary, PullObject, "Pull object", physDemo.PullObject ());
+    AddItemFunction (Secondary, DeleteObject, "Delete object", physDemo.DeleteObject ());
+    AddItemFunction (Secondary, ToggleObjectDynamic, "Toggle dynamic", physDemo.ToggleObjectDynamic ());
   }
 
   {
     // Vehicle Manager
     ItemTemplate& templ = ItemMgr::Instance->CreateTemplate ("Vehicle Manager");
     
-    AddItemFunction (Primary, EnterTargetVehicle, "Enter Target Vehicle", physDemo.EnterTargetVehicle ());
-    AddItemFunction (Primary, DeleteTargetVehicle, "Delete Target Vehicle", physDemo.DeleteTargetVehicle ());
+    AddItemFunction (Primary, EnterTargetVehicle, "Enter target vehicle", physDemo.EnterTargetVehicle ());
+    AddItemFunction (Primary, DeleteTargetVehicle, "Delete target vehicle", physDemo.DeleteTargetVehicle ());
     
-    AddItemFunction (Secondary, AccelerateVehicle, "Leave Current Vehicle", physDemo.LeaveCurrentVehicle ());
-    AddItemFunction (Secondary, SpawnVehicle, "Spawn New Vehicle", physDemo.SpawnVehicle ());
-    AddItemFunction (Secondary, AccelerateVehicle, "Accelerate Target Vehicle", physDemo.AccelerateTargetVehicle ());
+    AddItemFunction (Secondary, AccelerateVehicle, "Leave current vehicle", physDemo.LeaveCurrentVehicle ());
+    AddItemFunction (Secondary, SpawnVehicle, "Spawn new vehicle", physDemo.SpawnVehicle ());
+    AddItemFunction (Secondary, AccelerateVehicle, "Accelerate target vehicle", physDemo.AccelerateTargetVehicle ());
   }
 
   {

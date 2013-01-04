@@ -24,19 +24,40 @@
 #include "common2.h"
 #include "collisionobject2.h"
 
+#include "csutil/custom_new_disable.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "csutil/custom_new_enable.h"
+
 CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 {
-class csBulletGhostCollisionObject : public scfVirtImplementationExt1<
-  csBulletGhostCollisionObject, csBulletCollisionObject, CS::Collisions::iGhostCollisionObject>
+
+class BulletGhostCollisionObjectFactory : public scfVirtImplementationExt1<
+  BulletGhostCollisionObjectFactory, BulletCollisionObjectFactory, CS::Collisions::iCollisionObjectFactory> 
 {
 public:
-  void CreateGhostCollisionObject(CS::Collisions::iGhostCollisionObjectFactory* props);
+  BulletGhostCollisionObjectFactory
+    (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "GhostObject")
+    : scfImplementationType (this, system, collider)
+  {
+  }
+    
+  /// Create a new object
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateGhostCollisionObject();
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
+};
+
+class csBulletGhostCollisionObject : public scfVirtImplementationExt1<
+  csBulletGhostCollisionObject, csBulletCollisionObject, CS::Collisions::iCollisionObject>
+{
+public:
+  void CreateGhostCollisionObject(CS::Collisions::iCollisionObjectFactory* props);
 
 public:
   csBulletGhostCollisionObject(csBulletSystem* sys);
   virtual ~csBulletGhostCollisionObject();
   virtual bool IsPhysicalObject() const { return false; }
-  virtual CS::Collisions::CollisionObjectType GetObjectType () const { return CS::Collisions::COLLISION_OBJECT_GHOST; }
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const
+  { return CS::Collisions::COLLISION_OBJECT_GHOST; }
 
   btPairCachingGhostObject* GetPairCachingGhostObject() const
   { 

@@ -45,10 +45,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     //CreatePhysicalBodyObject (props);
     collider = dynamic_cast<csBulletCollider*>(props->GetCollider ());
-    // TODO: really?
-    SetName (props->QueryObject ()->GetName ());
 
     // TODO: use factory's state
+    // TODO: use collider transform
 
     // set mass & density
     btScalar mass;
@@ -140,11 +139,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       RemoveBulletObject ();
     
     sector->bulletWorld->addRigidBody (btBody, group->value, group->mask);
-
-    //if (GetName () && strcmp (GetName (), "Actor") == 0)
-    //{
-    //  btBody->setAngularFactor (0);
-    //}
 
     insideWorld = true;
     return true;
@@ -674,5 +668,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return;
     }
   }
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

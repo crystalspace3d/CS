@@ -24,7 +24,9 @@
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
 #include "iengine/portal.h"
+#include "imesh/emit.h"
 #include "imesh/genmesh.h"
+#include "imesh/particles.h"
 #include "imesh/terrain2.h"
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
@@ -36,10 +38,10 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody (const char* name, const csOrthoTransform& trans,
+csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody (const csOrthoTransform& trans,
   float friction, float density)
 { 
-  csRef<iRigidBodyFactory> factory = physDemo.physicalSystem->CreateRigidBodyFactory (Collider, name);
+  csRef<iRigidBodyFactory> factory = physDemo.physicalSystem->CreateRigidBodyFactory (Collider);
   factory->SetDensity (density);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (friction);
@@ -49,10 +51,10 @@ csPtr<CS::Physics::iRigidBody> RenderMeshColliderPair::SpawnRigidBody (const cha
   
   iMaterialWrapper* mat = physDemo.engine->GetMaterialList ()->FindByName ("stone");
   csRef<iMeshWrapper> mesh = MeshFactory->CreateMeshWrapper ();
-  mesh->QueryObject ()->SetName (name);
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
   body->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  body->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   // Add to world
   physDemo.GetCurrentSector ()->AddCollisionObject (body);
@@ -83,11 +85,11 @@ csRef<CS::Physics::iRigidBody> PhysDemo::SpawnBox (const csVector3& extents, con
   // Create a box collider & mesh and then the actual box object
   RenderMeshColliderPair pair;
   CreateBoxMeshColliderPair (pair, extents);
-  return SpawnRigidBody (pair, pos, "box", setVelocity);
+  return SpawnRigidBody (pair, pos, setVelocity);
 }
 
 csRef<CS::Physics::iRigidBody> PhysDemo::SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos,
-  const char* name, float friction, float density, bool setVelocity)
+  float friction, float density, bool setVelocity)
 {
   //static csRandomFloatGen randGen;
 
@@ -98,7 +100,7 @@ csRef<CS::Physics::iRigidBody> PhysDemo::SpawnRigidBody (RenderMeshColliderPair&
 
   // Set transform
   csOrthoTransform trans; trans.SetOrigin (pos);
-  csRef<CS::Physics::iRigidBody> body = pair.SpawnRigidBody (name, trans, friction, density);
+  csRef<CS::Physics::iRigidBody> body = pair.SpawnRigidBody (trans, friction, density);
 
   if (setVelocity)
   {
@@ -138,9 +140,9 @@ void PhysDemo::CreateGhostCylinder ()
 
   // Create a body and attach the mesh
   csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
-  csRef<iGhostCollisionObjectFactory> factory = physicalSystem->CreateGhostCollisionObjectFactory (cylinder);
+  csRef<iCollisionObjectFactory> factory = physicalSystem->CreateGhostCollisionObjectFactory (cylinder);
 
-  ghostObject = factory->CreateGhostCollisionObject ();
+  ghostObject = factory->CreateCollisionObject ();
   
   csYRotMatrix3 m (PI/2.0);
   csOrthoTransform trans (m, csVector3 (0, -3, 5));
@@ -150,13 +152,11 @@ void PhysDemo::CreateGhostCylinder ()
   ghostObject->SetAttachedSceneNode (mesh->QuerySceneNode ());
 
   // It won't work for ghost and actor.
-  ghostObject->QueryObject ()->SetName ("ghostObject");
   //ghostObject->Rotate (csVector3 (0, 1, 0), PI/2.0);
   //ghostObject->AddCollider (cylinder, trans)
 
   GetCurrentSector ()->AddCollisionObject (ghostObject);
 }
-
 
 CS::Physics::iRigidBody* PhysDemo::SpawnSphere (bool setVelocity /* = true */)
 {
@@ -209,7 +209,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   // Create a body and attach the mesh and attach a sphere collider.
   csRef<CS::Collisions::iColliderSphere> sphere = physicalSystem->CreateColliderSphere (1.0);
   sphere->SetLocalScale (radius);
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (sphere, "sphere");
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (sphere);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
@@ -220,6 +220,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnSphere (const csVector3& pos, float radi
   //meshNode->GetMovable ()->SetTransform (artificialTransform);//.GetInverse ());
   //meshNode->GetMovable ()->UpdateMove ();
   rb->SetAttachedSceneNode (meshNode);
+  rb->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   csOrthoTransform trans = tc;
   trans.SetOrigin (pos);
@@ -248,15 +249,14 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   const float radius (0.4f);
   const float length (0.8f);
 
-  // We do a hardtransform here to make sure our cylinder has an artificial
-  // offset. That way we can test if the physics engine supports that.
- 
+  // TODO: implement genmesh generation of a cone
+
   // Create a body and attach the mesh and attach a cone collider.
   csRef<CS::Collisions::iColliderCone> cone = physicalSystem->CreateColliderCone (length, radius);
   cone->SetLocalScale (csVector3 (rand ()%5/10. + .2, rand ()%5/10. + .2, rand ()%5/10. + .2));
 
   // Create object
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (cone, "cone");
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (cone);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
@@ -290,7 +290,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
 
   // Create the cylinder mesh factory.
-  csRef<iMeshFactoryWrapper> cylinderFact = engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh", "cylinderFact");
+  csRef<iMeshFactoryWrapper> cylinderFact =
+    engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh", "cylinderFact");
   if (!cylinderFact)
   {
     ReportError ("Error creating mesh object factory!");
@@ -318,20 +319,22 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCylinder (bool setVelocity /* = true */)
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
   // Create a body and attach the mesh.
-  csRef<CS::Collisions::iColliderCylinder> cylinder = physicalSystem->CreateColliderCylinder (length, radius);
+  csRef<CS::Collisions::iColliderCylinder> cylinder =
+    physicalSystem->CreateColliderCylinder (length, radius);
   csMatrix3 m;
 
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (cylinder, "cylinder");
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (cylinder);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
   csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody ();
 
   csOrthoTransform trans = tc;
-  trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   trans.SetOrigin (tc.GetOrigin () + tc.GetT2O () * csVector3 (0, 0, 1));
+  trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   rb->SetTransform (trans);
   rb->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  rb->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   if (setVelocity)
   {
@@ -355,7 +358,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
 
   // Create the capsule mesh factory.
-  csRef<iMeshFactoryWrapper> capsuleFact = engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh", "capsuleFact");
+  csRef<iMeshFactoryWrapper> capsuleFact =
+    engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh", "capsuleFact");
   if (!capsuleFact)
   {
     ReportError ("Error creating mesh object factory!");
@@ -375,8 +379,9 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
   // Create a body
-  csRef<CS::Collisions::iColliderCapsule> capsule = physicalSystem->CreateColliderCapsule (length, radius);
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (capsule, "capsule");
+  csRef<CS::Collisions::iColliderCapsule> capsule =
+    physicalSystem->CreateColliderCapsule (length, radius);
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (capsule);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
@@ -390,6 +395,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
 
   // attach the mesh
   rb->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  rb->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   // Add to world
   GetCurrentSector ()->AddCollisionObject (rb);
@@ -445,7 +451,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh ()
   }  
 
   // create body
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (starCollider, "star");
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (starCollider);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
@@ -456,6 +462,7 @@ CS::Collisions::iCollisionObject* PhysDemo::SpawnConcaveMesh ()
   csOrthoTransform trans = tc;
   trans.SetOrigin (tc.GetOrigin () + tc.GetT2O () * csVector3 (0, 0, 2));
   co->SetAttachedSceneNode (star->QuerySceneNode ());
+  co->QueryObject ()->SetObjectParent (star->QueryObject ());
   co->SetTransform (trans);
   
   GetCurrentSector ()->AddCollisionObject (co);
@@ -497,7 +504,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   // Create a body and attach the mesh.
   csRef<CS::Collisions::iColliderConvexMesh> collider =
     physicalSystem->CreateColliderConvexMesh (collisionHelper.FindCollisionMesh (mesh));
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (collider, "convexmesh");
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (collider);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
@@ -511,6 +518,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnConvexMesh (bool setVelocity /* = true *
   
   // Attach mesh
   rb->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  rb->QueryObject ()->SetObjectParent (mesh->QueryObject ());
   
   if (setVelocity)
   {
@@ -555,7 +563,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
 	  (collisionHelper.FindCollisionMesh (mesh)));
 
   // Create a body
-  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (rootCollider, "compound");
+  csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (rootCollider);
   factory->SetDensity (DefaultDensity);
   factory->SetElasticity (DefaultElasticity);
   factory->SetFriction (DefaultFriction);
@@ -567,6 +575,7 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCompound (bool setVelocity /* = true */)
   trans.SetOrigin (tc.GetOrigin () + tc.GetT2O () * csVector3 (0, 0, 2));
   rb->SetTransform (trans);
   rb->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  rb->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   // Add to world
   GetCurrentSector ()->AddCollisionObject (rb);
@@ -856,15 +865,99 @@ void PhysDemo::SpawnChain ()
   //dynamicsDebugger->UpdateDisplay ();
 }
 
+void PhysDemo::SpawnParticles ()
+{
+  // Compute the position of the particles
+  iSector* sector = view->GetCamera ()->GetSector ();
+  float height = ActorDimensions.y;
+
+  csVector3 pos = GetPointInFrontOfFeetXZ (2 * height);
+  csVector3 origin = pos + csVector3 (0, height, 0);
+  //csVector3 origin = cam->GetTransform ().GetOrigin () + csVector3 (0, ActorDimensions.y, 2);
+
+  // Load the texture
+  const char* materialName = "fire";
+  iMaterialWrapper* mat = engine->GetMaterialList ()->FindByName (materialName);
+  if (!mat)
+  {
+    ReportError ("Could not find the material %s!", CS::Quote::Single (materialName));
+    return;
+  }
+
+  // Create the particle mesh
+  csRef<iMeshFactoryWrapper> meshFactory =
+    engine->CreateMeshFactory ("crystalspace.mesh.object.particles", "physical");
+  if (!meshFactory)
+  {
+    ReportError ("Could not create the particle factory!");
+    return;
+  }
+
+  csRef<iMeshWrapper> mesh = engine->CreateMeshWrapper (meshFactory, "physical", sector, origin);
+  mesh->SetZBufMode (CS_ZBUF_TEST);
+  mesh->SetRenderPriority (engine->GetRenderPriority ("transp"));
+  mesh->GetMeshObject ()->SetMaterialWrapper (mat);
+
+  // Setup the particle system
+  csRef<iParticleSystem> partstate = scfQueryInterface<iParticleSystem> (mesh->GetMeshObject ());
+  partstate->SetParticleSize (csVector2 (0.04f, 0.08f));
+
+  // Create the emitters and effectors
+  csRef<iParticleBuiltinEmitterFactory> emitterFactory = 
+      csLoadPluginCheck<iParticleBuiltinEmitterFactory> (
+        GetObjectRegistry (), "crystalspace.mesh.object.particles.emitter", false);
+  csRef<iParticleBuiltinEffectorFactory> effectorFactory = 
+      csLoadPluginCheck<iParticleBuiltinEffectorFactory> (
+        GetObjectRegistry (), "crystalspace.mesh.object.particles.effector", false);
+
+  csRef<iParticleBuiltinEmitterSphere> sphemit = emitterFactory->CreateSphere ();
+  float velocity = 0.4f;
+  float secondsToLive = 8.0f;
+  float verticalFactor = 2.0f;
+  sphemit->SetRadius (.2f);
+  sphemit->SetParticlePlacement (CS_PARTICLE_BUILTIN_VOLUME);
+  sphemit->SetEmissionRate (256.0f / secondsToLive);
+  sphemit->SetInitialMass (5.0f, 7.5f);
+  sphemit->SetUniformVelocity (true);
+  sphemit->SetInitialTTL (secondsToLive, secondsToLive);
+  sphemit->SetInitialVelocity (csVector3 (0, verticalFactor * velocity, 0), csVector3 (0));
+  partstate->AddEmitter (sphemit);
+
+/*
+  csRef<iParticleBuiltinEffectorLinColor> lincol = effectorFactory->CreateLinColor ();
+  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 2.0000f);
+  lincol->AddColor (csColor4 (1.00f, 0.35f, 0.00f, 0.00f), 1.5000f);
+  lincol->AddColor (csColor4 (1.00f, 0.22f, 0.00f, 0.10f), 1.3125f);
+  lincol->AddColor (csColor4 (1.00f, 0.12f, 0.00f, 0.30f), 1.1250f);
+  lincol->AddColor (csColor4 (0.80f, 0.02f, 0.00f, 0.80f), 0.9375f);
+  lincol->AddColor (csColor4 (0.60f, 0.00f, 0.00f, 0.90f), 0.7500f);
+  lincol->AddColor (csColor4 (0.40f, 0.00f, 0.00f, 0.97f), 0.5625f);
+  lincol->AddColor (csColor4 (0.20f, 0.00f, 0.00f, 1.00f), 0.3750f);
+  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.1875f);
+  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.0000f);
+  partstate->AddEffector (lincol);
+*/
+
+  csRef<iParticleBuiltinEffectorPhysical> physicalEffector = effectorFactory->CreatePhysical ();
+  physicalEffector->SetRandomAcceleration (csVector3 (1.5f, verticalFactor * 1.5f, 1.5f));
+  partstate->AddEffector (physicalEffector);
+}
+
+void PhysDemo::LoadFrankieRagdoll () {}
+void PhysDemo::SpawnFrankieRagdoll () {}
+
+/*
 void PhysDemo::LoadFrankieRagdoll ()
 {
   // Load animesh factory
+  printf ("Loading the Frankie model... ");
   csLoadResult rc = loader->Load ("/lib/frankie/frankie.xml");
   if (!rc.success)
   {
     ReportError ("Can't load Frankie!");
     return;
   }
+  printf ("Done");
 
   csRef<iMeshFactoryWrapper> meshfact = engine->FindMeshFactory ("franky_frankie");
   if (!meshfact)
@@ -905,71 +998,6 @@ void PhysDemo::LoadFrankieRagdoll ()
   // Create ragdoll animation node factory
   csRef<CS::Animation::iSkeletonRagdollNodeFactory2> ragdollFactory =
     ragdollManager->CreateAnimNodeFactory ("frankie_ragdoll");
-  ragdollFactory->SetBodySkeleton (bodySkeleton);
-  ragdollFactory->AddBodyChain (chain, CS::Animation::STATE_DYNAMIC);
-
-  // Set the ragdoll anim node as the only node of the animation tree
-  animeshFactory->GetSkeletonFactory ()->GetAnimationPacket ()
-    ->SetAnimationRoot (ragdollFactory);
-}
-
-void PhysDemo::LoadKrystalRagdoll ()
-{
-  // Load animesh factory
-  csLoadResult rc = loader->Load ("/lib/krystal/krystal.xml");
-  if (!rc.success)
-  {
-    ReportError ("Can't load Krystal library file!");
-    return;
-  }
-
-  csRef<iMeshFactoryWrapper> meshfact =
-    engine->FindMeshFactory ("krystal");
-  if (!meshfact)
-  {
-    ReportError ("Can't find Krystal's mesh factory!");
-    return;
-  }
-
-  csRef<CS::Mesh::iAnimatedMeshFactory> animeshFactory =
-    scfQueryInterface<CS::Mesh::iAnimatedMeshFactory>
-    (meshfact->GetMeshObjectFactory ());
-  if (!animeshFactory)
-  {
-    ReportError ("Can't find Krystal's animesh factory!");
-    return;
-  }
-
-  // Load bodymesh (animesh's physical properties)
-  rc = loader->Load ("/lib/krystal/skelkrystal_body");
-  if (!rc.success)
-  {
-    ReportError ("Can't load Krystal's body mesh file!");
-    return;
-  }
-
-  csRef<CS::Animation::iBodyManager> bodyManager =
-    csQueryRegistry<CS::Animation::iBodyManager> (GetObjectRegistry ());
-  csRef<CS::Animation::iBodySkeleton> bodySkeleton = bodyManager->FindBodySkeleton ("krystal_body");
-  if (!bodySkeleton)
-  {
-    ReportError ("Can't find Krystal's body mesh description!");
-    return;
-  }
-
-  // Create bone chain
-  CS::Animation::iBodyChain* chain = bodySkeleton->CreateBodyChain
-    ("body_chain", animeshFactory->GetSkeletonFactory ()->FindBone ("Hips"));
-  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("Head"));
-  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("RightFoot"));
-  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("LeftFoot"));
-  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("RightHand"));
-  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("LeftHand"));
-  //chain->AddAllSubChains ();
-
-  // Create ragdoll animation node factory
-  csRef<CS::Animation::iSkeletonRagdollNodeFactory2> ragdollFactory =
-    ragdollManager->CreateAnimNodeFactory ("krystal_ragdoll");
   ragdollFactory->SetBodySkeleton (bodySkeleton);
   ragdollFactory->AddBodyChain (chain, CS::Animation::STATE_DYNAMIC);
 
@@ -1028,13 +1056,89 @@ void PhysDemo::SpawnFrankieRagdoll ()
     rb->SetAngularVelocity (tc.GetT2O () * csVector3 (5, 5, 0));
   }
 }
+*/
+void PhysDemo::LoadKrystalRagdoll ()
+{
+  // Load animesh factory
+  printf ("Loading the Krystal model... ");
+  csLoadResult rc = loader->Load ("/lib/krystal/krystal.xml");
+  if (!rc.success)
+  {
+    ReportError ("Can't load Krystal library file!");
+    return;
+  }
+  printf ("Done");
+
+  csRef<iMeshFactoryWrapper> meshfact =
+    engine->FindMeshFactory ("krystal");
+  if (!meshfact)
+  {
+    ReportError ("Can't find Krystal's mesh factory!");
+    return;
+  }
+
+  csRef<CS::Mesh::iAnimatedMeshFactory> animeshFactory =
+    scfQueryInterface<CS::Mesh::iAnimatedMeshFactory>
+    (meshfact->GetMeshObjectFactory ());
+  if (!animeshFactory)
+  {
+    ReportError ("Can't find Krystal's animesh factory!");
+    return;
+  }
+
+/*
+  // Load bodymesh (animesh's physical properties)
+  rc = loader->Load ("/lib/krystal/skelkrystal_body");
+  if (!rc.success)
+  {
+    ReportError ("Can't load Krystal's body mesh file!");
+    return;
+  }
+
+  csRef<CS::Animation::iBodyManager> bodyManager =
+    csQueryRegistry<CS::Animation::iBodyManager> (GetObjectRegistry ());
+  csRef<CS::Animation::iBodySkeleton> bodySkeleton = bodyManager->FindBodySkeleton ("krystal_body");
+  if (!bodySkeleton)
+  {
+    ReportError ("Can't find Krystal's body mesh description!");
+    return;
+  }
+*/
+  // Generate automatically a skeleton model
+  csRef<CS::Animation::iSkeletonModel> skeletonModel =
+    modelManager->CreateModel (animeshFactory->GetSkeletonFactory ());
+  skeletonModel->PopulateDefaultModels (animeshFactory);
+  //skeletonModel->QueryObject ()->SetObjectParent (meshfact->QueryObject ());
+  animeshFactory->GetSkeletonFactory ()->SetSkeletonModel (skeletonModel);
+
+  // Create the bone chain
+  CS::Animation::iSkeletonChain* chain = skeletonModel->CreateChain
+    ("skeleton_chain", animeshFactory->GetSkeletonFactory ()->FindBone ("Hips"));
+/*
+  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("Head"));
+  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("RightFoot"));
+  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("LeftFoot"));
+  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("RightHand"));
+  chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("LeftHand"));
+*/
+  chain->AddAllSubChains ();
+  printf ("%s\n", chain->Description().GetData());
+
+  // Create the ragdoll animation node factory
+  csRef<CS::Animation::iSkeletonRagdollNodeFactory2> ragdollFactory =
+    ragdollManager->CreateAnimNodeFactory ("krystal_ragdoll");
+  ragdollFactory->AddChain (chain, CS::Animation::STATE_DYNAMIC);
+
+  // Set the ragdoll animation node as the only node of the animation tree
+  animeshFactory->GetSkeletonFactory ()->GetAnimationPacket ()
+    ->SetAnimationRoot (ragdollFactory);
+}
+
 
 void PhysDemo::SpawnKrystalRagdoll ()
 {
   // Load krystal's factory if not yet done
-  
-  csRef<iMeshFactoryWrapper> meshfact =
-    engine->FindMeshFactory ("krystal");
+  csRef<iMeshFactoryWrapper> meshfact = engine->FindMeshFactory ("krystal");
   if (!meshfact)
   {
     LoadKrystalRagdoll ();
@@ -1043,8 +1147,9 @@ void PhysDemo::SpawnKrystalRagdoll ()
 
   if (!meshfact)
     return;
+  printf ("spawning Krystal\n");
 
-  // Create animesh
+  // Create the animesh
   csRef<iMeshWrapper> ragdollMesh = engine->CreateMeshWrapper (meshfact, "Krystal",
     room, csVector3 (0, -4, 0));
   csRef<CS::Mesh::iAnimatedMesh> animesh =
@@ -1060,8 +1165,6 @@ void PhysDemo::SpawnKrystalRagdoll ()
     GetAnimationRoot ();
   csRef<CS::Animation::iSkeletonRagdollNode2> ragdoll =
     scfQueryInterfaceSafe<CS::Animation::iSkeletonRagdollNode2> (root);
-  ragdoll->SetPhysicalSystem (physicalSystem);
-  ragdoll->SetPhysicalSector (GetCurrentSector ());
   ragdoll->Play ();
 
   // Fling the body.
@@ -1199,6 +1302,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth ()
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
   body->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  body->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   body->RebuildObject ();
   GetCurrentSector ()->AddCollisionObject (body);
@@ -1264,6 +1368,7 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
   body->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  body->QueryObject ()->SetObjectParent (mesh->QueryObject ());
   body->RebuildObject ();
   
   csOrthoTransform trans;
@@ -1335,7 +1440,7 @@ void PhysDemo::SpawnBoxStacks (int stackNum, int stackHeight, float boxLen, floa
       boxPos += (.5f * (1 + vSpacingFactor) * boxLen) * UpVector;
       for (int i = 0; i < stackHeight; ++i)
       {
-        SpawnRigidBody (stackBoxMeshPair, boxPos, "box", DefaultFriction, DefaultDensity, false);
+        SpawnRigidBody (stackBoxMeshPair, boxPos, DefaultFriction, DefaultDensity, false);
         boxPos += ((1 + vSpacingFactor) * boxLen) * UpVector;
       }
       ++n;

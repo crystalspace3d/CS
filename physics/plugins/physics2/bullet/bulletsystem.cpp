@@ -22,22 +22,20 @@
 */
 
 #include "cssysdef.h"
-//#include "ivaria/reporter.h"
-#include "imesh/animesh.h"
-#include "iengine/scenenode.h"
-#include "iengine/movable.h"
 #include "csgeom/sphere.h"
 #include "csgeom/tri.h"
+#include "csutil/sysfunc.h"
+#include "iengine/movable.h"
+#include "iengine/portal.h"
+#include "iengine/portalcontainer.h"
+#include "iengine/scenenode.h"
+#include "igeom/trimesh.h"
+#include "imesh/animesh.h"
 #include "imesh/genmesh.h"
 #include "imesh/object.h"
 #include "imesh/objmodel.h"
-#include "csutil/sysfunc.h"
 #include "iutil/objreg.h"
 #include "ivaria/view.h"
-#include "ivaria/collisions.h"
-#include "igeom/trimesh.h"
-#include "iengine/portal.h"
-#include "iengine/portalcontainer.h"
 
 #include "csutil/custom_new_disable.h"
 
@@ -125,12 +123,23 @@ csBulletSystem::~csBulletSystem ()
   collisionGroups.DeleteAll ();
   // TODO: delete vehicle map
   delete debugDraw;
+  // TODO: unregister
 }
 
 bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
 {
   this->object_reg = object_reg;
-  // TODO: register to the registry if not yet made? to be done in the tool class?
+
+  // If there are no current collision system registered to the object
+  // registry, then register itself to it
+  csRef<CS::Collisions::iCollisionSystem> collisionSystem =
+    csQueryRegistry<CS::Collisions::iCollisionSystem> (object_reg);
+  if (!collisionSystem)
+  {
+    object_reg->Register (this, "CS::Collisions::iCollisionSystem");
+    object_reg->Register (this, "CS::Physics::iPhysicalSystem");
+  }
+
   return true;
 }
 
@@ -287,13 +296,9 @@ void csBulletSystem::RemoveCollisionSector (CS::Collisions::iCollisionSector* se
   collSectors.Delete (collSector);
 }
 
-CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const char* name)
-{
-  return this->collSectors.FindByName (name);
-}
-
 CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSector* sec)
 {
+  // TODO: use a hash for faster access
   for (size_t i = 0; i < collSectors.GetSize (); i++)
   {
     if (collSectors[i]->GetSector () == sec)
@@ -302,131 +307,6 @@ CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSe
     }
   }
   return nullptr;
-}
-
-// ###############################################################################################################
-// Physical Objects
-
-// Joints
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateJoint ()
-{
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateP2PJoint (const csVector3& position)
-{
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  joint->SetTransConstraints (true, true, true);
-  csVector3 trans (0.0f,0.0f,0.0f);
-  joint->SetMaximumDistance (trans);
-  joint->SetMinimumDistance (trans);
-  joint->SetPosition (position);
-  joint->SetType (RIGID_P2P_JOINT);
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateSlideJoint (const csOrthoTransform& trans,
-                                                    float minDist, float maxDist, 
-                                                    float minAngle, float maxAngle, int axis)
-{
-  if (axis < 0 || axis > 2)
-    return csPtr<CS::Physics::iJoint> (nullptr);
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  joint->SetTransConstraints (true, true, true);
-  joint->SetRotConstraints (true, true, true);
-  csVector3 minDistant (0.0f, 0.0f, 0.0f);
-  csVector3 maxDistant (0.0f, 0.0f, 0.0f);
-
-  minDistant[axis] = minDist;
-  maxDistant[axis] = maxDist;
-  joint->SetMinimumDistance (minDistant);
-  joint->SetMaximumDistance (maxDistant);
-  minDistant[axis] = minAngle;
-  maxDistant[axis] = maxAngle;
-  joint->SetMinimumAngle (minDistant);
-  joint->SetMaximumAngle (maxDistant);
-  joint->SetTransform (trans);
-  joint->SetType (RIGID_SLIDE_JOINT);
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateHingeJoint (const csVector3& position, 
-                                                     float minAngle, float maxAngle, int axis)
-{
-  if (axis < 0 || axis > 2)
-    return csPtr<CS::Physics::iJoint> (nullptr);
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  csVector3 minDistant (0.0f, 0.0f, 0.0f);
-  csVector3 maxDistant (0.0f, 0.0f, 0.0f);
-  minDistant[axis] = minAngle;
-  maxDistant[axis] = maxAngle;
-  joint->SetMinimumAngle (minDistant);
-  joint->SetMaximumAngle (maxDistant);
-  joint->SetPosition (position);  
-  joint->SetType (RIGID_HINGE_JOINT);
-  joint->axis = axis;
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateConeTwistJoint (const csOrthoTransform& trans, 
-                                                                       float swingSpan1,float swingSpan2,
-                                                                       float twistSpan) 
-{
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  joint->SetTransConstraints (true, true, true);
-  joint->SetRotConstraints (true, true, true);
-
-  csVector3 minDistant (0.0f, 0.0f, 0.0f);
-  csVector3 maxDistant (0.0f, 0.0f, 0.0f);
-  joint->SetMaximumDistance (minDistant);
-  joint->SetMinimumDistance (maxDistant);
-  minDistant.Set (-twistSpan, -swingSpan2, -swingSpan1);  
-  maxDistant.Set (twistSpan, swingSpan2, swingSpan1); 
-  joint->SetMinimumAngle (minDistant);
-  joint->SetMaximumAngle (maxDistant);
-  joint->SetTransform (trans);
-  joint->SetType (RIGID_CONETWIST_JOINT);
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftLinearJoint (const csVector3& position)
-{
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  joint->SetPosition (position);
-  joint->SetType (SOFT_LINEAR_JOINT);
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreateSoftAngularJoint (int axis)
-{
-  csBulletJoint* joint = nullptr;
-  if (axis < 0 || axis > 2)
-    return joint;
-  joint = new csBulletJoint (this);
-  if (axis == 0)
-    joint->SetRotConstraints (false, true, true);
-  else if (axis == 1)
-    joint->SetRotConstraints (true, false, false);
-  else if (axis == 2)
-    joint->SetRotConstraints (false, false, true);
-
-  joint->SetType (SOFT_ANGULAR_JOINT);
-  return csPtr<CS::Physics::iJoint> (joint);
-}
-
-csPtr<CS::Physics::iJoint> csBulletSystem::CreatePivotJoint (iRigidBody* body, const csVector3& position)
-{
-  csRef<csBulletJoint> joint = csPtr<csBulletJoint> (new csBulletJoint (this));
-  joint->SetTransConstraints (true, true, true);
-  csVector3 trans (0.0f,0.0f,0.0f);
-  joint->SetMaximumDistance (trans);
-  joint->SetMinimumDistance (trans);
-  joint->SetPosition (position);
-  joint->SetType (RIGID_PIVOT_JOINT);
-  joint->Attach (body, nullptr);
-  return csPtr<CS::Physics::iJoint> (joint);
 }
 
 // ###############################################################################################################
@@ -612,42 +492,43 @@ iCollisionGroup* csBulletSystem::GetCollisionGroup (size_t index) const
 // Factory
 
 csPtr<iCollisionObjectFactory> csBulletSystem::CreateCollisionObjectFactory
-  (CS::Collisions::iCollider *collider, const char* name)
+  (CS::Collisions::iCollider *collider)
 {
-  BulletRigidBodyFactory* factory = new BulletRigidBodyFactory (this, collider, name);
+  BulletRigidBodyFactory* factory = new BulletRigidBodyFactory (this, collider);
+  // TODO: remove this system allocation
   factory->system = this;
   factory->SetState (STATE_STATIC);
   return csPtr<iCollisionObjectFactory> (factory);
 }
 
-csPtr<CS::Collisions::iGhostCollisionObjectFactory> 
-  csBulletSystem::CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider, const char* name) 
+csPtr<CS::Collisions::iCollisionObjectFactory>
+ csBulletSystem::CreateGhostCollisionObjectFactory (CS::Collisions::iCollider* collider) 
 { 
-  BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory (this, collider, name);
+  BulletGhostCollisionObjectFactory* fact = new BulletGhostCollisionObjectFactory (this, collider);
   fact->system = this;
-  return csPtr<iGhostCollisionObjectFactory> (fact); 
+  return csPtr<iCollisionObjectFactory> (fact); 
 }
 
 csPtr<CS::Collisions::iCollisionActorFactory> 
-  csBulletSystem::CreateCollisionActorFactory (CS::Collisions::iCollider* collider, const char* name) 
+  csBulletSystem::CreateCollisionActorFactory (CS::Collisions::iCollider* collider) 
 {
-  BulletCollisionActorFactory* fact = new BulletCollisionActorFactory (this, collider, name);
+  BulletCollisionActorFactory* fact = new BulletCollisionActorFactory (this, collider);
   fact->system = this;
   return csPtr<iCollisionActorFactory> (fact); 
 }
 
 csPtr<CS::Physics::iRigidBodyFactory> 
-  csBulletSystem::CreateRigidBodyFactory (CS::Collisions::iCollider* collider, const char* name)
+  csBulletSystem::CreateRigidBodyFactory (CS::Collisions::iCollider* collider)
 {
-  BulletRigidBodyFactory* fact = new BulletRigidBodyFactory (this, collider, name);
+  BulletRigidBodyFactory* fact = new BulletRigidBodyFactory (this, collider);
   fact->system = this;
   return csPtr<iRigidBodyFactory> (fact); 
 }
 
 csPtr<CS::Physics::iDynamicActorFactory> 
-  csBulletSystem::CreateDynamicActorFactory (CS::Collisions::iCollider* collider, const char* name)
+  csBulletSystem::CreateDynamicActorFactory (CS::Collisions::iCollider* collider)
 {
-  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (this, collider, name);
+  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (this, collider);
   fact->system = this;
   return csPtr<iDynamicActorFactory> (fact);
 }

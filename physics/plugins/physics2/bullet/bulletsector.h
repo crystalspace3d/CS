@@ -89,7 +89,7 @@ class csBulletSector : public scfVirtImplementationExt2<
   friend class csBulletGhostCollisionObject;
   friend class CollisionPortal;
 
-  csWeakRef<csBulletSystem> system;
+  csBulletSystem* system;
 
   // TODO: Get rid of this hitPortal field
   btGhostObject* hitPortal;
@@ -108,16 +108,15 @@ class csBulletSector : public scfVirtImplementationExt2<
   float angularDisableThreshold;
   float timeDisableThreshold;
 
+  csRef<iSector> sector;
+
   csRefArray<csBulletJoint> joints;
   csArray<CollisionPortal*> portals;
   csRefArrayObject<csBulletCollisionObject> collisionObjects;
   csRefArrayObject<csBulletRigidBody> rigidBodies;
   csRefArrayObject<csBulletSoftBody> softBodies;
   csWeakRefArray<csBulletSoftBody> anchoredSoftBodies;
-  csRef<iSector> sector;
-
   csRefArray<csBulletCollisionTerrain> terrains;
-
   csRefArray<CS::Physics::iUpdatable> updatables;
 
   void CheckCollisions ();
@@ -133,9 +132,10 @@ public:
   virtual ~csBulletSector ();
   
   //-- iCollisionSector
-  virtual CS::Collisions::iCollisionSystem* GetSystem ();
+  virtual CS::Collisions::iCollisionSystem* GetSystem () const
+  { return (CS::Collisions::iCollisionSystem*) system; }
 
-  virtual iObject* QueryObject ()
+  virtual iObject* QueryObject () const
   { return (iObject*) this; }
 
   virtual CS::Collisions::CollisionObjectType GetSectorType () const
@@ -153,9 +153,9 @@ public:
 
   virtual size_t GetCollisionObjectCount () {return collisionObjects.GetSize ();}
   virtual CS::Collisions::iCollisionObject* GetCollisionObject (size_t index);
-  virtual CS::Collisions::iCollisionObject* FindCollisionObject (const char* name);
 
   virtual void AddCollisionTerrain (CS::Collisions::iCollisionTerrain* terrain);
+  virtual void RemoveCollisionTerrain (CS::Collisions::iCollisionTerrain* terrain);
   virtual size_t GetCollisionTerrainCount () const { return terrains.GetSize (); }
   virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain (size_t index) const;
   virtual CS::Collisions::iCollisionTerrain* GetCollisionTerrain (iTerrainSystem* terrain);
@@ -188,11 +188,9 @@ public:
 
   virtual size_t GetRigidBodyCount () {return rigidBodies.GetSize ();}
   virtual CS::Physics::iRigidBody* GetRigidBody (size_t index);
-  virtual CS::Physics::iRigidBody* FindRigidBody (const char* name);
 
   virtual size_t GetSoftBodyCount () {return softBodies.GetSize ();}
   virtual CS::Physics::iSoftBody* GetSoftBody (size_t index);
-  virtual CS::Physics::iSoftBody* FindSoftBody (const char* name);
 
   virtual void AddJoint (CS::Physics::iJoint* joint);
   virtual void RemoveJoint (CS::Physics::iJoint* joint);

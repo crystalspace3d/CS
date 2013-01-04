@@ -1,5 +1,10 @@
 /*
+    Copyright (C) 2012 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
+    Copyright (C) 2011 by Liu Lu
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -15,16 +20,14 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-/**
- * Utility class for any kind of collision system
- */
-
 #ifndef __CS_CSTOOL_COLLISIONHELPER_H
 #define __CS_CSTOOL_COLLISIONHELPER_H
 
-#include "csextern.h"
+/**\file
+ * Utility class to help building and managing collision and physical systems
+ */
 
+#include "csutil/strhash.h"
 #include "csutil/scf_implementation.h"
 #include "iutil/strset.h"
 
@@ -32,25 +35,51 @@ struct iCollection;
 struct iEngine;
 struct iMeshWrapper;
 struct iSector;
+struct iSyntaxService;
 struct iTriangleMesh;
+
+namespace CS {
+namespace Physics {
+
+struct iJointFactory;
+struct iPhysicalObjectFactory;
+struct iRigidBodyFactory;
+
+} // namespace Physics
+} // namespace CS
 
 namespace CS {
 namespace Collisions {
 
 struct iCollider;
+struct iCollisionObjectFactory;
 struct iCollisionSystem;
 struct iConvexDecomposer;
 
 // TODO: move in the cstool lib
-class CS_CRYSTALSPACE_EXPORT CollisionHelper 
+// TODO: document me
+class CS_CRYSTALSPACE_EXPORT CollisionHelper
 {
   iObjectRegistry* objectRegistry;
+  csRef<iEngine> engine;
   csRef<CS::Collisions::iCollisionSystem> collisionSystem;
   csRef<CS::Collisions::iConvexDecomposer> decomposer;
+  csRef<iSyntaxService> synldr;
+  csStringHash xmltokens;
   csStringID baseID;
   csStringID collisionID;
 
   void ReportError (const char* msg, ...);
+  void ReportWarning (const char* msg, ...);
+
+  void ParseCollisionObjectProperties
+    (iDocumentNode* node, CS::Collisions::iCollisionObjectFactory* object,
+     iLoaderContext* loaderContext, iBase* context) const;
+  void ParsePhysicalObjectProperties
+    (iDocumentNode* node, CS::Physics::iPhysicalObjectFactory* object,
+     iLoaderContext* loaderContext, iBase* context) const;
+  bool ParseJointConstraint
+    (iDocumentNode *node, bool& x, bool& y, bool& z, csVector3& min, csVector3& max) const;
 
 public:
   /// Initialize this collision helper
@@ -70,8 +99,19 @@ public:
   void InitializeCollisionObjects (iSector* sector, 
 				   iMeshWrapper* mesh) const;
 
-  /// Tries to find and return the underlying collision iTriangleMesh that has any of this system's ids
+  /**
+   * Search for the collision iTriangleMesh of the given mesh. Return nullptr in case
+   * there are explicitely none.
+   */
   iTriangleMesh* FindCollisionMesh (iMeshWrapper* mesh) const;
+
+  /**
+   * Search for the collision iTriangleMesh of the given mesh factory. Return nullptr
+   * in case there are explicitely none.
+   */
+  iTriangleMesh* FindCollisionMesh (iMeshFactoryWrapper* meshFactory) const;
+
+  // TODO: find coll/physical factory
 
   /**
    * Perform a convex decomposition on the given concave triangle mesh and compound the
@@ -83,10 +123,26 @@ public:
   /**
    * Perform a convex decomposition on the given concave mesh wrapper and compound the
    * resulting convex parts into the given collider. This is equivalent to a call to
-   * FindCollisionMesh() followed by a call to DecomposeConcaveMesh(iTriangleMesh*,CS::Collisions::iCollider*).
+   * FindCollisionMesh() followed by a call to
+   * DecomposeConcaveMesh(iTriangleMesh*,CS::Collisions::iCollider*,CS::Collisions::iConvexDecomposer*).
    */
   void DecomposeConcaveMesh (iMeshWrapper* mesh, CS::Collisions::iCollider* collider,
 			     CS::Collisions::iConvexDecomposer* decomposer) const;
+
+  // TODO: CollisionParser?
+  csPtr<CS::Collisions::iCollider> ParseCollider
+    (iDocumentNode* node, csTransform& transform, iLoaderContext* loaderContext,
+     iBase* context) const;
+  csPtr<CS::Collisions::iCollisionObjectFactory> ParseCollisionObjectFactory
+    (iDocumentNode* node, iLoaderContext* loaderContext, iBase* context) const;
+  csPtr<CS::Collisions::iCollisionObjectFactory> ParseCollisionObjectSimpleFactory
+    (iDocumentNode* node, iLoaderContext* loaderContext, iBase* context) const;
+  csPtr<CS::Collisions::iCollisionObjectFactory> ParseCollisionObjectGhostFactory
+    (iDocumentNode* node, iLoaderContext* loaderContext, iBase* context) const;
+  csPtr<CS::Physics::iRigidBodyFactory> ParseRigidBodyFactory
+    (iDocumentNode* node, iLoaderContext* loaderContext, iBase* context) const;
+  csPtr<CS::Physics::iJointFactory> ParseJointFactory
+    (iDocumentNode* node, iLoaderContext* loaderContext, iBase* context) const;
 };
 
 } // namespace Collisions

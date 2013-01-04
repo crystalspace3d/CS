@@ -42,7 +42,7 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   
 
@@ -51,20 +51,20 @@ csBulletColliderTerrain::csBulletColliderTerrain ( float* gridData,
                                    float minHeight, float maxHeight,
                                    float internalScale, csBulletSystem* sys)
                                    :  scfImplementationType (this),
-                                   cell(cell), heightData (gridData)
+                                   cell (cell), heightData (gridData)
 {
   collSystem = sys;
 
   // create shape
-  shape = new btHeightfieldTerrainShape (cell->GetGridWidth(), cell->GetGridHeight(),
+  shape = new btHeightfieldTerrainShape (cell->GetGridWidth (), cell->GetGridHeight (),
                                    gridData, 1.0f, minHeight, maxHeight,
                                    1, PHY_FLOAT, false);
   
   // Apply the local scaling on the shape
-  const csVector3& size = cell->GetSize();
-  localScale.setValue (size[0] * internalScale / (cell->GetGridWidth() - 1),
+  const csVector3& size = cell->GetSize ();
+  localScale.setValue (size[0] * internalScale / (cell->GetGridWidth () - 1),
     internalScale,
-    size[2] * internalScale/ (cell->GetGridHeight() - 1));
+    size[2] * internalScale/ (cell->GetGridHeight () - 1));
   shape->setLocalScaling (localScale);
 
   margin = 0.04 * collSystem->GetInverseInternalScale ();
@@ -88,17 +88,17 @@ void csBulletColliderTerrain::UpdateMaxHeight (float maxHeight)
   //  heightData, 1.0f, m_minHeight, maxHeight, 1, PHY_FLOAT, false);
 }
 
-void csBulletColliderTerrain::UpdateHeight(const csRect& area)
+void csBulletColliderTerrain::UpdateHeight (const csRect& area)
 {
-  int w = cell->GetGridWidth();
-  int h = cell->GetGridHeight();
+  int w = cell->GetGridWidth ();
+  int h = cell->GetGridHeight ();
   csLockedHeightData newData = cell->LockHeightData (area);
 
-  for (int y = 0; y < area.Height(); y++)
+  for (int y = 0; y < area.Height (); y++)
   {
-    for (int x = 0; x < area.Width(); x++)
+    for (int x = 0; x < area.Width (); x++)
     {
-      heightData[CSToBulletIndex2D(x + area.xmin, y + area.ymin, w, h)] = newData.data[y * w + x];
+      heightData[CSToBulletIndex2D (x + area.xmin, y + area.ymin, w, h)] = newData.data[y * w + x];
     }
   }
 }
@@ -113,7 +113,7 @@ csBulletCollisionTerrain::csBulletCollisionTerrain (iTerrainSystem* terrain, flo
   collSystem = sys;
 
   terrain->AddCellLoadListener (this);
-  terrain->AddCellHeightUpdateListener(this);
+  terrain->AddCellHeightUpdateListener (this);
 
   // Find the transform of the terrain
   csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (terrain);
@@ -136,7 +136,7 @@ csBulletCollisionTerrain::~csBulletCollisionTerrain ()
   {
     for (size_t i = 0; i < bodies.GetSize (); i++)
     {
-      collSector->RemoveCollisionObject(bodies[i]);
+      collSector->RemoveCollisionObject (bodies[i]);
     }
   }
 }
@@ -152,14 +152,14 @@ void csBulletCollisionTerrain::OnCellPreLoad (iTerrainCell *cell)
 
 void csBulletCollisionTerrain::OnCellUnload (iTerrainCell *cell)
 {
-  for (int i = 0; i < (int)bodies.GetSize(); ++i)
+  for (int i = 0; i < (int)bodies.GetSize (); ++i)
   {
     csBulletRigidBody* body = bodies[i];
 
-    csBulletColliderTerrain* collider = dynamic_cast<csBulletColliderTerrain*>(body->GetCollider());
+    csBulletColliderTerrain* collider = dynamic_cast<csBulletColliderTerrain*>(body->GetCollider ());
     if (collider->cell == cell) 
     {
-      collSector->RemoveCollisionObject(bodies[i]);
+      collSector->RemoveCollisionObject (bodies[i]);
       bodies.DeleteIndexFast (i);
       break;
     }
@@ -183,7 +183,7 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
   {
     for (int i=0;i<gridWidth;i++)
     {
-      float height = btHeightData[CSToBulletIndex2D(i, j, gridWidth, gridHeight)] = cellData.data[j * gridWidth + i];
+      float height = btHeightData[CSToBulletIndex2D (i, j, gridWidth, gridHeight)] = cellData.data[j * gridWidth + i];
 
       if (needExtremum)
       {
@@ -208,22 +208,22 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
     terrainTransform.This2OtherRelative (cellCenter));
 
   // Create the terrain shape
-  csBulletColliderTerrain* collider = new csBulletColliderTerrain(
+  csBulletColliderTerrain* collider = new csBulletColliderTerrain (
     btHeightData, cell, minHeight, maxHeight,
     collSystem->GetInternalScale (), collSystem);
 
   // Create the rigid body and add it to the world
 
   // TODO: Re-use factory
-  cellFactory = collSystem->CreateRigidBodyFactory(collider, "heightfield cell");
-  cellFactory->SetCollisionGroup(collSystem->FindCollisionGroup("Static"));
-  csRef<iRigidBody> ibody = cellFactory->CreateRigidBody();
+  cellFactory = collSystem->CreateRigidBodyFactory (collider);
+  cellFactory->SetCollisionGroup (collSystem->FindCollisionGroup ("Static"));
+  csRef<iRigidBody> ibody = cellFactory->CreateRigidBody ();
   csBulletRigidBody* body = dynamic_cast<csBulletRigidBody*> (&*ibody);
   
-  body->SetTransform(cellTransform);
+  body->SetTransform (cellTransform);
   
   //btRigidBody* btBody = body->btBody;
-  //btBody->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);    // do not debug draw the terrain
+  //btBody->setCollisionFlags (body->getCollisionFlags () | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);    // do not debug draw the terrain
 
   // Add to body collection and to world
   bodies.Push (body);
@@ -238,22 +238,22 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
 void csBulletCollisionTerrain::OnHeightUpdate (iTerrainCell* cell, const csRect& rectangle) 
 {
   // find cell collider:
-  csBulletColliderTerrain* collider = GetCellCollider(cell);
+  csBulletColliderTerrain* collider = GetCellCollider (cell);
   
   // this method is actually fired prior to the load event
   if (collider)
   {
-    collider->UpdateHeight(rectangle);
+    collider->UpdateHeight (rectangle);
   }
 }
 
-csBulletRigidBody* csBulletCollisionTerrain::GetCellBody(iTerrainCell* cell) const
+csBulletRigidBody* csBulletCollisionTerrain::GetCellBody (iTerrainCell* cell) const
 {
-  for (int i = 0; i < (int)bodies.GetSize(); ++i)
+  for (int i = 0; i < (int)bodies.GetSize (); ++i)
   {
     csBulletRigidBody* body = bodies[i];
 
-    csBulletColliderTerrain* collider = dynamic_cast<csBulletColliderTerrain*>(body->GetCollider());
+    csBulletColliderTerrain* collider = dynamic_cast<csBulletColliderTerrain*>(body->GetCollider ());
     if (collider->cell == cell) return body;
   }
   return nullptr;
@@ -261,11 +261,11 @@ csBulletRigidBody* csBulletCollisionTerrain::GetCellBody(iTerrainCell* cell) con
 
 csBulletColliderTerrain* csBulletCollisionTerrain::GetCellCollider (iTerrainCell* cell) const
 {
-  for (int i = 0; i < (int)bodies.GetSize(); ++i)
+  for (int i = 0; i < (int)bodies.GetSize (); ++i)
   {
     csBulletRigidBody* body = bodies[i];
 
-    csBulletColliderTerrain* collider = dynamic_cast<csBulletColliderTerrain*>(body->GetCollider());
+    csBulletColliderTerrain* collider = dynamic_cast<csBulletColliderTerrain*>(body->GetCollider ());
     if (collider->cell == cell) return collider;
   }
   return nullptr;
@@ -277,7 +277,7 @@ void csBulletCollisionTerrain::RemoveRigidBodies ()
 
   for (size_t i = 0; i < bodies.GetSize (); i++)
   {
-    collSector->RemoveCollisionObject(bodies[i]);
+    collSector->RemoveCollisionObject (bodies[i]);
   }
 }
 
@@ -289,9 +289,9 @@ void csBulletCollisionTerrain::AddRigidBodies (csBulletSector* sector)
     iTerrainCell* cell = terrainSystem->GetCell (i);
     if (cell->GetLoadState () != iTerrainCell::Loaded)
       continue;
-    sector->AddCollisionObject(bodies[i]);
+    sector->AddCollisionObject (bodies[i]);
   }
 }
 
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)

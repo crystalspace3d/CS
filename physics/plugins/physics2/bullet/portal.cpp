@@ -42,18 +42,17 @@
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
-
 // TODO: Add new sector to sector mesh's sector list
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void SoftBodySynchronizer::SetupSynchronizer(csBulletSoftBody* cloneObj)
+  void SoftBodySynchronizer::SetupSynchronizer (csBulletSoftBody* cloneObj)
   {
     // Store all initial node velocities of the clone
-    btSoftBody* btCloneObj = cloneObj->GetBulletSoftPointer();
-    for (size_t i = 0; i < cloneObj->GetNodeCount(); ++i)
+    btSoftBody* btCloneObj = cloneObj->GetBulletSoftPointer ();
+    for (size_t i = 0; i < cloneObj->GetNodeCount (); ++i)
     {
-      oldCloneVels.Push(btCloneObj->m_nodes[i].m_v);
+      oldCloneVels.Push (btCloneObj->m_nodes[i].m_v);
     }
   }
 
@@ -63,31 +62,31 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   {
     // Set the sector
     targetSector = dynamic_cast<csBulletSector*>
-      (sourceSector->system->FindCollisionSector (portal->GetSector()));
+      (sourceSector->system->FindCollisionSector (portal->GetSector ()));
 
     // Create a ghost collisder for the portal
     ghostPortal = new btGhostObject ();
 
     // compute the size of the portal
-    // WARNING: GetWorldVertices() initializes the portal plane - Always call this before GetObjectPlane()!
+    // WARNING: GetWorldVertices () initializes the portal plane - Always call this before GetObjectPlane ()!
     const csVector3* vert = portal->GetWorldVertices ();
-    csVector3 portalPos(0);
+    csVector3 portalPos (0);
     csBox3 box;
     for (int i = 0; i < portal->GetVertexIndicesCount (); i++)
     {
-      csVector3 v(vert[portal->GetVertexIndices ()[i]]);
+      csVector3 v (vert[portal->GetVertexIndices ()[i]]);
       portalPos += v;
       box.AddBoundingVertex (v);
     }
 
-    portalPos /= portal->GetVertexIndicesCount();
+    portalPos /= portal->GetVertexIndicesCount ();
 
     // Compute the warp transform of the portal
     // TODO: This is not quite correct
     warpTrans = portal->GetWarp ().GetInverse ();
     warpTrans = meshTrans.GetInverse () * warpTrans * meshTrans;
     csVector3 normal = portal->GetObjectPlane ().GetNormal ();
-    normal = meshTrans.GetT2O() * normal;              // rotate normal
+    normal = meshTrans.GetT2O () * normal;              // rotate normal
 
     float maxEdge = csMax (box.GetSize ().x, box.GetSize ().y);
     maxEdge = csMax (maxEdge, box.GetSize ().z);
@@ -95,19 +94,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     
     // place the portal at the center of the box that represents it
     csVector3 size = 0.499f * box.GetSize ();           // compute "flat" box size
-    size = meshTrans.GetT2O() * size;                   // rotate box
+    size = meshTrans.GetT2O () * size;                   // rotate box
     size += normal * thresh;                            // add thickness to box
     csVector3 centerDist = (size * normal) * normal;    // move origin into the center of the box
     
     csOrthoTransform realTrans;                         // no rotation necessary, since we already rotated everything
-    realTrans.SetOrigin(portalPos + meshTrans.GetOrigin() + centerDist);
+    realTrans.SetOrigin (portalPos + meshTrans.GetOrigin () + centerDist);
     ghostPortal->setWorldTransform (CSToBullet (realTrans, sourceSector->system->GetInternalScale ()));
 
     // give the portal it's shape and add it to the world
     btCollisionShape* shape = new btBoxShape (CSToBullet (size, sourceSector->system->GetInternalScale ()));
 
     ghostPortal->setCollisionShape (shape);
-    ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    ghostPortal->setCollisionFlags (ghostPortal->getCollisionFlags () | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     
     sourceSector->bulletWorld->addCollisionObject (ghostPortal);
 /*
@@ -127,9 +126,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     }
   }
 
-  bool CollisionPortal::CanTraverse(csBulletCollisionObject* obj)
+  bool CollisionPortal::CanTraverse (csBulletCollisionObject* obj)
   {
-    if (obj->IsPassive())
+    if (obj->IsPassive ())
     {
       // Clones and other passive objects cannot traverse portals
       return false;
@@ -141,7 +140,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 	  && obj->QueryPhysicalBody ()->IsDynamic ());
   }
   
-  bool CollisionPortal::IsOnOtherSide(csBulletCollisionObject* obj)
+  bool CollisionPortal::IsOnOtherSide (csBulletCollisionObject* obj)
   {
     // Check if it has traversed the portal
     csOrthoTransform transform = obj->GetTransform ();
@@ -154,21 +153,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     return a > 0;
   }
 
-  void CollisionPortal::Traverse(csBulletCollisionObject* obj)
+  void CollisionPortal::Traverse (csBulletCollisionObject* obj)
   {
     // Remove object from Portal:
-    RemoveTraversingObject(obj);
+    RemoveTraversingObject (obj);
 
     // Warp transformation
-    csOrthoTransform transform = obj->GetTransform() * warpTrans;
+    csOrthoTransform transform = obj->GetTransform () * warpTrans;
     if (targetSector != sourceSector)
     {
       // Move the body to new sector
-      csRef<csBulletCollisionObject> safeRef(obj);  // This line demonstrates why passing native pointers fails.
+      csRef<csBulletCollisionObject> safeRef (obj);  // This line demonstrates why passing native pointers fails.
       sourceSector->RemoveCollisionObject (obj);
       targetSector->AddCollisionObject (obj);
     }
-    if (obj->QueryPhysicalBody() && obj->QueryPhysicalBody()->QueryRigidBody())
+    if (obj->QueryPhysicalBody () && obj->QueryPhysicalBody ()->QueryRigidBody ())
     {
       // Warp velocities
       iPhysicalBody* pb = obj->QueryPhysicalBody ();
@@ -177,24 +176,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       rb->SetAngularVelocity (warpTrans.GetT2O () * rb->GetAngularVelocity ()); 
 
       // TODO: Also warp force
-      //rb->setfo(warpTrans.GetT2O () * rb->GetForce()); 
+      //rb->setfo (warpTrans.GetT2O () * rb->GetForce ()); 
     }
     obj->SetTransform (transform);
   }
 
   void CollisionPortal::UpdateCollisionsPreStep (csBulletSector* sector)
   {
-    CS_ASSERT(sourceSector == sector);
+    CS_ASSERT (sourceSector == sector);
     if (!targetSector)
     {
       // Lookup targetSector if the portal uses lazy sector lookup
       targetSector = dynamic_cast<csBulletSector*>
-	(sourceSector->system->FindCollisionSector (portal->GetSector()));
+	(sourceSector->system->FindCollisionSector (portal->GetSector ()));
 
       if (!targetSector)
       {
         //  Problem: Sector might not be retreived before first rendering of portal
-        //CS_ASSERT(!"targetSector not set in portal");
+        //CS_ASSERT (!"targetSector not set in portal");
       }
     }
     
@@ -207,18 +206,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
       // Check if object can traverse
       if (!obj ||                         // not a valid object
-        obj->GetSector() != sector ||     // object not updated yet
-        !CanTraverse(obj))                // not a valid object
+        obj->GetSector () != sector ||     // object not updated yet
+        !CanTraverse (obj))                // not a valid object
       {
         continue;
       }
 
       // If object is already past the mid-point of the portal, it must be ported immediately
-      if (IsOnOtherSide(obj)) 
+      if (IsOnOtherSide (obj)) 
       {
-        Traverse(obj);
+        Traverse (obj);
 #ifdef _DEBUG
-        csPrintf(">>>> Obj traversed portal 0x%lx: 0x%lx\n", this, obj);
+        csPrintf (">>>> Obj traversed portal 0x%lx: 0x%lx\n", this, obj);
 #endif
         continue;
       }
@@ -228,12 +227,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       csRef<csBulletCollisionObject> cloneObj;
       if (!obj->portalData || !obj->portalData->OtherObject)
       {
-        csRef<iCollisionObject> newObj = obj->ClonePassivePortalObject();
+        csRef<iCollisionObject> newObj = obj->ClonePassivePortalObject ();
 
         cloneObj = csRef<csBulletCollisionObject>(dynamic_cast<csBulletCollisionObject*>(&*newObj));
 
         if (!cloneObj) continue;   // Cannot produce a clone
-        cloneObj->QueryObject()->SetName("Clone of " + csString(obj->QueryObject()->GetName()));
+#ifdef CS_DEBUG
+        cloneObj->QueryObject ()->SetName ("Clone of " + csString (obj->QueryObject ()->GetName ()));
+#endif
       }
       else
       {
@@ -244,26 +245,26 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       // Start with data verification and consistency:
       PortalTraversalData* data = obj->portalData;
 
-      size_t objIndex = objects.Find(obj);
+      size_t objIndex = objects.Find (obj);
       bool isNew = objIndex == csArrayItemNotFound;
       if (isNew)
       {
         // New object: Must not already be referencing this portal
-        CS_ASSERT(data == nullptr || data->Portal != this);
+        CS_ASSERT (data == nullptr || data->Portal != this);
       }
       else
       {
         // Traversing Object:
-        //CS_ASSERT(data != nullptr && data->Portal == this);
+        //CS_ASSERT (data != nullptr && data->Portal == this);
 
         // remove from objects array (will be re-added later)
-        objects.DeleteIndex(objIndex);
+        objects.DeleteIndex (objIndex);
       }
 
       if (data == nullptr)
       {
         // Create new Portal Data container
-        obj->portalData = data = new PortalTraversalData(true, this, obj);
+        obj->portalData = data = new PortalTraversalData (true, this, obj);
       }
       else
       {
@@ -283,15 +284,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       if (isNew)
       {
 #ifdef _DEBUG
-        csPrintf(">>>> Obj setup at portal 0x%lx: 0x%lx\n", this, obj);
+        csPrintf (">>>> Obj setup at portal 0x%lx: 0x%lx\n", this, obj);
 #endif
 
         // Add mesh to other sector
-        iSceneNode* node = obj->GetAttachedSceneNode();
+        iSceneNode* node = obj->GetAttachedSceneNode ();
         if (node)
         {
-          node->GetMovable()->GetSectors()->Add(targetSector->GetSector());
-          node->GetMovable()->UpdateMove();
+          node->GetMovable ()->GetSectors ()->Add (targetSector->GetSector ());
+          node->GetMovable ()->UpdateMove ();
         }
 
         // Setup clone object for first-time use:
@@ -300,25 +301,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
         cloneObj->SetDeactivable (false);
 
         // Disable gravity (TODO: Fix fail OOP)
-        if (cloneObj->QueryPhysicalBody())
+        if (cloneObj->QueryPhysicalBody ())
         {
-          cloneObj->QueryPhysicalBody()->SetGravityEnabled(false);
+          cloneObj->QueryPhysicalBody ()->SetGravityEnabled (false);
         }
-        else if (cloneObj->QueryActor())
+        else if (cloneObj->QueryActor ())
         {
-          cloneObj->QueryActor()->SetGravityEnabled(false);
+          cloneObj->QueryActor ()->SetGravityEnabled (false);
         }
 
         // No collisions with static objects
 	// TODO: why not?
 	// TODO: this is a hack with heavy side effects
 /*
-        CollisionGroup collGroup(cloneObj->GetCollisionGroup());
+        CollisionGroup collGroup (cloneObj->GetCollisionGroup ());
         collGroup.mask &= ~CollisionGroupMaskValueStatic;
-        cloneObj->SetCollisionGroup(collGroup);
+        cloneObj->SetCollisionGroup (collGroup);
 */
         // Add clone
-        targetSector->AddCollisionObject(cloneObj);
+        targetSector->AddCollisionObject (cloneObj);
 
         // Setup synchronizer
         if (data->Synchronizer)
@@ -326,29 +327,29 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           delete data->Synchronizer;
           data->Synchronizer = nullptr;
         }
-        if (obj->QueryPhysicalBody())
+        if (obj->QueryPhysicalBody ())
         {
-          if (obj->QueryPhysicalBody()->QueryRigidBody())
+          if (obj->QueryPhysicalBody ()->QueryRigidBody ())
           {
-            data->Synchronizer = new RigidBodySynchronizer();
+            data->Synchronizer = new RigidBodySynchronizer ();
           }
-          else if (obj->QueryPhysicalBody()->QuerySoftBody())
+          else if (obj->QueryPhysicalBody ()->QuerySoftBody ())
           {
-            SoftBodySynchronizer* syncer = new SoftBodySynchronizer();
+            SoftBodySynchronizer* syncer = new SoftBodySynchronizer ();
             data->Synchronizer = syncer;
-            syncer->SetupSynchronizer(dynamic_cast<csBulletSoftBody*>(cloneObj->QueryPhysicalBody()->QuerySoftBody()));
+            syncer->SetupSynchronizer (dynamic_cast<csBulletSoftBody*>(cloneObj->QueryPhysicalBody ()->QuerySoftBody ()));
           }
         }
       }
       else
       {
         // NOTE: The object should not have been removed, moved or tempered with in any way other than by the solver
-        CS_ASSERT(cloneObj->GetSector() == targetSector);
+        CS_ASSERT (cloneObj->GetSector () == targetSector);
 
         // Synchronize the two objects
         if (data->Synchronizer)
         {
-          Synchronize(obj, cloneObj);
+          Synchronize (obj, cloneObj);
         }
       }
     }
@@ -357,15 +358,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     // Update object book-keeping:
 
     // Remove all objects that are not touching the portal anymore, from the portal
-    for (size_t i = 0; i < objects.GetSize(); ++i)
+    for (size_t i = 0; i < objects.GetSize (); ++i)
     {
-      csRef<csBulletCollisionObject> oldObj = objects.Get(i);
-      if (IsTraversingThisPortal(oldObj))
+      csRef<csBulletCollisionObject> oldObj = objects.Get (i);
+      if (IsTraversingThisPortal (oldObj))
       {
-        RemoveTraversingObject(oldObj);
+        RemoveTraversingObject (oldObj);
       }
     }
-    objects.DeleteAll();      // clear array
+    objects.DeleteAll ();      // clear array
 
     // re-add all existing objects:
     for (int i = 0; i < ghostPortal->getNumOverlappingObjects (); i++)
@@ -374,92 +375,92 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       iCollisionObject* iObj = static_cast<iCollisionObject*> (btObj->getUserPointer ());
       csBulletCollisionObject* obj = dynamic_cast<csBulletCollisionObject*> (iObj);
       
-      if (obj && IsTraversingThisPortal(obj))
+      if (obj && IsTraversingThisPortal (obj))
       {
-        objects.Push(obj);
+        objects.Push (obj);
       }
     }
   }
   
   /// Synchronize the two symbiotic objects and correct position, velocity and force
-  void CollisionPortal::Synchronize(csBulletCollisionObject* obj, csBulletCollisionObject* cloneObj)
+  void CollisionPortal::Synchronize (csBulletCollisionObject* obj, csBulletCollisionObject* cloneObj)
   {
-    csOrthoTransform objTrans(obj->GetTransform());
-    csOrthoTransform cloneTrans(cloneObj->GetTransform());
+    csOrthoTransform objTrans (obj->GetTransform ());
+    csOrthoTransform cloneTrans (cloneObj->GetTransform ());
     
-    //const csVector3& pos = objTrans.GetOrigin();
-    //const csVector3& clonePos = cloneTrans.GetOrigin();
+    //const csVector3& pos = objTrans.GetOrigin ();
+    //const csVector3& clonePos = cloneTrans.GetOrigin ();
 
-    if (obj->QueryPhysicalBody())
+    if (obj->QueryPhysicalBody ())
     {
-      iPhysicalBody* ipObj = obj->QueryPhysicalBody();
-      iPhysicalBody* ipCloneObj = cloneObj->QueryPhysicalBody();
-      CS_ASSERT(ipCloneObj);
+      iPhysicalBody* ipObj = obj->QueryPhysicalBody ();
+      iPhysicalBody* ipCloneObj = cloneObj->QueryPhysicalBody ();
+      CS_ASSERT (ipCloneObj);
       
       csPhysicalBody* pObj = dynamic_cast<csPhysicalBody*>(ipObj);
       csPhysicalBody* pCloneObj = dynamic_cast<csPhysicalBody*>(ipCloneObj);
 
-      if (pObj->QuerySoftBody())
+      if (pObj->QuerySoftBody ())
       {
         // Soft Body:
-        CS_ASSERT(pCloneObj->QuerySoftBody());
-        csBulletSoftBody* sObj = dynamic_cast<csBulletSoftBody*>(pObj->QuerySoftBody());
-        csBulletSoftBody* sCloneObj = dynamic_cast<csBulletSoftBody*>(pCloneObj->QuerySoftBody());
-        CS_ASSERT(sObj && sCloneObj);
-        CS_ASSERT(sObj->GetNodeCount() == sCloneObj->GetNodeCount());
+        CS_ASSERT (pCloneObj->QuerySoftBody ());
+        csBulletSoftBody* sObj = dynamic_cast<csBulletSoftBody*>(pObj->QuerySoftBody ());
+        csBulletSoftBody* sCloneObj = dynamic_cast<csBulletSoftBody*>(pCloneObj->QuerySoftBody ());
+        CS_ASSERT (sObj && sCloneObj);
+        CS_ASSERT (sObj->GetNodeCount () == sCloneObj->GetNodeCount ());
         
         // Update velocities per node
         SoftBodySynchronizer& traverser = *(SoftBodySynchronizer*)&obj->portalData->Synchronizer;
-        traverser.Synchronize(sObj, sCloneObj);
+        traverser.Synchronize (sObj, sCloneObj);
       }
       else
       {
         // Rigid Body:
         csBulletRigidBody* rObj = dynamic_cast<csBulletRigidBody*>(ipObj);
         csBulletRigidBody* rCloneObj = dynamic_cast<csBulletRigidBody*>(ipCloneObj);
-        CS_ASSERT(rObj && rCloneObj);
+        CS_ASSERT (rObj && rCloneObj);
         
         // Update CoM velocities
         RigidBodySynchronizer& traverser = *(RigidBodySynchronizer*)&obj->portalData->Synchronizer;
-        traverser.Synchronize(rObj, rCloneObj);
+        traverser.Synchronize (rObj, rCloneObj);
       }
     }
   }
 
-  void RigidBodySynchronizer::Synchronize(csBulletRigidBody* obj, csBulletRigidBody* cloneObj)
+  void RigidBodySynchronizer::Synchronize (csBulletRigidBody* obj, csBulletRigidBody* cloneObj)
   {
-    btRigidBody* btObj = obj->GetBulletRigidPointer();
-    btRigidBody* btCloneObj = cloneObj->GetBulletRigidPointer();
+    btRigidBody* btObj = obj->GetBulletRigidPointer ();
+    btRigidBody* btCloneObj = cloneObj->GetBulletRigidPointer ();
 
     // Sync rigid body
-    btVector3 deltaVelLin = btCloneObj->getDeltaLinearVelocity();
-    btVector3 deltaVelAng = btCloneObj->getDeltaAngularVelocity();
+    btVector3 deltaVelLin = btCloneObj->getDeltaLinearVelocity ();
+    btVector3 deltaVelAng = btCloneObj->getDeltaAngularVelocity ();
     
-    btVector3 velLin = btObj->getLinearVelocity() + deltaVelLin;
-    btVector3 velAng = btObj->getAngularVelocity() + deltaVelAng;
+    btVector3 velLin = btObj->getLinearVelocity () + deltaVelLin;
+    btVector3 velAng = btObj->getAngularVelocity () + deltaVelAng;
 
-    btObj->setLinearVelocity(velLin);
-    btObj->setAngularVelocity(velAng);
-    btCloneObj->setLinearVelocity(velLin);
-    btCloneObj->setAngularVelocity(velAng);
+    btObj->setLinearVelocity (velLin);
+    btObj->setAngularVelocity (velAng);
+    btCloneObj->setLinearVelocity (velLin);
+    btCloneObj->setAngularVelocity (velAng);
     
     // New transform is that of the original object
-    cloneObj->SetTransform(obj->GetTransform());
+    cloneObj->SetTransform (obj->GetTransform ());
   }
 
-  void SoftBodySynchronizer::Synchronize(csBulletSoftBody* obj, csBulletSoftBody* cloneObj)
+  void SoftBodySynchronizer::Synchronize (csBulletSoftBody* obj, csBulletSoftBody* cloneObj)
   {
-    btSoftBody* btObj = obj->GetBulletSoftPointer();
-    btSoftBody* btCloneObj = cloneObj->GetBulletSoftPointer();
+    btSoftBody* btObj = obj->GetBulletSoftPointer ();
+    btSoftBody* btCloneObj = cloneObj->GetBulletSoftPointer ();
     
     // Soft body state must not be changed during traversal
-    CS_ASSERT(oldCloneVels.GetSize() == obj->GetNodeCount());
+    CS_ASSERT (oldCloneVels.GetSize () == obj->GetNodeCount ());
 
     // Sync every single node
-    for (size_t i = 0; i < obj->GetNodeCount(); ++i)
+    for (size_t i = 0; i < obj->GetNodeCount (); ++i)
     {
       btVector3 deltaPos = btCloneObj->m_nodes[i].m_x - btCloneObj->m_nodes[i].m_q;
-      btVector3 deltaVel = btCloneObj->m_nodes[i].m_v - oldCloneVels.Get(i);
+      btVector3 deltaVel = btCloneObj->m_nodes[i].m_v - oldCloneVels.Get (i);
 
       btVector3 newPos = btObj->m_nodes[i].m_x + deltaPos;
       btVector3 newVel = btObj->m_nodes[i].m_v + deltaVel;
@@ -471,31 +472,31 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       btObj->m_nodes[i].m_x = btCloneObj->m_nodes[i].m_x = newPos;
 
       // set old node velocity
-      oldCloneVels.Put(i, btCloneObj->m_nodes[i].m_v);
+      oldCloneVels.Put (i, btCloneObj->m_nodes[i].m_v);
     }
 
     // New transform is that of the original object
-    cloneObj->SetTransform(obj->GetTransform());
+    cloneObj->SetTransform (obj->GetTransform ());
   }
 
 
-  void CollisionPortal::RemoveFromSector()
+  void CollisionPortal::RemoveFromSector ()
   {
     for (size_t j = 0; j < objects.GetSize (); j++)
     {
       if (objects[j]->portalData)
       {
-        RemoveTraversingObject(objects[j]);
+        RemoveTraversingObject (objects[j]);
       }
     }
-    objects.DeleteAll();
-    sourceSector->GetBulletWorld()->removeCollisionObject(ghostPortal);
+    objects.DeleteAll ();
+    sourceSector->GetBulletWorld ()->removeCollisionObject (ghostPortal);
   }
 
-  void CollisionPortal::RemoveTraversingObject(csBulletCollisionObject* obj)
+  void CollisionPortal::RemoveTraversingObject (csBulletCollisionObject* obj)
   {
     // Can only remove original objects
-    CS_ASSERT(!obj->IsPassive());
+    CS_ASSERT (!obj->IsPassive ());
 
     // Unset portal data and remove clone
     if (obj->portalData)
@@ -503,18 +504,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
       obj->portalData->Portal = nullptr;
       if (obj->portalData->OtherObject)
       {
-        iSceneNode* node = obj->GetAttachedSceneNode();
+        iSceneNode* node = obj->GetAttachedSceneNode ();
         if (node)
         {
           // Remove mesh from second sector
-          for (size_t i = 0; node->GetMovable()->GetSectors()->GetCount() > 1;)
+          for (size_t i = 0; node->GetMovable ()->GetSectors ()->GetCount () > 1;)
           {
-            iSector* sec = node->GetMovable()->GetSectors()->Get(int(i));
-            if (sec != obj->GetSector()->GetSector())
+            iSector* sec = node->GetMovable ()->GetSectors ()->Get (int (i));
+            if (sec != obj->GetSector ()->GetSector ())
             {
-              //sec->GetMeshes ()->Remove(node->QueryMesh());
-              node->GetMovable()->GetSectors()->Remove(sec);
-              node->GetMovable()->UpdateMove();
+              //sec->GetMeshes ()->Remove (node->QueryMesh ());
+              node->GetMovable ()->GetSectors ()->Remove (sec);
+              node->GetMovable ()->UpdateMove ();
             }
             else
             {
@@ -523,7 +524,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
           }
         }
         // Remove clone from CollisionSector
-        targetSector->RemoveCollisionObject(obj->portalData->OtherObject);
+        targetSector->RemoveCollisionObject (obj->portalData->OtherObject);
         obj->portalData->OtherObject = nullptr;
       }
     }
@@ -536,7 +537,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //{
   //  if (!targetSector)
   //  {
-  //    targetSector = dynamic_cast<csBulletSector*>(sourceSector->system->GetCollisionSector(portal->GetSector()));
+  //    targetSector = dynamic_cast<csBulletSector*>(sourceSector->system->GetCollisionSector (portal->GetSector ()));
   //  }
 
   //  // Get old Objects
@@ -547,7 +548,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //  
   //  // Get AABB
   //  btVector3 aabbMin2, aabbMax2;
-  //  ghostPortal->getCollisionShape()->getAabb(ghostPortal->getWorldTransform (),aabbMin2,aabbMax2);
+  //  ghostPortal->getCollisionShape ()->getAabb (ghostPortal->getWorldTransform (),aabbMin2,aabbMax2);
 
   //  // Iterate over all intersecting objects
   //  for (int j = 0; j < ghostPortal->getNumOverlappingObjects (); j++)
@@ -557,17 +558,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //    iCollisionObject* iObj = static_cast<iCollisionObject*> (btObj->getUserPointer ());
   //    csBulletCollisionObject* obj = dynamic_cast<csBulletCollisionObject*> (iObj);
 
-  //    //for (size_t k = 0; k < sector->GetCollisionObjectCount(); ++k)
+  //    //for (size_t k = 0; k < sector->GetCollisionObjectCount (); ++k)
   //    //{
-  //    //  iCollisionObject* ooo = sector->GetCollisionObject(k);
-  //    //  btCollisionObject* btooo = dynamic_cast<csBulletCollisionObject*>(ooo)->GetBulletCollisionPointer();
-  //    //  //bool collliides = ghostPortal->col(btooo);
-  //    //  bool aaactive = btooo->isActive();
-  //    //  csString nnn = ooo->QueryObject()->GetName();
-  //    //  nnn = obj->QueryObject()->GetName();
+  //    //  iCollisionObject* ooo = sector->GetCollisionObject (k);
+  //    //  btCollisionObject* btooo = dynamic_cast<csBulletCollisionObject*>(ooo)->GetBulletCollisionPointer ();
+  //    //  //bool collliides = ghostPortal->col (btooo);
+  //    //  bool aaactive = btooo->isActive ();
+  //    //  csString nnn = ooo->QueryObject ()->GetName ();
+  //    //  nnn = obj->QueryObject ()->GetName ();
   //    //}
 
-  //    if (!obj || !CanTraverse(obj)) continue;
+  //    if (!obj || !CanTraverse (obj)) continue;
   //    
   //    csBulletCollisionObject* newObject;
   //    
@@ -602,13 +603,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //        btVector3 norm = CSToBullet (portal->GetObjectPlane ().GetNormal (), 1.0f);
 
   //        // TODO: Transform normal
-  //        float length = dis.dot(norm);
+  //        float length = dis.dot (norm);
   //        
   //        btTransform tr;
   //        tr.setIdentity ();
   //        tr.setOrigin (dis + norm * length * 1.2f);
 
-  //        if (portal->GetSector () != sector->GetSector())
+  //        if (portal->GetSector () != sector->GetSector ())
   //        {
   //          // Move the body to the new sector.
   //          sector->RemoveCollisionObject (sb);
@@ -665,8 +666,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //            }
   //            csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*>(rbs[head]->QueryRigidBody ());
   //            rb->btBody->getAabb (aabbMin, aabbMax);
-  //            box.AddBoundingVertex (csVector3 (aabbMax.x(), aabbMax.y(), aabbMax.z()));
-  //            box.AddBoundingVertex (csVector3 (aabbMin.x(), aabbMin.y(), aabbMin.z()));
+  //            box.AddBoundingVertex (csVector3 (aabbMax.x (), aabbMax.y (), aabbMax.z ()));
+  //            box.AddBoundingVertex (csVector3 (aabbMin.x (), aabbMin.y (), aabbMin.z ()));
 
   //            for (size_t k = 0; k < rb->joints.GetSize (); k ++)
   //            {
@@ -696,11 +697,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //            btVector3 dis = tr.getOrigin () - center;
 
   //            btVector3 norm = CSToBullet (portal->GetObjectPlane ().GetNormal (), 1.0f);
-  //            float length = dis.dot(norm);
+  //            float length = dis.dot (norm);
   //            dis += norm * length * 1.2f;
 
   //            //TODO: Remove this to test transmit to a different sector.
-  //            if (portal->GetSector () != sector->GetSector())
+  //            if (portal->GetSector () != sector->GetSector ())
   //            {
   //              // Move the body to the new sector.
   //              for (size_t l = 0; l < jnts.GetSize (); l++)
@@ -747,14 +748,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //    {
   //      // Move the object to the other side
   //      transform = transform * warpTrans;
-  //      if (portal->GetSector () != sector->GetSector())
+  //      if (portal->GetSector () != sector->GetSector ())
   //      {
   //        // Move the body to the new sector.
   //        targetSector->RemoveCollisionObject (obj->objectCopy);
   //        sector->RemoveCollisionObject (obj);
   //        targetSector->AddCollisionObject (obj);
   //      }
-  //      if (obj->QueryPhysicalBody() && obj->QueryPhysicalBody()->QueryRigidBody())
+  //      if (obj->QueryPhysicalBody () && obj->QueryPhysicalBody ()->QueryRigidBody ())
   //      {
   //        iPhysicalBody* pb = obj->QueryPhysicalBody ();
   //        csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -781,21 +782,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //      {
   //        btVector3 localInertia (0.0f, 0.0f, 0.0f);
   //        iPhysicalBody* pb = obj->QueryPhysicalBody ();
-  //        if (pb->QueryRigidBody())
+  //        if (pb->QueryRigidBody ())
   //        {
   //          csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
 
-  //          csRef<iRigidBodyFactory> factory = sector->system->CreateRigidBodyFactory(rb->GetCollider());
+  //          csRef<iRigidBodyFactory> factory = sector->system->CreateRigidBodyFactory (rb->GetCollider ());
   //          
-  //          factory->SetDensity (rb->GetDensity());
-  //          factory->SetFriction (rb->GetFriction());
-  //          factory->SetElasticity (rb->GetElasticity());
+  //          factory->SetDensity (rb->GetDensity ());
+  //          factory->SetFriction (rb->GetFriction ());
+  //          factory->SetElasticity (rb->GetElasticity ());
   //          factory->SetLinearDamping (0.5f);
   //          factory->SetAngularDamping (0.5f);
 
-  //          factory->SetCollisionGroup (sector->GetSystem()->FindCollisionGroup("Portal"));
+  //          factory->SetCollisionGroup (sector->GetSystem ()->FindCollisionGroup ("Portal"));
 
-  //          csRef<iRigidBody> inb = factory->CreateRigidBody();
+  //          csRef<iRigidBody> inb = factory->CreateRigidBody ();
 
   //          csBulletRigidBody* newBody = dynamic_cast<csBulletRigidBody*> ((iRigidBody*)inb);
 
@@ -817,11 +818,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //      else if (obj->GetObjectType () == COLLISION_OBJECT_GHOST || obj->GetObjectType () == COLLISION_OBJECT_ACTOR)
   //      {
   //        csRef<iGhostCollisionObjectFactory> factory = 
-  //          sector->system->CreateGhostCollisionObjectFactory(obj->GetCollider(), "ghost copy");
+  //          sector->system->CreateGhostCollisionObjectFactory (obj->GetCollider (), "ghost copy");
 
-  //        factory->SetCollisionGroup (sector->system->FindCollisionGroup("Portal"));
+  //        factory->SetCollisionGroup (sector->system->FindCollisionGroup ("Portal"));
   //        
-  //        csRef<iGhostCollisionObject> co = factory->CreateGhostCollisionObject();
+  //        csRef<iGhostCollisionObject> co = factory->CreateGhostCollisionObject ();
   //        
   //        newObject = dynamic_cast<csBulletCollisionObject*> ((iCollisionObject*)co);
 
@@ -869,7 +870,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //  if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //  {
   //    iPhysicalBody* pb = obj->QueryPhysicalBody ();
-  //    if (pb->QueryRigidBody())
+  //    if (pb->QueryRigidBody ())
   //    {
   //      csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
   //      csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -901,7 +902,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //  if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //  {
   //    iPhysicalBody* pb = obj->QueryPhysicalBody ();
-  //    if (pb->QueryRigidBody())
+  //    if (pb->QueryRigidBody ())
   //    {
   //      csBulletRigidBody* btCopy = dynamic_cast<csBulletRigidBody*> (cpy->QueryPhysicalBody ()->QueryRigidBody ());
   //      csBulletRigidBody* rb = dynamic_cast<csBulletRigidBody*> (pb->QueryRigidBody ());
@@ -939,4 +940,4 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
   //  }
   //}
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)

@@ -47,36 +47,34 @@ struct iTerrainSystem;
 struct iTriangleMesh;
 struct iView;
 
-namespace CS
-{
-namespace Physics
-{
+namespace CS {
+namespace Physics {
+
 struct iPhysicalBody;
+
 }
 }
 
-namespace CS
-{
-namespace Collisions
-{
+namespace CS {
+namespace Collisions {
   
 /**
  * The type of a collider.
  */
 enum ColliderType
 {
-COLLIDER_INVALID = 0,              /*!< Undefined collider type. */
-COLLIDER_BOX,                      /*!< The collider is a box. */
-COLLIDER_SPHERE,                   /*!< The collider is a sphere. */
-COLLIDER_CYLINDER,                 /*!< The collider is a cylinder. */
-COLLIDER_CAPSULE,                  /*!< The collider is a capsule. */
-COLLIDER_CONE,                     /*!< The collider is a cone. */
-COLLIDER_PLANE,                    /*!< The collider is a plane. */
-COLLIDER_CONVEX_MESH,              /*!< The collider is a convex mesh. */
-COLLIDER_CONCAVE_MESH,             /*!< The collider is a concave mesh. */
-COLLIDER_CONCAVE_MESH_SCALED,      /*!< The collider is a scaled concave mesh. */
-COLLIDER_TERRAIN,                  /*!< The collider is a terrain. */
-COLLIDER_COMPOUND                  /*!< The collider is an empty (hence supposedly compound) collider. */
+  COLLIDER_INVALID = 0,            /*!< Undefined collider type. */
+  COLLIDER_BOX,                    /*!< The collider is a box. */
+  COLLIDER_SPHERE,                 /*!< The collider is a sphere. */
+  COLLIDER_CYLINDER,               /*!< The collider is a cylinder. */
+  COLLIDER_CAPSULE,                /*!< The collider is a capsule. */
+  COLLIDER_CONE,                   /*!< The collider is a cone. */
+  COLLIDER_PLANE,                  /*!< The collider is a plane. */
+  COLLIDER_CONVEX_MESH,            /*!< The collider is a convex mesh. */
+  COLLIDER_CONCAVE_MESH,           /*!< The collider is a concave mesh. */
+  COLLIDER_CONCAVE_MESH_SCALED,    /*!< The collider is a scaled concave mesh. */
+  COLLIDER_TERRAIN,                /*!< The collider is a terrain. */
+  COLLIDER_COMPOUND                /*!< The collider is an empty (hence supposedly compound) collider. */
 };
 
 /**
@@ -99,6 +97,12 @@ struct iCollider : public virtual iBase
   /// Get the volume of this collider
   virtual float GetVolume () const = 0;
 
+  /// Set the transform of this collider relatively to its parent.
+  //virtual void SetTransform (const csOrthoTransform& transform) = 0;
+
+  /// Get the transform of this collider relatively to its parent.
+  //virtual const csOrthoTransform& GetTransform () const = 0;
+
   /**
    * Whether this collider (and all its children) can potentially be animated dynamically
    * by the physical simulation. All colliders are potentially dynamic, excepted the
@@ -119,7 +123,14 @@ struct iCollider : public virtual iBase
   /// Get the collider with the given index.
   virtual iCollider* GetChild (size_t index) = 0; 
 
-  /// Get the collider and it's relative transformation at the given index.
+  /// Set the relative transform of the collider with the given index.
+  virtual void SetChildTransform (size_t index, const csOrthoTransform& transform) = 0;
+
+  /// Get the relative transform of the collider with the given index.
+  virtual const csOrthoTransform& GetChildTransform (size_t index) const = 0;
+
+  /// Get the collider and it's relative transform at the given index.
+  // TODO: remove
   virtual void GetChild (size_t index, iCollider*& collider, csOrthoTransform& transform) = 0;
 
   /// Get the count of child colliders in this collider

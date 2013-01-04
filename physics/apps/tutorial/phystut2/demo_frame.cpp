@@ -71,7 +71,7 @@ void PhysDemo::Frame()
   // Rotate actor
   RotateActor();
 
-  if (!pauseDynamic)
+  if (!paused)
   {
     if (actorVehicle)
     {
@@ -192,12 +192,12 @@ void PhysDemo::DoStep()
 
   if (player.GetActor())
   {
-    player.GetActor()->UpdatePreStep(timeMs * dynamicStepFactor);
+    player.GetActor()->UpdatePreStep(timeMs);
   }
-  physicalSystem->Step (elapsed_time * dynamicStepFactor);
+  physicalSystem->Step (elapsed_time);
   if (player.GetActor())
   {
-    player.GetActor()->UpdatePostStep(timeMs * dynamicStepFactor);
+    player.GetActor()->UpdatePostStep(timeMs);
   }
 }
 

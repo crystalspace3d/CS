@@ -16,23 +16,39 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-#include "btBulletDynamicsCommon.h"
-#include "btBulletCollisionCommon.h"
-
-
 #include "cssysdef.h"
 #include "iengine/scenenode.h"
 #include "collisionghost.h"
 
 #include "portal.h"
 
+#include "csutil/custom_new_disable.h"
+
+#include "btBulletDynamicsCommon.h"
+#include "btBulletCollisionCommon.h"
+
+#include "csutil/custom_new_enable.h"
 
 using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  void csBulletGhostCollisionObject::CreateGhostCollisionObject(CS::Collisions::iGhostCollisionObjectFactory* props)
+
+  csPtr<CS::Collisions::iCollisionObject> BulletGhostCollisionObjectFactory::CreateGhostCollisionObject ()
+  {
+    csBulletGhostCollisionObject* object = new csBulletGhostCollisionObject (system);
+    object->CreateGhostCollisionObject (this);
+    return csPtr<iCollisionObject> (object);
+  }
+
+  csPtr<CS::Collisions::iCollisionObject> BulletGhostCollisionObjectFactory::CreateCollisionObject () 
+  { 
+    csBulletGhostCollisionObject* object = new csBulletGhostCollisionObject (system);
+    object->CreateGhostCollisionObject (this);
+    return csPtr<CS::Collisions::iCollisionObject> (object);
+  }
+
+  void csBulletGhostCollisionObject::CreateGhostCollisionObject(CS::Collisions::iCollisionObjectFactory* props)
   {
     CreateCollisionObject(props);
     
@@ -45,7 +61,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   csBulletGhostCollisionObject::csBulletGhostCollisionObject(csBulletSystem* sys) : scfImplementationType(this, sys)
   {
   }
-
   
   csBulletGhostCollisionObject::~csBulletGhostCollisionObject()
   {
@@ -95,7 +110,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     insideWorld = true;
     return true;
   }
-  
 
   bool csBulletGhostCollisionObject::RemoveBulletObject ()
   {
@@ -109,5 +123,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
     return true;
   }
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

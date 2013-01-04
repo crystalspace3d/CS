@@ -29,6 +29,7 @@ struct iSceneNode;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
 
+class CollisionGroup;
 class PortalTraversalData;
 
 class csBulletCollisionObject: public scfVirtImplementationExt1<
@@ -47,7 +48,10 @@ class csBulletCollisionObject: public scfVirtImplementationExt1<
 
 protected:
   csRef<csBulletCollider> collider;
+  csOrthoTransform colliderTransform;
+  // TODO: kept only if there are some listeners?
   csRefArray<csBulletCollisionObject> contactObjects;
+  // TODO: notion of jointed islands instead?
   csArray<CS::Physics::iJoint*> joints;
   // TODO: this does not allow to switch an object from one system to another
   CollisionGroup* group;
@@ -65,7 +69,7 @@ protected:
   
   btCollisionObject* btObject;
 
-  // TODO: this is redundant with the system
+  // TODO: this is redundant with the sector
   bool insideWorld;
 
   void CreateCollisionObject (CS::Collisions::iCollisionObjectFactory* props);
@@ -76,11 +80,11 @@ public:
   virtual ~csBulletCollisionObject ();
 
   virtual iObject* QueryObject (void) { return (iObject*) this; }
-  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
-  virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () {return nullptr;}
-  virtual CS::Collisions::iActor* QueryActor () {return nullptr;}
+  virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () { return nullptr; }
+  virtual CS::Collisions::iActor* QueryActor () { return nullptr; }
 
   virtual CS::Collisions::iCollisionSystem* GetSystem () const { return system; }
+  virtual void SetSector (CS::Collisions::iCollisionSector* sector);
   virtual CS::Collisions::iCollisionSector* GetSector () const { return sector; }
 
   virtual CS::Collisions::CollisionObjectType GetObjectType () const = 0;
@@ -92,20 +96,21 @@ public:
   { 
     this->camera = camera; if (camera) camera->SetTransform (GetTransform ());
   }
-  virtual iCamera* GetAttachedCamera () const {return camera;}
+  virtual iCamera* GetAttachedCamera () const { return camera; }
 
-  /// Get the collider that defines this object's shape
   virtual CS::Collisions::iCollider* GetCollider () const { return collider; }
+  virtual void SetCollider (CS::Collisions::iCollider* collider,
+			    const csOrthoTransform& transform = csOrthoTransform ());
 
-  /// Set the collider that defines this object's shape
-  virtual void SetCollider (CS::Collisions::iCollider* collider);
+  virtual void SetColliderTransform (const csOrthoTransform& transform);
+  virtual const csOrthoTransform& GetColliderTransform () const;
 
   virtual void SetTransform (const csOrthoTransform& trans);
   virtual csOrthoTransform GetTransform () const;
   virtual void SetRotation (const csMatrix3& rot);
-  
+
   virtual void RebuildObject () = 0;
-  
+
   virtual void SetCollisionGroup (CS::Collisions::iCollisionGroup* group);
   virtual CS::Collisions::iCollisionGroup* GetCollisionGroup () const;
 
@@ -118,7 +123,7 @@ public:
   virtual size_t GetContactObjectsCount ();
   virtual CS::Collisions::iCollisionObject* GetContactObject (size_t index);
 
-  btCollisionObject* GetBulletCollisionPointer () {return btObject;}
+  btCollisionObject* GetBulletCollisionPointer () { return btObject; }
   virtual bool RemoveBulletObject () = 0;
   virtual bool AddBulletObject () = 0;
 
@@ -138,7 +143,7 @@ public:
   /// Clone this object
   virtual csPtr<CS::Collisions::iCollisionObject> CloneObject () 
   { 
-    return csPtr<CS::Collisions::iCollisionObject>(nullptr); 
+    return csPtr<CS::Collisions::iCollisionObject> (nullptr); 
   }
   
   /**

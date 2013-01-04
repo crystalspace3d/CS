@@ -23,8 +23,6 @@
 
 #include "ivaria/physics.h"
 
-#include "BulletCollision/CollisionDispatch/btGhostObject.h"
-
 class btCollisionObject;
 class btCompoundShape;
 class btDynamicsWorld;
@@ -54,93 +52,34 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csBulletSystem* system;
     csRef<CS::Collisions::iCollider> collider;
     CollisionGroup* group;
+    csOrthoTransform transform;
 
   public:
-    BulletCollisionObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider, const char* name = "");
+    BulletCollisionObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider);
 
-    /// Return the underlying object
     virtual iObject *QueryObject (void) { return this; }
 
-    /// Return the system to which the factory belongs
-    virtual CS::Collisions::iCollisionSystem* GetSystem() const
+    virtual CS::Collisions::iCollisionSystem* GetSystem () const
     { return (CS::Collisions::iCollisionSystem*) system; }
 
-    /// Create a new object
     // TODO: create a real object
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject()
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ()
     { return csPtr<CS::Collisions::iCollisionObject> (nullptr); }
 
-    /// Get the collider of all objects that will be constructed with this factory
-    virtual CS::Collisions::iCollider* GetCollider() const { return collider; }
-    /// Set the collider of all objects that will be constructed with this factory
-    virtual void SetCollider(CS::Collisions::iCollider* value) { collider = value; }
+    virtual void SetCollider (CS::Collisions::iCollider* value,
+			      const csOrthoTransform& transform = csOrthoTransform ())
+    {
+      collider = value;
+      this->transform = transform;
+    }
+    virtual CS::Collisions::iCollider* GetCollider () const { return collider; }
+
+    virtual void SetColliderTransform (const csOrthoTransform& transform);
+    virtual const csOrthoTransform& GetColliderTransform () const;
 
     virtual void SetCollisionGroup (CS::Collisions::iCollisionGroup* group);
     virtual CS::Collisions::iCollisionGroup* GetCollisionGroup () const;
   };
-
-  class BulletGhostCollisionObjectFactory : public scfVirtImplementationExt1<
-    BulletGhostCollisionObjectFactory, BulletCollisionObjectFactory, CS::Collisions::iGhostCollisionObjectFactory> 
-  {
-  public:
-    BulletGhostCollisionObjectFactory
-      (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "GhostObject")
-      : scfImplementationType (this, system, collider)
-    {
-    }
-    
-    /// Create a new object
-    virtual csPtr<CS::Collisions::iGhostCollisionObject> CreateGhostCollisionObject();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
-  };
-
-  /**
-   * Kinematic Actor
-   */
-  class BulletCollisionActorFactory : public scfVirtImplementationExt1<
-    BulletCollisionActorFactory, BulletGhostCollisionObjectFactory, CS::Collisions::iCollisionActorFactory> 
-  {
-    float stepHeight;
-    float walkSpeed, jumpSpeed;
-    float airControlFactor;
-
-  public:
-    BulletCollisionActorFactory
-      (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "CollisionActor") :
-      scfImplementationType (this, system, collider),
-      stepHeight(.5f),
-      walkSpeed(10.f),
-      jumpSpeed(10.f),
-      airControlFactor(0.04f)
-    {
-    }
-
-    /// Create a new object
-    virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
-
-    /// Get the max vertical threshold that this actor can step over
-    virtual float GetStepHeight () const { return stepHeight; }
-    /// Set the max vertical threshold that this actor can step over
-    virtual void SetStepHeight (float h) { stepHeight = h; }
-
-    /// Get the walk speed
-    virtual float GetWalkSpeed () const { return walkSpeed; }
-    /// Set the walk speed
-    virtual void SetWalkSpeed (float s) { walkSpeed = s; }
-
-    /// Get the jump speed
-    virtual float GetJumpSpeed () const { return jumpSpeed; }
-    /// Set the jump speed
-    virtual void SetJumpSpeed (float s) { jumpSpeed = s; }
-
-    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-    virtual float GetAirControlFactor () const { return airControlFactor; }
-    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-    virtual void SetAirControlFactor (float f) { airControlFactor = f; }
-  };
-
-
 
   // ###################################################################################################
   // Physics
@@ -154,51 +93,24 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool gravityEnabled;
 
   public:
-    BulletPhysicalObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "") : 
-    scfImplementationType (this, system, collider, name),
-        density(0), mass(0),     // static objects // TODO: really?
-        friction(10), gravityEnabled(true)
+    BulletPhysicalObjectFactory (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr) : 
+    scfImplementationType (this, system, collider),
+        density (1.0f), mass (1.0f),     // static objects // TODO: really?
+        friction (10.0f), gravityEnabled (true)
     {}
 
-    /// Get the density of all objects that will be constructed with this factory
-    virtual float GetDensity() const { return density; }
-    /// Set the density of all objects that will be constructed with this factory
-    virtual void SetDensity(float value) { density = value; mass = 0; }
+    virtual float GetDensity () const { return density; }
+    virtual void SetDensity (float value) { density = value; mass = 0; }
     
-    /// Get the mass of all objects that will be constructed with this factory
-    virtual float GetMass() const { return mass; }
-    /// Set the mass of all objects that will be constructed with this factory
-    virtual void SetMass(float value) { mass = value; density = 0; }
+    virtual float GetMass () const { return mass; }
+    virtual void SetMass (float value) { mass = value; density = 0; }
 
-    /// Set the friction of all objects that will be constructed with this factory
-    virtual void SetFriction(float value) { friction = value; }
-    /// Get the friction of all objects that will be constructed with this factory
-    virtual float GetFriction() const { return friction; }
+    virtual void SetFriction (float value) { friction = value; }
+    virtual float GetFriction () const { return friction; }
     
-    /// Whether this object is affected by gravity
-    virtual bool GetGravityEnabled() const { return gravityEnabled; }
-    /// Whether this object is affected by gravity
-    virtual void SetGravityEnabled(bool enabled) { gravityEnabled = enabled; }
+    virtual bool GetGravityEnabled () const { return gravityEnabled; }
+    virtual void SetGravityEnabled (bool enabled) { gravityEnabled = enabled; }
   };
-
-  // TODO: There are a lot more configurable parameters - See btRigidBodyConstructionInfo:
-  /*
-		btVector3			m_localInertia;
-
-		///best simulation results using zero restitution.
-		btScalar			m_restitution;
-
-		btScalar			m_linearSleepingThreshold;
-		btScalar			m_angularSleepingThreshold;
-
-		//Additional damping can help avoiding lowpass jitter motion, help stability for ragdolls etc.
-		//Such damping is undesirable, so once the overall simulation quality of the rigid body dynamics system has improved, this should become obsolete
-		bool				m_additionalDamping;
-		btScalar			m_additionalDampingFactor;
-		btScalar			m_additionalLinearDampingThresholdSqr;
-		btScalar			m_additionalAngularDampingThresholdSqr;
-		btScalar			m_additionalAngularDampingFactor;
-  */
 
   /**
    * Collection of all properties of a rigid body
@@ -211,53 +123,28 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     float elasticity;
     float linearDamping, angularDamping;
 
-
   public:
-    BulletRigidBodyFactory(csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "RigidBody") : 
-    scfImplementationType (this, system, collider, name), state (CS::Physics::STATE_DYNAMIC),
-      elasticity(0.1f), linearDamping(0.01f), angularDamping(0.01f)
+    BulletRigidBodyFactory (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr) : 
+    scfImplementationType (this, system, collider), state (CS::Physics::STATE_DYNAMIC),
+      elasticity (0.1f), linearDamping (0.01f), angularDamping (0.01f)
     {
     }
 
-    /// Create a new object
-    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
     
-    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType() const { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
 
     virtual void SetState (CS::Physics::RigidBodyState state) { this->state = state; }
     virtual CS::Physics::RigidBodyState GetState () const { return state; }
 
-    /// Set the elasticity of this rigid body.
     virtual void SetElasticity (float value) { elasticity = value; }
-    /// Get the elasticity of this rigid body.
     virtual float GetElasticity () const { return elasticity; }
 
-    /**
-    * Set the linear Damping for this rigid body. The damping correspond to
-    * how much the movements of the objects will be reduced. It is a value
-    * between 0 and 1, giving the ratio of speed that will be reduced
-    * in one second. 0 means that the movement will not be reduced, while
-    * 1 means that the object will not move.
-    * The default value is 0.
-    * \sa iDynamicSystem::SetLinearDamping()
-    */
     void SetLinearDamping (float d) { linearDamping = d; }
-
-    /// Get the linear Damping for this rigid body.
     float GetLinearDamping () const { return linearDamping; }
 
-    /**
-    * Set the angular Damping for this rigid body. The damping correspond to
-    * how much the movements of the objects will be reduced. It is a value
-    * between 0 and 1, giving the ratio of speed that will be reduced
-    * in one second. 0 means that the movement will not be reduced, while
-    * 1 means that the object will not move.
-    * The default value is 0.
-    */
     virtual void SetAngularDamping (float d) { angularDamping = d; }
-
-    /// Get the angular Damping for this rigid body.
     virtual float GetAngularDamping () const { return angularDamping; }
   };
 
@@ -270,17 +157,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   protected:
 
   public:
-  BulletSoftBodyFactory(csBulletSystem* system) : scfImplementationType (this, system)
+  BulletSoftBodyFactory (csBulletSystem* system) : scfImplementationType (this, system)
     {
-      SetName("SoftBody");
-      SetFriction(float(.2));    // between 0 and 1
+      SetFriction (float (.2));    // between 0 and 1
     }
 
-    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType() const { return CS::Physics::PHYSICAL_OBJECT_SOFTYBODY; }
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const
+    { return CS::Physics::PHYSICAL_OBJECT_SOFTYBODY; }
 
     /// Create a new object
-    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody() = 0;
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody () = 0;
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
   };
 
   /**
@@ -294,26 +181,22 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     size_t nodeCount;
 
   public:
-  BulletSoftRopeFactory(csBulletSystem* system) : scfImplementationType (this, system),
-      start(0), end(0),
-      nodeCount(10)
+  BulletSoftRopeFactory (csBulletSystem* system) : scfImplementationType (this, system),
+      start (0), end (0),
+      nodeCount (10)
     {
     }
 
-    /// Create a new object
-    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody ();
 
-    /// Start position of the rope
-    virtual const csVector3& GetStart() const { return start; }
-    virtual void SetStart(const csVector3& v) { start = v; }
+    virtual const csVector3& GetStart () const { return start; }
+    virtual void SetStart (const csVector3& v) { start = v; }
     
-    /// End position of the rope
-    virtual const csVector3& GetEnd() const { return end; }
-    virtual void SetEnd(const csVector3& v) { end = v; }
+    virtual const csVector3& GetEnd () const { return end; }
+    virtual void SetEnd (const csVector3& v) { end = v; }
     
-    /// Amount of nodes along the rope
-    virtual size_t GetNodeCount() const { return nodeCount; }
-    virtual void SetNodeCount(size_t c) { nodeCount = c; }
+    virtual size_t GetNodeCount () const { return nodeCount; }
+    virtual void SetNodeCount (size_t c) { nodeCount = c; }
   };
 
   /**
@@ -328,29 +211,29 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool withDiagonals;
 
   public:
-  BulletSoftClothFactory(csBulletSystem* system) : scfImplementationType (this, system),
-      withDiagonals(false)
+  BulletSoftClothFactory (csBulletSystem* system) : scfImplementationType (this, system),
+      withDiagonals (false)
     {
-      for (size_t i = 0; i < 4; ++i) corners[i] = csVector3(i);
+      for (size_t i = 0; i < 4; ++i) corners[i] = csVector3 (i);
       counts[0] = counts[1] = 10;
     }
 
     /// Create a new object
-    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody ();
 
     /// Get the four corners of the cloth
-    virtual const csVector3* GetCorners() const { return corners; }
+    virtual const csVector3* GetCorners () const { return corners; }
     /// Set the four corners of the cloth
-    virtual void SetCorners(csVector3 cs[4]) { for (size_t i = 0; i < 4; ++i) corners[i] = cs[i]; }
+    virtual void SetCorners (csVector3 cs[4]) { for (size_t i = 0; i < 4; ++i) corners[i] = cs[i]; }
 
     /// Get the two segment counts along the two primary axes
-    virtual void GetSegmentCounts(size_t& count1, size_t& count2) const { count1 = counts[0]; count2 = counts[1]; }
+    virtual void GetSegmentCounts (size_t& count1, size_t& count2) const { count1 = counts[0]; count2 = counts[1]; }
     /// Set the two segment counts along the two primary axes
-    virtual void SetSegmentCounts(size_t count1, size_t count2) { counts[0] = count1; counts[1] = count2; }
+    virtual void SetSegmentCounts (size_t count1, size_t count2) { counts[0] = count1; counts[1] = count2; }
     
     /// Whether there must be diagonal segments in the cloth
-    virtual bool GetWithDiagonals() const { return withDiagonals; }
-    virtual void SetWithDiagonals(bool d) { withDiagonals = d; }
+    virtual bool GetWithDiagonals () const { return withDiagonals; }
+    virtual void SetWithDiagonals (bool d) { withDiagonals = d; }
   };
   
   /**
@@ -363,17 +246,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     iGeneralFactoryState* factory;
 
   public:
-  BulletSoftMeshFactory(csBulletSystem* system) : scfImplementationType (this, system)
+  BulletSoftMeshFactory (csBulletSystem* system) : scfImplementationType (this, system)
     {
     }
 
     /// Create a new object
-    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody();
+    virtual csPtr<CS::Physics::iSoftBody> CreateSoftBody ();
 
     /// Get the factory that contains the mesh to define the softbody
-    virtual iGeneralFactoryState* GetGenmeshFactory() const { return factory; }
+    virtual iGeneralFactoryState* GetGenmeshFactory () const { return factory; }
     /// Set the factory that contains the mesh to define the softbody
-    virtual void SetGenmeshFactory(iGeneralFactoryState* s) { factory = s; }
+    virtual void SetGenmeshFactory (iGeneralFactoryState* s) { factory = s; }
   };
 
   class BulletDynamicActorFactory : public scfVirtImplementationExt1<
@@ -385,20 +268,20 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool kinematicSteps;
 
   public:
-  BulletDynamicActorFactory(csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr, const char* name = "DynamicActor") : 
-    scfImplementationType (this, system, collider, name),
-      stepHeight(.1f),
-      walkSpeed(10.f),
-      jumpSpeed(10.f),
-      airControlFactor(0.04f),
-      kinematicSteps(true)
+  BulletDynamicActorFactory (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr) : 
+    scfImplementationType (this, system, collider),
+      stepHeight (.1f),
+      walkSpeed (10.f),
+      jumpSpeed (10.f),
+      airControlFactor (0.04f),
+      kinematicSteps (true)
     {
     }
 
     /// Create a new object
-    virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor();
-    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody();
-    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
+    virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor ();
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
+    virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
 
     /// Get the max vertical threshold that this actor can step over
     float GetStepHeight () const { return stepHeight; }
@@ -421,9 +304,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     void SetAirControlFactor (float f) { airControlFactor = f; }
     
     /// Get whether to use a kinematic method for smooth steps
-    bool GetUseKinematicSteps() const { return kinematicSteps; }
+    bool GetUseKinematicSteps () const { return kinematicSteps; }
     /// Set whether to use a kinematic method for smooth steps
-    void SetUseKinematicSteps(bool u) { kinematicSteps = u; }
+    void SetUseKinematicSteps (bool u) { kinematicSteps = u; }
   };
 
 }

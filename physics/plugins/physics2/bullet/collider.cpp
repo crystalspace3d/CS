@@ -16,10 +16,7 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-
 #include "cssysdef.h"
-
 #include "csutil/stringquote.h"
 #include "imesh/objmodel.h"
 
@@ -319,6 +316,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       collider = children->colliders[index];
       trans = children->transforms[index];
     }
+  }
+
+  void csBulletCollider::SetChildTransform (size_t index, const csOrthoTransform& transform)
+  {
+    if (shape) children->transforms[index - 1] = transform;
+    else children->transforms[index] = transform;
+  }
+
+  const csOrthoTransform& csBulletCollider::GetChildTransform (size_t index) const
+  {
+    if (shape) return children->transforms[index - 1];
+    else return children->transforms[index];
   }
 
 }

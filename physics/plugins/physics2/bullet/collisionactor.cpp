@@ -28,6 +28,22 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {   
+
+  // TODO: use simulation speed
+
+  csPtr<CS::Collisions::iCollisionActor> BulletCollisionActorFactory::CreateCollisionActor ()
+  {
+    csBulletCollisionActor* actor = new csBulletCollisionActor (system);
+    actor->CreateCollisionActor(this);
+    csRef<CS::Collisions::iCollisionActor> iactor = csPtr<CS::Collisions::iCollisionActor>(actor);
+    return csPtr<iCollisionActor>(iactor);
+  }
+
+  csPtr<CS::Collisions::iCollisionObject> BulletCollisionActorFactory::CreateCollisionObject() 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor>(CreateCollisionActor()); 
+  }
+
   void csBulletCollisionActor::CreateCollisionActor(CS::Collisions::iCollisionActorFactory* props)
   {
     CreateGhostCollisionObject(props);

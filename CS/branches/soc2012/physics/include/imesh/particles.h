@@ -696,7 +696,7 @@ struct iParticleBuiltinEmitterFactory : public virtual iBase
 /**
  * Simple force/acceleration applied to particles.
  * 
- * The new velocity of particles is computed by a simple formula
+ * The new velocity of particles is computed by a simple formula:
  *
  * v' = v + (a+f/m)*dt
  *
@@ -727,23 +727,27 @@ struct iParticleBuiltinEffectorForce : public iParticleEffector
 };
 
 /**
- * Simple force/acceleration applied to particles. Particles will not penetrate other physical objects.
+ * Physical forces and collisions applied to particles. Particles will not penetrate
+ * other physical objects and will bounce upon contact (although they might still
+ * penetrate fast moving objects).
  * 
- * The new velocity of particles is computed by a simple formula
+ * The new velocity of particles is computed by a simple formula:
  *
- * v' = v + (a+f/m)*dt
+ * v' = v + (a+g+f/m)*dt
  *
  * v  - old velocity (vector)
  * v' - new velocity (vector)
  * a  - constant acceleration (vector)
+ * g  - gravity of the collision sector (vector)
  * f  - force (vector)
  * m  - particle mass (scalar)
  *
- *
+ * Upon collision, the particle is bounced against the surface being hit.
  */
-struct iParticleBuiltinEffectorForceWithCollisions : public iParticleBuiltinEffectorForce
+struct iParticleBuiltinEffectorPhysical : public iParticleBuiltinEffectorForce
 {
-  SCF_INTERFACE(iParticleBuiltinEffectorForceWithCollisions,2,0,0);
+  SCF_INTERFACE(iParticleBuiltinEffectorPhysical,1,0,0);
+
   /**
    * Set the normal (x) and tangential (y) coefficient of restitution which determines the "bounciness" 
    * of particles when colliding with other objects.
@@ -1100,7 +1104,7 @@ struct iParticleBuiltinEffectorFactory : public virtual iBase
   virtual csPtr<iParticleBuiltinEffectorLight> CreateLight () const = 0;
 
   /// Create a 'force' particle effector
-  virtual csPtr<iParticleBuiltinEffectorForceWithCollisions> CreateForceWithCollisions (CS::Collisions::iCollisionSector* collisionSector) const = 0;
+  virtual csPtr<iParticleBuiltinEffectorPhysical> CreatePhysical () const = 0;
 };
 
 /** @} */

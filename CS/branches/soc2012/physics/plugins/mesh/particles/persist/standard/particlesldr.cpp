@@ -559,7 +559,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
 
     if (!strcasecmp (effectorType, "force"))
     {
-      effector = ParseEffectorForce(node, baseObject, factory);
+      effector = ParseEffectorForce(node, baseObject, factory, false);
+    }
+    else if (!strcasecmp (effectorType, "physical"))
+    {
+      effector = ParseEffectorForce(node, baseObject, factory, true);
     }
     else if (!strcasecmp (effectorType, "linear"))
     {
@@ -754,54 +758,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(ParticlesLoader)
       return 0;
     }
 
-
     return csPtr<iParticleEffector> (effector);
   }
 
   csPtr<iParticleEffector> ParticlesBaseLoader::ParseEffectorForce (
-    iDocumentNode* node, iParticleSystemBase* baseObject, csRef<iParticleBuiltinEffectorFactory> factory)
+    iDocumentNode* node, iParticleSystemBase* baseObject, csRef<iParticleBuiltinEffectorFactory> factory,
+    bool physical)
   {
-    bool forceWithColl = node->GetAttribute("collisions") != nullptr;
-
     csRef<iParticleBuiltinEffectorForce> forceEffector;
-    if (forceWithColl)
+    if (physical)
     {
-      csRef<iCollisionSystem> colSys = csQueryRegistry<iCollisionSystem> (objectRegistry);
-      if (colSys)
-      {
-        // get mesh
-        csRef<iMeshObject> mesh = scfQueryInterface<iMeshObject> (baseObject);
-        iMovable* movable = mesh->GetMeshWrapper()->GetMovable();
-        
-        if (movable)
-        {
-          // get iSector(s)
-          // TODO: Since the object could be in multiple sectors at once, 
-          //        it might have to check against collisions in all of them
-          iSector* sect = movable->GetSectors()->Get(0);
-          
-          // Find or create the iCollisionSector associated to the iSector
-          iCollisionSector* colSect = colSys->FindCollisionSector (sect);
-          if (!colSect)
-	  {
-	    colSect = colSys->CreateCollisionSector ();
-	    colSect->SetSector (sect);
-	  }
-
-	  // create particles that respect physical boundaries
-	  csRef<iParticleBuiltinEffectorForce> forceWithColl(
-	    csRef<iParticleBuiltinEffectorForceWithCollisions>(
-              factory->CreateForceWithCollisions(colSect)));
-            
-	  forceEffector = csPtr<iParticleBuiltinEffectorForce>(forceWithColl);
-        }
-      }
+      csRef<iParticleBuiltinEffectorPhysical> physicalEffector = factory->CreatePhysical ();
+      // TODO: parse the parameters of this effector
+      forceEffector = physicalEffector;
     }
 
-    if (!forceEffector)
-    {
-      forceEffector = factory->CreateForce ();
-    }
+    else forceEffector = factory->CreateForce ();
 
     csRef<iDocumentNodeIterator> it = node->GetNodes ();
     while (it->HasNext ())

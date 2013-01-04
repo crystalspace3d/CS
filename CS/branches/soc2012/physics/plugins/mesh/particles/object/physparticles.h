@@ -13,15 +13,15 @@
 
 #include "builtineffectors.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(Particles)
+CS_PLUGIN_NAMESPACE_BEGIN (Particles)
 {
   /**
   * Behaves like the default ParticleEffectorForce but does not penetrate physical boundaries
   */ 
-  class ParticleEffectorForceWithCollisions : public scfImplementationExt1<
-    ParticleEffectorForceWithCollisions,
+  class ParticleEffectorPhysical : public scfImplementationExt1<
+    ParticleEffectorPhysical,
     ParticleEffectorForce, 
-    iParticleBuiltinEffectorForceWithCollisions>
+    iParticleBuiltinEffectorPhysical>
   {
   private:
     csVector3 acceleration;
@@ -30,10 +30,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     bool do_randomAcceleration;
     csVector2 restitution;
 
-    csRef<CS::Collisions::iCollisionSector> collisionSector;
-
   public:
-    ParticleEffectorForceWithCollisions (csRef<CS::Collisions::iCollisionSector> collisionSector);
+    ParticleEffectorPhysical ();
 
     //-- iParticleEffector
     virtual csPtr<iParticleEffector> Clone () const;
@@ -79,12 +77,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     virtual void SetRestitution (const csVector2& res) { restitution = res; }
     virtual csVector2 GetRestitution () const { return restitution; }
 
-    virtual void SetRestitutionMagnitude (float rest) { restitution = csVector2(rest / sqrt(2.f)); }
-    virtual float GetRestitutionMagnitude () const { return sqrt(restitution * restitution); }    // what is the method to get a vector's magnitude?
+    virtual void SetRestitutionMagnitude (float rest) { restitution = csVector2 (rest / sqrt (2.f)); }
+    virtual float GetRestitutionMagnitude () const { return sqrt (restitution * restitution); }    // what is the method to get a vector's magnitude?
   };
 
 }
-CS_PLUGIN_NAMESPACE_END(Particles)
+CS_PLUGIN_NAMESPACE_END (Particles)
 
 #endif
 

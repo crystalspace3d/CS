@@ -57,31 +57,32 @@ struct iMediaPlayer : public virtual iBase
   virtual void SetActiveStream (int index) = 0;
 
   /**
-   * Deactivate a stream from the media container.
+    * Deactivate a stream from the media container.
     * \param[in] index Index of a media stream
     */
   virtual void RemoveActiveStream (int index) = 0;
 
   /**
     * Get a reference to the internal texture buffer.
-    * \param[out] target Target texture
+    * \return the target texture
     */
-  virtual void GetTargetTexture (csRef<iTextureHandle> &target) = 0;
+  virtual iTextureHandle* GetTargetTexture () = 0;
 
   /**
-    *  Get a reference to the internal audio stream.
-    * \param[out] target Target audio stream
+    * Get a reference to the internal audio stream.
+    * \return the target audio stream
     */
-  virtual void GetTargetAudio (csRef<iSndSysStream> &target) = 0;
+  virtual iSndSysStream* GetTargetAudio () = 0;
 
   /**
-    * Called continuously to update the player. The user shouldn't call this method directly.
+    * Called continuously to update the player. 
+    * The user shouldn't call this method directly.
     * To start and stop the player, use StartPlayer() and StopPlayer()
     */
   THREADED_INTERFACE ( Update );
 
   /**
-    * Start the Update thread for the media player. In order to close the player
+    * Start the Update thread for the media player. In order to run the player
     * properly, this method must be called when starting the player.
     */
   virtual void StartPlayer () = 0;
@@ -140,7 +141,7 @@ struct iMediaPlayer : public virtual iBase
   /**
     * Select a language from the available ones.
     */
-  virtual void SelectLanguage (const char* identifier) = 0;
+  virtual void SetLanguage (const char* identifier) = 0;
 };
 
 /** @} */

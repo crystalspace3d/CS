@@ -32,7 +32,8 @@ struct iObjectRegistry;
   * This is the implementation for our API and
   * also the implementation of the plugin.
   */
-class csVplLoader : public scfImplementation2<csVplLoader,iMediaLoader,iComponent>
+class csVplLoader : public scfImplementation2
+    <csVplLoader, iMediaLoader, iComponent>
 {
 private:
   iObjectRegistry*  _object_reg;
@@ -44,8 +45,9 @@ public:
   // From iComponent.
   virtual bool Initialize (iObjectRegistry*);
 
-  virtual csRef<iMediaContainer> LoadMedia (const char * pFileName, const char *pDescription=0);
-
+  // From iMediaLoader
+  virtual csRef<iMediaContainer> LoadMedia (const char * pFileName, 
+                                            const char *pDescription=0);
   virtual void Create (csString path,csArray<Language> languages) {}
 };
 

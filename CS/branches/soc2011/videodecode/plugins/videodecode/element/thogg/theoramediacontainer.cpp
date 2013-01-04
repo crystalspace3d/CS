@@ -39,10 +39,12 @@ bool TheoraMediaContainer::Initialize (iObjectRegistry* r)
 
   return 0;
 }
+
 size_t TheoraMediaContainer::GetMediaCount () const
 {
   return _media.GetSize ();
 }
+
 void TheoraMediaContainer::SetLanguages (csArray<Language> languages)
 {
   this->_languages = languages;
@@ -84,7 +86,6 @@ void TheoraMediaContainer::SetActiveStream (size_t index)
   if (!found)
   {
     _activeStreams.Push (index);
-
     _media[index]->SetCacheSize (_cacheSize);
   }
 
@@ -131,7 +132,7 @@ void TheoraMediaContainer::DropFrame ()
 
 void TheoraMediaContainer::Update ()
 {
-  // if processingCache is true, that means we've reached the end
+  // If processingCache is true, that means we've reached the end
   // of the file, but there still is data in the caches of the 
   // active streams which needs processing
   static bool processingCache=false;
@@ -139,12 +140,13 @@ void TheoraMediaContainer::Update ()
   static csTicks frameTime = 0;
   static csTicks lastTime=csGetTicks ();
 
-  if (frameTime==0 && _activeTheoraStream.IsValid ())
+  if (frameTime==0 && _activeTheoraStream.IsValid () 
+      && _activeTheoraStream->GetTargetFPS () != 0)
   {
     frameTime = 1000/_activeTheoraStream->GetTargetFPS ();
   }
 
-  // if a seek is scheduled, do it
+  // If a seek is scheduled, do it
   if (_timeToSeekTo!=-1)
   {
     MutexScopedLock lock (_swapMutex);
@@ -154,26 +156,30 @@ void TheoraMediaContainer::Update ()
 
     _isSeeking.NotifyOne ();
   }
+
   if (!_endOfFile && _activeStreams.GetSize () > 0)
   {
     _updateState=0;
     size_t cacheFull = 0;
     size_t dataAvailable = 0;
+
     for (size_t i=0;i<_activeStreams.GetSize ();i++)
     {
       // First, we want to know if any stream needs more data.
-      // in one stream needs data, ok will be different from 0
-      // If we're at the end of the file, but there's still data 
-      // in the caches, we don't care if a streams needs more data
+      // If one stream needs data, updateState will be different from 0
+      // If we're at the end of the file but there's still data 
+      // in the caches, we don't care if a stream needs more data
       if ( _media [_activeStreams [i]]->Update () && !processingCache)
         _updateState++;
+
       // Next, we want to know if all the active streams have
       // a full cache. if they do, we won't read more data until 
       // there's space left in the cache
       if ( _media [_activeStreams [i]]->IsCacheFull ())
         cacheFull++;
-      // Next, we want to know if there still is data available
-      // we don't want to stop updating 'til we used every frame
+
+      // Next, we want to know if there still is data available.
+      // We don't want to stop updating until every frame is treated
       if ( _media [_activeStreams [i]]->HasDataReady ())
         dataAvailable++;
     }
@@ -200,10 +206,10 @@ void TheoraMediaContainer::Update ()
     if (processingCache && dataAvailable==0)
       _updateState++;
 
-    /* buffer compressed data every loop */
+    // Buffer compressed data on each loop
     if (_updateState>0 && cacheFull!=_activeStreams.GetSize ())
     {
-      _hasDataToBuffer=BufferData (&_syncState);
+      _hasDataToBuffer = BufferData (&_syncState);
       if (_hasDataToBuffer==0)
       {
         if (dataAvailable==0)
@@ -302,10 +308,10 @@ void TheoraMediaContainer::Seek (float time)
 
 void TheoraMediaContainer::DoSeek ()
 {
-  // In order to seek, there needs to be an active video stream
+  // In order to seek, an active video stream has to be defined.
   // This is because we first have to seek the video stream and
-  // sync the rest of the streams to that frame
-  // This is important, because of the nature of seeking in theora
+  // sync the rest of the streams to that frame.
+  // This is important, because of the nature of seeking in Theora.
 
   if (!_activeTheoraStream.IsValid ())
   {
@@ -314,26 +320,37 @@ void TheoraMediaContainer::DoSeek ()
     return;
   }
 
-  // If a video stream is present, seek
-  long frame;
-  unsigned long targetFrame= (unsigned long) (_activeTheoraStream->GetFrameCount () * 
-    _timeToSeekTo / _activeTheoraStream->GetLength ());
-
-  // check if we're seeking outside the video
-  if (targetFrame>_activeTheoraStream->GetFrameCount ())
+  if (_activeTheoraStream->GetLength () == 0)
   {
-    targetFrame = _activeTheoraStream->GetFrameCount ();
+    csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
+      "The active video stream has a zero length. Seeking not available.\n");
+    return;
   }
 
-  frame = _activeTheoraStream->SeekPage (targetFrame,true,&_syncState,_fileSize);
+  // If a video stream is present, seek
+  long frame;
+  unsigned long frameCount = _activeTheoraStream->GetFrameCount ();
+  unsigned long targetFrame = (unsigned long) 
+    (frameCount * _timeToSeekTo / _activeTheoraStream->GetLength ());
+
+  // Check if we're seeking outside the video
+  if (targetFrame >= _activeTheoraStream->GetFrameCount ())
+    targetFrame = _activeTheoraStream->GetFrameCount () - 1;
+  else if (targetFrame < 0)
+    targetFrame = 0;
+
+  frame = _activeTheoraStream->SeekPage (targetFrame,frameCount,
+                                         true,&_syncState,_fileSize);
   if (frame != -1)
-    _activeTheoraStream->SeekPage (std::max ( (long)0,frame),false,&_syncState,_fileSize);
+    _activeTheoraStream->SeekPage (std::max((long)0,frame),frameCount,
+                                   false,&_syncState,_fileSize);
 
-  // In case audio from video file is implemented later on, seek to this time
-  //float time= ( (float) targetFrame/_activeTheoraStream->GetFrameCount ()) *_activeTheoraStream->GetLength ();
+  // TODO: In case audio from video file is implemented later on, seek to this time
+  //float time = ( (float) targetFrame/_activeTheoraStream->GetFrameCount () ) 
+  //                * _activeTheoraStream->GetLength ();
 
 
-  // skip to the frame we need
+  // Skip to the frame we need
   while (_activeTheoraStream->Update ()!=0)
   {
     _hasDataToBuffer=BufferData (&_syncState);
@@ -348,6 +365,7 @@ void TheoraMediaContainer::DoSeek ()
     }
   }
 
+  // If a sound stream is present, seek
   if (_sndstream.IsValid ())
   {
     // We want to know if we seek past the end of the audio stream.
@@ -356,7 +374,11 @@ void TheoraMediaContainer::DoSeek ()
       _sndstream->SetPosition (_sndstream->GetFrameCount ());
     // Ortherwise, seek to the required position
     else
+    {
+      if (_sndstream->GetPauseState() == CS_SNDSYS_STREAM_PAUSED)
+        _sndstream->Unpause();
       _sndstream->SetPosition (_timeToSeekTo*_sndstream->GetRenderedFormat ()->Freq);
+    }
   }
 }
 
@@ -386,17 +408,19 @@ void TheoraMediaContainer::AutoActivateStreams ()
   }
 }
 
-void TheoraMediaContainer::GetTargetTexture (csRef<iTextureHandle> &target) 
+iTextureHandle* TheoraMediaContainer::GetTargetTexture () 
 {
   if (_activeTheoraStream.IsValid ())
-    _activeTheoraStream->GetVideoTarget (target);
-  else target=NULL;
+    return _activeTheoraStream->GetVideoTarget ();
+  else 
+    return NULL;
 }
-void TheoraMediaContainer::GetTargetAudio (csRef<iSndSysStream> &target)
+iSndSysStream* TheoraMediaContainer::GetTargetAudio ()
 {
   if (_sndstream.IsValid ())
-    target = _sndstream;
-  else target=NULL;
+    return _sndstream;
+  else 
+    return NULL;
 }
 
 float TheoraMediaContainer::GetPosition () const
@@ -466,6 +490,7 @@ void TheoraMediaContainer::SwapBuffers ()
     }
   }
 }
+
 void TheoraMediaContainer::WriteData ()
 {
   if (_waitToFillCache)
@@ -495,8 +520,25 @@ float TheoraMediaContainer::GetAspectRatio ()
   return 1;
 }
 
-void TheoraMediaContainer::SelectLanguage (const char* identifier)
+size_t TheoraMediaContainer::GetLanguageCount () const
 {
+  return _languages.GetSize();
+}
+
+bool TheoraMediaContainer::GetLanguage (size_t index, Language &lang) const
+{
+  if (index >= _languages.GetSize())
+    return false;
+  
+  lang = _languages[index];
+  return true;
+}
+
+void TheoraMediaContainer::SetLanguage (const char* identifier)
+{
+  bool found = false;
+
+  // Search for the selected language
   for (size_t i =0;i<_languages.GetSize ();i++)
   {
     if (strcmp (_languages[i].name,identifier) ==0)
@@ -530,8 +572,14 @@ void TheoraMediaContainer::SelectLanguage (const char* identifier)
       }
       _sndstream->SetLoopState (CS_SNDSYS_STREAM_DONTLOOP);
 
-      // store the audio stream length
+      // Store the audio stream length
+      found = true;
       _audioStreamLength = _sndstream->GetFrameCount ()/_sndstream->GetRenderedFormat ()->Freq;
+      break;
     }
   }
+  
+  if (!found)
+    csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
+              "Can't set '%s': language not found.\n", identifier);
 }

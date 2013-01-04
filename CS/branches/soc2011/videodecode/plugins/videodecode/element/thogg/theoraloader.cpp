@@ -21,6 +21,58 @@ csThOggLoader::~csThOggLoader ()
 {
 }
 
+bool csThOggLoader::Initialize (iObjectRegistry* r)
+{
+  _object_reg = r;
+  _infile = NULL;
+
+  return true;
+}
+
+void csThOggLoader::Create (csString path,csArray<Language> languages)
+{
+  _path = path;
+  _languages = languages;
+}
+
+csRef<iMediaContainer> csThOggLoader::LoadMedia (const char* pFileName, 
+                                                 const char *pDescription)
+{
+  printf("\nLoading media file '%s'\n",pFileName);
+
+  _g3d=csQueryRegistry<iGraphics3D> (_object_reg);
+  _texManager = _g3d->GetTextureManager ();
+
+  // Get an iMediaParser from the object registry
+  csRef<iVFS> vfs = csQueryRegistry<iVFS> (_object_reg);
+
+  // Get the path for the video
+  csRef<iDataBuffer> vidPath = vfs->GetRealPath (_path.GetData ());
+  _infile = fopen (vidPath->GetData (),"rb");
+
+  // Check if the file exists
+  if (_infile == NULL)
+  {
+    csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
+      "Unable to open '%s' for playback.\n", pFileName);
+    return NULL;  
+  }
+  else	
+  {
+    // Create a new container
+    csRef<TheoraMediaContainer> container;
+    container.AttachNew (new TheoraMediaContainer ( (iBase*)this));
+    container->Initialize (_object_reg);
+    container->SetLanguages (_languages);
+
+    if (!StartParsing (container))
+      return NULL;
+
+    container->SetDescription (pDescription);
+    return container;
+  }
+}
+
 int csThOggLoader::BufferData (ogg_sync_state *oy)
 {
   char *buffer=ogg_sync_buffer (oy,4096);
@@ -31,18 +83,18 @@ int csThOggLoader::BufferData (ogg_sync_state *oy)
 
 bool csThOggLoader::StartParsing (csRef<TheoraMediaContainer> container)
 {
-  /* start up Ogg stream synchronization layer */
+  // Start up Ogg stream synchronization layer
   ogg_sync_init (&_oy);
 
-  /* init supporting Vorbis structures needed in header parsing */
+  // Init supporting Vorbis structures needed in header parsing
   vorbis_info_init (&_vi);
   vorbis_comment_init (&_vc);
 
-  /* init supporting Theora structures needed in header parsing */
+  // Init supporting Theora structures needed in header parsing
   th_comment_init (&tc);
   th_info_init (&ti);
 
-  /* Copy the file pointer in the container */
+  // Copy the file pointer in the container
   container->_infile=_infile;
 
   return ParseHeaders (container);
@@ -55,34 +107,33 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
   fseek (_infile,0,SEEK_SET);
   container->SetFileSize (mSize);
 
-  th_setup_info *ts=0;
   ogg_packet op;
-  int stateflag=0;
+  th_setup_info *ts = 0;
+  int stateflag = 0;
+//  int audioCnt = 0;
 
-  //since we're loading a Theora video, we expect video to be present
-  //otherwise, everything will be dropped.
-  bool foundVideo=false;
+  // Since we're loading a Theora video, we expect video to be present
+  // otherwise, everything will be dropped.
+  bool foundVideo = false;
 
-  /* Parse the headers */
-  /* Only interested in Vorbis/Theora streams */
-
+  // Parse the headers
+  // Only interested in Vorbis/Theora streams
   while (!stateflag)
   {
-    int ret=BufferData (&_oy);
-    if (ret==0)
+    int ret = BufferData (&_oy);
+    if (ret == 0)
       break;
 
-    while (ogg_sync_pageout (&_oy,&_og)>0)
+    while (ogg_sync_pageout (&_oy,&_og) > 0)
     {
       ogg_stream_state test;
 
-      /* is this a mandated initial header? If not, stop parsing */
+      // Is this a mandated initial header? If not, stop parsing
       if (!ogg_page_bos (&_og))
       {
-        /* don't leak the page; get it into the appropriate stream */
+        // Don't leak the page; get it into the appropriate stream
         container->QueuePage (&_og);
-
-        stateflag=1;
+        stateflag = 1;
         break;
       }
 
@@ -90,60 +141,68 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
       ogg_stream_pagein (&test,&_og);
       ogg_stream_packetout (&test,&op);
 
-      /* identify the codec: try theora */
-      if (th_decode_headerin (&ti,&tc,&ts,&op)>=0)
+      // Identify the codec
+      if (th_decode_headerin (&ti,&tc,&ts,&op) >= 0)
       {
-        // it is theora 
+        // It is Theora 
+        if (foundVideo)
+          continue;
+
+        csString name (_path);
+        name.Append("_videostream");
         csRef<csTheoraVideoMedia> videoStream;
-        videoStream.AttachNew ( new csTheoraVideoMedia ( (iBase*)this));
-
-        videoStream->InitializeStream (test, ti, tc, ts, _infile, _texManager);
-
+        videoStream.AttachNew ( new csTheoraVideoMedia ((iBase*)this) );
+        videoStream->InitializeStream (name.GetData(), test, ti, tc, ts, _infile, _texManager);
         container->AddMedia (videoStream);
+        foundVideo = true;
 
-        foundVideo=true;
-
-        //reinitialize Theora structures for next stream, if there is one
+        // Reinitialize Theora structures for next stream, if there is one
         th_comment_init (&tc);
         th_info_init (&ti);
       }
       else
-        if ( (vorbis_synthesis_headerin (&_vi,&_vc,&op))>=0)
+        if (vorbis_synthesis_headerin (&_vi,&_vc,&op) == 0)
         {
-          // it is vorbis 
-          csRef<csTheoraAudioMedia> audioStream;
-          audioStream.AttachNew ( new csTheoraAudioMedia ( (iBase*)this));
+          // It is Vorbis 
           
-          audioStream->InitializeStream (test, _vi, _vc, _infile);
+          // TODO: support for Vorbis audio stream
+          // Debug this part of code that triggers a segfault
+          /*
+          audioCnt++;
+          csString name (_path);
+          name.Append("_audiostream_").Append(audioCnt);
 
+          csRef<csTheoraAudioMedia> audioStream;
+          audioStream.AttachNew ( new csTheoraAudioMedia ((iBase*)this) ); 
+          audioStream->InitializeStream (name.GetData(), test, _vi, _vc, _infile);
           container->AddMedia (audioStream);
 
-          //reinitialize Vorbis structures for next stream, if there is one
+          // Reinitialize Vorbis structures for next stream, if there is one
           vorbis_info_init (&_vi);
           vorbis_comment_init (&_vc);
+          */
         }
         else
         {
-          /* whatever it is, we don't care about it */
+          // Whatever it is, we don't care about it
           ogg_stream_clear (&test);
         }
     }
-
+    
   }
 
-  // if there isn't a Theora video stream in the file, we don't care anymore
+  // If there isn't a Theora video stream in the file, we don't care anymore
   if (!foundVideo)
   {
-    //clear the sync state
+    // Clear the sync state
     ogg_sync_clear (&_oy);
 
-    //post a warning
+    // Post a warning
     csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
       "Unable to find a Theora video stream.\n");
 
     return false;
   }
-
 
   // Next, parse secondary headers.
   size_t times=0;
@@ -192,6 +251,7 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
 
         }
       }
+
       // Read extra headers for audio
       if (strcmp (container->GetMedia (i)->GetType (), "TheoraAudio") == 0)
       {
@@ -244,15 +304,17 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
     }
   }
 
-  //Compute the length in seconds and frame count (where applicable) of the streams
+  // Compute the length in seconds and frame count (where applicable) 
+  // of the streams
   ComputeStreamLength (container);
 
-  //In order to get everything back in order, we need to reparse the headers
-  //Streams aren't recreated, but we need to get the sync state in the proper position
+  // In order to get everything back in order, we need to reparse 
+  // the headers. Streams aren't recreated, but we need to get 
+  // the sync state in the proper position
   stateflag=0;
   ts=0;
 
-  /* Parse the headers */
+  // Parse the headers
   while (!stateflag)
   {
     int ret=BufferData (&_oy);
@@ -263,10 +325,10 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
     {
       ogg_stream_state test;
 
-      /* is this a mandated initial header? If not, stop parsing */
+      // Is this a mandated initial header? If not, stop parsing
       if (!ogg_page_bos (&_og))
       {
-        /* don't leak the page; get it into the appropriate stream */
+        // Don't leak the page; get it into the appropriate stream
         container->QueuePage (&_og);
 
         stateflag=1;
@@ -307,7 +369,7 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
 
   }
 
-  //copy the ogg sync state to the container
+  // Copy the ogg sync state to the container
   memcpy (&container->_syncState,&_oy,sizeof (_oy));
 
   return true;
@@ -317,7 +379,7 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
 {
   for (size_t i=0;i<container->GetMediaCount ();i++)
   {
-    if (strcmp (container->GetMedia (i)->GetType (), "TheoraVideo")==0)
+    if (strcmp (container->GetMedia (i)->GetType (), "TheoraVideo") == 0)
     {
       csRef<iVideoMedia> media = scfQueryInterface<iVideoMedia> (container->GetMedia (i)); 
       if (media.IsValid ()) 
@@ -343,7 +405,7 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
           {
             int ret=ogg_sync_pageout (&_oy, &_og);
             if (ret == 0) break;
-            // if page is not a theora page, skip it
+            // If page is not a Theora page, skip it
             if (ogg_page_serialno (&_og) != buff->StreamState ()->serialno) continue;
 
             unsigned long granule= (unsigned long) ogg_page_granulepos (&_og);
@@ -364,6 +426,7 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
         fseek (_infile,0,SEEK_SET);
       }
     }
+
     if (strcmp (container->GetMedia (i)->GetType (),"TheoraAudio")==0 )
     {
       csRef<iAudioMedia> media2 = scfQueryInterface<iAudioMedia> (container->GetMedia (i)); 
@@ -371,9 +434,7 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
       { 
         csRef<csTheoraAudioMedia> buff = static_cast<csTheoraAudioMedia*> ( (iAudioMedia*)media2);
         buff->Initialize (this->_object_reg);
-
         float mDuration=0;
-//        unsigned long mNumFrames=0;
 
         for (int i=1;i<=10;i++)
         {
@@ -389,7 +450,8 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
           {
             int ret=ogg_sync_pageout ( &_oy, &_og );
             if (ret == 0) break;
-            // if page is not a theora page, skip it
+
+            // If page is not a Theora page, skip it
             if (ogg_page_serialno (&_og) != buff->StreamState ()->serialno) continue;
 
             unsigned long granule= (unsigned long) ogg_page_granulepos (&_og);
@@ -410,61 +472,4 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
     }
   }
 
-}
-
-bool csThOggLoader::Initialize (iObjectRegistry* r)
-{
-  _object_reg = r;
-  _infile = NULL;
-
-
-  return true;
-}
-
-csRef<iMediaContainer> csThOggLoader::LoadMedia (const char * pFileName, const char *pDescription)
-{
-  _g3d=csQueryRegistry<iGraphics3D> (_object_reg);
-
-  _texManager = _g3d->GetTextureManager ();
-
-  csReport (_object_reg, CS_REPORTER_SEVERITY_DEBUG, QUALIFIED_PLUGIN_NAME,
-    "Loading Theora video from '%s'.\n", pFileName);
-
-  // Get an iMediaParser from the object registry
-
-  csRef<iVFS> vfs = csQueryRegistry<iVFS> (_object_reg);
-  // Get the path for the video
-  csRef<iDataBuffer> vidPath = vfs->GetRealPath (_path.GetData ());
-  _infile = fopen (vidPath->GetData (),"rb");
-
-  // checking if the file exists
-  if (_infile==NULL)
-  {
-    csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
-      "Unable to open '%s' for playback.\n", pFileName);
-
-    return NULL;  
-  }
-  else	
-  {
-    csRef<TheoraMediaContainer> container;
-    container.AttachNew (new TheoraMediaContainer ( (iBase*)this));
-    container->Initialize (_object_reg);
-    container->SetLanguages (_languages);
-
-    bool res=false;
-    res = StartParsing (container);
-
-    if (!res)
-      return NULL;
-
-    container->SetDescription (pDescription);
-    return container;
-  }
-}
-
-void csThOggLoader::Create (csString path,csArray<Language> languages)
-{
-  this->_path = path;
-  this->_languages = languages;
 }

@@ -29,6 +29,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "csutil/scf.h"
 #include "csutil/ref.h"
 #include "crystalspace.h"
+#include <ivideodecode/mediastructs.h>
 
 struct iMedia;
 
@@ -40,12 +41,12 @@ struct iMediaContainer : public virtual iBase
   SCF_INTERFACE (iMediaContainer,0,1,0);
 
   /**
-    * Return the number of iMedia objects inside the iMediaContainer.
+    * Return the number of iMedia objects inside the container.
     */
   virtual size_t GetMediaCount () const = 0;
 
   /**
-    * Get an iMedia object specified by an index.
+    * Get an iMedia object specified by its index.
     * \param[in] index Index of a media stream
     */
   virtual csRef<iMedia> GetMedia (size_t index) = 0;
@@ -56,33 +57,35 @@ struct iMediaContainer : public virtual iBase
   virtual const char* GetDescription () const = 0;
 
   /**
-    * Activate a stream. In case there's already an activated stream of that type, it is replaced.
+    * Activate a stream. 
+    * In case there's already an activated stream of that type, it is replaced.
     * \param[in] index Index of a media stream
     */
   virtual void SetActiveStream (size_t index) = 0;
 
   /**
-    * Remove an active stream.
-    * \param[in] index Index of a media stream
+    * Deactivate a stream.
+    * \param[in] index Index of an active media stream
     */
   virtual bool RemoveActiveStream (size_t index) = 0;
 
   /**
-    * Automatically activate the first stream of every kind from inside the container.
+    * Automatically activate the first stream of every kind 
+    * from inside the container.
     */
   virtual void AutoActivateStreams () = 0;
 
   /**
     * Get a reference to the internal texture buffer.
-    * \param[out] texture Target texture
+    * \return the target texture
     */
-  virtual void GetTargetTexture (csRef<iTextureHandle> &target) = 0;
+  virtual iTextureHandle* GetTargetTexture () = 0;
 
   /**
-    *  Get a reference to the internal audio stream.
-    * \param[out] target Target audio stream
+    * Get a reference to the internal audio stream.
+    * \return the target audio stream
     */
-  virtual void GetTargetAudio (csRef<iSndSysStream> &target) = 0;
+  virtual iSndSysStream* GetTargetAudio () = 0;
 
   /**
     * Update the active streams.
@@ -110,7 +113,8 @@ struct iMediaContainer : public virtual iBase
   virtual float GetLength () const = 0;
 
   /**
-    * Swap the active buffer for the last one that was written to inside the active iMedia.
+    * Swap the active buffer for the last one that was written to 
+    * inside the active iMedia.
     */
   virtual void SwapBuffers () = 0;
 
@@ -135,10 +139,24 @@ struct iMediaContainer : public virtual iBase
   virtual void DropFrame () = 0;
 
   /**
+   * Get the number of languages in the container.
+   */
+  virtual size_t GetLanguageCount () const = 0;
+
+  /**
+   * Get a language of the container
+   * \param[in] index Index of a language, 
+   *            defined in the interval [0,GetLanguageCount()-1]
+   * \param[out] lang Language corresponding to the given index
+   * \return true if success
+   */
+  virtual bool GetLanguage (size_t index, Language &lang) const = 0;
+
+  /**
     * Select a language from the available ones.
-    * \param[in] identifier An identifier for the target language
+    * \param[in] identifier The name of the target language
     */
-  virtual void SelectLanguage (const char* identifier) = 0;
+  virtual void SetLanguage (const char* identifier) = 0;
 
   /**
     * Callback for the "Pause" command.

@@ -39,7 +39,7 @@ struct iObjectRegistry;
   * also the implementation of the plugin.
   */
 class csVplPlayer :  public ThreadedCallable<csVplPlayer>,
-  public scfImplementation2<csVplPlayer,iMediaPlayer,iComponent>
+  public scfImplementation2 <csVplPlayer, iMediaPlayer, iComponent>
 {
 private:
   iObjectRegistry*        _object_reg;
@@ -52,45 +52,43 @@ private:
   bool                    _shouldUpdate;
   bool                    _shouldPlay;
 
-
   csRef<iThreadReturn>    _threadInfo;
 
 public:
-  iObjectRegistry* GetObjectRegistry () const
-  { return _object_reg; }
-
   csVplPlayer (iBase* parent);
   virtual ~csVplPlayer ();
 
   // From iComponent.
   virtual bool Initialize (iObjectRegistry*);
 
-  virtual void StartPlayer () ;
-
-  virtual void StopPlayer () ;
-
-  virtual void InitializePlayer (csRef<iMediaContainer> media, size_t cacheSize = 1) ;
+  // From iMediaPlayer
+  virtual void InitializePlayer (csRef<iMediaContainer> media, 
+                                 size_t cacheSize = 1) ;
   virtual void SetActiveStream (int index) ;
   virtual void RemoveActiveStream (int index) ;
-  virtual void GetTargetTexture (csRef<iTextureHandle> &target) ;
-  virtual void GetTargetAudio (csRef<iSndSysStream> &target) ;
-  
-  THREADED_CALLABLE_DECL (csVplPlayer, Update, csThreadReturn, THREADED, false, false);
+  virtual iTextureHandle* GetTargetTexture () ;
+  virtual iSndSysStream* GetTargetAudio () ;
+  THREADED_CALLABLE_DECL (csVplPlayer, Update, csThreadReturn, 
+                          THREADED, false, false);
+  virtual void StartPlayer () ;
+  virtual void StopPlayer () ;
   virtual void Loop (bool shouldLoop) ;
   virtual void Play () ;
   virtual void Pause () ;
   virtual void Stop () ;
   virtual void Seek (float time) ;
   virtual float GetPosition () const;
-  virtual bool IsPlaying () ;
   virtual float GetLength () const;
-  virtual void SelectLanguage (const char* identifier);
-
+  virtual bool IsPlaying () ;
   virtual float GetAspectRatio () ;
+  virtual void SetLanguage (const char* identifier);
 
   void WriteData () ;
 
   void SwapBuffers();
+
+  iObjectRegistry* GetObjectRegistry () const
+    { return _object_reg; }
 
   /**
    * Embedded iEventHandler interface that handles the Frame event
@@ -102,6 +100,7 @@ public:
   {
   private:
     csVplPlayer* parent;
+
   public:
     FrameEventHandler (csVplPlayer* parent) :
         scfImplementationType (this), parent (parent) { }

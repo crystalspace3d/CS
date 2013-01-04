@@ -6,14 +6,15 @@
 
 SCF_IMPLEMENT_FACTORY (csTheoraAudioMedia)
 
-csTheoraAudioMedia::csTheoraAudioMedia (iBase* parent) :
-scfImplementationType (this, parent),
-_object_reg (0)
+csTheoraAudioMedia::csTheoraAudioMedia (iBase* parent) 
+: scfImplementationType (this, parent),
+  _object_reg (0)
 {
 }
 
 csTheoraAudioMedia::~csTheoraAudioMedia ()
 {
+  delete _name;
 }
 
 void csTheoraAudioMedia::CleanMedia ()
@@ -34,7 +35,7 @@ bool csTheoraAudioMedia::Initialize (iObjectRegistry* r)
 {
   _object_reg = r;
 
-  // initialize the decoders
+  // Initialize the decoders
   if (_vorbis_p)
   {
     vorbis_synthesis_init (&_dspState,&_streamInfo);
@@ -67,12 +68,17 @@ bool csTheoraAudioMedia::Initialize (iObjectRegistry* r)
   }
   else
   {
-    /* tear down the partial vorbis setup */
+    // Tear down the partial Vorbis setup
     vorbis_info_clear (&_streamInfo);
     vorbis_comment_clear (&_streamComments);
     _decodersStarted = false;
   }
   return 0;
+}
+
+const char* csTheoraAudioMedia::GetName () const
+{
+  return _name;
 }
 
 const char* csTheoraAudioMedia::GetType () const
@@ -107,24 +113,23 @@ bool csTheoraAudioMedia::Update ()
     
   _audiobuf_ready=false;
 
-
   while (_vorbis_p && !_audiobuf_ready)
   {
     float **pcm;
     int ret=vorbis_synthesis_pcmout (&_dspState,&pcm);
     int count = 0;
 
-    // ToDo: change 714 to the frame count of the video
+    // ToDo: change 714 to the frame count of the video !!!!!!!!
     int numSamples = 714 * _streamInfo.channels;
     int numBytes = numSamples * sizeof (short);
 
     short *samples = new short[numBytes];
 
-    /* if there's pending, decoded audio, grab it */
+    // If there's pending, decoded audio, grab it
     if (ret>0)
     {
       int i,j;
-      // int count=0;
+
       for (i=0;i<ret && i< (2048/_streamInfo.channels);i++)
         for (j=0;j<_streamInfo.channels;j++)
         {
@@ -150,31 +155,28 @@ bool csTheoraAudioMedia::Update ()
     }
     else
     {
-      /* no pending audio; is there a pending packet to decode? */
+      // No pending audio; is there a pending packet to decode?
       if (ogg_stream_packetout (&_streamState,&_oggPacket)>0)
       {
-        if (vorbis_synthesis (&_vorbisBlock,&_oggPacket)==0) /* test for success! */
+        if (vorbis_synthesis (&_vorbisBlock,&_oggPacket)==0)  // test for success!
           vorbis_synthesis_blockin (&_dspState,&_vorbisBlock);
       }
-      else   /* we need more data; break out to suck in another page */
+      else   // We need more data; break out to suck in another page
         break;
     }
 
   }
 
   if (_audiobuf_ready)
-  {
     return 0;
-  }
 
   return 1;
 }
+
 void csTheoraAudioMedia::DropFrame ()
 {
   if (_cache.GetSize ()!=0)
-  {
     _cache.PopTop ();
-  }
 }
 
 void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState)
@@ -182,9 +184,10 @@ void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_s
   ogg_stream_reset (&_streamState);
   vorbis_synthesis_restart (&_dspState);
 
-  // let's decode some pages and seek to the appropriate PCM sample
+  // Let's decode some pages and seek to the appropriate PCM sample
   ogg_int64_t granule=0;
   float last_page_time=time;
+
   while (true)
   {
     int ret=ogg_sync_pageout ( oy, op );
@@ -201,6 +204,7 @@ void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_s
           int len = vorbis_synthesis_pcmout (&_dspState,&pcm);
           if (len > 0)
             break;
+
           //ogg_stream_pagein(&mInfo->VorbisStreamState,&mInfo->OggPage);
           time=g_time;
           break;
@@ -220,20 +224,21 @@ void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_s
 
 }
 
-
 void csTheoraAudioMedia::SwapBuffers ()
 {
-
 }
-void csTheoraAudioMedia::InitializeStream (ogg_stream_state &state, vorbis_info &info, vorbis_comment &comments, 
-                       FILE *source)
+
+void csTheoraAudioMedia::InitializeStream (const char* name,  ogg_stream_state &state, 
+                                           vorbis_info &info, vorbis_comment &comments, 
+                                           FILE *source)
 {
+  _name = new char[strlen (name)];
+  strcpy(_name, name);
   memcpy (&_streamState,&state,sizeof (state));
   memcpy (&_streamInfo,&info,sizeof (info));
   memcpy (&_streamComments,&comments,sizeof (comments));
   _vorbis_p=1;
   _infile = source;
-
   _decodersStarted = false;
 }
 
@@ -246,12 +251,10 @@ void csTheoraAudioMedia::WriteData ()
   }
 }
 
-
 void csTheoraAudioMedia::SetCacheSize (size_t size) 
 {
   _cacheSize = size;
 }
-
 
 bool csTheoraAudioMedia::HasDataReady ()
 {
@@ -259,6 +262,7 @@ bool csTheoraAudioMedia::HasDataReady ()
     return true;
   return false;
 }
+
 bool csTheoraAudioMedia::IsCacheFull ()
 {
   if (_cache.GetSize ()>=_cacheSize)

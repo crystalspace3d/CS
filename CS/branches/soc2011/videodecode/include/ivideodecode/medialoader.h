@@ -47,8 +47,8 @@ struct iMediaLoader : public virtual iBase
     *   through any streams or sources created from it, and may be useful for display or
     *   diagnostic purposes.
     *
-    * \param[in] pFileName The path to the file that needs to be loaded
-    * \param[in] pDescription A description for the resulting media stream (Optional)
+    * \param[in] pFileName Path to the file that needs to be loaded
+    * \param[in] pDescription A description for the resulting media stream (optional)
     */
   virtual csRef<iMediaContainer> LoadMedia (const char * pFileName, const char *pDescription=0) = 0;
 

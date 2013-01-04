@@ -39,6 +39,11 @@ struct iMedia : public virtual iBase
   SCF_INTERFACE (iMedia,0,1,0);
 
   /**
+    * Get the name of this stream.
+    */
+  virtual const char* GetName () const = 0;  
+
+  /**
     * Get the media type of this stream.
     */
   virtual const char* GetType () const = 0;
@@ -49,7 +54,7 @@ struct iMedia : public virtual iBase
   virtual unsigned long GetFrameCount() const = 0;
 
   /**
-    * Return the length in seconds.
+    * Return the stream length in seconds.
     */
   virtual float GetLength () const = 0;
 
@@ -59,7 +64,8 @@ struct iMedia : public virtual iBase
   virtual double GetPosition () const = 0 ;
 
   /**
-    * Clear all the decoders of the stream. Done when destroying the object by the container.
+    * Clear all the decoders of the stream. Done when destroying 
+    * the object by the container.
     */
   virtual void CleanMedia () = 0 ;
 
@@ -85,7 +91,7 @@ struct iMedia : public virtual iBase
   virtual void SetCacheSize (size_t size) = 0;
 
   /**
-    * Return true if there is data ready to be used
+    * Return true if there is data ready to be used.
     */
   virtual bool HasDataReady () = 0;
 
@@ -100,6 +106,7 @@ struct iMedia : public virtual iBase
   virtual void DropFrame () = 0;
 };
 
+
 /**
   * Video stream
   */
@@ -112,19 +119,18 @@ struct iVideoMedia : public iMedia
     */
   virtual float GetAspectRatio () = 0;
 
-
   /**
     * Get a reference to the internal texture buffer.
-    * \param[out] texture Target texture
+    * \return the target texture
     */
-  virtual void GetVideoTarget (csRef<iTextureHandle> &texture) = 0;
+  virtual iTextureHandle* GetVideoTarget () = 0;
 
   /**
     * Return the target FPS of the video stream.
     */
   virtual double GetTargetFPS () = 0;
-
 };
+
 
 /**
   * Audio stream
@@ -134,7 +140,7 @@ struct iAudioMedia : public iMedia
   SCF_INTERFACE (iAudioMedia,0,1,0);
 
   /**
-    *  Get a reference to the internal audio stream.
+    * Get a reference to the internal audio stream.
     * \param[out] stream Target audio stream
     */
   virtual void GetAudioTarget (csRef<iSndSysStream> &stream) = 0;

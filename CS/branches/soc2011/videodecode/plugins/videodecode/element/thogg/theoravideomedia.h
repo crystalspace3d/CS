@@ -27,8 +27,10 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ivideodecode/media.h>
 #include <csutil/scf_implementation.h>
 
-// theora headers
+// Theora headers
+#include "csutil/custom_new_disable.h"
 #include "theora/theoradec.h"
+#include "csutil/custom_new_enable.h"
 
 #include <iostream>
 using namespace std;
@@ -42,10 +44,12 @@ struct csVPLvideoFormat;
 /**
   * Video stream
   */
-class csTheoraVideoMedia : public scfImplementation2< csTheoraVideoMedia, iVideoMedia, scfFakeInterface<iMedia> >
+class csTheoraVideoMedia : public scfImplementation2
+    < csTheoraVideoMedia, iVideoMedia, scfFakeInterface<iMedia> >
 {
 private:
   iObjectRegistry* _object_reg;
+  char*            _name;
   float            _length;
   unsigned long    _frameCount;
 
@@ -81,7 +85,6 @@ private:
   float               _aspectRatio;
 
   // Stuff for conversion on the other thread
-
   uint8*  _rgbBuff;
   void    Convert ();
   
@@ -95,11 +98,11 @@ private:
       RVlut[256],
       BUlut[256];
 
-  // Mutexes
-private:
-  bool        _isWrite;
+  // Mutex
   Mutex       _writeMutex;
+  bool        _isWrite;
   Condition   _isWriting;
+
 public:
 
   // Provide access to the Theora specific members
@@ -111,40 +114,41 @@ public:
   inline th_setup_info**   SetupInfo ()       { return &_setupInfo; }
   inline int&              Theora_p ()        { return _theora_p; }
 
-  // An easy way to initialize the stream
-  void InitializeStream (ogg_stream_state &state, th_info &info, th_comment &comments, th_setup_info *setupInfo,
-    FILE *source, csRef<iTextureManager> texManager);
-
 public:
   csTheoraVideoMedia (iBase* parent);
   virtual ~csTheoraVideoMedia ();
 
-  // From iComponent.
+  // From iComponent
   virtual bool Initialize (iObjectRegistry*);
 
+  // From iMedia
+  virtual const char* GetName () const;  
   virtual const char* GetType () const;
   virtual unsigned long GetFrameCount () const;
   virtual float GetLength () const;
-  virtual void GetVideoTarget (csRef<iTextureHandle> &texture);
   virtual double GetPosition () const;
   virtual void CleanMedia () ;
   virtual bool Update () ;
   virtual void WriteData () ;
-  virtual void SetCacheSize (size_t size) ;
-
   virtual void SwapBuffers () ;
-
+  virtual void SetCacheSize (size_t size) ;
   virtual bool HasDataReady () ;
   virtual bool IsCacheFull () ;
-
-  virtual double GetTargetFPS () ;
-
-  virtual float GetAspectRatio () ;
   virtual void DropFrame () ;
+
+  // From iVideoMedia
+  virtual float GetAspectRatio () ;
+  virtual iTextureHandle* GetVideoTarget ();
+  virtual double GetTargetFPS () ;
 
   inline void SetFrameCount (unsigned long count)  { _frameCount=count; }
   inline void SetLength (float length)  { this->_length=length; }
-  long SeekPage (long targetFrame,bool return_keyframe, ogg_sync_state *oy,unsigned  long fileSize);
+  long SeekPage (long targetFrame, long frameCount, bool return_keyframe, 
+                 ogg_sync_state *oy, unsigned  long fileSize);
+  // An easy way to initialize the stream
+  void InitializeStream (const char* name, ogg_stream_state &state, th_info &info, 
+                         th_comment &comments, th_setup_info *setupInfo,
+                         FILE *source, csRef<iTextureManager> texManager);
 };
 
 

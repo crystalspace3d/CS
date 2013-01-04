@@ -24,12 +24,16 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <iutil/comp.h>
+#include <ivideodecode/mediastructs.h>
 #include <ivideodecode/mediacontainer.h>
 #include <csutil/scf_implementation.h>
 #include <csutil/refarr.h>
 #include <csutil/array.h>
 
+#include "csutil/custom_new_disable.h"
 #include "vorbis/codec.h"
+#include "csutil/custom_new_enable.h"
+
 #include "theoravideomedia.h"
 #include "theoraaudiomedia.h"
 
@@ -40,9 +44,8 @@ using namespace CS::Threading;
 /**
   * Container for the different streams inside a video file
   */
-class TheoraMediaContainer : public scfImplementation2<TheoraMediaContainer, 
-  iMediaContainer,
-  iComponent>
+class TheoraMediaContainer : public scfImplementation2
+    <TheoraMediaContainer, iMediaContainer, iComponent>
 {
 private:
   iObjectRegistry*    _object_reg;
@@ -60,7 +63,6 @@ private:
   size_t  _cacheSize;
 
   // audio languages
-  
   csArray<Language> _languages;
 
   // audio stream
@@ -69,7 +71,7 @@ private:
   // audio stream length in seconds
   size_t _audioStreamLength;
 
-private:
+  // Mutex
   Mutex     _swapMutex;
   Condition _isSeeking;
 
@@ -85,7 +87,7 @@ private:
   int   _hasDataToBuffer;
   int   _updateState;
 
-  //helper for buffering data
+  // Helper for data buffering
   int BufferData (ogg_sync_state *oy);
 
 public:
@@ -95,57 +97,57 @@ public:
   // From iComponent.
   virtual bool Initialize (iObjectRegistry*);
 
+  // From iMediaContainer
   virtual size_t GetMediaCount () const;
   virtual csRef<iMedia> GetMedia (size_t index);
   virtual const char* GetDescription () const;
-  inline virtual void SetDescription (const char* pDescription)
-    { this->_pDescription=pDescription; }
-
-  void AddMedia (csRef<iMedia> media);
-  virtual void GetTargetTexture (csRef<iTextureHandle> &target) ;
-  virtual void GetTargetAudio (csRef<iSndSysStream> &target) ;
   virtual void SetActiveStream (size_t index);
   virtual bool RemoveActiveStream (size_t index);
+  virtual void AutoActivateStreams () ;
+  virtual iTextureHandle* GetTargetTexture () ;
+  virtual iSndSysStream* GetTargetAudio () ;
   virtual void Update ();
   virtual bool Eof () const;
   virtual void Seek (float time) ;
-  virtual void AutoActivateStreams () ;
   virtual float GetPosition () const;
   virtual float GetLength () const;
   virtual void SwapBuffers () ;
-
   virtual void WriteData () ;
-
-
   virtual void SetCacheSize(size_t size) ;
-
   virtual float GetAspectRatio () ;
-
   virtual void DropFrame ();
-
-  virtual void SelectLanguage (const char* identifier);
-
+  virtual size_t GetLanguageCount () const;
+  virtual bool GetLanguage (size_t index, Language &lang) const;
+  virtual void SetLanguage (const char* identifier);
   virtual void OnPause ();
-
   virtual void OnPlay ();
-
   virtual void OnStop ();
+
+  // Add a media to the container
+  void AddMedia (csRef<iMedia> media);
 
   // Execute a seek on the active media
   void DoSeek ();
 
   // Queue a page to the appropriate stream
   void QueuePage (ogg_page *page);
+
+  inline void SetDescription (const char* pDescription)
+    { this->_pDescription=pDescription; }
+
+  inline csArray<Language> GetLanguages () const
+    { return _languages; }
+
   void SetLanguages (csArray<Language> languages);
 
   inline void ClearMedia ()  
-  { _media.Empty (); }
+    { _media.Empty (); }
 
   inline unsigned long GetFileSize () const 
-  { return _fileSize; }
+    { return _fileSize; }
 
   inline void SetFileSize (unsigned long size)  
-  { _fileSize=size; }
+    { _fileSize=size; }
 };
 
 /** @} */

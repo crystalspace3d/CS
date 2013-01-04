@@ -38,6 +38,13 @@ csRef<iMediaContainer> csVplLoader::LoadMedia (const char * pFileName, const cha
   csRef<iDocument> xmlDoc = docSys->CreateDocument ();
   csRef<iDataBuffer> xmlData = vfs->ReadFile (pFileName);
 
+  if (!xmlData)
+  {
+    csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
+      "Can't parse media: File '%s' not found.\n", pFileName);
+    return NULL;
+  }
+
   // Start parsing
   if (xmlDoc->Parse (xmlData) == 0)
   {
@@ -47,7 +54,10 @@ csRef<iMediaContainer> csVplLoader::LoadMedia (const char * pFileName, const cha
     // Tell the parser to parse the xml file
     csRef<iBase> result = parser->Parse (node,0,0,0);
 
+    // Get the media loader
     csRef<iMediaLoader> loader = scfQueryInterface<iMediaLoader> (result);
+
+    // Load the media and return a container
     return loader->LoadMedia (pFileName,pDescription);
   }
   else

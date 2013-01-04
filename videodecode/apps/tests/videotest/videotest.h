@@ -22,7 +22,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "crystalspace.h"
 
 #include "ivaria/icegui.h"
-
 #include <iostream>
 
 #include <ivideodecode/medialoader.h>
@@ -88,7 +87,7 @@ public:
   void Frame ();
 
   const char* GetApplicationConfigFile ()
-  { return "/config/csisland.cfg"; }
+    { return "/config/csisland.cfg"; }
 
   //-- csApplicationFramework
   bool Application ();

@@ -26,6 +26,8 @@ using namespace std;
 
 SCF_IMPLEMENT_FACTORY (csVplParser)
 
+static const char* msgidFactory = "crystalspace.vplparser";
+
 csVplParser::csVplParser (iBase* parent) :
 scfImplementationType (this, parent),
 _object_reg (0)
@@ -50,9 +52,8 @@ bool csVplParser::Initialize (iObjectRegistry* r)
   return true;
 }
 
-static const char* msgidFactory = "crystalspace.vplparser";
-
-csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*, iLoaderContext* ldr_context, iBase* context)
+csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*, 
+                                 iLoaderContext* ldr_context, iBase* context)
 {
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
 
@@ -76,10 +77,9 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*, iLoaderCon
 
         if (strcmp (type,"theoraVideo")==0)
         {
-
           csRef<iPluginManager> mgr=csQueryRegistry<iPluginManager> (_object_reg);
-          csRef<iMediaLoader> m_pThOggLoader=csLoadPlugin<iMediaLoader> (mgr,
-            "crystalspace.vpl.element.thogg");
+          csRef<iMediaLoader> m_pThOggLoader=csLoadPlugin<iMediaLoader> 
+            (mgr, "crystalspace.vpl.element.thogg");
           // Get the type of the media
           _mediaType = csString (child->GetAttributeValue ("type"));
 
@@ -122,11 +122,11 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*, iLoaderCon
                   {
                   case XMLTOKEN_LANGUAGE:
                     {
-                      // Store the info about the language
-                      //we want to store all the language streams
+                      // Store the info about the language.
+                      // We want to store all the language streams.
                       Language buff;
 
-                      //store the name
+                      // Store the name
                       const char* name = child3->GetAttributeValue ("name");
                       if (name == 0)
                       {
@@ -138,7 +138,7 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*, iLoaderCon
                       buff.name = new char[strlen (name)];
                       strcpy (buff.name,name);
 
-                      //and the path
+                      // and the path
                       const char* langPath = child3->GetAttributeValue ("path");
                       if (langPath == 0)
                       {

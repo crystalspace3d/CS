@@ -100,19 +100,20 @@ void csVplPlayer::RemoveActiveStream (int index)
     _mediaFile->RemoveActiveStream (index);
 }
 
-void csVplPlayer::GetTargetTexture (csRef<iTextureHandle> &target) 
+iTextureHandle* csVplPlayer::GetTargetTexture () 
 {
-  _mediaFile->GetTargetTexture (target);
-}
-void csVplPlayer::GetTargetAudio (csRef<iSndSysStream> &target)
-{
-  _mediaFile->GetTargetAudio (target);
+  return _mediaFile->GetTargetTexture ();
 }
 
-void csVplPlayer::SelectLanguage (const char* identifier)
+iSndSysStream* csVplPlayer::GetTargetAudio ()
+{
+  return _mediaFile->GetTargetAudio ();
+}
+
+void csVplPlayer::SetLanguage (const char* identifier)
 {
   if (_mediaFile.IsValid ())
-    _mediaFile->SelectLanguage (identifier);
+    _mediaFile->SetLanguage (identifier);
 }
 
 THREADED_CALLABLE_IMPL(csVplPlayer, Update)

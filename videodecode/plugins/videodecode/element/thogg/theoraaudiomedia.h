@@ -27,7 +27,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ivideodecode/media.h>
 #include <csutil/scf_implementation.h>
 
-#include <vorbis/codec.h>
+#include "csutil/custom_new_disable.h"
+#include "vorbis/codec.h"
+#include "csutil/custom_new_enable.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -35,14 +37,13 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 using namespace CS::SndSys;
 using namespace std;
 
-struct iTextureWrapper; 
-struct csVPLvideoFormat;
 
 class SndSysTheoraStream;
 /**
   * Audio stream
   */
-class csTheoraAudioMedia : public scfImplementation2 < csTheoraAudioMedia, iAudioMedia, scfFakeInterface<iMedia> >
+class csTheoraAudioMedia : public scfImplementation2 
+   < csTheoraAudioMedia, iAudioMedia, scfFakeInterface<iMedia> >
 {
 public:
 
@@ -51,8 +52,10 @@ public:
     int count;
     short* data;
   };
+
 private:
   iObjectRegistry*      _object_reg;
+  char*                 _name;
   float                 _length;
 
   ogg_stream_state  _streamState;
@@ -67,7 +70,6 @@ private:
   FILE              *_log;
   bool              _decodersStarted;
   bool              _audiobuf_ready;
-
 
   csFIFO<cachedData>  _cache;
   size_t              _cacheSize;
@@ -86,36 +88,37 @@ public:
   inline vorbis_comment*     StreamComments () { return &_streamComments; }
   inline int&                Vorbis_p ()       { return _vorbis_p; }
 
-  // An easy way to initialize the stream
-  void InitializeStream (ogg_stream_state &state, vorbis_info &info, vorbis_comment &comments, 
-    FILE *source);
-
 public:
   csTheoraAudioMedia (iBase* parent);
-  virtual ~csTheoraAudioMedia ();
+  ~csTheoraAudioMedia ();
 
   // From iComponent.
   virtual bool Initialize (iObjectRegistry*);
 
+  // From iMedia
+  virtual const char* GetName () const;  
   virtual const char* GetType () const;
   virtual unsigned long GetFrameCount () const;
   virtual float GetLength () const;
-  virtual void GetAudioTarget (csRef<iSndSysStream> &stream);
   virtual double GetPosition () const;
   virtual void CleanMedia () ;
   virtual bool Update () ;
   virtual void WriteData () ;
-  virtual void SetCacheSize (size_t size) ;
-
   virtual void SwapBuffers () ;
-
+  virtual void SetCacheSize (size_t size) ;
   virtual bool HasDataReady () ;
   virtual bool IsCacheFull () ;
-
   virtual void DropFrame () ;
+
+  // From iAudioMedia
+  virtual void GetAudioTarget (csRef<iSndSysStream> &stream);
 
   inline void SetLength (float length)  { this->_length=length; }
   void Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState);
+  // An easy way to initialize the stream
+  void InitializeStream (const char* name, ogg_stream_state &state, 
+                         vorbis_info &info, vorbis_comment &comments, 
+                         FILE *source);
 };
 
 #endif // __CS_THOGGAUDIOMEDIA_H__

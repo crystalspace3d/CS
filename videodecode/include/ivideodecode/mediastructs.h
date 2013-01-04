@@ -33,7 +33,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * @{ */
 
 /**
-  * Used to store languages available for a media file
+  * Used to store languages available for a media file.
   */
 struct Language
 {

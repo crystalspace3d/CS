@@ -45,40 +45,34 @@ void VideoTest::PrintHelp ()
 
 void VideoTest::Frame ()
 {
-  //draw the room
+  // Draw the room
   view->Draw ();
   mediaPlayer->StartPlayer ();
-
 
   if (updateSeeker)
   {
     float videoPos = mediaPlayer->GetPosition ();
-    CEGUI::Scrollbar * seeker = 
-      static_cast<CEGUI::Scrollbar*> (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Seek"));
+    CEGUI::Scrollbar * seeker = static_cast<CEGUI::Scrollbar*> 
+      (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Seek"));
     seeker->setScrollPosition (videoPos);
   }
-
 
   // Default behavior from DemoApplication
   DemoApplication::Frame ();
 
-  //in order to be able to draw 2D, it seems you need to do it after DemoApplication::Frame ()
-  //not really major, but might help when drawing the video on-screen
+  // In order to be able to draw 2D, it seems you need to do it after DemoApplication::Frame ()
+  // Not really major, but might help when drawing the video on-screen
 
   int w, h;
   logoTex->GetOriginalDimensions (w, h);
-
   int screenW = g2d->GetWidth ();
-
-  // Margin to the edge of the screen, as a fraction of screen width
-//  const float marginFraction = 0.01f;
-//  const int margin = (int)screenW * marginFraction;
 
   // Width of the logo, as a fraction of screen width
   const float widthFraction = 0.5f;
   const int width = (int)screenW * widthFraction;
   const int height = width * h / w;
 
+  // Draw 2D window displaying the video on-screen
   g3d->BeginDraw (CSDRAW_2DGRAPHICS);
   g3d->DrawPixmap (logoTex, 
     10, 
@@ -94,7 +88,8 @@ void VideoTest::Frame ()
 
 void VideoTest::OnExit ()
 {
-  mediaPlayer->StopPlayer ();
+  if (mediaPlayer)
+    mediaPlayer->StopPlayer ();
 }
 
 bool VideoTest::Application ()
@@ -106,7 +101,8 @@ bool VideoTest::Application ()
     CS_REQUEST_PLUGIN ("crystalspace.vpl.parser",iLoaderPlugin),
     CS_REQUEST_PLUGIN ("crystalspace.cegui.wrapper", iCEGUI),
     CS_REQUEST_PLUGIN ("crystalspace.documentsystem.multiplexer", iDocumentSystem),
-    CS_REQUEST_PLUGIN_TAG ("crystalspace.documentsystem.tinyxml", iDocumentSystem, "iDocumentSystem.1"),
+    CS_REQUEST_PLUGIN_TAG ("crystalspace.documentsystem.tinyxml", iDocumentSystem, 
+                           "iDocumentSystem.1"),
     CS_REQUEST_PLUGIN ("crystalspace.sndsys.renderer.openal", iSndSysRenderer),
     CS_REQUEST_END))
   {
@@ -127,8 +123,8 @@ bool VideoTest::Application ()
   if (!cegui) return ReportError ("Failed to locate CEGUI plugin");
 
   sndrenderer = csQueryRegistry<iSndSysRenderer> (GetObjectRegistry ());
-  if (!sndrenderer) ReportWarning ("Failed to locate sound renderer!");
-
+  if (!sndrenderer) 
+    ReportWarning ("Failed to locate sound renderer!");
   else
   {
     csRef<iSndSysListener> listener = sndrenderer->GetListener ();
@@ -141,23 +137,45 @@ bool VideoTest::Application ()
 
   // Get the loader and load the video
   csRef<iMediaLoader> vlpLoader = csQueryRegistry<iMediaLoader> (object_reg);
-  csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid420.xml");
+  csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid422.xml");
+  //csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid420.xml");
+  //csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid444.xml");
 
+  if (!video)
+    return false;
+
+  // Display media content
   if (video.IsValid ())
   {
-    printf ("%d streams in media container\n", (int)video->GetMediaCount ());
+    printf ("%d stream(s) in media container:\n", (int)video->GetMediaCount ());
+    for (size_t i=0; i<video->GetMediaCount (); i++)
+    {
+      csRef<iMedia> media = video->GetMedia (i);
+      printf("--> %i. '%s' of type '%s'\n",(int)i+1,media->GetName(),media->GetType());
+    }
+    printf ("%d language(s) in media container:\n", (int)video->GetLanguageCount ());
+    for (size_t i=0; i<video->GetLanguageCount (); i++)
+    {
+      Language lang;
+      if (video->GetLanguage(i,lang))
+        printf("--> %i. language '%s' from file '%s'\n",(int)i+1,lang.name,lang.path);
+    }
+    printf("\n");
   }
 
+  // Initialize the player
   mediaPlayer = csQueryRegistry<iMediaPlayer> (object_reg);
   mediaPlayer->InitializePlayer (video,5);
 
-  // Specifying -1 as index triggers auto stream activation
-  mediaPlayer->SetActiveStream (0);
-  mediaPlayer->GetTargetTexture (logoTex);
+  // Get the video texture
+  mediaPlayer->SetActiveStream (0);  // Specifying -1 as index triggers auto stream activation
+  logoTex = mediaPlayer->GetTargetTexture ();
 
-  mediaPlayer->SelectLanguage ("enUS");
-  mediaPlayer->GetTargetAudio (audioStream);
+  // Get the audio stream
+  mediaPlayer->SetLanguage ("enUS");
+  audioStream = mediaPlayer->GetTargetAudio ();
 
+  // Start the player
   mediaPlayer->Loop (false);
 
   if (audioStream.IsValid () && sndrenderer)
@@ -174,7 +192,7 @@ bool VideoTest::Application ()
 
   InitializeCEGUI ();
 
-  updateSeeker=true;
+  updateSeeker = true;
 
   // Create the scene
   if (!CreateScene ())
@@ -309,7 +327,7 @@ bool VideoTest::CreateScene ()
   return true;
 }
 
-// CEGUI listeners
+//-------------- CEGUI listeners -----------------------------------------
 bool VideoTest::OnExitButtonClicked (const CEGUI::EventArgs&)
 {
   csRef<iEventQueue> q =
@@ -337,8 +355,8 @@ bool VideoTest::OnStopButtonClicked (const CEGUI::EventArgs&)
 }
 bool VideoTest::OnLoopToggle (const CEGUI::EventArgs& e)
 {
-  CEGUI::RadioButton * radioButton1 = 
-    static_cast<CEGUI::RadioButton*> (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Loop"));
+  CEGUI::RadioButton * radioButton1 = static_cast<CEGUI::RadioButton*> 
+    (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Loop"));
 
   if (radioButton1->isSelected ())
   {

@@ -7,14 +7,15 @@
 SCF_IMPLEMENT_FACTORY (csTheoraVideoMedia)
 
 
-csTheoraVideoMedia::csTheoraVideoMedia (iBase* parent) :
-scfImplementationType (this, parent),
-_object_reg (0)
+csTheoraVideoMedia::csTheoraVideoMedia (iBase* parent) 
+: scfImplementationType (this, parent),
+  _object_reg (0), _name (NULL)
 {
 }
 
 csTheoraVideoMedia::~csTheoraVideoMedia ()
 {
+  delete _name;
 }
 
 void csTheoraVideoMedia::CleanMedia ()
@@ -35,19 +36,24 @@ bool csTheoraVideoMedia::Initialize (iObjectRegistry* r)
 {
   _object_reg = r;
 
-  // initialize the decoders
+  // Initialize the decoders
   if (_theora_p)
   {
-    //Clear the theora state in case it contains previous data
-    _decodeControl=NULL;
+    // Clear the theora state in case it contains previous data
+    _decodeControl = NULL;
 
-    _decodeControl=th_decode_alloc (&_streamInfo,_setupInfo);
+    // Initialize the decoders and print the info on the stream
+    _decodeControl = th_decode_alloc (&_streamInfo,_setupInfo);
 
-    //Initialize the decoders and print the info on the stream
+    if (_streamInfo.aspect_numerator == 0 or _streamInfo.aspect_denominator == 0)
+      _aspectRatio = 1.0;
+    else
+      _aspectRatio = (float)_streamInfo.aspect_numerator / _streamInfo.aspect_denominator;
 
-    _aspectRatio = (float)_streamInfo.aspect_numerator/ (float)_streamInfo.aspect_denominator;
-
-    _FPS = (double)_streamInfo.fps_numerator/_streamInfo.fps_denominator;
+    if (_streamInfo.fps_numerator == 0 or _streamInfo.fps_denominator == 0)
+      _FPS = -1.0;
+    else
+      _FPS = (double)_streamInfo.fps_numerator / _streamInfo.fps_denominator;
 
     _decodersStarted=true;
     _videobuf_granulepos=-1;
@@ -57,7 +63,7 @@ bool csTheoraVideoMedia::Initialize (iObjectRegistry* r)
   }
   else
   {
-    /* tear down the partial theora setup */
+    // Tear down the partial theora setup
     th_info_clear (&_streamInfo);
     th_comment_clear (&_streamComments);
 
@@ -65,6 +71,11 @@ bool csTheoraVideoMedia::Initialize (iObjectRegistry* r)
   }
 
   return 0;
+}
+
+const char* csTheoraVideoMedia::GetName () const
+{
+  return _name;
 }
 
 const char* csTheoraVideoMedia::GetType () const
@@ -82,10 +93,10 @@ float csTheoraVideoMedia::GetLength () const
   return _length;
 }
 
-void csTheoraVideoMedia::GetVideoTarget (csRef<iTextureHandle> &texture)
+iTextureHandle* csTheoraVideoMedia::GetVideoTarget ()
 {
   // We want "texture" to point to its internal representation in the stream
-  texture = _texture;
+  return _texture;
 }
 
 double csTheoraVideoMedia::GetPosition () const
@@ -95,31 +106,30 @@ double csTheoraVideoMedia::GetPosition () const
 
 bool csTheoraVideoMedia::Update ()
 {
-  if (_cache.GetSize ()>=_cacheSize)
+  if (_cache.GetSize() >= _cacheSize)
     return false;
 
-  _videobufReady=false;
+  _videobufReady = false;
 
   while (_theora_p && !_videobufReady)
   {
-    if (ogg_stream_packetout (&_streamState,&_oggPacket)>0)
+    if (ogg_stream_packetout (&_streamState,&_oggPacket) > 0)
     {
-      if (th_decode_packetin (_decodeControl,&_oggPacket,&_videobuf_granulepos)>=0)
+      if (th_decode_packetin (_decodeControl,&_oggPacket,&_videobuf_granulepos) >= 0)
       {
-        _videobufTime=th_granule_time (_decodeControl,_videobuf_granulepos);
+        _videobufTime = th_granule_time (_decodeControl,_videobuf_granulepos);
 
-        if (th_granule_frame (_decodeControl,_videobuf_granulepos)<_frameToSkip)
+        if (th_granule_frame (_decodeControl,_videobuf_granulepos) < _frameToSkip)
         {
           return false;
         }
         else
         {
-          _videobufReady=true;
+          _videobufReady = true;
           _frameToSkip = -1;
 
           th_decode_ycbcr_out (_decodeControl,_currentYUVBuffer);
           Convert ();
-          _cache.Push (_currentPixels);
         }
       }
     }
@@ -127,55 +137,81 @@ bool csTheoraVideoMedia::Update ()
       break;
   }
 
-
   if (!_videobufReady)
     return true;
 
   return false;
 }
 
-long csTheoraVideoMedia::SeekPage (long targetFrame,bool return_keyframe, ogg_sync_state *oy,unsigned long fileSize)
+long csTheoraVideoMedia::SeekPage (long targetFrame, long frameCount, bool return_keyframe, 
+                                   ogg_sync_state *oy,unsigned long fileSize)
 {
+  if (frameCount == 0)
+  {
+    csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
+              "The active video stream has a null frame count. Seeking not available.\n");
+    return -1;
+  }
+
   MutexScopedLock lock (_writeMutex);
   while (_isWrite)
     _isWriting.Wait (_writeMutex);
+
+  // Reset Theora decoder
   _rgbBuff = NULL;
-
   _cache.DeleteAll ();
-
   ogg_stream_reset (&_streamState);
   th_decode_free (_decodeControl);
   _decodeControl=th_decode_alloc (&_streamInfo,_setupInfo);
 
-  int seek_min=0, seek_max=fileSize;
+  // Init seeking interval
+  float seekRatio = (float)targetFrame / frameCount;
+  float frameSize = (float)fileSize / frameCount;
+  int seek_min = std::max(0, (int)(fileSize * seekRatio - 10 * frameSize));
+  int seek_max = targetFrame == 0 ? 
+    0 : std::min((int)(fileSize * seekRatio + 10 * frameSize), (int)fileSize);
+
+  // Init data
   long frame;
   ogg_int64_t granule=0;
   bool fineseek=false;
   ogg_page og;
 
-  for (int i=0;i<100;i++)
+  for (int i=0; i<100; i++)
   {
+    // Reset the internal counters of the ogg_sync_state struct 
+    // that tracks the synchronization of the current page. 
     ogg_sync_reset (oy);
 
+    // Goto searching position in the stream
     fseek (_infile,(seek_min+seek_max)/2,SEEK_SET);
+
+    // Try to synchronize to the next page in the bitstream
     memset (&og, 0, sizeof (ogg_page));
     ogg_sync_pageseek (oy,&og);
 
     while (true)
     {
-      int ret=ogg_sync_pageout ( oy, &og );
+      // Try to read a new page.
+      int ret = ogg_sync_pageout ( oy, &og );
+
+      // Check if the page was synced and returned.
       if (ret == 1)
       {
-        int serno=ogg_page_serialno (&og);
+        // Get the unique serial number for the logical bitstream of this page.
+        int serno = ogg_page_serialno (&og);
         if (serno == _streamState.serialno)
         {
-          granule=ogg_page_granulepos (&og);
+          // Get the last granular position of the decoded data contained in the page.
+          granule = ogg_page_granulepos (&og);
           if (granule >= 0)
           {
-            frame= (long) th_granule_frame (_decodeControl,granule);
-            if (frame < targetFrame-1 && targetFrame-frame < 10)
+            // Convert granule position to an absolute frame index.
+            frame = (long) th_granule_frame (_decodeControl,granule);
+            if ((targetFrame == 0 and frame == 0) or                
+                (frame < targetFrame-1 && targetFrame-frame < 10))
             {
-              fineseek=true;
+              fineseek = true;
               if (!return_keyframe) break;
             }
 
@@ -184,42 +220,57 @@ long csTheoraVideoMedia::SeekPage (long targetFrame,bool return_keyframe, ogg_sy
 
             if (fineseek) 
               continue;
-
+            
+            if (seek_max - seek_min <= 1)
+            {
+              fineseek = true;
+              break;
+            }
+            
             if (targetFrame-1 > frame) 
-              seek_min= (seek_min+seek_max)/2;
+              seek_min = (seek_min+seek_max)/2;
             else
-              seek_max= (seek_min+seek_max)/2;
+              seek_max = (seek_min+seek_max)/2;
+
             break;
           }
         }
       }
-      else
+      else  // Stream has not yet captured sync.
       {
-        char *buffer = ogg_sync_buffer ( oy, 4096);
+        char *buffer = ogg_sync_buffer (oy, 4096);
         int bytesRead = fread (buffer,1,4096,_infile);
         if (bytesRead == 0) break;
         ogg_sync_wrote ( oy, bytesRead );
       }
     }
+
     if (fineseek) break;
   }
 
+  // Add a complete page to the bitstream.
   ogg_stream_pagein (&_streamState,&og);
+
+  // Set the granule position.
   th_decode_ctl (_decodeControl,TH_DECCTL_SET_GRANPOS,&granule,sizeof (granule));
 
-  //make sure we skip to the keyframe we need
+  // Make sure we skip to the keyframe we need
   if (return_keyframe)
   {
     _frameToSkip = targetFrame;
 
     return (long) (granule >> _streamInfo.keyframe_granule_shift);
   }
+
   return -1;
 }
 
-void csTheoraVideoMedia::InitializeStream (ogg_stream_state &state, th_info &info, th_comment &comments,
-                                         th_setup_info *setupInfo, FILE *source, csRef<iTextureManager> texManager)
+void csTheoraVideoMedia::InitializeStream (const char* name, ogg_stream_state &state, th_info &info, 
+                                           th_comment &comments, th_setup_info *setupInfo, FILE *source, 
+                                           csRef<iTextureManager> texManager)
 {
+  _name = new char[strlen (name)];
+  strcpy(_name, name);
   memcpy (&_streamState,&state,sizeof (state));
   memcpy (&_streamInfo,&info,sizeof (info));
   memcpy (&_streamComments,&comments,sizeof (comments));
@@ -231,12 +282,12 @@ void csTheoraVideoMedia::InitializeStream (ogg_stream_state &state, th_info &inf
 
   // Create the buffers needed for double buffering
   csRef<iTextureHandle> tex1 = texManager->CreateTexture 
-    (_streamInfo.frame_width, _streamInfo.frame_height, 0, csimg2D, "rgb8",
+    (_streamInfo.pic_width, _streamInfo.pic_height, 0, csimg2D, "rgb8",
      CS_TEXTURE_2D | CS_TEXTURE_NPOTS);
   _buffers.Push (tex1);
 
   csRef<iTextureHandle> tex2 = texManager->CreateTexture 
-    (_streamInfo.frame_width, _streamInfo.frame_height, 0, csimg2D, "rgb8",
+    (_streamInfo.pic_width, _streamInfo.pic_height, 0, csimg2D, "rgb8",
      CS_TEXTURE_2D | CS_TEXTURE_NPOTS);
   _buffers.Push (tex2);
 
@@ -244,21 +295,18 @@ void csTheoraVideoMedia::InitializeStream (ogg_stream_state &state, th_info &inf
 
   _texture = _buffers[0];
 
-
   // Initialize the LUTs
+  double scale = 1L << 8, temp;
+
+  for (int i=0; i<256; i++)
   {
-    double scale = 1L << 8, temp;
+    temp = i - 128;
 
-    for (int i=0;i<256;i++)
-    {
-      temp = i - 128;
-
-      Ylut[i] = (int) ( (1.164 * scale + 0.5) * (i - 16));
-      RVlut[i] = (int) ( (1.596 * scale + 0.5) * temp);		//Calc R component
-      GUlut[i] = (int) ( (0.391 * scale + 0.5) * temp);		//Calc G u & v components
-      GVlut[i] = (int) ( (0.813 * scale + 0.5) * temp);
-      BUlut[i] = (int) ( (2.018 * scale + 0.5) * temp);		//Calc B component
-    }
+    Ylut[i] = (int) ( (1.164 * scale + 0.5) * (i - 16));
+    RVlut[i] = (int) ( (1.596 * scale + 0.5) * temp);		//Calc R component
+    GUlut[i] = (int) ( (0.391 * scale + 0.5) * temp);		//Calc G u & v components
+    GVlut[i] = (int) ( (0.813 * scale + 0.5) * temp);
+    BUlut[i] = (int) ( (2.018 * scale + 0.5) * temp);		//Calc B component
   }
 
   _canSwap=false;
@@ -268,6 +316,8 @@ void csTheoraVideoMedia::DropFrame ()
 {
   if (_cache.GetSize ()!=0)
   {
+    MutexScopedLock lock (_writeMutex);
+
     cachedData pixels = _cache.PopTop ();
     delete pixels;
   }
@@ -275,23 +325,26 @@ void csTheoraVideoMedia::DropFrame ()
 
 void csTheoraVideoMedia::Convert ()
 {
-
-  int y_offset= (_streamInfo.pic_x&~1)+_currentYUVBuffer[0].stride* (_streamInfo.pic_y&~1);
-
   int Y,U,V,R,G,B;
+
+  // Luma plane offset
+  int y_offset = (_streamInfo.pic_x&~1) + _currentYUVBuffer[0].stride * (_streamInfo.pic_y&~1);
 
   // 4:2:0 pixel format
   if (_streamInfo.pixel_fmt==TH_PF_420)
   {
-    int uv_offset= (_streamInfo.pic_x/2)+ (_currentYUVBuffer[1].stride)* (_streamInfo.pic_y/2);
-    uint8 * outputBuffer = new uint8[_streamInfo.pic_width*_streamInfo.pic_height*4];
+    // Chroma is decimated by 2 in both the X and Y directions (4:2:0). 
+    // The Cb and Cr chroma planes are half the width and half the height of the luma plane.
+    int uv_offset = (_streamInfo.pic_x/2) + (_currentYUVBuffer[1].stride) * (_streamInfo.pic_y/2);
+    uint8* outputBuffer = new uint8[_streamInfo.pic_width*_streamInfo.pic_height*4];
     int k=0;
-    for (ogg_uint32_t y = 0 ; y < _streamInfo.frame_height ; y++)
-      for (ogg_uint32_t x = 0 ; x < _streamInfo.frame_width ; x++)
+
+    for (ogg_uint32_t y = 0 ; y < _streamInfo.pic_height ; y++)
+      for (ogg_uint32_t x = 0 ; x < _streamInfo.pic_width ; x++)
       {
-        Y = (_currentYUVBuffer[0].data+y_offset+_currentYUVBuffer[0].stride* ( (y)))[x] ;
-        U = (_currentYUVBuffer[1].data+uv_offset+_currentYUVBuffer[1].stride* (y/2))[x/2] ;
-        V = (_currentYUVBuffer[2].data+uv_offset+_currentYUVBuffer[2].stride* (y/2))[x/2] ;
+        Y = (_currentYUVBuffer[0].data + y_offset  + _currentYUVBuffer[0].stride * (y)  )[x] ;
+        U = (_currentYUVBuffer[1].data + uv_offset + _currentYUVBuffer[1].stride * (y/2))[x/2] ;
+        V = (_currentYUVBuffer[2].data + uv_offset + _currentYUVBuffer[2].stride * (y/2))[x/2] ;
 
         R = (Ylut[Y] + RVlut[V])>>8;
         G = (Ylut[Y] - GUlut[U] - GVlut[V])>>8;
@@ -313,20 +366,22 @@ void csTheoraVideoMedia::Convert ()
       }
 
       _currentPixels = outputBuffer;
-
   }
   // 4:2:2 pixel format
   else if (_streamInfo.pixel_fmt==TH_PF_422)
   {
-    int uv_offset= (_streamInfo.pic_x/2)+ (_currentYUVBuffer[1].stride)* (_streamInfo.pic_y);
+    // Chroma is decimated by 2 in the X direction (4:2:2). 
+    // The Cb and Cr chroma planes are half the width of the luma plane, but full height. 
+    int uv_offset = (_streamInfo.pic_x/2) + (_currentYUVBuffer[1].stride) * (_streamInfo.pic_y);
     uint8 * outputBuffer = new uint8[_streamInfo.pic_width*_streamInfo.pic_height*4];
     int k=0;
-    for (ogg_uint32_t y = 0 ; y < _streamInfo.frame_height ; y++)
-      for (ogg_uint32_t x = 0 ; x < _streamInfo.frame_width ; x++)
+
+    for (ogg_uint32_t y = 0 ; y < _streamInfo.pic_height ; y++)
+      for (ogg_uint32_t x = 0 ; x < _streamInfo.pic_width ; x++)
       {
-        Y = (_currentYUVBuffer[0].data+y_offset+_currentYUVBuffer[0].stride*y)[x] ;
-        U = (_currentYUVBuffer[1].data+uv_offset+_currentYUVBuffer[1].stride* (y))[x/2] ;
-        V = (_currentYUVBuffer[2].data+uv_offset+_currentYUVBuffer[2].stride* (y))[x/2] ;
+        Y = (_currentYUVBuffer[0].data + y_offset  + _currentYUVBuffer[0].stride * y)[x] ;
+        U = (_currentYUVBuffer[1].data + uv_offset + _currentYUVBuffer[1].stride * y)[x/2] ;
+        V = (_currentYUVBuffer[2].data + uv_offset + _currentYUVBuffer[2].stride * y)[x/2] ;
 
         R = (Ylut[Y] + RVlut[V])>>8;
         G = (Ylut[Y] - GUlut[U] - GVlut[V])>>8;
@@ -346,22 +401,24 @@ void csTheoraVideoMedia::Convert ()
         outputBuffer[k] = 0xff;
         k++;
       }
-      _currentPixels = outputBuffer;
 
+      _currentPixels = outputBuffer;
   }
   // 4:4:4 pixel format
   else if (_streamInfo.pixel_fmt==TH_PF_444)
   {
-    int uv_offset= (_streamInfo.pic_x/2)+ (_currentYUVBuffer[1].stride)* (_streamInfo.pic_y);
-
+    // No chroma decimation (4:4:4).
+    // The Cb and Cr chroma planes are full width and full height. 
+    int uv_offset = (_streamInfo.pic_x) + (_currentYUVBuffer[1].stride) * (_streamInfo.pic_y);
     uint8 * outputBuffer = new uint8[_streamInfo.pic_width*_streamInfo.pic_height*4];
     int k=0;
-    for (ogg_uint32_t y = 0 ; y < _streamInfo.frame_height ; y++)
-      for (ogg_uint32_t x = 0 ; x < _streamInfo.frame_width ; x++)
+
+    for (ogg_uint32_t y = 0 ; y < _streamInfo.pic_height ; y++)
+      for (ogg_uint32_t x = 0 ; x < _streamInfo.pic_width ; x++)
       {
-        Y = (_currentYUVBuffer[0].data+y_offset+_currentYUVBuffer[0].stride*y)[x];
-        U = (_currentYUVBuffer[1].data+uv_offset+_currentYUVBuffer[1].stride* (y))[x] ;
-        V = (_currentYUVBuffer[2].data+uv_offset+_currentYUVBuffer[2].stride* (y))[x] ;
+        Y = (_currentYUVBuffer[0].data + y_offset  + _currentYUVBuffer[0].stride * y)[x];
+        U = (_currentYUVBuffer[1].data + uv_offset + _currentYUVBuffer[1].stride * y)[x] ;
+        V = (_currentYUVBuffer[2].data + uv_offset + _currentYUVBuffer[2].stride * y)[x] ;
 
         R = (Ylut[Y] + RVlut[V])>>8;
         G = (Ylut[Y] - GUlut[U] - GVlut[V])>>8;
@@ -381,21 +438,23 @@ void csTheoraVideoMedia::Convert ()
         outputBuffer[k] = 0xff;
         k++;
       }
-      _currentPixels = outputBuffer;
 
+      _currentPixels = outputBuffer;
   }
   else
   {
     csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
       "The Theora video stream has an unsupported pixel format.\n");
-    _isWrite=false;
-    _isWriting.NotifyOne ();
     return;
   }
+
+  MutexScopedLock lock (_writeMutex);
+  _cache.Push (_currentPixels);
 }
+
 void csTheoraVideoMedia::SwapBuffers ()
 {
-  if(_canSwap)
+  if (_canSwap)
   {
     if (_activeBuffer==0)
     {
@@ -412,19 +471,18 @@ void csTheoraVideoMedia::SwapBuffers ()
   }
 }
 
-
 void csTheoraVideoMedia::WriteData ()
 {
   _isWrite=true;
-  if(!_canSwap && _cache.GetSize ()!=0)
+
+  if (!_canSwap && _cache.GetSize () != 0)
   {
     {
-      MutexScopedLock lock (_writeMutex);
-
       cachedData pixels = _cache.PopTop ();
       size_t dstSize;
       iTextureHandle* tex = _buffers.Get (_activeBuffer);
-      _rgbBuff = tex->QueryBlitBuffer (_streamInfo.pic_x,_streamInfo.pic_y,_streamInfo.pic_width,_streamInfo.pic_height,dstSize);
+      _rgbBuff = tex->QueryBlitBuffer (_streamInfo.pic_x,_streamInfo.pic_y,
+                                       _streamInfo.pic_width,_streamInfo.pic_height,dstSize);
 
       memcpy(_rgbBuff,pixels,_streamInfo.pic_width*_streamInfo.pic_height*4);
       delete pixels;
@@ -436,6 +494,7 @@ void csTheoraVideoMedia::WriteData ()
       _isWriting.NotifyOne ();
     }
   }
+
   _isWrite=false;
 }
 

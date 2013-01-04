@@ -27,8 +27,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "theoramediacontainer.h"
 #include <csutil/nobjvec.h>
 
+#include "csutil/custom_new_disable.h"
 #include "vorbis/codec.h"
-
+#include "csutil/custom_new_enable.h"
 
 #define QUALIFIED_PLUGIN_NAME "crystalspace.vpl.element.thogg"
 
@@ -44,43 +45,32 @@ struct iObjectRegistry;
   * This is the implementation for our API and
   * also the implementation of the plugin.
   */
-class csThOggLoader : public scfImplementation2<csThOggLoader,iMediaLoader,iComponent>
+class csThOggLoader : public scfImplementation2
+    <csThOggLoader,iMediaLoader,iComponent>
 {
 private:
 
   iObjectRegistry* _object_reg;
-
   csRef<iTextureManager> _texManager;
+  csRef<iGraphics3D>  _g3d;
 
-  //ogg stuff
+  // Ogg stuff
   ogg_sync_state   _oy;
   ogg_page         _og;
 
-  //theora stuff
+  // Theora stuff
   th_info      ti;
   th_comment   tc;
-  //------------------
 
-  //vorbis stuff
+  // Vorbis stuff
   vorbis_info      _vi;
   vorbis_comment   _vc;
-  //------------------
 
-  FILE *              _infile;
-  csRef<iGraphics3D>  _g3d;
-
-  csString            _path;
-  csArray<Language>   _languages;
-
-private:
-
-  /* Helper; just grab some more compressed bitstream and sync it for
-  page extraction */
-  int BufferData (ogg_sync_state *oy);
-
-  bool StartParsing (csRef<TheoraMediaContainer> container);
-  bool ParseHeaders (csRef<TheoraMediaContainer> container);
-  void ComputeStreamLength (csRef<TheoraMediaContainer> container);
+  // Media data
+  csString            _path;        // video file path
+  FILE *              _infile;      // video file
+  csArray<Language>   _languages;   // array of languages 
+                                    // (audio file paths and names)
 
 public:
   csThOggLoader (iBase* parent);
@@ -89,10 +79,20 @@ public:
   // From iComponent.
   virtual bool Initialize (iObjectRegistry*);
 
-
-  virtual csRef<iMediaContainer> LoadMedia (const char * pFileName, const char *pDescription=0);
-
   virtual void Create (csString path,csArray<Language> languages) ;
+
+  virtual csRef<iMediaContainer> LoadMedia 
+    (const char * pFileName, const char *pDescription=0);
+
+private:
+
+  /* Helper; just grab some more compressed bitstream 
+     and sync it for page extraction */
+  int BufferData (ogg_sync_state *oy);
+
+  bool StartParsing (csRef<TheoraMediaContainer> container);
+  bool ParseHeaders (csRef<TheoraMediaContainer> container);
+  void ComputeStreamLength (csRef<TheoraMediaContainer> container);
 };
 
 #endif // __THOGGLOADER_H__

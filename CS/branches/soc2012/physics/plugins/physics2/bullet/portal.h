@@ -28,13 +28,13 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
 class CollisionPortal;
 class PortalTraversalData;
 
-
+// TODO: what's this?
 struct PhysObjSynchronizer
-{
-  
+{  
 };
 
 class RigidBodySynchronizer : public PhysObjSynchronizer
@@ -42,9 +42,9 @@ class RigidBodySynchronizer : public PhysObjSynchronizer
   //csOrthoTransform oldTransform;
 
 public:
-  RigidBodySynchronizer() {}
+  RigidBodySynchronizer () {}
 
-  void Synchronize(csBulletRigidBody* obj, csBulletRigidBody* cloneObj);
+  void Synchronize (csBulletRigidBody* obj, csBulletRigidBody* cloneObj);
 };
 
 class SoftBodySynchronizer : public PhysObjSynchronizer
@@ -52,11 +52,11 @@ class SoftBodySynchronizer : public PhysObjSynchronizer
   csArray<btVector3> oldCloneVels;
 
 public:
-  SoftBodySynchronizer() {}
+  SoftBodySynchronizer () {}
 
-  void SetupSynchronizer(csBulletSoftBody* cloneObj);
+  void SetupSynchronizer (csBulletSoftBody* cloneObj);
 
-  void Synchronize(csBulletSoftBody* obj, csBulletSoftBody* cloneObj);
+  void Synchronize (csBulletSoftBody* obj, csBulletSoftBody* cloneObj);
 };
 
 /**
@@ -81,12 +81,12 @@ public:
   PhysObjSynchronizer* Synchronizer;
 
 public:
-  PortalTraversalData(bool isOriginal, CollisionPortal* portal, csBulletCollisionObject* obj) : 
-      IsOriginal(isOriginal), Portal(portal), Object(obj), Synchronizer(nullptr)
+  PortalTraversalData (bool isOriginal, CollisionPortal* portal, csBulletCollisionObject* obj) : 
+      IsOriginal (isOriginal), Portal (portal), Object (obj), Synchronizer (nullptr)
   {
   }
 
-  virtual ~PortalTraversalData()
+  virtual ~PortalTraversalData ()
   {
     if (Synchronizer)
       delete Synchronizer;
@@ -112,7 +112,6 @@ public:
    */
   csOrthoTransform warpTrans;
 
-
   csBulletSector* sourceSector;
   csBulletSector* targetSector;
 
@@ -135,27 +134,28 @@ public:
   CollisionPortal (iPortal* portal, const csOrthoTransform& meshTrans, csBulletSector* sourceSector);
   ~CollisionPortal ();
 
-  bool CanTraverse(csBulletCollisionObject* obj);
+  bool CanTraverse (csBulletCollisionObject* obj);
 
-  inline bool IsTraversingThisPortal(csBulletCollisionObject* obj) { return obj->portalData && obj->portalData->Portal == this; }
+  inline bool IsTraversingThisPortal (csBulletCollisionObject* obj)
+  { return obj->portalData && obj->portalData->Portal == this; }
 
   void UpdateCollisionsPreStep (csBulletSector* sector);
   void UpdateCollisionsPostStep (csBulletSector* sector) {}
 
-  bool IsOnOtherSide(csBulletCollisionObject* obj);
-  void Traverse(csBulletCollisionObject* obj);
+  bool IsOnOtherSide (csBulletCollisionObject* obj);
+  void Traverse (csBulletCollisionObject* obj);
 
   /// Synchronize the two symbiotic objects and correct position, velocity and force
-  void Synchronize(csBulletCollisionObject* obj, csBulletCollisionObject* cloneObj);
+  void Synchronize (csBulletCollisionObject* obj, csBulletCollisionObject* cloneObj);
 
   /// Removes this portal from its sector
-  void RemoveFromSector();
+  void RemoveFromSector ();
 
   /// Removes the given object from the context of this portal
-  void RemoveTraversingObject(csBulletCollisionObject* obj);
+  void RemoveTraversingObject (csBulletCollisionObject* obj);
 };
 
 }
-CS_PLUGIN_NAMESPACE_END(Bullet2)
+CS_PLUGIN_NAMESPACE_END (Bullet2)
 
 #endif

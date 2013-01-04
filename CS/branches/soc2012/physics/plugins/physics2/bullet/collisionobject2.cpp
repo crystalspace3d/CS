@@ -34,12 +34,10 @@ using namespace CS::Collisions;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  // TODO: factory in constructor
+  // TODO: factory in constructor (everywhere)
   void csBulletCollisionObject::CreateCollisionObject (iCollisionObjectFactory* props)
   {
     collider = dynamic_cast<csBulletCollider*>(props->GetCollider ());
-    // TODO: remove name assignations
-    SetName (props->QueryObject ()->GetName ());
     group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
   }
 
@@ -62,6 +60,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
   
+  void csBulletCollisionObject::SetSector (CS::Collisions::iCollisionSector* sector)
+  {
+    if (this->sector) this->sector->RemoveCollisionObject (this);
+    if (!sector) this->sector = nullptr;
+    else sector->AddCollisionObject (this);
+  }
+
   void csBulletCollisionObject::SetAttachedSceneNode (iSceneNode* newSceneNode) 
   {
     if (sceneNode == newSceneNode) return;
@@ -84,14 +89,25 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
   
-  void csBulletCollisionObject::SetCollider (CS::Collisions::iCollider* newCollider)
+  void csBulletCollisionObject::SetCollider (CS::Collisions::iCollider* newCollider,
+					     const csOrthoTransform& transform)
   {
+    colliderTransform = transform;
     if (newCollider)
     {
       collider = dynamic_cast<csBulletCollider*>(newCollider);
-
       RebuildObject ();
     }
+  }
+
+  void csBulletCollisionObject::SetColliderTransform (const csOrthoTransform& transform)
+  {
+    colliderTransform = transform;
+  }
+
+  const csOrthoTransform& csBulletCollisionObject::GetColliderTransform () const
+  {
+    return colliderTransform;
   }
 
   void csBulletCollisionObject::SetTransform (const csOrthoTransform& trans)

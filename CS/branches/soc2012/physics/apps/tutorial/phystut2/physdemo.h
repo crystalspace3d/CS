@@ -32,6 +32,7 @@
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
 #include "imesh/modifiableterrain.h"
+#include "imesh/skeletonmodel.h"
 #include "imesh/softanim.h"
 
 #include "agent.h"
@@ -124,8 +125,7 @@ public:
 
   /// Creates a new RigidBody from the given collider and render mesh
   csPtr<CS::Physics::iRigidBody> SpawnRigidBody
-    (const char* name, const csOrthoTransform& trans,
-     float friction = 1, float density = 30);
+    (const csOrthoTransform& trans, float friction = 1, float density = 30);
 };
 
 //static const csVector3 ActorDimensions (0.8);
@@ -156,12 +156,12 @@ public:
   int phys_engine_id;
   bool do_bullet_debug;
   bool do_soft_debug;
-  float remainingStepDuration;
+  //float remainingStepDuration;
 
   // Dynamic simulation related
   bool allStatic;
-  bool pauseDynamic;
-  float dynamicStepFactor;
+  bool paused;
+  float simulationSpeed;
 
   // Dragging related
   bool dragging;
@@ -187,6 +187,7 @@ public:
 
   // Ragdoll related
   csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
+  csRef<CS::Animation::iSkeletonModelManager> modelManager;
 
   // Cut & Paste related
   csRef<CS::Physics::iPhysicalBody> clipboardBody;
@@ -195,7 +196,7 @@ public:
   // Collider
 
   // Ghost
-  csWeakRef<CS::Collisions::iGhostCollisionObject> ghostObject;
+  csWeakRef<CS::Collisions::iCollisionObject> ghostObject;
 
   // Terrain
   /// The feeder to which the current terrain mod is applied (if any)
@@ -244,6 +245,7 @@ public:
   CS::Physics::iRigidBody* SpawnCompound (bool setVelocity = true);
   CS::Physics::iJoint* SpawnJointed ();
   void SpawnChain ();
+  void SpawnParticles ();
   void LoadFrankieRagdoll ();
   void LoadKrystalRagdoll ();
   void SpawnFrankieRagdoll ();
@@ -259,7 +261,7 @@ public:
   void CreateBoxRoom (const csVector3& roomExtents, const csVector3& pos = csVector3 (0), float wallThickness = 5);
 
   /// Create the default box room with a given side-length
-  void CreateBoxRoom (float size = 50.0f);
+  void CreateBoxRoom (float size);
   
   /// Load a scene from file
   bool LoadLevel (const char* filepath, bool convexDecomp = false);
@@ -269,11 +271,7 @@ public:
 
   /// Creates a new rigid body, places it at the given pos and, optionally, gives it some initial momentum
   csRef<CS::Physics::iRigidBody> SpawnRigidBody (RenderMeshColliderPair& pair, const csVector3& pos, 
-    const char* name, float friction = 1, float density = 30, bool setVelocity = false);
-
-
-  // particles
-  void AddParticles (const csVector3& origin, float yFactor = 1, int num = 256);
+    float friction = 1, float density = 30, bool setVelocity = false);
 
   // removes everything and resets things
   void ResetCurrentLevel ();

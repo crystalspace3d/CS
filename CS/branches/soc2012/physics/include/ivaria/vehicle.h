@@ -48,13 +48,12 @@ namespace CS
   {
     struct iDynamicActor;
     struct iJoint;
-    struct iObject;
-    struct iRigidBody;
-    struct iSoftBody;
     struct iKinematicCallback;
     struct iPhysicalSector;
     struct iPhysicalSystem;
+    struct iRigidBody;
     struct iRigidBodyFactory;
+    struct iSoftBody;
     struct iVehicle;
     struct iVehicleWheelFactory;
 

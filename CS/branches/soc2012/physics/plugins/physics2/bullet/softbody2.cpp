@@ -77,7 +77,7 @@ CS::Collisions::HitBeamResult csBulletSoftBody::HitBeam (const csVector3& start,
   if (btBody->rayTest (rayFrom, rayTo, ray))
   {
     result.hasHit = true;
-    result.object = QueryCollisionObject ();
+    result.object = this;
     result.isect = BulletToCS (rayCallback.m_hitPointWorld,
       system->GetInverseInternalScale ());
     result.normal = BulletToCS (rayCallback.m_hitNormalWorld,

@@ -39,41 +39,67 @@ using namespace CS::Physics;
 using namespace CS::Geometry;
 
 
-bool PhysDemo::PickCursorObject(CS::Collisions::HitBeamResult& result)
+bool PhysDemo::PickCursorObject (CS::Collisions::HitBeamResult& result)
 { 
   // Find the object under the cursor:
 
   // Compute the end beam points
-  csRef<iCamera> camera = view->GetCamera();
-  csVector2 v2d (mouse->GetLastX(), g2d->GetHeight() - mouse->GetLastY());
+  csRef<iCamera> camera = view->GetCamera ();
+  csVector2 v2d (mouse->GetLastX (), g2d->GetHeight () - mouse->GetLastY ());
   csVector3 v3d = camera->InvPerspective (v2d, 10000);
-  csVector3 startBeam = camera->GetTransform().GetOrigin();
-  csVector3 endBeam = camera->GetTransform().This2Other (v3d);
+  csVector3 startBeam = camera->GetTransform ().GetOrigin ();
+  csVector3 endBeam = camera->GetTransform ().This2Other (v3d);
 
-  // Trace the physical beam
-  result = GetCurrentSector()->HitBeamPortal (startBeam, endBeam);
+  // Trace the physical bea
+  //result = GetCurrentSector ()->HitBeamPortal (startBeam, endBeam);
+  result = GetCurrentSector ()->HitBeam (startBeam, endBeam);
 
-  // debug print name
+  // Print the name of the object and its relations on standard output
   if (result.hasHit)
   {
-    csPrintf("Picked object: %s\n", result.object->QueryObject()->GetName());
+    csPrintf ("Clicked on object:\n");
+    csPrintf ("- Collision object name: %s\n",
+	      CS::Quote::Single (result.object->QueryObject ()->GetName ()));
+
+    // Query the parent iObject
+    csPrintf ("- Parent object: ");
+    iObject* parent = result.object->QueryObject ()->GetObjectParent ();
+    if (!parent) csPrintf ("none\n");
+    else csPrintf ("%s\n", CS::Quote::Single (parent->GetName ()));
+
+    // Grab the scene node that is attached to the collision object
+    csPrintf ("- Attached scene node: ");
+    iSceneNode* node = result.object->GetAttachedSceneNode ();
+    if (!node) csPrintf ("none\n\n");
+    else
+    {
+      // Find the type of the node
+      if (node->QueryMesh ())
+	csPrintf ("mesh %s\n",
+		  CS::Quote::Single (node->QueryMesh ()->QueryObject ()->GetName ()));
+      else if (node->QueryLight ())
+	csPrintf ("light %s\n",
+		  CS::Quote::Single (node->QueryLight ()->QueryObject ()->GetName ()));
+      else csPrintf ("unknown\n");
+      csPrintf ("\n");
+    }
   }
 
   return result.hasHit;
 }
 
-::iBase* PhysDemo::GetOwner(CS::Collisions::iCollisionObject* obj)
+::iBase* PhysDemo::GetOwner (CS::Collisions::iCollisionObject* obj)
 {
   // TODO: Need a generic mechanism to determine ownership of objects
 
   // check for actor
-  if (obj->QueryActor())
+  if (obj->QueryActor ())
   {
-    return obj->QueryActor();
+    return obj->QueryActor ();
   }
 
   // check for vehicle
-  iVehicle* vehicle = physicalSystem->GetVehicle(obj);
+  iVehicle* vehicle = physicalSystem->GetVehicle (obj);
   if (vehicle)
   {
     return vehicle;
@@ -84,13 +110,13 @@ bool PhysDemo::PickCursorObject(CS::Collisions::HitBeamResult& result)
 }
 
 
-bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
+bool PhysDemo::TestOnGround (CS::Collisions::iCollisionObject* obj)
 {
   static const float groundAngleCosThresh = .7f;
 
   // Find any objects that can at least remotely support the object
   csArray<CollisionData> collisions;
-  GetCurrentSector()->CollisionTest(obj, collisions);
+  GetCurrentSector ()->CollisionTest (obj, collisions);
 
   for (size_t i = 0; i < collisions.GetSize (); ++i)
   {
@@ -107,121 +133,121 @@ bool PhysDemo::TestOnGround(CS::Collisions::iCollisionObject* obj)
   return false;
 }
 
-void PhysDemo::PullObject(CS::Collisions::iCollisionObject* obj)
+void PhysDemo::PullObject (CS::Collisions::iCollisionObject* obj)
 {
   csVector3 from;
   if (!obj)
   {
     // Pick object
     HitBeamResult result;
-    if (!PickCursorObject(result) || !IsDynamic(result.object)) return;    // didn't hit anything dynamic
+    if (!PickCursorObject (result) || !IsDynamic (result.object)) return;    // didn't hit anything dynamic
     obj = result.object;
     from = result.isect;
   }
   else
   {
-    from = obj->GetTransform().GetOrigin();
+    from = obj->GetTransform ().GetOrigin ();
   }
    
-  iPhysicalBody* pb = obj->QueryPhysicalBody();
+  iPhysicalBody* pb = obj->QueryPhysicalBody ();
 
-  csVector3 posCorrection(2  * UpVector);
+  csVector3 posCorrection (2  * UpVector);
 
-  csVector3 force(GetActorPos() - from - posCorrection);
-  force.Normalize();
-  force *= 30 * pb->GetMass();
+  csVector3 force (GetActorPos () - from - posCorrection);
+  force.Normalize ();
+  force *= 30 * pb->GetMass ();
 
   // prevent sliding problem
-  csOrthoTransform trans = pb->GetTransform();
-  trans.SetOrigin(trans.GetOrigin() + posCorrection);
-  pb->SetTransform(trans);
+  csOrthoTransform trans = pb->GetTransform ();
+  trans.SetOrigin (trans.GetOrigin () + posCorrection);
+  pb->SetTransform (trans);
 
-  pb->QueryRigidBody()->AddForce (force);
+  pb->QueryRigidBody ()->AddForce (force);
 }
 
-void PhysDemo::DeleteObject(CS::Collisions::iCollisionObject* obj)
+void PhysDemo::DeleteObject (CS::Collisions::iCollisionObject* obj)
 {
   if (!obj)
   {
     // Pick object
     HitBeamResult result;
-    if (!PickCursorObject(result)) return;    // didn't hit anything
+    if (!PickCursorObject (result)) return;    // didn't hit anything
     obj = result.object;
   }
    
-  if (!GetOwner(obj))
+  if (!GetOwner (obj))
   {
     // can only remove it, if it has no owner
-    obj->GetSector()->RemoveCollisionObject(obj);
+    obj->GetSector ()->RemoveCollisionObject (obj);
   }
   else
   {
     // TODO: Handle removal of complex game entities generically
-    ReportWarning("Cannot trivially remove the given object because it is part of a complex object.\n");
+    ReportWarning ("Cannot trivially remove the given object because it is part of a complex object.\n");
   }
 }
 
-void PhysDemo::ToggleObjectDynamic(CS::Collisions::iCollisionObject* obj)
+void PhysDemo::ToggleObjectDynamic (CS::Collisions::iCollisionObject* obj)
 {
   if (!obj)
   {
     // Pick object
     HitBeamResult result;
-    if (!PickCursorObject(result)) return;    // didn't hit anything
+    if (!PickCursorObject (result)) return;    // didn't hit anything
     obj = result.object;
   }
 
-  if (!obj->QueryPhysicalBody())
+  if (!obj->QueryPhysicalBody ())
   {
     // must be physical in order to be toggled
     return;
   }
 
-  iPhysicalBody* physObj = obj->QueryPhysicalBody();
-  bool isDynamic = physObj->GetDensity() != 0;
-  csRef<CS::Collisions::iCollider> oldCollider = obj->GetCollider();
+  iPhysicalBody* physObj = obj->QueryPhysicalBody ();
+  bool isDynamic = physObj->GetDensity () != 0;
+  csRef<CS::Collisions::iCollider> oldCollider = obj->GetCollider ();
   if (isDynamic)
   {
     // Set mass to 0 (makes it static)
-    physObj->SetDensity(0);
+    physObj->SetDensity (0);
   }
   else
   {
     // Give it mass (makes it dynamic)
-    if (physObj->GetCollider()->GetColliderType() == COLLIDER_CONCAVE_MESH && obj->GetAttachedSceneNode() && convexDecomposer)
+    if (physObj->GetCollider ()->GetColliderType () == COLLIDER_CONCAVE_MESH && obj->GetAttachedSceneNode () && convexDecomposer)
     {
       // First decompose it into its convex parts
-      csPrintf("Performing convex decomposition on object: \"%s\"...\n", obj->QueryObject()->GetName());
+      csPrintf ("Performing convex decomposition on object: \"%s\"...\n", obj->QueryObject ()->GetName ());
 
       csRef<CS::Collisions::iCollider> collider =
 	csRef<CS::Collisions::iCollider> (physicalSystem->CreateCollider ());
       collisionHelper.DecomposeConcaveMesh (obj->GetAttachedSceneNode ()->QueryMesh (), collider, convexDecomposer);
       obj->SetCollider (collider);
 
-      csPrintf("Done - Performed convex decomposition on object: \"%s\".\n", obj->QueryObject()->GetName());
+      csPrintf ("Done - Performed convex decomposition on object: \"%s\".\n", obj->QueryObject ()->GetName ());
     }
     
-    physObj->SetDensity(DefaultDensity);
+    physObj->SetDensity (DefaultDensity);
   }
 
-  if ((physObj->GetDensity() != 0) == isDynamic)
+  if ((physObj->GetDensity () != 0) == isDynamic)
   {
-    obj->SetCollider(oldCollider);
-    ReportWarning("Cannot make object \"%s\" %s.\n", physObj->QueryObject()->GetName(), isDynamic ? "STATIC" : "DYNAMIC");
+    obj->SetCollider (oldCollider);
+    ReportWarning ("Cannot make object \"%s\" %s.\n", physObj->QueryObject ()->GetName (), isDynamic ? "STATIC" : "DYNAMIC");
   }
 }
 
 
-void PhysDemo::TeleportObject(CS::Collisions::iCollisionObject* obj, iCameraPosition* pos)
+void PhysDemo::TeleportObject (CS::Collisions::iCollisionObject* obj, iCameraPosition* pos)
 {
   // set transform
-  csOrthoTransform trans(csMatrix3(), pos->GetPosition());
-  trans.LookAt(pos->GetForwardVector(), pos->GetUpwardVector());
-  obj->SetTransform(trans);
+  csOrthoTransform trans (csMatrix3 (), pos->GetPosition ());
+  trans.LookAt (pos->GetForwardVector (), pos->GetUpwardVector ());
+  obj->SetTransform (trans);
   
   // set sector
-  iSector* isector = engine->FindSector(pos->GetSector());
+  iSector* isector = engine->FindSector (pos->GetSector ());
   iCollisionSector* collSector = physicalSystem->FindCollisionSector (isector);
-  CS_ASSERT(collSector);
-  collSector->AddCollisionObject(obj);
+  CS_ASSERT (collSector);
+  collSector->AddCollisionObject (obj);
 }

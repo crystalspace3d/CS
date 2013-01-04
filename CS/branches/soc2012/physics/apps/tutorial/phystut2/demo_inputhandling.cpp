@@ -170,30 +170,40 @@ bool PhysDemo::OnKeyboard (iEvent &event)
 
   else if (code == 'p')
   {
-    // TODO: use iPhysicalSystem::SetSimulationSpeed ()
-    // Toggle pause mode for dynamic simulation
-    pauseDynamic = !pauseDynamic;
-    if (pauseDynamic)
-      printf ("Dynamic simulation paused\n");
-    else
+    // Toggle the pause mode of the dynamic simulation
+    if (paused)
+    {
+      paused = false;
+      physicalSystem->SetSimulationSpeed (simulationSpeed);
       printf ("Dynamic simulation resumed\n");
+    }
+    else
+    {
+      paused = true;
+      physicalSystem->SetSimulationSpeed (0.0f);
+      printf ("Dynamic simulation paused\n");
+    }
+
     return true;
   }
 
   else if (code == 'o')
   {
-    // TODO: use iPhysicalSystem::SetSimulationSpeed ()
-    // Toggle speed of dynamic simulation
-    if (dynamicStepFactor - 0.025 < EPSILON)
+    // Toggle the speed of the dynamic simulation
+    if (simulationSpeed - 0.025f < EPSILON)
     {
-      dynamicStepFactor = 1.0f;
+      simulationSpeed = 1.0f;
       printf ("Dynamic simulation at normal speed\n");
     }
     else
     {
-      dynamicStepFactor = 0.025f;
+      simulationSpeed = 0.025f;
       printf ("Dynamic simulation slowed\n");
     }
+    if (!paused)
+      physicalSystem->SetSimulationSpeed (simulationSpeed);
+
+    return true;
   }
 
   else if (code == 'k')
@@ -379,23 +389,6 @@ bool PhysDemo::OnKeyboard (iEvent &event)
     }
     return true;
 
-    // particle stuff
-  case '[':
-    {
-      // spawn particles at the actor's feet
-      float height = ActorDimensions.y;
-      float colliderRadius = height/6;
-
-      csVector3 pos = GetPointInFrontOfFeetXZ (2 * height);
-      csVector3 origin = pos + csVector3 (0, height, 0);
-      //csVector3 origin = cam->GetTransform ().GetOrigin () + csVector3 (0, ActorDimensions.y, 2);
-
-      AddParticles (origin, -1);
-
-      // add physical object to demonstrate that particles are not penetrating it
-      SpawnSphere (pos + csVector3 (0, colliderRadius + EPSILON, 0), colliderRadius, false);
-      return true;
-    }
   case 'v':
     {
     // Update camera follow mode
@@ -489,8 +482,13 @@ bool PhysDemo::OnMouseDown (iEvent &event)
       {
         csRef<CS::Physics::iRigidBody> bulletBody = scfQueryInterface<CS::Physics::iRigidBody> (physicalBody);
 
-        // Create a p2p joint at the point clicked
-        dragJoint = physicalSystem->CreatePivotJoint (bulletBody, hitResult.isect);
+        // Create a pivot joint at the point clicked
+	//dragJoint = physicalSystem->CreatePivotJoint (bulletBody, hitResult.isect);
+	csRef<CS::Physics::iJointFactory> jointFactory =
+	  physicalSystem->CreatePivotJointFactory ();
+	dragJoint = jointFactory->CreateJoint ();
+	dragJoint->SetTransform (csOrthoTransform (csMatrix3 (), hitResult.isect));
+	dragJoint->Attach (bulletBody, nullptr);
         GetCurrentSector ()->AddJoint (dragJoint);
 
         dragging = true;

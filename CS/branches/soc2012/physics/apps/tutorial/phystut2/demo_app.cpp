@@ -19,17 +19,14 @@
 #include "cssysdef.h"
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
-
-#include "iengine/campos.h"
-
-#include "imesh/genmesh.h"
-#include "imesh/terrain2.h"
-
-#include "ivaria/convexdecompose.h"
-#include "ivaria/engseq.h"
-
 #include "cstool/genmeshbuilder.h"
 #include "cstool/materialbuilder.h"
+#include "iengine/campos.h"
+#include "imap/services.h"
+#include "imesh/genmesh.h"
+#include "imesh/terrain2.h"
+#include "ivaria/convexdecompose.h"
+#include "ivaria/engseq.h"
 
 #include "physdemo.h"
 
@@ -38,25 +35,24 @@ using namespace CS::Physics;
 
 PhysDemo physDemo;
 
-PhysDemo::PhysDemo()
+PhysDemo::PhysDemo ()
   : DemoApplication ("CrystalSpace.PhysTut2"),
   isSoftBodyWorld (true), do_bullet_debug (false),
-  do_soft_debug (false), remainingStepDuration (0.0f), allStatic (false), 
-  pauseDynamic (false), dynamicStepFactor (1.0f),
+  do_soft_debug (false), allStatic (false), 
+  paused (false), simulationSpeed (1.0f),
   dragging (false), softDragging (false),
   debugMode (DEBUG_COLLIDERS),
-  actorAirControl(.2f),
-  moveSpeed(3.f),
-  turnSpeed(1.6f),
-  //actorMode (ActorModeKinematic)
-  actorMode (ActorModeDynamic)
-  ,
-  cameraMode(CameraMode1stPerson),
-  selectedItem(nullptr)
+  actorAirControl (.2f),
+  moveSpeed (3.f),
+  turnSpeed (1.6f),
+  //actorMode (ActorModeKinematic),
+  actorMode (ActorModeDynamic),
+  cameraMode (CameraMode1stPerson),
+  selectedItem (nullptr)
 {
 }
 
-PhysDemo::~PhysDemo()
+PhysDemo::~PhysDemo ()
 {
 }
 
@@ -66,11 +62,11 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   if (!DemoApplication::OnInitialize (argc, argv))
     return false;
 
-  csBaseEventHandler::Initialize (GetObjectRegistry());
-  if (!RegisterQueue (GetObjectRegistry(), csevAllEvents (GetObjectRegistry())))
+  csBaseEventHandler::Initialize (GetObjectRegistry ());
+  if (!RegisterQueue (GetObjectRegistry (), csevAllEvents (GetObjectRegistry ())))
     return ReportError ("Failed to set up event handler!");
 
-  csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry());
+  csRef<iPluginManager> plugmgr = csQueryRegistry<iPluginManager> (GetObjectRegistry ());
   
   // Load the Physics plugin
   physicalSystem = csLoadPlugin<CS::Physics::iPhysicalSystem> (plugmgr, "crystalspace.physics.bullet");
@@ -85,10 +81,10 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
   }
   
   // Initialize the collision helper
-  collisionHelper.Initialize (GetObjectRegistry(), physicalSystem);
+  collisionHelper.Initialize (GetObjectRegistry (), physicalSystem);
 
   // Get commandline parser
-  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
+  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
 
   // Check whether the soft bodies are enabled or not
   isSoftBodyWorld = clp->GetBoolOption ("soft", true);
@@ -101,25 +97,30 @@ bool PhysDemo::OnInitialize (int argc, char* argv[])
     softBodyAnimationType = csLoadPlugin<CS::Animation::iSoftBodyAnimationControlType>
       (plugmgr, "crystalspace.physics.softanim2");
     if (!softBodyAnimationType)
-      return ReportError ("Could not load soft body animation for genmeshes plugin!");
+      return ReportError ("Could not load the soft body animation controller for the genmeshes!");
 
-    softBodyAnimationFactory = softBodyAnimationType->CreateAnimationControlFactory();
+    softBodyAnimationFactory = softBodyAnimationType->CreateAnimationControlFactory ();
   }
 
   // Load the ragdoll plugin
   ragdollManager = csLoadPlugin<CS::Animation::iSkeletonRagdollNodeManager2>
     (plugmgr, "crystalspace.mesh.animesh.animnode.ragdoll2");
   if (!ragdollManager)
-    return ReportError ("Failed to locate ragdoll manager!");
+    return ReportError ("Failed to locate the ragdoll manager!");
+
+  // Load the skeleton model plugin
+  modelManager = csLoadPlugin<CS::Animation::iSkeletonModelManager>
+    (plugmgr, "crystalspace.mesh.animesh.model");
+  if (!modelManager)
+    return ReportError ("Failed to locate the skeleton model plugin!");
 
   return true;
 }
 
-
-bool PhysDemo::Application()
+bool PhysDemo::Application ()
 {
   // Default behavior from DemoApplication
-  if (!DemoApplication::Application())
+  if (!DemoApplication::Application ())
     return false;
 
   // Set camera
@@ -130,32 +131,32 @@ bool PhysDemo::Application()
   cameraManager->SetMouseMoveEnabled (false);
 
   // Initialize Player items
-  CreateItemTemplates();
-  for (size_t i = 0; i < ItemMgr::Instance->GetTemplateCount(); ++i)
+  CreateItemTemplates ();
+  for (size_t i = 0; i < ItemMgr::Instance->GetTemplateCount (); ++i)
   {
-    ItemTemplate& templ = ItemMgr::Instance->GetTemplate(i);
-    player.GetInventory().AddItem(templ);
+    ItemTemplate& templ = ItemMgr::Instance->GetTemplate (i);
+    player.GetInventory ().AddItem (templ);
   }
 
   if (ItemMgr::Instance->GetTemplateCount ())
-    selectedItem = player.GetInventory().GetItem (0);
+    selectedItem = player.GetInventory ().GetItem (0);
   selectedIndex = 0;
 
   // Load specified scene
-  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
+  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   csString pathname = clp->GetOption ("mapfile");
   bool convexdecompose = clp->GetBoolOption ("convexdecompose");
 
   // Load or create scene
-  if (SetLevel(pathname, convexdecompose))
+  if (SetLevel (pathname, convexdecompose))
   {
-    Run();
+    Run ();
     return true;
   }
   return false;
 }
 
-void PhysDemo::Reset()
+void PhysDemo::Reset ()
 {
   // reset all other variables
   mainCollider = nullptr;
@@ -166,7 +167,7 @@ void PhysDemo::Reset()
   dragJoint = nullptr;
   draggedBody = nullptr;
 
-  player.SetObject(nullptr);
+  player.SetObject (nullptr);
   dynamicActor = nullptr;
   kinematicActor = nullptr;
 
@@ -178,19 +179,19 @@ void PhysDemo::Reset()
   moddedTerrainFeeder = nullptr;
   terrainMod = nullptr;
 
-  debugNameMap.DeleteAll();
+  debugNameMap.DeleteAll ();
 
   actorVehicle = nullptr;
 
   walls = nullptr;
 
   // Remove all physical sectors
-  physicalSystem->DeleteAll();
+  physicalSystem->DeleteAll ();
 
   // Remove everything in the engine that existed before
-  engine->DeleteAll();
-  engine->ResetWorldSpecificSettings();
-  engine->GetCameraPositions()->RemoveAll();
+  engine->DeleteAll ();
+  engine->ResetWorldSpecificSettings ();
+  engine->GetCameraPositions ()->RemoveAll ();
   csRef<iEngineSequenceManager> seqMgr = csQueryRegistry<iEngineSequenceManager> (object_reg);
   if (seqMgr)
   {
@@ -199,7 +200,7 @@ void PhysDemo::Reset()
   }
 }
 
-bool PhysDemo::SetLevel(PhysDemoLevel level, bool convexDecomp)
+bool PhysDemo::SetLevel (PhysDemoLevel level, bool convexDecomp)
 {
   csString path;
   switch (level)
@@ -222,19 +223,19 @@ bool PhysDemo::SetLevel(PhysDemoLevel level, bool convexDecomp)
   default:
     break;
   }
-  return SetLevel(path, convexDecomp);
+  return SetLevel (path, convexDecomp);
 }
 
-bool PhysDemo::SetLevel(const char* mapPath, bool convexDecomp)
+bool PhysDemo::SetLevel (const char* mapPath, bool convexDecomp)
 {
   // Reset scene
-  Reset();
+  Reset ();
 
   // Initialize the actor
-  UpdateActorMode(actorMode);
+  UpdateActorMode (actorMode);
 
   // Preload some materials
-  if (!loader->LoadTexture ("raindrop", "/lib/std/raindrop.png")) return ReportError ("Error loading texture: raindrop");
+  if (!loader->LoadTexture ("fire", "/lib/std/castle/fire1.png")) return ReportError ("Error loading texture: fire");
   if (!loader->LoadTexture ("stone", "/lib/std/stone4.gif")) return ReportError ("Could not load texture: stone");
   if (!loader->LoadTexture ("objtexture", "/lib/std/blobby.jpg")) return ReportError ("Error loading texture: blobby");
   if (!loader->LoadTexture ("misty", "/lib/std/misty.jpg")) return ReportError ("Error loading texture: misty");
@@ -243,51 +244,51 @@ bool PhysDemo::SetLevel(const char* mapPath, bool convexDecomp)
   bool loaded = false;
   if (mapPath)
   {
-    loaded = LoadLevel(mapPath, convexDecomp);
+    loaded = LoadLevel (mapPath, convexDecomp);
     currentMap = mapPath;
     if (!loaded)
     {
-      ReportWarning("Falling back to default level: Box room");
+      ReportWarning ("Falling back to default level: Box room");
     }
   }
   
   if (!loaded)
   {
     // fall back to default
-    CreateBoxRoom();
+    CreateBoxRoom (20.0f);
     currentMap = "";
   }
 
   // Finalize stuff in the engine after scene setup
-  engine->Prepare();
+  engine->Prepare ();
 
   // Update Camera Manager item
-  UpdateCameraManager();
+  UpdateCameraManager ();
 
   // Initialize HUD
-  SetupHUD();
+  SetupHUD ();
 
   // Move actor to initial position
-  TeleportObject(player.GetObject(), engine->GetCameraPositions()->Get(0));
+  TeleportObject (player.GetObject (), engine->GetCameraPositions ()->Get (0));
 
   return true;
 }
 
-void PhysDemo::SetupHUD()
+void PhysDemo::SetupHUD ()
 {
   // Setup the descriptions in the HUD
-  iStringArray& desc = *hudManager->GetKeyDescriptions();
-  desc.Empty();
+  iStringArray& desc = *hudManager->GetKeyDescriptions ();
+  desc.Empty ();
 
-  desc.Push("N: Next page");
+  desc.Push ("N: Next page");
   
-  if (selectedItem && selectedItem->GetTemplate().GetPrimaryFunctions().GetSize())
+  if (selectedItem && selectedItem->GetTemplate ().GetPrimaryFunctions ().GetSize ())
   {
     ItemFunction* func;
-    func = selectedItem->GetTemplate().GetPrimaryFunction(0);
-    desc.Push (csString("Left Mouse Button: ") + func->GetName());
-    func = selectedItem->GetTemplate().GetPrimaryFunction(1);
-    desc.Push (csString("Right Mouse Button: ") + func->GetName());
+    func = selectedItem->GetTemplate ().GetPrimaryFunction (0);
+    desc.Push (csString ("Left Mouse Button: ") + func->GetName ());
+    func = selectedItem->GetTemplate ().GetPrimaryFunction (1);
+    desc.Push (csString ("Right Mouse Button: ") + func->GetName ());
   }
   else
   {
@@ -314,7 +315,6 @@ void PhysDemo::SetupHUD()
   desc.Push ("G: toggle gravity");
 
   desc.Push ("]: Toggle heightmap modifier");
-  desc.Push ("[: Add collision-aware particles");
 
   desc.Push ("CTRL-i: start profiling");
   desc.Push ("CTRL-o: stop profiling");
@@ -322,17 +322,17 @@ void PhysDemo::SetupHUD()
   
   if (selectedItem)
   {
-    ItemTemplate& templ = selectedItem->GetTemplate();
-    desc.Push (csString().Format("--Current Tool (%s)--", templ.GetName()));
-    for (size_t i = 0; i < csMin(templ.GetPrimaryFunctions().GetSize(), size_t(2)); ++i)
+    ItemTemplate& templ = selectedItem->GetTemplate ();
+    desc.Push (csString ().Format ("--Current Tool (%s)--", templ.GetName ()));
+    for (size_t i = 0; i < csMin (templ.GetPrimaryFunctions ().GetSize (), size_t (2)); ++i)
     {
-      ItemFunction* func = templ.GetPrimaryFunction(i);
-      desc.Push (csString().Format(" %s: %s", i == 0 ? "LMB" : "RMB", func->GetName()));
+      ItemFunction* func = templ.GetPrimaryFunction (i);
+      desc.Push (csString ().Format (" %s: %s", i == 0 ? "LMB" : "RMB", func->GetName ()));
     }
-    for (size_t i = 0; i < templ.GetSecondaryFunctions().GetSize(); ++i)
+    for (size_t i = 0; i < templ.GetSecondaryFunctions ().GetSize (); ++i)
     {
-      ItemFunction* func = templ.GetSecondaryFunction(i);
-      desc.Push (csString().Format(" %zu: %s", i+1, func->GetName()));
+      ItemFunction* func = templ.GetSecondaryFunction (i);
+      desc.Push (csString ().Format (" %zu: %s", i+1, func->GetName ()));
     }
   }
   else
@@ -341,15 +341,15 @@ void PhysDemo::SetupHUD()
   }
 
   desc.Push ("--Tools--");
-  for (size_t i = 0; i < player.GetInventory().GetItems().GetSize(); ++i)
+  for (size_t i = 0; i < player.GetInventory ().GetItems ().GetSize (); ++i)
   {
-    Item* item = player.GetInventory().GetItem(i);
-    desc.Push (csString().Format(" F%zu: %s", i+1, item->GetName()));
+    Item* item = player.GetInventory ().GetItem (i);
+    desc.Push (csString ().Format (" F%zu: %s", i+1, item->GetName ()));
   }
 }
 
 
-iPhysicalSector* PhysDemo::CreatePhysicalSector(iSector* isector)
+iPhysicalSector* PhysDemo::CreatePhysicalSector (iSector* isector)
 {
   iPhysicalSector* sector =
     physicalSystem->CreateCollisionSector (isector)->QueryPhysicalSector ();
@@ -361,40 +361,40 @@ iPhysicalSector* PhysDemo::CreatePhysicalSector(iSector* isector)
 // Misc stuff
 
 
-void PhysDemo::ApplyGhostSlowEffect()
+void PhysDemo::ApplyGhostSlowEffect ()
 {
   if (!ghostObject) return;
 
-  size_t count = ghostObject->GetContactObjectsCount();
+  size_t count = ghostObject->GetContactObjectsCount ();
   for (size_t i = 0; i < count; i++)
   {
-    iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody();
-    if (pb && IsDynamic(pb))
+    iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody ();
+    if (pb && IsDynamic (pb))
     {
-      if (pb->QueryRigidBody())
+      if (pb->QueryRigidBody ())
       {
-        CS::Physics::iRigidBody* rb = pb->QueryRigidBody();
-        csVector3 velo = pb->GetLinearVelocity();
+        CS::Physics::iRigidBody* rb = pb->QueryRigidBody ();
+        csVector3 velo = pb->GetLinearVelocity ();
         velo = - velo;
-        //rb->Disable();
+        //rb->Disable ();
         rb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         rb->SetAngularVelocity (csVector3 (.0f,.0f,.0f));
       }
       else
       {
-        iSoftBody* sb = pb->QuerySoftBody();
-        sb->QueryPhysicalBody()->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
+        iSoftBody* sb = pb->QuerySoftBody ();
+        sb->QueryPhysicalBody ()->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
         //sb->SetLinearVelocity (csVector3 (0,0,-1.0f));
       }
     }
   }
 }
 
-void PhysDemo::UpdateActorMode(ActorMode newActorMode)
+void PhysDemo::UpdateActorMode (ActorMode newActorMode)
 {
   actorMode = newActorMode;
 
-  iCollisionObject* lastActorObj = player.GetObject();
+  iCollisionObject* lastActorObj = player.GetObject ();
 
   switch (actorMode)
   {
@@ -406,18 +406,18 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y);
         //csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
         csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
-        csRef<iDynamicActorFactory> factory = physicalSystem->CreateDynamicActorFactory(collider);
-        factory->SetMass(80.);
-        factory->SetElasticity(0);
-        factory->SetFriction(.1);
+        csRef<iDynamicActorFactory> factory = physicalSystem->CreateDynamicActorFactory (collider);
+        factory->SetMass (80.);
+        factory->SetElasticity (0);
+        factory->SetFriction (.1);
 
-        factory->SetAirControlFactor(actorAirControl);
-        factory->SetStepHeight(0.2);
+        factory->SetAirControlFactor (actorAirControl);
+        factory->SetStepHeight (0.2);
 
-        dynamicActor = factory->CreateDynamicActor();
+        dynamicActor = factory->CreateDynamicActor ();
       }
 
-      player.SetObject(dynamicActor);
+      player.SetObject (dynamicActor);
       break;
     }
 
@@ -430,21 +430,21 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
         //csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
 
         /*csOrthoTransform trans;
-        trans.RotateThis(csVector3(1, 0, 0), HALF_PI);
+        trans.RotateThis (csVector3 (1, 0, 0), HALF_PI);
         csRef<CS::Collisions::iCollider> parent = physicalSystem->CreateCollider ();
-        parent->AddCollider(collider, trans);
-        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(parent);*/
-        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory(collider);
-        factory->SetAirControlFactor(actorAirControl);
-        factory->SetJumpSpeed(moveSpeed);
-        factory->SetStepHeight(0.2);
+        parent->AddCollider (collider, trans);
+        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory (parent);*/
+        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory (collider);
+        factory->SetAirControlFactor (actorAirControl);
+        factory->SetJumpSpeed (moveSpeed);
+        factory->SetStepHeight (0.2);
 
-        kinematicActor = factory->CreateCollisionActor();
+        kinematicActor = factory->CreateCollisionActor ();
       }
 
-      kinematicActor->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
+      kinematicActor->SetCollisionGroup (physicalSystem->FindCollisionGroup ("Actor"));
 
-      player.SetObject(kinematicActor);
+      player.SetObject (kinematicActor);
     }
     break;
 
@@ -452,74 +452,74 @@ void PhysDemo::UpdateActorMode(ActorMode newActorMode)
     break;
   }
 
-  CS_ASSERT(player.GetObject()->QueryActor());
+  CS_ASSERT (player.GetObject ()->QueryActor ());
 
   if (actorMode != ActorModeNoclip)
   {
     if (lastActorObj)
     {
       // remove previous actor
-      lastActorObj->GetSector()->RemoveCollisionObject(lastActorObj);
+      lastActorObj->GetSector ()->RemoveCollisionObject (lastActorObj);
       
       // move new actor to old transform
-      player.GetObject()->SetTransform(lastActorObj->GetTransform());
-      lastActorObj->GetSector()->AddCollisionObject(player.GetObject());
+      player.GetObject ()->SetTransform (lastActorObj->GetTransform ());
+      lastActorObj->GetSector ()->AddCollisionObject (player.GetObject ());
     }
-    player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("Actor"));
+    player.GetObject ()->SetCollisionGroup (physicalSystem->FindCollisionGroup ("Actor"));
     SetGravity (csVector3 (0.0f, -9.81f, 0.0f));
   }
   else
   {
     // The camera is free now -> Requires actor object to already be created & set
-    player.GetObject()->SetCollisionGroup(physicalSystem->FindCollisionGroup("None"));
-    iPhysicalBody* physActor = player.GetObject()->QueryPhysicalBody();
+    player.GetObject ()->SetCollisionGroup (physicalSystem->FindCollisionGroup ("None"));
+    iPhysicalBody* physActor = player.GetObject ()->QueryPhysicalBody ();
     if (physActor)
     {
-      physActor->SetLinearVelocity(0);
+      physActor->SetLinearVelocity (0);
       physActor->SetGravityEnabled (false);
-      if (physActor->QueryRigidBody())
+      if (physActor->QueryRigidBody ())
       {
-        physActor->QueryRigidBody()->SetAngularVelocity(0);
+        physActor->QueryRigidBody ()->SetAngularVelocity (0);
       }
     }
     // TODO: remove this hack and use SetGravityEnabled instead
-    SetGravity(0);
+    SetGravity (0);
   }
 }
 
-bool PhysDemo::IsDynamic(CS::Collisions::iCollisionObject* obj) const
+bool PhysDemo::IsDynamic (CS::Collisions::iCollisionObject* obj) const
 {
   return 
-    obj->QueryPhysicalBody() &&
+    obj->QueryPhysicalBody () &&
     (
-    !obj->QueryPhysicalBody()->QueryRigidBody() || 
-    obj->QueryPhysicalBody()->QueryRigidBody()->GetState() == STATE_DYNAMIC
+    !obj->QueryPhysicalBody ()->QueryRigidBody () || 
+    obj->QueryPhysicalBody ()->QueryRigidBody ()->GetState () == STATE_DYNAMIC
     );
 }
 
-bool PhysDemo::IsActor(CS::Collisions::iCollisionObject* obj) const
+bool PhysDemo::IsActor (CS::Collisions::iCollisionObject* obj) const
 {
-  return obj->QueryActor() != nullptr;
+  return obj->QueryActor () != nullptr;
 }
 
-void PhysDemo::SetGravity(const csVector3& g)
+void PhysDemo::SetGravity (const csVector3& g)
 {
-  for (size_t i = 0; i < physicalSystem->GetCollisionSectorCount(); ++i)
+  for (size_t i = 0; i < physicalSystem->GetCollisionSectorCount (); ++i)
   {
-    csRef<iPhysicalSector> sector = scfQueryInterface<iPhysicalSector>(physicalSystem->GetCollisionSector(i));
-    sector->SetGravity(g);
+    csRef<iPhysicalSector> sector = scfQueryInterface<iPhysicalSector>(physicalSystem->GetCollisionSector (i));
+    sector->SetGravity (g);
   }
 }
 
-void PhysDemo::ResetCurrentLevel()
+void PhysDemo::ResetCurrentLevel ()
 {
-  SetLevel(currentMap);
+  SetLevel (currentMap);
 }
 
-bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groundPos) const
+bool PhysDemo::GetPointOnGroundBeneathPos (const csVector3& pos, csVector3& groundPos) const
 {
   csVector3 to = pos - 10000 * UpVector;
-  HitBeamResult result = GetCurrentSector()->HitBeam(pos, to);
+  HitBeamResult result = GetCurrentSector ()->HitBeam (pos, to);
 
   if (result.hasHit)
   {
@@ -529,10 +529,10 @@ bool PhysDemo::GetPointOnGroundBeneathPos(const csVector3& pos, csVector3& groun
   return false;
 }
 
-bool PhysDemo::GetPointOnGroundAbovePos(const csVector3& pos, csVector3& groundPos) const
+bool PhysDemo::GetPointOnGroundAbovePos (const csVector3& pos, csVector3& groundPos) const
 {
   csVector3 to = pos + 10000 * UpVector;
-  HitBeamResult result = GetCurrentSector()->HitBeam(pos, to);
+  HitBeamResult result = GetCurrentSector ()->HitBeam (pos, to);
 
   if (result.hasHit)
   {
@@ -553,5 +553,5 @@ csRef<iPhysicalSystem> _physSys;
 int main (int argc, char* argv[])
 {
   _physSys = physDemo.physicalSystem;
-  return physDemo.Main(argc, argv);
+  return physDemo.Main (argc, argv);
 }

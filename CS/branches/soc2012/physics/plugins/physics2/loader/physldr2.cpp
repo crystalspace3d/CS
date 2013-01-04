@@ -84,7 +84,7 @@ enum
   XMLTOKEN_LINEARSTIFFNESS,
   XMLTOKEN_ANGULARSTIFFNESS,
   XMLTOKEN_LINEARDAMPING,
-  XMLTOKEN_ANGULARDAMPING,
+  XMLTOKEN_ANGULARDAMPING
 };
 
 SCF_IMPLEMENT_FACTORY (csPhysicsLoader2)
@@ -158,11 +158,11 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
   engine = csQueryRegistry<iEngine> (object_reg);
   CS_ASSERT (engine);
   collisionSystem = csQueryRegistry<CS::Collisions::iCollisionSystem> (object_reg);
-  if (collisionSystem == NULL)
+  if (collisionSystem == nullptr)
   {
     synldr->ReportError ("crystalspace.dynamics.loader",
       node, "No physics in object registry!");
-    return 0;
+    return csPtr<iBase> (nullptr);
   }
   physicalSystem = scfQueryInterface<CS::Physics::iPhysicalSystem> (collisionSystem);
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
@@ -176,22 +176,14 @@ csPtr<iBase> csPhysicsLoader2::Parse (iDocumentNode *node,
     {
     case XMLTOKEN_COLLISIONSECTOR:
     {
-      csRef<iDocumentAttribute> attr = child->GetAttribute ("name");
-      csRef<CS::Collisions::iCollisionSector> collisionSector;
-      if (attr)
-        collisionSector = collisionSystem->FindCollisionSector (attr->GetValue ());
-      if (! collisionSector)
-      {
-        collisionSector = collisionSystem->CreateCollisionSector ();
-        if (attr)
-          collisionSector->QueryObject ()->SetName (attr->GetValue ());
-      }
+      csRef<CS::Collisions::iCollisionSector> collisionSector =
+	collisionSystem->CreateCollisionSector ();
       if (!ParseCollisionSector (child, collisionSector, ldr_context))
-        return 0;
+        return csPtr<iBase> (nullptr);
       else
       {
         synldr->ReportBadToken (child);
-        return 0;
+        return csPtr<iBase> (nullptr);
       }
       break;
     }
@@ -295,13 +287,15 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       {
         csRef<CS::Collisions::iCollisionObject> obj;
         
-        csRef<CS::Collisions::iCollider> rootCollider = csRef<CS::Collisions::iCollider>(physicalSystem->CreateCollider ());
+        csRef<CS::Collisions::iCollider> rootCollider =
+	  csRef<CS::Collisions::iCollider>(physicalSystem->CreateCollider ());
         
         csRef<iCollisionObjectFactory> factory;
 
         if (child->GetAttribute ("ghost"))
         {
-          factory = csRef<iGhostCollisionObjectFactory>(physicalSystem->CreateGhostCollisionObjectFactory (rootCollider));
+          factory = csRef<iCollisionObjectFactory>
+	    (physicalSystem->CreateGhostCollisionObjectFactory (rootCollider));
         }
         else
         {
@@ -316,7 +310,8 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       }
     case XMLTOKEN_RIGIDBODY:
       {
-        csRef<CS::Collisions::iCollider> rootCollider = csRef<CS::Collisions::iCollider>(physicalSystem->CreateCollider ());
+        csRef<CS::Collisions::iCollider> rootCollider =
+	  csRef<CS::Collisions::iCollider>(physicalSystem->CreateCollider ());
 
         csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (rootCollider);
         csRef<CS::Physics::iRigidBody> rb = factory->CreateRigidBody ();
@@ -332,9 +327,11 @@ bool csPhysicsLoader2::ParseCollisionSector (iDocumentNode *node,
       }
     case XMLTOKEN_JOINT:
       {
+/*
         csRef<CS::Physics::iJoint> joint = physicalSystem->CreateJoint ();
         if (!ParseJoint (child, joint, physSector))
           return false;
+*/
         break;
       }
     default:
@@ -350,8 +347,6 @@ bool csPhysicsLoader2::ParseCollisionObject (iDocumentNode *node,
                                              CS::Collisions::iCollisionSector* collisionSector, 
                                              iLoaderContext* ldr_context)
 {
-  const char *name = node->GetAttributeValue ("name");
-  object->QueryObject ()->SetName (name);
   iCollisionSystem* collisionSystem = collisionSector->GetSystem ();
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
@@ -468,7 +463,7 @@ bool csPhysicsLoader2::ParseRigidBody (iDocumentNode *node,
                                        iLoaderContext* ldr_context)
 {
   if (node->GetAttributeValue ("mass"))
-    body->SetMass ( node->GetAttributeValueAsFloat ("mass"));
+    body->SetMass (node->GetAttributeValueAsFloat ("mass"));
 
   if (node->GetAttributeValue ("density"))
     body->SetDensity (node->GetAttributeValueAsFloat ("density"));
@@ -515,7 +510,7 @@ bool csPhysicsLoader2::ParseRigidBody (iDocumentNode *node,
     }
   }
 
-  return ParseCollisionObject (node, body->QueryCollisionObject (), collisionSector, ldr_context);
+  return ParseCollisionObject (node, body, collisionSector, ldr_context);
 }
 
 bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node, 
@@ -553,9 +548,6 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
     }
   }
 
-  const char *name = node->GetAttributeValue ("name");
-  body->QueryObject ()->SetName (name);
-
   if (node->GetAttributeValue ("mass"))
     body->SetMass ( node->GetAttributeValueAsFloat ("mass"));
 
@@ -581,6 +573,7 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
     case XMLTOKEN_ANCHOR:
       {
         size_t index = child->GetAttributeValueAsInt ("index");
+/*
         const char* rname = child->GetAttributeValue ("rigidbody");
         if (rname)
         {
@@ -594,6 +587,7 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
           body->AnchorVertex (index, rb);
         }
         else
+*/
           body->AnchorVertex (index);
         break;
       }
@@ -847,8 +841,9 @@ bool csPhysicsLoader2::ParseJoint (iDocumentNode *node, CS::Physics::iJoint* joi
     switch (id)
     {
     case XMLTOKEN_RIGIDBODY:
-      if (body1 == NULL)
+      if (body1 == nullptr)
       {
+/*
         const char* name = child->GetContentsValue ();
         if (name)
         {
@@ -861,14 +856,16 @@ bool csPhysicsLoader2::ParseJoint (iDocumentNode *node, CS::Physics::iJoint* joi
           }
         }
         else
+*/
         {
           synldr->ReportError ("crystalspace.dynamics.loader",
             child, "Body should have a name");
           return false;
         }
       }
-      else if (body2 == NULL)
+      else if (body2 == nullptr)
       {
+/*
         const char* name = child->GetContentsValue ();
         if (name)
         {
@@ -881,6 +878,7 @@ bool csPhysicsLoader2::ParseJoint (iDocumentNode *node, CS::Physics::iJoint* joi
           }
         }
         else
+*/
         {
           synldr->ReportError ("crystalspace.dynamics.loader",
             child, "Body should have a name");
@@ -895,6 +893,7 @@ bool csPhysicsLoader2::ParseJoint (iDocumentNode *node, CS::Physics::iJoint* joi
       }
       break;
     case XMLTOKEN_SOFTBODY:
+/*
       if (body1 == 0)
       {
         const char* name = child->GetContentsValue ();
@@ -941,6 +940,7 @@ bool csPhysicsLoader2::ParseJoint (iDocumentNode *node, CS::Physics::iJoint* joi
           child, "Too many bodies attached to joint");
         return false;
       }
+*/
       break;
     case XMLTOKEN_CONSTRAINTS:
       {

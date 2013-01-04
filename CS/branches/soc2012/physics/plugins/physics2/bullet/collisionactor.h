@@ -27,6 +27,49 @@
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
+class BulletCollisionActorFactory : public scfVirtImplementationExt1<
+  BulletCollisionActorFactory, BulletGhostCollisionObjectFactory, CS::Collisions::iCollisionActorFactory> 
+{
+  float stepHeight;
+  float walkSpeed, jumpSpeed;
+  float airControlFactor;
+
+public:
+  BulletCollisionActorFactory
+    (csBulletSystem* system, CS::Collisions::iCollider* collider = nullptr)
+    : scfImplementationType (this, system, collider),
+    stepHeight(.5f),
+    walkSpeed(10.f),
+    jumpSpeed(10.f),
+    airControlFactor(0.04f)
+    {}
+
+  /// Create a new object
+  virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor();
+  virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject();
+
+  /// Get the max vertical threshold that this actor can step over
+  virtual float GetStepHeight () const { return stepHeight; }
+  /// Set the max vertical threshold that this actor can step over
+  virtual void SetStepHeight (float h) { stepHeight = h; }
+
+  /// Get the walk speed
+  virtual float GetWalkSpeed () const { return walkSpeed; }
+  /// Set the walk speed
+  virtual void SetWalkSpeed (float s) { walkSpeed = s; }
+
+  /// Get the jump speed
+  virtual float GetJumpSpeed () const { return jumpSpeed; }
+  /// Set the jump speed
+  virtual void SetJumpSpeed (float s) { jumpSpeed = s; }
+
+  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+  virtual float GetAirControlFactor () const { return airControlFactor; }
+  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+  virtual void SetAirControlFactor (float f) { airControlFactor = f; }
+};
+
  /**
   * TODO: IsMovingUp
   */

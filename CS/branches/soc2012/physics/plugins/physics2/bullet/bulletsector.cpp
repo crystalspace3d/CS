@@ -81,8 +81,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 				      int partId1, int index1)
     {
       CS::Collisions::CollisionData data;
-      data.objectA = static_cast<CS::Collisions::iCollisionObject*>(colObj0->getUserPointer ());
-      data.objectB = static_cast<CS::Collisions::iCollisionObject*>(colObj1->getUserPointer ());
+      data.objectA = static_cast<CS::Collisions::iCollisionObject*> (colObj0->getUserPointer ());
+      data.objectB = static_cast<CS::Collisions::iCollisionObject*> (colObj1->getUserPointer ());
       data.penetration = cp.m_distance1 * system->GetInverseInternalScale ();
       data.positionWorldOnA = BulletToCS (cp.m_positionWorldOnA, system->GetInverseInternalScale ());
       data.positionWorldOnB = BulletToCS (cp.m_positionWorldOnB, system->GetInverseInternalScale ());
@@ -210,8 +210,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     portals.DeleteAll ();
   }
 
-  CS::Collisions::iCollisionSystem* csBulletSector::GetSystem () { return system; }
-
   void csBulletSector::SetGravity (const csVector3& v)
   {
     // first re-activate all objects
@@ -244,9 +242,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       object->GetSector ()->RemoveCollisionObject (object);
     }
 
-    csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*>(object));
+    csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*> (object));
 
 #ifdef _DEBUG
+    // TODO: unused
     printf ("Adding object \"%s\" (0x%lx) to sector: 0x%lx\n", object->QueryObject ()->GetName (), obj->btObject, this);
 #endif
 
@@ -254,7 +253,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     case CS::Collisions::COLLISION_OBJECT_ACTOR:
       {
-        AddCollisionActor (static_cast<csBulletCollisionActor*>(obj));
+        AddCollisionActor (static_cast<csBulletCollisionActor*> (obj));
       }
       break;
     case CS::Collisions::COLLISION_OBJECT_PHYSICAL:
@@ -303,15 +302,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       RemoveSceneNodeFromSector (object->GetAttachedSceneNode ());
 
       iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
-      if (phyBody->QueryRigidBody ())
+      if (phyBody)
       {
-	rigidBodies.Delete (dynamic_cast<csBulletRigidBody*>(phyBody->QueryRigidBody ()));
-      }
-      else
-      {
-	csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*>(phyBody->QuerySoftBody ());
-	softBodies.Delete (btBody);
-	RemoveUpdatable (btBody);
+	if (phyBody->QueryRigidBody ())
+	{
+	  rigidBodies.Delete (dynamic_cast<csBulletRigidBody*> (phyBody->QueryRigidBody ()));
+	}
+	else
+	{
+	  csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*> (phyBody->QuerySoftBody ());
+	  softBodies.Delete (btBody);
+	  RemoveUpdatable (btBody);
+	}
       }
     }
   }
@@ -320,7 +322,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (index >= 0 && index < collisionObjects.GetSize ())
     {
-      return collisionObjects[index]->QueryCollisionObject ();
+      return collisionObjects[index];
     }
     else
     {
@@ -330,17 +332,25 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletSector::AddCollisionTerrain (CS::Collisions::iCollisionTerrain* terrain)
   {
-    csBulletCollisionTerrain* btTerrain = dynamic_cast<csBulletCollisionTerrain*>(terrain);
+    csBulletCollisionTerrain* csTerrain = dynamic_cast<csBulletCollisionTerrain*> (terrain);
 
-    btTerrain->RemoveRigidBodies ();
-    btTerrain->AddRigidBodies (this);
+    csTerrain->RemoveRigidBodies ();
+    csTerrain->AddRigidBodies (this);
 
-    terrains.Push (btTerrain);
+    terrains.Push (csTerrain);
   }
   
+  void csBulletSector::RemoveCollisionTerrain (CS::Collisions::iCollisionTerrain* terrain)
+  {
+    csBulletCollisionTerrain* csTerrain = dynamic_cast<csBulletCollisionTerrain*> (terrain);
+    csTerrain->RemoveRigidBodies ();
+    terrains.Delete (csTerrain);
+  }
+
   CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain (size_t index) const 
   { 
-    return csRef<CS::Collisions::iCollisionTerrain>(scfQueryInterface<CS::Collisions::iCollisionTerrain>(terrains.Get (index)));
+    return csRef<CS::Collisions::iCollisionTerrain>
+      (scfQueryInterface<CS::Collisions::iCollisionTerrain> (terrains.Get (index)));
   }
 
   CS::Collisions::iCollisionTerrain* csBulletSector::GetCollisionTerrain (iTerrainSystem* terrain) 
@@ -353,11 +363,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       }
     }
     return nullptr;
-  }
-
-  CS::Collisions::iCollisionObject* csBulletSector::FindCollisionObject (const char* name)
-  {
-    return collisionObjects.FindByName (name);
   }
 
   void csBulletSector::AddPortal (iPortal* portal, const csOrthoTransform& meshTrans)
@@ -388,10 +393,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (sector)
     {
       // sector is set
-
-      // set name
-      // TODO: remove?
-      QueryObject ()->SetName (sector->QueryObject ()->GetName ());
 
       // add portal meshes
       /*const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
@@ -591,8 +592,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
           btPersistentManifold* manifold = manifoldArray[j];
           btCollisionObject* objA = static_cast<btCollisionObject*> (manifold->getBody0 ());
           btCollisionObject* objB = static_cast<btCollisionObject*> (manifold->getBody1 ());
-          CS::Collisions::iCollisionObject* csCOA = static_cast<CS::Collisions::iCollisionObject*>(objA->getUserPointer ());
-          CS::Collisions::iCollisionObject* csCOB = static_cast<CS::Collisions::iCollisionObject*>(objB->getUserPointer ());
+          CS::Collisions::iCollisionObject* csCOA = static_cast<CS::Collisions::iCollisionObject*> (objA->getUserPointer ());
+          CS::Collisions::iCollisionObject* csCOB = static_cast<CS::Collisions::iCollisionObject*> (objB->getUserPointer ());
           for (int p=0;p<manifold->getNumContacts ();p++)
           {
             CS::Collisions::CollisionData data;
@@ -619,7 +620,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       for (size_t i = 0; i < copyData.GetSize (); i++)
       {
         CS::Collisions::CollisionData data;
-        if (copyData[i].objectA == portalClone->QueryCollisionObject ())
+        if (copyData[i].objectA == portalClone)
         {
           data.objectA = object;
           data.objectB = copyData[i].objectB;
@@ -654,7 +655,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletSector::AddCollisionActor (CS::Collisions::iCollisionActor* actor)
   {
-    csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*>(actor));
+    csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*> (actor));
     collisionObjects.Push (obj);
     obj->sector = this;
     obj->AddBulletObject ();
@@ -803,7 +804,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
   {
-    csRef<csBulletRigidBody> bulletBody (dynamic_cast<csBulletRigidBody*>(body));
+    csRef<csBulletRigidBody> bulletBody (dynamic_cast<csBulletRigidBody*> (body));
     rigidBodies.Push (bulletBody);
 
     bulletBody->sector = this;
@@ -821,16 +822,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return rigidBodies[index]->QueryRigidBody ();
   }
 
-  CS::Physics::iRigidBody* csBulletSector::FindRigidBody (const char* name)
-  {
-    return rigidBodies.FindByName (name);
-  }
-
   void csBulletSector::AddSoftBody (CS::Physics::iSoftBody* body)
   {
     CS_ASSERT (system->isSoftWorld);
 
-    csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*>(body));
+    csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*> (body));
     softBodies.Push (btBody);
     AddUpdatable (btBody);
 
@@ -862,37 +858,33 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return softBodies[index]->QuerySoftBody ();
   }
 
-  CS::Physics::iSoftBody* csBulletSector::FindSoftBody (const char* name)
-  {
-    return softBodies.FindByName (name);
-  }
-
   void csBulletSector::AddJoint (CS::Physics::iJoint* joint)
   {
-    csBulletJoint* btJoint = dynamic_cast<csBulletJoint*> (joint);
-    CS_ASSERT (btJoint);
-    btJoint->sector = this;
-    btJoint->AddBulletJoint ();
-    joints.Push (btJoint);
+    // TODO: all objects need to be removed from their previous sector
+    csBulletJoint* csJoint = dynamic_cast<csBulletJoint*> (joint);
+    CS_ASSERT (csJoint);
+    csJoint->sector = this;
+    csJoint->AddBulletJoint ();
+    joints.Push (csJoint);
   }
 
   void csBulletSector::RemoveJoint (CS::Physics::iJoint* joint)
   {
-    csBulletJoint* btJoint = dynamic_cast<csBulletJoint*> (joint);
-    CS_ASSERT (btJoint);
+    csBulletJoint* csJoint = dynamic_cast<csBulletJoint*> (joint);
+    CS_ASSERT (csJoint);
 
     // re-activate the now free bodies
-    if (btJoint->bodies[0])
+    if (csJoint->bodies[0])
     {
-      dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[0])->btObject->activate (true);
+      dynamic_cast<csBulletCollisionObject*> (csJoint->bodies[0])->btObject->activate (true);
     }
-    if (btJoint->bodies[1])
+    if (csJoint->bodies[1])
     {
-      dynamic_cast<csBulletCollisionObject*>(btJoint->bodies[1])->btObject->activate (true);
+      dynamic_cast<csBulletCollisionObject*> (csJoint->bodies[1])->btObject->activate (true);
     }
 
-    btJoint->RemoveBulletJoint ();
-    joints.Delete (btJoint);
+    csJoint->RemoveBulletJoint ();
+    joints.Delete (csJoint);
   }
 
   bool csBulletSector::Save (const char* filename)
@@ -984,9 +976,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
           static_cast<btCollisionObject*> (contactManifold->getBody1 ());
 
         csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*>
-	  (static_cast<CS::Collisions::iCollisionObject*>(obA->getUserPointer ()));
+	  (static_cast<CS::Collisions::iCollisionObject*> (obA->getUserPointer ()));
         csBulletCollisionObject* csCOB = dynamic_cast <csBulletCollisionObject*>
-	  (static_cast<CS::Collisions::iCollisionObject*>(obB->getUserPointer ()));
+	  (static_cast<CS::Collisions::iCollisionObject*> (obB->getUserPointer ()));
 
         if (csCOA && csCOA->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
           if (csCOA->contactObjects.Contains (csCOB) == csArrayItemNotFound)
@@ -1027,7 +1019,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       AddCollisionObject (u->GetCollisionObject ());
     }
 
-    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
+    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper> (u);
     if (wrapper && wrapper->GetBulletAction ())
     {
       // It was an internal action that also defines a bullet action
@@ -1047,7 +1039,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       RemoveCollisionObject (u->GetCollisionObject ());
     }
 
-    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper>(u);
+    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper> (u);
     if (wrapper && wrapper->GetBulletAction ())
     {
       bulletWorld->removeAction (wrapper->GetBulletAction ());

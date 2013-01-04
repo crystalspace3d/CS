@@ -34,7 +34,7 @@
 
 const static float StaticElasticity = 0.1f;
 
-const csString DefaultSectorName("defaultsector");
+const csString DefaultSectorName ("defaultsector");
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -44,21 +44,21 @@ using namespace CS::Geometry;
  * Utility function - Should eventually be added to csPoly3D.
  * Rotates polyIn by rotation and stores it in polyOut.
  */
-void TransformPoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csOrthoTransform& trans)
+void TransformPoly3D (const csPoly3D& polyIn, csPoly3D& polyOut, const csOrthoTransform& trans)
 {
-  polyOut.SetVertexCount(polyIn.GetVertexCount());
-  for (size_t i = 0; i < polyIn.GetVertexCount(); ++i)
+  polyOut.SetVertexCount (polyIn.GetVertexCount ());
+  for (size_t i = 0; i < polyIn.GetVertexCount (); ++i)
   {
     csVector3 vert = polyIn[i];
-    vert = trans.GetOrigin() + trans.GetT2O() * vert;
+    vert = trans.GetOrigin () + trans.GetT2O () * vert;
     polyOut[i] = vert;
   }
 }
 
-void RotatePoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& rot)
+void RotatePoly3D (const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& rot)
 {
-  polyOut.SetVertexCount(polyIn.GetVertexCount());
-  for (size_t i = 0; i < polyIn.GetVertexCount(); ++i)
+  polyOut.SetVertexCount (polyIn.GetVertexCount ());
+  for (size_t i = 0; i < polyIn.GetVertexCount (); ++i)
   {
     csVector3 vert = polyIn[i];
     vert = rot * vert;
@@ -67,50 +67,49 @@ void RotatePoly3D(const csPoly3D& polyIn, csPoly3D& polyOut, const csMatrix3& ro
 }
 
 
-void PhysDemo::CreateBoxRoom(const csVector3& roomExtents, const csVector3& pos, float wallThickness)
+void PhysDemo::CreateBoxRoom (const csVector3& roomExtents, const csVector3& pos, float wallThickness)
 {
   // The boxes that make up floor and ceiling
   // AABB over these two is the entire room, including walls
-  csVector3 yExtents(
+  csVector3 yExtents (
     roomExtents[HorizontalAxis1] + 2 * wallThickness,
     wallThickness,
     roomExtents[HorizontalAxis2] + 2 * wallThickness);
   RenderMeshColliderPair yLimitingPair;
-  CreateBoxMeshColliderPair(yLimitingPair, yExtents);
+  CreateBoxMeshColliderPair (yLimitingPair, yExtents);
 
   // The boxes that make up one pair of walls
   // AABB over these two is the y-limited part of the room
-  csVector3 xExtents(
+  csVector3 xExtents (
     wallThickness,
     roomExtents[HorizontalAxis1],
     roomExtents[HorizontalAxis2] + 2 * wallThickness);
   RenderMeshColliderPair xLimitingPair;
-  CreateBoxMeshColliderPair(xLimitingPair, xExtents);
+  CreateBoxMeshColliderPair (xLimitingPair, xExtents);
 
   // The boxes that make up the other pair of walls
   // AABB over these two is the y- and x- limited part of the room
-  csVector3 zExtents(
+  csVector3 zExtents (
     roomExtents[HorizontalAxis2],
     roomExtents[HorizontalAxis1],
     wallThickness);
   RenderMeshColliderPair zLimitingPair;
-  CreateBoxMeshColliderPair(zLimitingPair, zExtents);
+  CreateBoxMeshColliderPair (zLimitingPair, zExtents);
   
   //csVector3 halfRoomExtents = roomExtents / 2;
-  csVector3 distances = (roomExtents + csVector3(wallThickness)) / 2;
+  csVector3 distances = (roomExtents + csVector3 (wallThickness)) / 2;
 
-  SpawnRigidBody(xLimitingPair, pos + csVector3(distances[HorizontalAxis1], 0, 0), "wall", 0, 0)->SetElasticity(StaticElasticity);
-  SpawnRigidBody(xLimitingPair, pos + csVector3(-distances[HorizontalAxis1], 0, 0), "wall", 0, 0)->SetElasticity(StaticElasticity);
+  SpawnRigidBody (xLimitingPair, pos + csVector3 (distances[HorizontalAxis1], 0, 0), 0, 0)->SetElasticity (StaticElasticity);
+  SpawnRigidBody (xLimitingPair, pos + csVector3 (-distances[HorizontalAxis1], 0, 0), 0, 0)->SetElasticity (StaticElasticity);
 
-  SpawnRigidBody(yLimitingPair, pos + csVector3(0, distances[UpAxis], 0), "ceiling", 0, 0)->SetElasticity(StaticElasticity);
-  SpawnRigidBody(yLimitingPair, pos + csVector3(0, -distances[UpAxis], 0), "floor", 15, 0)->SetElasticity(StaticElasticity);
+  SpawnRigidBody (yLimitingPair, pos + csVector3 (0, distances[UpAxis], 0), 0, 0)->SetElasticity (StaticElasticity);
+  SpawnRigidBody (yLimitingPair, pos + csVector3 (0, -distances[UpAxis], 0), 15, 0)->SetElasticity (StaticElasticity);
 
-  SpawnRigidBody(zLimitingPair, pos + csVector3(0, 0, distances[HorizontalAxis2]), "wall", 0, 0)->SetElasticity(StaticElasticity);
-  SpawnRigidBody(zLimitingPair, pos + csVector3(0, 0, -distances[HorizontalAxis2]), "wall", 0, 0)->SetElasticity(StaticElasticity);
-  
+  SpawnRigidBody (zLimitingPair, pos + csVector3 (0, 0, distances[HorizontalAxis2]), 0, 0)->SetElasticity (StaticElasticity);
+  SpawnRigidBody (zLimitingPair, pos + csVector3 (0, 0, -distances[HorizontalAxis2]), 0, 0)->SetElasticity (StaticElasticity);
 }
 
-void PhysDemo::CreateBoxRoom(float size)
+void PhysDemo::CreateBoxRoom (float size)
 { 
   // Create and setup sector
   room = engine->CreateSector (DefaultSectorName);
@@ -118,189 +117,48 @@ void PhysDemo::CreateBoxRoom(float size)
     physicalSystem->CreateCollisionSector (room)->QueryPhysicalSector ();
   SetCurrentSector (sector);
 
-  // Add cam pos
-  iCameraPosition* pos = engine->GetCameraPositions()->NewCameraPosition("Center");
-  pos->Set(DefaultSectorName, csVector3 (0, 1.0f - size * .5f, 0), csVector3 (0, 0, 1), UpVector);
+  // Setup the camera position
+  iCameraPosition* pos = engine->GetCameraPositions ()->NewCameraPosition ("Center");
+  pos->Set (DefaultSectorName, csVector3 (0, 1.0f - size * .5f, 0), csVector3 (0, 0, 1), UpVector);
 
-  // Room parameters
-  csVector3 roomExtents(size); csVector3 halfRoomExtents(.5f * roomExtents);
-  csVector3 roomPos(0);
+  // Create the room
+  csVector3 roomExtents (size);
+  csVector3 halfRoomExtents (.5f * roomExtents);
+  csVector3 roomPos (0);
   float wallThickness = 5;
-  
-  //csMatrix3 rotation = csZRotMatrix3 (HALF_PI);                   // the rotation between the two portals
-  
-  // Default behavior from DemoApplication for the creation of the scene
-  if (!DemoApplication::CreateRoom()) return;
-
-  // Create room
-  CreateBoxRoom(roomExtents, roomPos, wallThickness);
-  
-  //// Portal parameters
-  //float portalEpsilon = 0.01;
-  ////csVector2 halfPortalExtents(1, 2);                              // a portal has width = 2, height = 4
-  //csVector2 halfPortalExtents(1);
-
-  //// Create portals
-
-  //// Positions of the portals
-  //csVector3 portal1Pos = csVector3(
-  //  halfRoomExtents.x - portalEpsilon, 
-  //  -halfRoomExtents.y + halfPortalExtents.y, 
-  //  0.0f);
-
-  //csVector3 portal2Pos = csVector3(
-  //  0, 
-  //  -halfRoomExtents.y + portalEpsilon , 
-  //  0);
-  
-  // TODO: Fix programmatic portals
-  // TODO: Add mechanism to more easily create a portal pair
-
-  //printf ("Creating portal room...\n");       // let's go
-  //
-  //
-  //// Add portals
-
-  //// Define the plane of the wall poly
-  //csPoly3D poly;
-  //poly.AddVertex (csVector3 (0.0f, -halfPortalExtents.y, halfPortalExtents.x));
-  //poly.AddVertex (csVector3 (0.0f, halfPortalExtents.y, halfPortalExtents.x));
-  //poly.AddVertex (csVector3 (0.0f, halfPortalExtents.y, -halfPortalExtents.x));
-  //poly.AddVertex (csVector3 (0.0f, -halfPortalExtents.y, -halfPortalExtents.x));
-
-  //// Portal transformations are absolute
-  //csOrthoTransform portal1Trans(
-  //  csMatrix3(),
-  //  portal1Pos);
-  //csOrthoTransform portal2Trans(
-  //  rotation,
-  //  portal2Pos);
-
-  //// transform the portals into place
-  //csPoly3D poly1, poly2;
-  //RotatePoly3D(poly, poly1, portal1Trans.GetT2O());
-  //RotatePoly3D(poly, poly2, portal2Trans.GetT2O());
-
-
-  //iPortal *portal1, *portal2;
-
-  //// Create the portal meshes
-  //csRef<iMeshWrapper> portalMesh1 = engine->CreatePortal ("right_wall", 
-  //  room,
-  //  portal1Trans.GetOrigin(),
-  //  room, 
-  //  poly1.GetVertices(), 
-  //  (int) poly1.GetVertexCount(),
-  //  portal1);
-
-  //csRef<iMeshWrapper> portalMesh2 = engine->CreatePortal ("floor", 
-  //  room,
-  //  portal2Trans.GetOrigin(),
-  //  room, 
-  //  poly2.GetVertices(), 
-  //  (int) poly2.GetVertexCount(),
-  //  portal2);
-
-  //
-  //portal1->GetWorldVertices ();
-
-  //csVector3 nor = portal1->GetObjectPlane ().GetNormal ();
-  //
-  //// place & configure portals and warp transforms
-  ////portalMesh1->QuerySceneNode()->GetMovable()->SetTransform(portal1Trans);
-  ////portalMesh2->QuerySceneNode()->GetMovable()->SetTransform(portal2Trans);
-  //
-  //portal1->GetFlags().Set (CS_PORTAL_ZFILL);
-  //portal1->GetFlags().Set (CS_PORTAL_CLIPDEST);
-
-  //portal2->GetFlags().Set (CS_PORTAL_ZFILL);
-  //portal2->GetFlags().Set (CS_PORTAL_CLIPDEST);
-  //
-  ////csOrthoTransform portal1Warp(portal2Trans.GetInverse() * portal1Trans);
-  ////csOrthoTransform portal2Warp(portal1Trans.GetInverse() * portal2Trans);
-  //
-  ////portal1Warp.SetT2O(portal1Warp.GetT2O() * csXRotMatrix3(PI) * csYRotMatrix3(PI));
-  ////portal1Warp.SetT2O(portal1Warp.GetT2O() * csZRotMatrix3(PI));
-  ////portal2Warp.SetT2O(portal2Warp.GetT2O() * csYRotMatrix3(PI) * csZRotMatrix3(PI));
-
-  //// distance between the two portals
-  //csVector3 portalDist(portal2Trans.GetOrigin() - portal1Trans.GetOrigin());
-
-  //csOrthoTransform portal1Warp(csYRotMatrix3 (-PI * 0.5f) * csZRotMatrix3 (PI * 0.5f),
-		//		     csVector3 (-portalDist.y, -portalDist.z, -portalDist.x));
-
-  //csOrthoTransform portal2Warp(csZRotMatrix3 (-PI * 0.5f) * csYRotMatrix3 (PI * 0.5f),
-		//		     csVector3 (portalDist.z, portalDist.x, portalDist.y));
-
-  //portal1->SetWarp (portal1Warp);
-  //portal2->SetWarp (portal2Warp);
-  //
-  //// Create collision portals
-  //static const csOrthoTransform identity;
-  //GetCurrentSector()->AddPortal (portal1, portal1Trans);
-  //GetCurrentSector()->AddPortal (portal2, portal2Trans);
+  CreateBoxRoom (roomExtents, roomPos, wallThickness);
 
   // Set up some lights
-  room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));
-
-  // Creating lights
   csRef<iLight> light;
   iLightList* lightList = room->GetLights ();
+  lightList->RemoveAll ();
 
-  // This light is for the background
-  light = engine->CreateLight (0, csVector3 (-1, -1, 0), 9000, csColor (1));
-  light->SetAttenuationMode (CS_ATTN_NONE);
+  room->SetDynamicAmbientLight (csColor (0.3f, 0.3f, 0.3f));
+
+  float distance = size * 0.6f;
+  light = engine->CreateLight (0, csVector3 (distance, 0.0f, 0.0f), size, csColor (1));
   lightList->Add (light);
 
-  // Other lights
-  light = engine->CreateLight (0, csVector3 (1, 0, 0), 8, csColor4 (1, 1, 1, 1));
-  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  light = engine->CreateLight (0, csVector3 (-distance, 0.0f,  0.0f), size, csColor (1));
   lightList->Add (light);
 
-  light = engine->CreateLight (0, csVector3 (-3, 0,  0), 8, csColor (1));
-  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  light = engine->CreateLight (0, csVector3 (0.0f, distance, 0.0f), size, csColor (1));
   lightList->Add (light);
 
-  light = engine->CreateLight (0, csVector3 (0, 0, -3), 8, csColor (1));
-  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  light = engine->CreateLight (0, csVector3 (0.0f, -distance, 0.0f), size, csColor (1));
   lightList->Add (light);
 
-  light = engine->CreateLight (0, csVector3 (0, 0, 3), 8, csColor (1));
-  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  light = engine->CreateLight (0, csVector3 (0.0f, 0.0f, distance), size, csColor (1));
   lightList->Add (light);
 
-  light = engine->CreateLight (0, csVector3 (0, -3, 0), 8, csColor (1));
-  light->SetAttenuationMode (CS_ATTN_REALISTIC);
+  light = engine->CreateLight (0, csVector3 (0.0f, 0.0f, -distance), size, csColor (1));
   lightList->Add (light);
 
   engine->Prepare ();
-  CS::Lighting::SimpleStaticLighter::ShineLights
-    (room, engine, CS::Lighting::SimpleStaticLighter::CS_SHADOW_FULL);
-/*
-  csRef<iLight> light;
-  iLightList* lightList = room->GetLights();
-  lightList->RemoveAll();
-
-  light = engine->CreateLight(0, csVector3(10), 9000, csColor (1));
-  lightList->Add (light);
-
-  light = engine->CreateLight (0, csVector3 (3, 0, 0), 8, csColor (1, 0, 0));
-  lightList->Add (light);
-
-  light = engine->CreateLight (0, csVector3 (-3, 0,  0), 8, csColor (0, 0, 1));
-  lightList->Add (light);
-
-  light = engine->CreateLight (0, csVector3 (0, 0, 3), 8, csColor (0, 1, 0));
-  lightList->Add (light);
-
-  light = engine->CreateLight (0, csVector3 (0, -3, 0), 8, csColor (1, 1, 0));
-  lightList->Add (light);
-
-  CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 4);
-*/
+  CS::Lighting::SimpleStaticLighter::ShineLights (room, engine, 6);
 }
 
-bool PhysDemo::LoadLevel(const char* pathname, bool convexDecomp)
+bool PhysDemo::LoadLevel (const char* pathname, bool convexDecomp)
 {
   csString folder, filename;
   GetFolderAndFile (pathname, folder, filename);
@@ -308,51 +166,51 @@ bool PhysDemo::LoadLevel(const char* pathname, bool convexDecomp)
   printf ("Loading level: %s...\n", pathname);
 
   // Load the level file
-  csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry()));
+  csRef<iVFS> VFS (csQueryRegistry<iVFS> (GetObjectRegistry ()));
 
-  VFS->PushDir();
-  if (!VFS->ChDir (folder.GetData()))
+  VFS->PushDir ();
+  if (!VFS->ChDir (folder.GetData ()))
   {
-    ReportError("ERROR: Couldn't find directory \"%s\" for level: %s", folder.GetData(), pathname);
+    ReportError ("ERROR: Couldn't find directory \"%s\" for level: %s", folder.GetData (), pathname);
     return false;
   }
 
   if (!loader->LoadMapFile (filename, false))
   {
-    ReportError("ERROR: Couldn't load file \"%s\" for level: %s", filename.GetData(), pathname);
+    ReportError ("ERROR: Couldn't load file \"%s\" for level: %s", filename.GetData (), pathname);
     return false;
   }
-  VFS->PopDir();
+  VFS->PopDir ();
   
   // Initialize the physical world from the content of the engine
   collisionHelper.InitializeCollisionObjects (engine);
 
   // Set the default sector
-  room = engine->GetSectors()->Get(0);
+  room = engine->GetSectors ()->Get (0);
 
-  CS_ASSERT(room && "Invalid level - Has no sectors.");
+  CS_ASSERT (room && "Invalid level - Has no sectors.");
 
   printf ("Done - level loaded: %s\n", pathname);
   return true;
 }
 
 
-iModifiableDataFeeder* PhysDemo::GetFirstTerrainModDataFeeder(CS::Collisions::iCollisionSector* sector)
+iModifiableDataFeeder* PhysDemo::GetFirstTerrainModDataFeeder (CS::Collisions::iCollisionSector* sector)
 {
   // iterate over all terrains in the sector
-  for (size_t i = 0; i < sector->GetCollisionTerrainCount(); ++i)
+  for (size_t i = 0; i < sector->GetCollisionTerrainCount (); ++i)
   {
-    iTerrainSystem* terrain = sector->GetCollisionTerrain(i)->GetTerrain();
+    iTerrainSystem* terrain = sector->GetCollisionTerrain (i)->GetTerrain ();
     csRef<iMeshObject> terrainObj = scfQueryInterface<iMeshObject>(terrain);
     if (terrainObj)
     {
       // Get the factory
-      csRef<iTerrainFactory> factory = scfQueryInterface<iTerrainFactory>(terrainObj->GetFactory());
-      CS_ASSERT(factory);
+      csRef<iTerrainFactory> factory = scfQueryInterface<iTerrainFactory>(terrainObj->GetFactory ());
+      CS_ASSERT (factory);
 
       // Get the data feeder and check if its modifiable
       // NOTE: By default, data feeders are not modifiable
-      csRef<iModifiableDataFeeder> terrainFeeder = scfQueryInterface<iModifiableDataFeeder> (factory->GetFeeder());
+      csRef<iModifiableDataFeeder> terrainFeeder = scfQueryInterface<iModifiableDataFeeder> (factory->GetFeeder ());
       if (terrainFeeder)
       {
         return terrainFeeder;

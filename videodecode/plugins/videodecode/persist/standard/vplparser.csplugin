@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<!-- parser.csplugin -->
+<!-- vplparser.csplugin -->
 <plugin>
   <scf>
     <classes>
       <class>
-        <name>crystalspace.vpl.parser</name>
+        <name>crystalspace.videodecode.parser</name>
         <implementation>csVplParser</implementation>
         <description>Generic Media Parser</description>
       </class>

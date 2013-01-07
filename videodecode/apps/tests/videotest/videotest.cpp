@@ -103,7 +103,7 @@ bool VideoTest::Application ()
     CS_REQUEST_VFS,
     CS_REQUEST_PLUGIN ("crystalspace.videodecode.loader", iMediaLoader),
     CS_REQUEST_PLUGIN ("crystalspace.videodecode.player", iMediaPlayer),
-    CS_REQUEST_PLUGIN ("crystalspace.videodecode.parser",iLoaderPlugin),
+    CS_REQUEST_PLUGIN ("crystalspace.videodecode.parser", iLoaderPlugin),
     CS_REQUEST_PLUGIN ("crystalspace.cegui.wrapper", iCEGUI),
     CS_REQUEST_PLUGIN ("crystalspace.documentsystem.multiplexer", iDocumentSystem),
     CS_REQUEST_PLUGIN_TAG ("crystalspace.documentsystem.tinyxml", iDocumentSystem, 
@@ -112,7 +112,7 @@ bool VideoTest::Application ()
     CS_REQUEST_END))
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-      "crystalspace.application.vidplaydemo",
+      "crystalspace.application.videotest",
       "Can't initialize plugins!");
     return false;
   }
@@ -141,10 +141,8 @@ bool VideoTest::Application ()
   vfs->ChDir ("/videodecode/");
 
   // Get the loader and load the video
-  csRef<iMediaLoader> vlpLoader = csQueryRegistry<iMediaLoader> (object_reg);
-  csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid422.xml");
-  //csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid420.xml");
-  //csRef<iMediaContainer> video = vlpLoader->LoadMedia ("vid444.xml");
+  csRef<iMediaLoader> vplLoader = csQueryRegistry<iMediaLoader> (object_reg);
+  csRef<iMediaContainer> video = vplLoader->LoadMedia ("vid422.xml");
 
   if (!video)
     return false;

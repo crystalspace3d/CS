@@ -1,12 +1,6 @@
 <media type="theoraVideo">
 	<videostream path="vid422.ogg"/>	
         <audiostream>
-		<language name="enUS" path="dupoxyF_-_lassitude.ogg"/>
-	</audiostream>
-</media>
-<media type="theoraVideo">
-	<videostream path="vid422.ogg"/>	
-        <audiostream>
-		<language name="enUS" path="dupoxyF_-_lassitude.ogg"/>
+		<language name="enUS" path="loopbzzt.wav"/>
 	</audiostream>
 </media>

@@ -4,7 +4,7 @@
   <scf>
     <classes>
       <class>
-        <name>crystalspace.vpl.element.thogg</name>
+        <name>crystalspace.videodecode.element.thogg</name>
         <implementation>csThOggLoader</implementation>
         <description>Theora OGG Video Player Element</description>
       </class>

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<!-- loader.csplugin -->
+<!-- medialoader.csplugin -->
 <plugin>
   <scf>
     <classes>
       <class>
-        <name>crystalspace.vpl.loader</name>",
+        <name>crystalspace.videodecode.loader</name>",
         <implementation>csVplLoader</implementation>",
         <description>Generic Media Loader</description>",
       </class>

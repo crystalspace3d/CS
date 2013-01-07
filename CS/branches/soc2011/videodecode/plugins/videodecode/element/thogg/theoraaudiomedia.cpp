@@ -1,8 +1,27 @@
-#include <cssysdef.h>
-#include "theoraaudiomedia.h"
-#include <iutil/objreg.h>
-#include <iutil/plugin.h>
+/*
+Copyright (C) 2011 by Alin Baciu
 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+#include "cssysdef.h"
+#include "isndsys/ss_renderer.h"
+#include "iutil/objreg.h"
+#include "iutil/plugin.h"
+#include "cstool/initapp.h"
+
+#include "theoraaudiomedia.h"
 
 SCF_IMPLEMENT_FACTORY (csTheoraAudioMedia)
 
@@ -42,12 +61,12 @@ bool csTheoraAudioMedia::Initialize (iObjectRegistry* r)
     vorbis_block_init (&_dspState,&_vorbisBlock);
 
     _decodersStarted = true;
-
+/*
     csSndSysSoundFormat format;
     format.Bits = _streamInfo.bitrate_nominal;
     format.Channels = _streamInfo.channels;
     format.Freq = _streamInfo.rate;
-
+*/
     if (!csInitializer::RequestPlugins (_object_reg,
       CS_REQUEST_VFS,
       CS_REQUEST_PLUGIN ("crystalspace.sndsys.renderer.software", iSndSysRenderer),
@@ -186,7 +205,7 @@ void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_s
 
   // Let's decode some pages and seek to the appropriate PCM sample
   ogg_int64_t granule=0;
-  float last_page_time=time;
+  //float last_page_time=time;
 
   while (true)
   {
@@ -209,7 +228,7 @@ void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_s
           time=g_time;
           break;
         }
-        last_page_time=g_time;
+        //last_page_time=g_time;
       }
       else ogg_stream_pagein (thState,op);
     }

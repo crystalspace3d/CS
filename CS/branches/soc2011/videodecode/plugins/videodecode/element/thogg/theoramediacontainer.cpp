@@ -1,8 +1,29 @@
-#include <cssysdef.h>
-#include "theoramediacontainer.h"
-#include <iutil/objreg.h>
-#include <iutil/plugin.h>
+/*
+Copyright (C) 2011 by Alin Baciu
 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+#include "cssysdef.h"
+#include "isndsys/ss_data.h"
+#include "isndsys/ss_loader.h"
+#include "isndsys/ss_renderer.h"
+#include "iutil/objreg.h"
+#include "iutil/plugin.h"
+#include "iutil/vfs.h"
+
+#include "theoramediacontainer.h"
 
 SCF_IMPLEMENT_FACTORY (TheoraMediaContainer)
 
@@ -45,7 +66,7 @@ size_t TheoraMediaContainer::GetMediaCount () const
   return _media.GetSize ();
 }
 
-void TheoraMediaContainer::SetLanguages (csArray<Language> languages)
+void TheoraMediaContainer::SetLanguages (csArray<MediaLanguage> languages)
 {
   this->_languages = languages;
 }
@@ -525,7 +546,7 @@ size_t TheoraMediaContainer::GetLanguageCount () const
   return _languages.GetSize();
 }
 
-bool TheoraMediaContainer::GetLanguage (size_t index, Language &lang) const
+bool TheoraMediaContainer::GetLanguage (size_t index, MediaLanguage &lang) const
 {
   if (index >= _languages.GetSize())
     return false;

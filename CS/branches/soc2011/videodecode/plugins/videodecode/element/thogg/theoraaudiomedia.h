@@ -15,7 +15,6 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __CS_THOGGAUDIOMEDIA_H__
 #define __CS_THOGGAUDIOMEDIA_H__
 
@@ -23,20 +22,20 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   * Video Player: media stream 
   */
 
-#include <iutil/comp.h>
-#include <ivideodecode/media.h>
-#include <csutil/scf_implementation.h>
+#include "csutil/scf_implementation.h"
+#include "isndsys/ss_listener.h"
+#include "isndsys/ss_source.h"
+#include "isndsys/ss_stream.h"
+#include "iutil/comp.h"
+#include "ivideo/videodecode.h"
+#include "namespacedocs.h"
 
 #include "csutil/custom_new_disable.h"
 #include "vorbis/codec.h"
 #include "csutil/custom_new_enable.h"
 
-#include <iostream>
-#include <stdio.h>
-
+using namespace CS::Material;
 using namespace CS::SndSys;
-using namespace std;
-
 
 class SndSysTheoraStream;
 /**

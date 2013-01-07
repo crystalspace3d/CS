@@ -23,12 +23,11 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 * Video Player: media stream 
 */
 
-#include <iutil/comp.h>
-#include <ivideodecode/mediastructs.h>
-#include <ivideodecode/mediacontainer.h>
-#include <csutil/scf_implementation.h>
-#include <csutil/refarr.h>
-#include <csutil/array.h>
+#include "csutil/array.h"
+#include "csutil/refarr.h"
+#include "csutil/scf_implementation.h"
+#include "iutil/comp.h"
+#include "ivideo/videodecode.h"
 
 #include "csutil/custom_new_disable.h"
 #include "vorbis/codec.h"
@@ -37,8 +36,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "theoravideomedia.h"
 #include "theoraaudiomedia.h"
 
-#define QUALIFIED_PLUGIN_NAME "crystalspace.vpl.element.thogg"
+#define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.element.thogg"
 
+using namespace CS::Material;
 using namespace CS::Threading;
 
 /**
@@ -63,7 +63,7 @@ private:
   size_t  _cacheSize;
 
   // audio languages
-  csArray<Language> _languages;
+  csArray<MediaLanguage> _languages;
 
   // audio stream
   csRef<iSndSysStream> _sndstream;
@@ -117,7 +117,7 @@ public:
   virtual float GetAspectRatio () ;
   virtual void DropFrame ();
   virtual size_t GetLanguageCount () const;
-  virtual bool GetLanguage (size_t index, Language &lang) const;
+  virtual bool GetLanguage (size_t index, MediaLanguage &lang) const;
   virtual void SetLanguage (const char* identifier);
   virtual void OnPause ();
   virtual void OnPlay ();
@@ -135,10 +135,10 @@ public:
   inline void SetDescription (const char* pDescription)
     { this->_pDescription=pDescription; }
 
-  inline csArray<Language> GetLanguages () const
+  inline csArray<MediaLanguage> GetLanguages () const
     { return _languages; }
 
-  void SetLanguages (csArray<Language> languages);
+  void SetLanguages (csArray<MediaLanguage> languages);
 
   inline void ClearMedia ()  
     { _media.Empty (); }

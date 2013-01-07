@@ -15,24 +15,23 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __VPLPARSER_H__
 #define __VPLPARSER_H__
 
+#include "csutil/scf_implementation.h"
+#include "csutil/strhash.h"
 #include "imap/reader.h"
 #include "imap/writer.h"
+#include "iutil/comp.h"
 #include "iutil/eventh.h"
-#include "csutil/strhash.h"
-
-#include <iutil/comp.h>
-#include <csutil/scf_implementation.h>
-#include <ivideodecode/mediastructs.h>
-#include <ivideodecode/medialoader.h>
+#include "ivideo/videodecode.h"
 
 struct iReporter;
 struct iPluginManager;
 struct iSyntaxService;
 struct iObjectRegistry;
+
+using namespace CS::Material;
 
 /**
   * This is the implementation for our API and
@@ -47,7 +46,7 @@ private:
 
   csString              _mediaPath;
   csString              _mediaType;
-  csArray<Language>     _languages;
+  csArray<MediaLanguage>     _languages;
 
   csStringHash xmltokens;
 #define CS_TOKEN_ITEM_FILE "plugins/videodecode/persist/standard/vplparser.tok"

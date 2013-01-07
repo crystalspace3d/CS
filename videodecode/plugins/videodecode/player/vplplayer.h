@@ -15,24 +15,19 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __VPLPLAYER_H__
 #define __VPLPLAYER_H__
 
-#include <iutil/comp.h>
-#include <ivideodecode/mediaplayer.h>
-#include <ivideodecode/mediacontainer.h>
-#include <csutil/scf_implementation.h>
-
-
+#include "csutil/scf_implementation.h"
 #include "csutil/threadmanager.h"
-
-#include <iostream>
-using namespace std;
+#include "iutil/comp.h"
+#include "ivideo/videodecode.h"
 
 struct iObjectRegistry;
 
-#define QUALIFIED_PLUGIN_NAME "crystalspace.vpl.player"
+#define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.player"
+
+using namespace CS::Material;
 
 /**
   * This is the implementation for our API and

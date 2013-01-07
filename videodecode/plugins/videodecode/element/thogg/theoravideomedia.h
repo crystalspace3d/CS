@@ -23,20 +23,21 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 * Video Player: media stream 
 */
 
-#include <iutil/comp.h>
-#include <ivideodecode/media.h>
-#include <csutil/scf_implementation.h>
+#include "csutil/scf_implementation.h"
+#include "csutil/fifo.h"
+#include "iutil/comp.h"
+#include "ivideo/txtmgr.h"
+#include "ivideo/videodecode.h"
 
 // Theora headers
 #include "csutil/custom_new_disable.h"
-#include "theora/theoradec.h"
+#include <theora/theoradec.h>
 #include "csutil/custom_new_enable.h"
 
-#include <iostream>
-using namespace std;
+using namespace CS::Material;
 using namespace CS::Threading;
 
-#define QUALIFIED_PLUGIN_NAME "crystalspace.vpl.element.thogg"
+#define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.element.thogg"
 
 struct iTextureWrapper; 
 struct csVPLvideoFormat;

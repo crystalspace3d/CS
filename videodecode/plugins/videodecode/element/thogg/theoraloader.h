@@ -15,25 +15,25 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __THOGGLOADER_H__
 #define __THOGGLOADER_H__
 
-#include <iutil/comp.h>
-#include <ivideodecode/medialoader.h>
-#include <ivideodecode/mediacontainer.h>
-#include <ivideodecode/media.h>
-#include <csutil/scf_implementation.h>
-#include "theoramediacontainer.h"
-#include <csutil/nobjvec.h>
+#include "csutil/scf_implementation.h"
+#include "csutil/nobjvec.h"
+#include "iutil/comp.h"
+#include "ivideo/videodecode.h"
 
 #include "csutil/custom_new_disable.h"
-#include "vorbis/codec.h"
+#include <vorbis/codec.h>
 #include "csutil/custom_new_enable.h"
 
-#define QUALIFIED_PLUGIN_NAME "crystalspace.vpl.element.thogg"
+#include "theoramediacontainer.h"
+
+#define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.element.thogg"
 
 struct iObjectRegistry;
+
+using namespace CS::Material;
 
 /*#ifdef WIN32
   #pragma comment (lib,"libtheora_static.lib")
@@ -69,7 +69,7 @@ private:
   // Media data
   csString            _path;        // video file path
   FILE *              _infile;      // video file
-  csArray<Language>   _languages;   // array of languages 
+  csArray<MediaLanguage>   _languages;   // array of languages 
                                     // (audio file paths and names)
 
 public:
@@ -79,7 +79,7 @@ public:
   // From iComponent.
   virtual bool Initialize (iObjectRegistry*);
 
-  virtual void Create (csString path,csArray<Language> languages) ;
+  virtual void Create (csString path,csArray<MediaLanguage> languages) ;
 
   virtual csRef<iMediaContainer> LoadMedia 
     (const char * pFileName, const char *pDescription=0);

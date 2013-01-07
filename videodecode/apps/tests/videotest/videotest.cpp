@@ -20,14 +20,19 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "csutil/custom_new_disable.h"
 #include <CEGUI.h>
-#include <CEGUIWindowManager.h>
 #include <CEGUILogger.h>
+#include <CEGUIWindowManager.h>
 #include "csutil/custom_new_enable.h"
-#include <csutil/array.h>
-#include <csutil/nobjvec.h>
-#include <iostream>
 
-using namespace std;
+#include "cstool/genmeshbuilder.h"
+#include "cstool/materialbuilder.h"
+#include "csutil/array.h"
+#include "csutil/nobjvec.h"
+#include "imap/reader.h"
+#include "isndsys/ss_listener.h"
+#include "isndsys/ss_source.h"
+#include "isndsys/ss_stream.h"
+#include "iutil/document.h"
 
 VideoTest::VideoTest ()
 : DemoApplication ("CrystalSpace.VideoTest"), inWater (false)
@@ -96,9 +101,9 @@ bool VideoTest::Application ()
 {
   if (!csInitializer::RequestPlugins (object_reg,
     CS_REQUEST_VFS,
-    CS_REQUEST_PLUGIN ("crystalspace.vpl.loader", iMediaLoader),
-    CS_REQUEST_PLUGIN ("crystalspace.vpl.player", iMediaPlayer),
-    CS_REQUEST_PLUGIN ("crystalspace.vpl.parser",iLoaderPlugin),
+    CS_REQUEST_PLUGIN ("crystalspace.videodecode.loader", iMediaLoader),
+    CS_REQUEST_PLUGIN ("crystalspace.videodecode.player", iMediaPlayer),
+    CS_REQUEST_PLUGIN ("crystalspace.videodecode.parser",iLoaderPlugin),
     CS_REQUEST_PLUGIN ("crystalspace.cegui.wrapper", iCEGUI),
     CS_REQUEST_PLUGIN ("crystalspace.documentsystem.multiplexer", iDocumentSystem),
     CS_REQUEST_PLUGIN_TAG ("crystalspace.documentsystem.tinyxml", iDocumentSystem, 
@@ -156,7 +161,7 @@ bool VideoTest::Application ()
     printf ("%d language(s) in media container:\n", (int)video->GetLanguageCount ());
     for (size_t i=0; i<video->GetLanguageCount (); i++)
     {
-      Language lang;
+      MediaLanguage lang;
       if (video->GetLanguage(i,lang))
         printf("--> %i. language '%s' from file '%s'\n",(int)i+1,lang.name,lang.path);
     }

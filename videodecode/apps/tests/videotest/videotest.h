@@ -19,20 +19,17 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef __VIDEOPLAY_H__
 #define __VIDEOPLAY_H__
 
-#include "crystalspace.h"
-
+#include "cstool/demoapplication.h"
+#include "isndsys/ss_renderer.h"
 #include "ivaria/icegui.h"
-#include <iostream>
-
-#include <ivideodecode/medialoader.h>
-#include <ivideodecode/media.h>
-#include <ivideodecode/mediacontainer.h>
-#include <ivideodecode/mediaplayer.h>
+#include "ivideo/videodecode.h"
 
 struct iEngine;
 struct iObjectRegistry;
 struct iGraphics3D;
 struct iGraphics2D;
+
+using namespace CS::Material;
 
 /**
   * The main class that runs the video player demo application.

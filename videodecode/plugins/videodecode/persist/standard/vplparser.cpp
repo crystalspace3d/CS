@@ -1,7 +1,23 @@
+/*
+Copyright (C) 2010 by Alin Baciu
 
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free
+Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 #include "cssysdef.h"
 
-#include <ctype.h>
+//#include <ctype.h>
 
 #include "imap/ldrctxt.h"
 #include "imap/services.h"
@@ -16,17 +32,11 @@
 #include "iutil/stringarray.h"
 #include "ivaria/reporter.h"
 
-#include <cssysdef.h>
 #include "vplparser.h"
-#include <iutil/objreg.h>
-#include <iutil/plugin.h>
-#include <iostream>
-
-using namespace std;
 
 SCF_IMPLEMENT_FACTORY (csVplParser)
 
-static const char* msgidFactory = "crystalspace.vplparser";
+static const char* msgidFactory = "crystalspace.videodecode.parser";
 
 csVplParser::csVplParser (iBase* parent) :
 scfImplementationType (this, parent),
@@ -79,7 +89,7 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
         {
           csRef<iPluginManager> mgr=csQueryRegistry<iPluginManager> (_object_reg);
           csRef<iMediaLoader> m_pThOggLoader=csLoadPlugin<iMediaLoader> 
-            (mgr, "crystalspace.vpl.element.thogg");
+            (mgr, "crystalspace.videodecode.element.thogg");
           // Get the type of the media
           _mediaType = csString (child->GetAttributeValue ("type"));
 
@@ -124,7 +134,7 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                     {
                       // Store the info about the language.
                       // We want to store all the language streams.
-                      Language buff;
+                      MediaLanguage buff;
 
                       // Store the name
                       const char* name = child3->GetAttributeValue ("name");

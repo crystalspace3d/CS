@@ -183,7 +183,7 @@ public:
    */
   void Dump (const char* tag = 0);
 
-  virtual float GetFreeArea() const;
+  virtual float GetFreeArea() const
   {
     return regionArea - usedArea;
   }
@@ -238,13 +238,13 @@ public:
   }
 
   /// Get the maximal free space if the rectangle is not able to expand
-  float GetFreeAreaNoGrow() const;
+  float GetFreeAreaNoGrow() const
   {
     return MaxRectangles::GetFreeArea();
   }
 
   /// Get the maximal free space of the rectangle
-  float GetFreeArea() const;
+  float GetFreeArea() const
   {
     return maxRectArea - usedArea;
   }

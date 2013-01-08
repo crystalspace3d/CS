@@ -34,7 +34,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <theora/theoradec.h>
 #include "csutil/custom_new_enable.h"
 
-using namespace CS::Material;
+using namespace CS::Media;
 using namespace CS::Threading;
 
 #define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.element.thogg"

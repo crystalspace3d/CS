@@ -25,7 +25,8 @@ SCF_IMPLEMENT_FACTORY (csVplPlayer)
 
 csVplPlayer::csVplPlayer (iBase* parent) :
 scfImplementationType (this, parent),
-_object_reg (0)
+  _object_reg (0), _playing (false), _shouldLoop (true), _shouldStop (false),
+  _shouldUpdate (false), _shouldPlay (false)
 {
 }
 
@@ -43,9 +44,6 @@ csVplPlayer::~csVplPlayer ()
 bool csVplPlayer::Initialize (iObjectRegistry* r)
 {
   _object_reg = r;
-
-  _mediaFile=NULL;
-  _playing = false;
   return true;
 }
 
@@ -127,10 +125,10 @@ iSndSysStream* csVplPlayer::GetTargetAudio ()
 void csVplPlayer::SetLanguage (const char* identifier)
 {
   if (_mediaFile.IsValid ())
-    _mediaFile->SetLanguage (identifier);
+    _mediaFile->SetCurrentLanguage (identifier);
 }
 
-THREADED_CALLABLE_IMPL(csVplPlayer, Update)
+THREADED_CALLABLE_IMPL (csVplPlayer, Update)
 {
   while (_shouldUpdate)
   {
@@ -153,7 +151,7 @@ THREADED_CALLABLE_IMPL(csVplPlayer, Update)
           if (_shouldLoop) 
           {
             // Seek back to the beginning of the stream
-            Seek (0.0f);
+            SetPosition (0.0f);
             _mediaFile->Update ();
             _playing=true;
           }
@@ -173,9 +171,14 @@ THREADED_CALLABLE_IMPL(csVplPlayer, Update)
   return true;
 }
 
-void csVplPlayer::Loop (bool shouldLoop)
+void csVplPlayer::SetCyclic (bool cyclic)
 {
-  _shouldLoop = shouldLoop;
+  _shouldLoop = cyclic;
+}
+
+bool csVplPlayer::GetCyclic () const
+{
+  return _shouldLoop;
 }
 
 void csVplPlayer::Play () 
@@ -197,7 +200,7 @@ void csVplPlayer::Play ()
     _shouldStop=false;
     if (_mediaFile.IsValid ())
     {
-      _mediaFile->Seek (0.0f);
+      _mediaFile->SetPosition (0.0f);
       _mediaFile->OnPlay ();
     }
   }
@@ -221,11 +224,11 @@ void csVplPlayer::Stop ()
   }
 }
 
-void csVplPlayer::Seek (float time)
+void csVplPlayer::SetPosition (float time)
 {
   if (_mediaFile.IsValid ())
   {
-    _mediaFile->Seek (time);
+    _mediaFile->SetPosition (time);
     _playing = true;
   }
 }

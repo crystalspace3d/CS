@@ -27,7 +27,7 @@ struct iObjectRegistry;
 
 #define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.player"
 
-using namespace CS::Material;
+using namespace CS::Media;
 
 /**
   * This is the implementation for our API and
@@ -58,29 +58,30 @@ public:
 
   // From iMediaPlayer
   virtual void InitializePlayer (csRef<iMediaContainer> media, 
-                                 size_t cacheSize = 1) ;
-  virtual void SetActiveStream (int index) ;
-  virtual void RemoveActiveStream (int index) ;
-  virtual iTextureHandle* GetTargetTexture () ;
-  virtual iSndSysStream* GetTargetAudio () ;
+                                 size_t cacheSize = 1);
+  virtual void SetActiveStream (int index);
+  virtual void RemoveActiveStream (int index);
+  virtual iTextureHandle* GetTargetTexture ();
+  virtual iSndSysStream* GetTargetAudio ();
   THREADED_CALLABLE_DECL (csVplPlayer, Update, csThreadReturn, 
                           THREADED, false, false);
-  virtual void StartPlayer () ;
-  virtual void StopPlayer () ;
-  virtual void Loop (bool shouldLoop) ;
-  virtual void Play () ;
-  virtual void Pause () ;
-  virtual void Stop () ;
-  virtual void Seek (float time) ;
+  virtual void StartPlayer ();
+  virtual void StopPlayer ();
+  virtual void SetCyclic (bool shouldLoop);
+  virtual bool GetCyclic () const;
+  virtual void Play ();
+  virtual void Pause ();
+  virtual void Stop ();
+  virtual void SetPosition (float time);
   virtual float GetPosition () const;
   virtual float GetLength () const;
-  virtual bool IsPlaying () ;
-  virtual float GetAspectRatio () ;
+  virtual bool IsPlaying ();
+  virtual float GetAspectRatio ();
   virtual void SetLanguage (const char* identifier);
 
-  void WriteData () ;
+  void WriteData ();
 
-  void SwapBuffers();
+  void SwapBuffers ();
 
   iObjectRegistry* GetObjectRegistry () const
     { return _object_reg; }

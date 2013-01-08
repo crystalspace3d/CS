@@ -38,7 +38,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.element.thogg"
 
-using namespace CS::Material;
+using namespace CS::Media;
 using namespace CS::Threading;
 
 /**
@@ -108,7 +108,7 @@ public:
   virtual iSndSysStream* GetTargetAudio () ;
   virtual void Update ();
   virtual bool Eof () const;
-  virtual void Seek (float time) ;
+  virtual void SetPosition (float time) ;
   virtual float GetPosition () const;
   virtual float GetLength () const;
   virtual void SwapBuffers () ;
@@ -117,8 +117,8 @@ public:
   virtual float GetAspectRatio () ;
   virtual void DropFrame ();
   virtual size_t GetLanguageCount () const;
-  virtual bool GetLanguage (size_t index, MediaLanguage &lang) const;
-  virtual void SetLanguage (const char* identifier);
+  virtual const MediaLanguage& GetLanguage (size_t index) const;
+  virtual void SetCurrentLanguage (const char* identifier);
   virtual void OnPause ();
   virtual void OnPlay ();
   virtual void OnStop ();

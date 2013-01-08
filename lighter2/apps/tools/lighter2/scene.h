@@ -220,7 +220,7 @@ namespace lighter
   class SectorGroup : public csRefCount
   {
     public :
-      SectorGroup(csRef<Sector> sector,csRef<SectorProcessor> processor);
+      SectorGroup(Sector* sector, SectorProcessor* processor);
       
       void addSector(csRef<Sector> sector);
 

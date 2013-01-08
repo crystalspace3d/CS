@@ -499,7 +499,7 @@ namespace lighter
 
   //-------------------------------------------------------------------------
 
-  SectorGroup::SectorGroup(csRef<Sector> sector,csRef<SectorProcessor> processor)
+  SectorGroup::SectorGroup(Sector* sector, SectorProcessor* processor)
     :sectorProcessor(processor)
   {
     this->addSector(sector);
@@ -967,7 +967,8 @@ namespace lighter
       || (globalConfig.GetLighterProperties().indirectLightEngine == LIGHT_ENGINE_PHOTONMAPPER);
 
     //With the proxy lights we are able to know the adjacent sector
-    csRef<SectorProcessor> sectorProcessor = new SectorProcessor(globalLighter->objectRegistry);
+    csRef<SectorProcessor> sectorProcessor;
+    sectorProcessor.AttachNew (new SectorProcessor(globalLighter->objectRegistry));
     sectIt.Reset();
 
     while (sectIt.HasNext())

@@ -29,7 +29,7 @@ struct iObjectRegistry;
 struct iGraphics3D;
 struct iGraphics2D;
 
-using namespace CS::Material;
+using namespace CS::Media;
 
 /**
   * The main class that runs the video player demo application.

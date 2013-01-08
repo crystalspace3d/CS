@@ -111,7 +111,7 @@ void TheoraMediaContainer::SetActiveStream (size_t index)
   }
 
   // Store the activated stream in our references, for fast, full access
-  if ( strcmp(_media [index]->GetType (),"TheoraVideo") == 0)
+  if ( strcmp (_media [index]->GetType (),"TheoraVideo") == 0)
   {
     csRef<iVideoMedia> stream = scfQueryInterface<iVideoMedia> ( _media [index] ); 
     if (stream.IsValid ()) 
@@ -120,7 +120,7 @@ void TheoraMediaContainer::SetActiveStream (size_t index)
     }
   }
 
-  if ( strcmp(_media [index]->GetType (),"TheoraAudio") == 0)
+  if ( strcmp (_media [index]->GetType (),"TheoraAudio") == 0)
   {
     csRef<iAudioMedia> stream = scfQueryInterface<iAudioMedia> ( _media [index] ); 
     if (stream.IsValid ()) 
@@ -316,7 +316,7 @@ bool TheoraMediaContainer::Eof () const
   return _endOfFile;
 }
 
-void TheoraMediaContainer::Seek (float time)
+void TheoraMediaContainer::SetPosition (float time)
 {
   // Seeking is triggered and will be executed at the beginning of
   // the next update
@@ -363,7 +363,7 @@ void TheoraMediaContainer::DoSeek ()
   frame = _activeTheoraStream->SeekPage (targetFrame,frameCount,
                                          true,&_syncState,_fileSize);
   if (frame != -1)
-    _activeTheoraStream->SeekPage (std::max((long)0,frame),frameCount,
+    _activeTheoraStream->SeekPage (std::max ((long)0,frame),frameCount,
                                    false,&_syncState,_fileSize);
 
   // TODO: In case audio from video file is implemented later on, seek to this time
@@ -396,8 +396,8 @@ void TheoraMediaContainer::DoSeek ()
     // Ortherwise, seek to the required position
     else
     {
-      if (_sndstream->GetPauseState() == CS_SNDSYS_STREAM_PAUSED)
-        _sndstream->Unpause();
+      if (_sndstream->GetPauseState () == CS_SNDSYS_STREAM_PAUSED)
+        _sndstream->Unpause ();
       _sndstream->SetPosition (_timeToSeekTo*_sndstream->GetRenderedFormat ()->Freq);
     }
   }
@@ -413,7 +413,7 @@ void TheoraMediaContainer::AutoActivateStreams ()
 
       for (size_t j=0;j<_activeStreams.GetSize ();j++)
       {
-        if (strcmp(_media[i]->GetType (), _media[_activeStreams[j]]->GetType ())==0)
+        if (strcmp (_media[i]->GetType (), _media[_activeStreams[j]]->GetType ())==0)
         {
           found = true;
           break;
@@ -543,19 +543,15 @@ float TheoraMediaContainer::GetAspectRatio ()
 
 size_t TheoraMediaContainer::GetLanguageCount () const
 {
-  return _languages.GetSize();
+  return _languages.GetSize ();
 }
 
-bool TheoraMediaContainer::GetLanguage (size_t index, MediaLanguage &lang) const
+const MediaLanguage& TheoraMediaContainer::GetLanguage (size_t index) const
 {
-  if (index >= _languages.GetSize())
-    return false;
-  
-  lang = _languages[index];
-  return true;
+  return _languages[index];
 }
 
-void TheoraMediaContainer::SetLanguage (const char* identifier)
+void TheoraMediaContainer::SetCurrentLanguage (const char* identifier)
 {
   bool found = false;
 

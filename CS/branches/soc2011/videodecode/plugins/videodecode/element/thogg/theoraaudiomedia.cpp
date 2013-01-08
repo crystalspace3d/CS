@@ -27,7 +27,7 @@ SCF_IMPLEMENT_FACTORY (csTheoraAudioMedia)
 
 csTheoraAudioMedia::csTheoraAudioMedia (iBase* parent) 
 : scfImplementationType (this, parent),
-  _object_reg (0)
+  _object_reg (0), _cacheSize (1)
 {
 }
 
@@ -198,7 +198,7 @@ void csTheoraAudioMedia::DropFrame ()
     _cache.PopTop ();
 }
 
-void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState)
+void csTheoraAudioMedia::SetPosition (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState)
 {
   ogg_stream_reset (&_streamState);
   vorbis_synthesis_restart (&_dspState);
@@ -224,7 +224,7 @@ void csTheoraAudioMedia::Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_s
           if (len > 0)
             break;
 
-          //ogg_stream_pagein(&mInfo->VorbisStreamState,&mInfo->OggPage);
+          //ogg_stream_pagein (&mInfo->VorbisStreamState,&mInfo->OggPage);
           time=g_time;
           break;
         }
@@ -252,7 +252,7 @@ void csTheoraAudioMedia::InitializeStream (const char* name,  ogg_stream_state &
                                            FILE *source)
 {
   _name = new char[strlen (name)];
-  strcpy(_name, name);
+  strcpy (_name, name);
   memcpy (&_streamState,&state,sizeof (state));
   memcpy (&_streamInfo,&info,sizeof (info));
   memcpy (&_streamComments,&comments,sizeof (comments));

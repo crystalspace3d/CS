@@ -31,7 +31,7 @@ struct iPluginManager;
 struct iSyntaxService;
 struct iObjectRegistry;
 
-using namespace CS::Material;
+using namespace CS::Media;
 
 /**
   * This is the implementation for our API and

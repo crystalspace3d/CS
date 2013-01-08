@@ -32,7 +32,7 @@ SCF_IMPLEMENT_FACTORY (csThOggLoader)
 
 csThOggLoader::csThOggLoader (iBase* parent) :
 scfImplementationType (this, parent),
-_object_reg(0)
+_object_reg (0)
 {
 }
 
@@ -57,7 +57,7 @@ void csThOggLoader::Create (csString path,csArray<MediaLanguage> languages)
 csRef<iMediaContainer> csThOggLoader::LoadMedia (const char* pFileName, 
                                                  const char *pDescription)
 {
-  printf("\nLoading media file '%s'\n",pFileName);
+  printf ("\nLoading media file '%s'\n",pFileName);
 
   _g3d=csQueryRegistry<iGraphics3D> (_object_reg);
   _texManager = _g3d->GetTextureManager ();
@@ -168,10 +168,10 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
           continue;
 
         csString name (_path);
-        name.Append("_videostream");
+        name.Append ("_videostream");
         csRef<csTheoraVideoMedia> videoStream;
         videoStream.AttachNew ( new csTheoraVideoMedia ((iBase*)this) );
-        videoStream->InitializeStream (name.GetData(), test, ti, tc, ts, _infile, _texManager);
+        videoStream->InitializeStream (name.GetData (), test, ti, tc, ts, _infile, _texManager);
         container->AddMedia (videoStream);
         foundVideo = true;
 
@@ -189,11 +189,11 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
           /*
           audioCnt++;
           csString name (_path);
-          name.Append("_audiostream_").Append(audioCnt);
+          name.Append ("_audiostream_").Append (audioCnt);
 
           csRef<csTheoraAudioMedia> audioStream;
           audioStream.AttachNew ( new csTheoraAudioMedia ((iBase*)this) ); 
-          audioStream->InitializeStream (name.GetData(), test, _vi, _vc, _infile);
+          audioStream->InitializeStream (name.GetData (), test, _vi, _vc, _infile);
           container->AddMedia (audioStream);
 
           // Reinitialize Vorbis structures for next stream, if there is one
@@ -298,7 +298,7 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
             {
 
               vorbis_comment_clear (&_vc);
-              vorbis_info_clear(&_vi);
+              vorbis_info_clear (&_vi);
               times++;
               break;
             }

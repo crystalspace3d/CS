@@ -26,7 +26,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 struct iObjectRegistry;
 
-using namespace CS::Material;
+using namespace CS::Media;
 
 /**
   * This is the implementation for our API and

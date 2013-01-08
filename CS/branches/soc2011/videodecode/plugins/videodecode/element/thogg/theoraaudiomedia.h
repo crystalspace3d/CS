@@ -34,7 +34,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "vorbis/codec.h"
 #include "csutil/custom_new_enable.h"
 
-using namespace CS::Material;
+using namespace CS::Media;
 using namespace CS::SndSys;
 
 class SndSysTheoraStream;
@@ -113,7 +113,7 @@ public:
   virtual void GetAudioTarget (csRef<iSndSysStream> &stream);
 
   inline void SetLength (float length)  { this->_length=length; }
-  void Seek (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState);
+  void SetPosition (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState);
   // An easy way to initialize the stream
   void InitializeStream (const char* name, ogg_stream_state &state, 
                          vorbis_info &info, vorbis_comment &comments, 

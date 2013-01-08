@@ -51,7 +51,7 @@ void VideoTest::PrintHelp ()
 void VideoTest::Frame ()
 {
   // Draw the room
-  view->Draw ();
+  //view->Draw ();
   mediaPlayer->StartPlayer ();
 
   if (updateSeeker)
@@ -62,17 +62,15 @@ void VideoTest::Frame ()
     seeker->setScrollPosition (videoPos);
   }
 
-  // Default behavior from DemoApplication
+  // Draw the 3D scene
   DemoApplication::Frame ();
 
-  // In order to be able to draw 2D, it seems you need to do it after DemoApplication::Frame ()
-  // Not really major, but might help when drawing the video on-screen
-
+  // Display the video image on top of the 3D scene
   int w, h;
   logoTex->GetOriginalDimensions (w, h);
   int screenW = g2d->GetWidth ();
 
-  // Width of the logo, as a fraction of screen width
+  // Width of the image, as a fraction of the screen width
   const float widthFraction = 0.5f;
   const int width = (int)screenW * widthFraction;
   const int height = width * h / w;
@@ -141,27 +139,28 @@ bool VideoTest::Application ()
   vfs->ChDir ("/videodecode/");
 
   // Get the loader and load the video
+  csString videoName = "vid422.xml";
   csRef<iMediaLoader> vplLoader = csQueryRegistry<iMediaLoader> (object_reg);
-  csRef<iMediaContainer> video = vplLoader->LoadMedia ("vid422.xml");
+  csRef<iMediaContainer> video = vplLoader->LoadMedia (videoName);
 
   if (!video)
-    return false;
+    return ReportError ("Failed to load the video file %s!",
+			CS::Quote::Single (videoName.GetData ()));
 
   // Display media content
   if (video.IsValid ())
   {
-    printf ("%d stream(s) in media container:\n", (int)video->GetMediaCount ());
-    for (size_t i=0; i<video->GetMediaCount (); i++)
+    printf ("%d stream(s) in media container:\n", (int) video->GetMediaCount ());
+    for (size_t i = 0; i < video->GetMediaCount (); i++)
     {
       csRef<iMedia> media = video->GetMedia (i);
-      printf("--> %i. '%s' of type '%s'\n",(int)i+1,media->GetName(),media->GetType());
+      printf("--> %i. '%s' of type '%s'\n",(int) i+1, media->GetName (), media->GetType ());
     }
-    printf ("%d language(s) in media container:\n", (int)video->GetLanguageCount ());
-    for (size_t i=0; i<video->GetLanguageCount (); i++)
+    printf ("%d language(s) in media container:\n", (int) video->GetLanguageCount ());
+    for (size_t i = 0; i < video->GetLanguageCount (); i++)
     {
-      MediaLanguage lang;
-      if (video->GetLanguage(i,lang))
-        printf("--> %i. language '%s' from file '%s'\n",(int)i+1,lang.name,lang.path);
+      MediaLanguage lang = video->GetLanguage (i);
+      printf("--> %i. language '%s' from file '%s'\n", (int) i+1, lang.name, lang.path);
     }
     printf("\n");
   }
@@ -179,7 +178,7 @@ bool VideoTest::Application ()
   audioStream = mediaPlayer->GetTargetAudio ();
 
   // Start the player
-  mediaPlayer->Loop (false);
+  mediaPlayer->SetCyclic (false);
 
   if (audioStream.IsValid () && sndrenderer)
   {
@@ -222,7 +221,7 @@ void VideoTest::InitializeCEGUI ()
   vfs->ChDir ("/cegui/");
 
   // Load the ice skin (which uses Falagard skinning system)
-  cegui->GetSchemeManagerPtr ()->create("ice.scheme");
+  cegui->GetSchemeManagerPtr ()->create ("ice.scheme");
 
   cegui->GetSystemPtr ()->setDefaultMouseCursor ("ice", "MouseArrow");
 
@@ -360,15 +359,7 @@ bool VideoTest::OnLoopToggle (const CEGUI::EventArgs& e)
 {
   CEGUI::RadioButton * radioButton1 = static_cast<CEGUI::RadioButton*> 
     (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Loop"));
-
-  if (radioButton1->isSelected ())
-  {
-    mediaPlayer->Loop (true);
-  }
-  else
-  {
-    mediaPlayer->Loop (false);
-  }
+  mediaPlayer->SetCyclic (radioButton1->isSelected ());
   return true;
 }
 bool VideoTest::OnSeekingStart (const CEGUI::EventArgs&)
@@ -382,7 +373,7 @@ bool VideoTest::OnSeekingEnd (const CEGUI::EventArgs&)
   CEGUI::Scrollbar * seeker = 
     static_cast<CEGUI::Scrollbar*> (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Seek"));
 
-  mediaPlayer->Seek (seeker->getScrollPosition ());
+  mediaPlayer->SetPosition (seeker->getScrollPosition ());
   updateSeeker=true;
   return true;
 }

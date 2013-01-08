@@ -134,7 +134,7 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                     {
                       // Store the info about the language.
                       // We want to store all the language streams.
-                      MediaLanguage buff;
+                      //MediaLanguage buff;
 
                       // Store the name
                       const char* name = child3->GetAttributeValue ("name");
@@ -145,8 +145,8 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                         return 0;
                       }
 
-                      buff.name = new char[strlen (name)];
-                      strcpy (buff.name,name);
+                      //buff.name = new char[strlen (name)];
+                      //strcpy (buff.name,name);
 
                       // and the path
                       const char* langPath = child3->GetAttributeValue ("path");
@@ -157,9 +157,10 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                         return 0;
                       }
 
-                      buff.path = new char[strlen (langPath)];
-                      strcpy (buff.path,langPath);
+                      //buff.path = new char[strlen (langPath)];
+                      //strcpy (buff.path,langPath);
 
+		      MediaLanguage buff (name, langPath);
                       _languages.Push (buff);
                     }
                   }

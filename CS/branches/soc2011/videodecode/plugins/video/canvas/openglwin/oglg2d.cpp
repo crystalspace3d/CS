@@ -94,6 +94,7 @@ csGraphics2DOpenGL::csGraphics2DOpenGL (iBase *iParent) :
   scfImplementationType (this, iParent),
   m_nGraphicsReady (true),
   m_hWnd (0),
+  primaryMonitor (0),
   modeSwitched (true),
   customIcon (0),
   transparencyRequested (false),
@@ -379,13 +380,9 @@ bool csGraphics2DOpenGL::Open ()
   m_bActivated = true;
 
   RECT wndRect;
-  int wwidth = fbWidth;
-  int wheight = fbHeight;
   DWORD exStyle = 0;
   DWORD style = WS_POPUP | WS_SYSMENU;
   windowModeStyle = WS_CAPTION;
-  int xpos = 0;
-  int ypos = 0;
   if (FullScreen)
   {
     /*exStyle |= WS_EX_TOPMOST;*/
@@ -568,7 +565,6 @@ void csGraphics2DOpenGL::Close (void)
 
 void csGraphics2DOpenGL::Print (csRect const* /*area*/)
 {
-  glFlush();
   SwapBuffers(hDC);
 }
 
@@ -731,9 +727,10 @@ void csGraphics2DOpenGL::AllowResize (bool iAllow)
   }
 }
 
-bool csGraphics2DOpenGL::Resize (int width, int height)
+bool csGraphics2DOpenGL::ForceCanvasResize (int width, int height)
 {
-  if (!csGraphics2DGLCommon::Resize (width, height)) return false;
+  if (!CS::PluginCommon::GL::CanvasCommonBase::ForceCanvasResize (width, height))
+    return false;
 
   if (is_open && !FullScreen)
   {
@@ -752,7 +749,7 @@ bool csGraphics2DOpenGL::Resize (int width, int height)
       AllowResizing = false;
 
       SetWindowPos (m_hWnd, 0,
-    		    wndRect.left, wndRect.right,
+    		    wndRect.left, wndRect.top,
 		    wndRect.right - wndRect.left, wndRect.bottom - wndRect.top,
 		    SWP_NOZORDER);
       
@@ -825,7 +822,7 @@ LRESULT CALLBACK csGraphics2DOpenGL::WindowProc (HWND hWnd, UINT message,
         {
 	  RECT R;
 	  GetClientRect (hWnd, &R);
-	  This->Resize (R.right - R.left, R.bottom - R.top);
+	  This->ResizeNotify (R.right - R.left, R.bottom - R.top);
         }
       }
       break;
@@ -977,15 +974,83 @@ void csGraphics2DOpenGL::SwitchDisplayMode (bool userMode)
   refreshRate = curdmode.dmDisplayFrequency;
 }
 
+static BOOL CALLBACK GrabPrimaryMonitor (HMONITOR monitor, HDC, LPRECT, LPARAM data)
+{
+  *(reinterpret_cast<HMONITOR*> (data)) = monitor;
+  return false;
+}
+
+csRect csGraphics2DOpenGL::GetWorkspaceRect ()
+{
+  // Monitor used to get the workspace.
+  HMONITOR workspaceMonitor;
+  if (!m_hWnd)
+  {
+    // No window yet: use primary monitor
+    if (!primaryMonitor)
+    {
+      EnumDisplayMonitors (NULL, NULL, &GrabPrimaryMonitor,
+                           reinterpret_cast<LPARAM> (&primaryMonitor));
+    }
+    workspaceMonitor = primaryMonitor;
+  }
+  else
+  {
+    workspaceMonitor = MonitorFromWindow (m_hWnd, MONITOR_DEFAULTTOPRIMARY);
+  }
+  MONITORINFO info;
+  memset (&info, 0, sizeof (info));
+  info.cbSize = sizeof (info);
+  if (!GetMonitorInfo (workspaceMonitor, &info))
+  {
+    return csRect (0, 0, GetSystemMetrics (SM_CXSCREEN),
+                   GetSystemMetrics (SM_CXSCREEN));
+  }
+  return csRect (info.rcWork.left, info.rcWork.top,
+                 info.rcWork.right, info.rcWork.bottom);
+}
+
 void csGraphics2DOpenGL::ComputeDefaultRect (RECT& windowRect, LONG style, LONG exStyle)
 {
+  csRect workspace (GetWorkspaceRect ());
   RECT clientRect;
-  clientRect.left = (GetSystemMetrics (SM_CXSCREEN) - fbWidth) / 2;
-  clientRect.top = (GetSystemMetrics (SM_CYSCREEN) - fbHeight) / 2;
-  clientRect.right = clientRect.left + fbWidth;
-  clientRect.bottom = clientRect.top + fbHeight;
+  clientRect.left = 0;
+  clientRect.top = 0;
+  clientRect.right = fbWidth;
+  clientRect.bottom = fbHeight;
   AdjustWindowRectEx (&clientRect, style, false, exStyle);
-  windowRect = clientRect;
+  int wndW (clientRect.right - clientRect.left), wndH (clientRect.bottom - clientRect.top);
+  windowRect.left = workspace.xmin + (workspace.Width() - wndW) / 2;
+  windowRect.top = workspace.ymin + (workspace.Height() - wndH) / 2;
+  windowRect.right = windowRect.left + wndW;
+  windowRect.bottom = windowRect.top + wndH;
+}
+
+bool csGraphics2DOpenGL::GetWorkspaceDimensions (int& width, int& height)
+{
+  csRect workspace (GetWorkspaceRect ());
+  width = workspace.Width();
+  height = workspace.Height();
+  return true;
+}
+
+bool csGraphics2DOpenGL::AddWindowFrameDimensions (int& width, int& height)
+{
+  RECT clientRect;
+  clientRect.left = 0;
+  clientRect.top = 0;
+  clientRect.right = width;
+  clientRect.bottom = height;
+  DWORD style (WS_POPUP), exStyle (0);
+  if (!FullScreen)
+  {
+    style |= WS_CAPTION;
+    if (AllowResizing) style |= WS_THICKFRAME;
+  }
+  AdjustWindowRectEx (&clientRect, style, false, exStyle);
+  width = clientRect.right - clientRect.left;
+  height = clientRect.bottom - clientRect.top;
+  return true;
 }
 
 bool csGraphics2DOpenGL::IsWindowTransparencyAvailable()

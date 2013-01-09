@@ -33,6 +33,7 @@
 #include "csgeom/vector3.h"
 #include "csgeom/math3d.h"
 #include "csgfx/trianglestream.h"
+#include "csgfx/imagememory.h"
 #include "cstool/collider.h"
 #include "cstool/csview.h"
 #include "cstool/enginetools.h"
@@ -1574,34 +1575,6 @@ static inline void BugplugBox (iGraphics2D* G2D,
   G2D->DrawLine (x, y+h, x, y, bordercolor);
 }
 
-static inline void DrawBox3D (iGraphics3D* G3D, 
-                              const csBox3& box,
-                              const csReversibleTransform& tr,
-                              int color)
-{
-  csVector3 vxyz = tr * box.GetCorner (CS_BOX_CORNER_xyz);
-  csVector3 vXyz = tr * box.GetCorner (CS_BOX_CORNER_Xyz);
-  csVector3 vxYz = tr * box.GetCorner (CS_BOX_CORNER_xYz);
-  csVector3 vxyZ = tr * box.GetCorner (CS_BOX_CORNER_xyZ);
-  csVector3 vXYz = tr * box.GetCorner (CS_BOX_CORNER_XYz);
-  csVector3 vXyZ = tr * box.GetCorner (CS_BOX_CORNER_XyZ);
-  csVector3 vxYZ = tr * box.GetCorner (CS_BOX_CORNER_xYZ);
-  csVector3 vXYZ = tr * box.GetCorner (CS_BOX_CORNER_XYZ);
-  float fov = G3D->GetPerspectiveAspect ();
-  G3D->DrawLine (vxyz, vXyz, fov, color);
-  G3D->DrawLine (vXyz, vXYz, fov, color);
-  G3D->DrawLine (vXYz, vxYz, fov, color);
-  G3D->DrawLine (vxYz, vxyz, fov, color);
-  G3D->DrawLine (vxyZ, vXyZ, fov, color);
-  G3D->DrawLine (vXyZ, vXYZ, fov, color);
-  G3D->DrawLine (vXYZ, vxYZ, fov, color);
-  G3D->DrawLine (vxYZ, vxyZ, fov, color);
-  G3D->DrawLine (vxyz, vxyZ, fov, color);
-  G3D->DrawLine (vxYz, vxYZ, fov, color);
-  G3D->DrawLine (vXyz, vXyZ, fov, color);
-  G3D->DrawLine (vXYz, vXYZ, fov, color);
-}
-
 bool csBugPlug::HandleFrame (iEvent& /*event*/)
 {
   SetupPlugin ();
@@ -1683,7 +1656,7 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
     iRenderView* rview = shadow->GetView();
     iCamera* cam = rview->GetOriginalCamera();
     csTransform tr_w2c = cam->GetTransform ();
-    float fov = G3D->GetPerspectiveAspect ();
+    const CS::Math::Matrix4& projection (cam->GetProjectionMatrix ());
     bool do_bbox, do_rad, do_norm, do_skel;
     shadow->GetShowOptions (do_bbox, do_rad, do_norm, do_skel);
     G3D->BeginDraw (CSDRAW_2DGRAPHICS);
@@ -1705,14 +1678,17 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
 	  bbox_color = G3D->GetDriver2D ()->FindRGB (255, 0, 255);
           for (int n = 0; n < rmesh_num; n++)
           {
-            DrawBox3D (G3D, rmeshes[n]->bbox, tr_o2c, bbox_color);
+            G3D->GetDriver2D ()->DrawBoxProjected
+	      (rmeshes[n]->bbox, tr_o2c,
+	       G3D->GetProjectionMatrix (), bbox_color);
           }
         }
         
         bbox_color = G3D->GetDriver2D ()->FindRGB (0, 255, 255);
         const csBox3& bbox = selected_meshes[k]->GetMeshObject ()
 	  ->GetObjectModel ()->GetObjectBoundingBox ();
-	DrawBox3D (G3D, bbox, tr_o2c, bbox_color);
+	G3D->GetDriver2D ()->DrawBoxProjected
+	  (bbox, tr_o2c, G3D->GetProjectionMatrix (), bbox_color);
       }
       if (do_rad)
       {
@@ -1721,13 +1697,12 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
         csVector3 r, center;
         selected_meshes[k]->GetMeshObject ()->GetObjectModel ()
 		->GetRadius (radius,center);
-        csVector3 trans_o = tr_o2c * center;
         r.Set (radius, 0, 0);
-        G3D->DrawLine (trans_o-r, trans_o+r, fov, rad_color);
+        G2D->DrawLineProjected (tr_o2c * (center-r), tr_o2c * (center+r), projection, rad_color);
         r.Set (0, radius, 0);
-        G3D->DrawLine (trans_o-r, trans_o+r, fov, rad_color);
+        G2D->DrawLineProjected (tr_o2c * (center-r), tr_o2c * (center+r), projection, rad_color);
         r.Set (0, 0, radius);
-        G3D->DrawLine (trans_o-r, trans_o+r, fov, rad_color);
+        G2D->DrawLineProjected (tr_o2c * (center-r), tr_o2c * (center+r), projection, rad_color);
       }
       if (do_norm)
       {
@@ -1791,16 +1766,16 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
                   (fabsf (n.Norm() - 1.0f) < EPSILON) ? norm_color : denorm_color;
                 // @@@ FIXME: Should perhaps be configurable
                 const float normScale = 0.5f; 
-                G3D->DrawLine (p, p+n*normScale, fov, color);
+                G2D->DrawLineProjected (p, p+n*normScale, projection, color);
                 if (tangents != 0)
                 {
                   csVector3 tng = tr_o2c.Other2ThisRelative ((*tangents)[tri[t]]);
-                  G3D->DrawLine (p, p+tng*normScale, fov, tang_color);
+                  G2D->DrawLineProjected (p, p+tng*normScale, projection, tang_color);
                 }
                 if (bitangents != 0)
                 {
                   csVector3 bit = tr_o2c.Other2ThisRelative ((*bitangents)[tri[t]]);
-                  G3D->DrawLine (p, p+bit*normScale, fov, bitang_color);
+                  G2D->DrawLineProjected (p, p+bit*normScale, projection, bitang_color);
                 }
               }
             }
@@ -1876,7 +1851,7 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
           csVector3 endGlobal = v + q.Rotate (endLocal);
           csVector3 ge = tr_o2c * endGlobal;
 
-          G3D->DrawLine (gs, ge, fov, bone_color);
+          G2D->DrawLineProjected (gs, ge, projection, bone_color);
         }
       }
       if (show_polymesh != BUGPLUG_POLYMESH_NO)
@@ -1936,9 +1911,9 @@ bool csBugPlug::HandleFrame (iEvent& /*event*/)
 	  for (i = 0 ; i < pocount ; i++)
 	  {
 	    csTriangle& tri = po[i];
-            G3D->DrawLine (vtt[tri.a], vtt[tri.c], fov, pm_color);
-            G3D->DrawLine (vtt[tri.b], vtt[tri.a], fov, pm_color);
-            G3D->DrawLine (vtt[tri.c], vtt[tri.b], fov, pm_color);
+            G2D->DrawLineProjected (vtt[tri.a], vtt[tri.c], projection, pm_color);
+            G2D->DrawLineProjected (vtt[tri.b], vtt[tri.a], projection, pm_color);
+            G2D->DrawLineProjected (vtt[tri.c], vtt[tri.b], projection, pm_color);
 	  }
           delete[] vtt;
         }
@@ -2483,8 +2458,7 @@ void csBugPlug::Dump (iSector* sector)
   {
     iMeshWrapper* mesh = sector->GetMeshes ()->Get (i);
     const char* n = mesh->QueryObject ()->GetName ();
-    Report (CS_REPORTER_SEVERITY_DEBUG, "        Mesh %s (%08p)",
-    	CS::Quote::Single (n ? n : "?"), mesh);
+    Dump (8, mesh);
   }
 }
 
@@ -2493,6 +2467,18 @@ void csBugPlug::Dump (int indent, iMeshWrapper* mesh)
   const char* mn = mesh->QueryObject ()->GetName ();
   Report (CS_REPORTER_SEVERITY_DEBUG, "%*s    Mesh wrapper %s (%08p)", 
     indent, "", CS::Quote::Single (mn ? mn : "?"), mesh);
+
+  const csFlags& flags = mesh->GetFlags ();
+  csString strFlags;
+  if (flags.Check (CS_ENTITY_DETAIL)) strFlags += "DETAIL ";
+  if (flags.Check (CS_ENTITY_CAMERA)) strFlags += "CAMERA ";
+  if (flags.Check (CS_ENTITY_INVISIBLEMESH)) strFlags += "INVISIBLEMESH ";
+  if (flags.Check (CS_ENTITY_NOHITBEAM)) strFlags += "NOHITBEAM ";
+  if (flags.Check (CS_ENTITY_NOSHADOWS)) strFlags += "NOSHADOWS ";
+  if (flags.Check (CS_ENTITY_NOLIGHTING)) strFlags += "NOLIGHTING ";
+  if (flags.Check (CS_ENTITY_NOCLIP)) strFlags += "NOCLIP ";
+  Report (CS_REPORTER_SEVERITY_DEBUG, "%*s        Flags: %s", indent, "", strFlags.GetData ());
+
   iMeshObject* obj = mesh->GetMeshObject ();
   if (!obj)
   {
@@ -2581,20 +2567,12 @@ void csBugPlug::Dump (int indent, const csPlane3& p)
 
 void csBugPlug::Dump (int indent, const csBox2& b)
 {
-  char ind[255];
-  int i;
-  for (i = 0 ; i < indent ; i++) ind[i] = ' ';
-  ind[i] = 0;
   Report (CS_REPORTER_SEVERITY_DEBUG, "%*s(%2.2f,%2.2f)-(%2.2f,%2.2f)", indent, "",
   	b.MinX (), b.MinY (), b.MaxX (), b.MaxY ());
 }
 
 void csBugPlug::Dump (int indent, const csBox3& b)
 {
-  char ind[255];
-  int i;
-  for (i = 0 ; i < indent ; i++) ind[i] = ' ';
-  ind[i] = 0;
   Report (CS_REPORTER_SEVERITY_DEBUG, "%*s(%2.2f,%2.2f,%2.2f)-(%2.2f,%2.2f,%2.2f)",
   	indent, "", b.MinX (), b.MinY (), b.MinZ (), b.MaxX (), b.MaxY (), b.MaxZ ());
 }
@@ -2773,12 +2751,21 @@ iMaterialWrapper* csBugPlug::FindColor (float r, float g, float b)
   name.Format ("mat%d,%d,%d\n", int (r*255), int (g*255), int (b*255));
   iMaterialWrapper* mw = Engine->FindMaterial (name);
   if (mw) return mw;
-  // Create a new material.
-  csRef<iMaterial> mat (Engine->CreateBaseMaterial (0));
 
-  // Attach a new SV to it
-  csShaderVariable* var = mat->GetVariableAdd (stringSetSvName->Request (CS_MATERIAL_VARNAME_FLATCOLOR));
-  var->SetValue (csColor (r,g,b));
+  iTextureManager* texman = G3D->GetTextureManager();
+  csRGBpixel singlePixel (int (r * 255), int (g * 255), int (b * 255), 255);
+  csRef<iImage> image;
+  int Format = texman ? texman->GetTextureFormat () : CS_IMGFMT_TRUECOLOR;
+  image.AttachNew (new csImageMemory (1, 1, (const void*)&singlePixel, Format));
+  iTextureWrapper* tex = Engine->GetTextureList ()->FindByName (name);
+  if (tex)
+    tex->SetImageFile (image);
+  else
+    tex = Engine->GetTextureList ()->NewTexture (image);
+  tex->QueryObject ()->SetName (name);
+
+  // Create a new material.
+  csRef<iMaterial> mat (Engine->CreateBaseMaterial (tex));
 
   mw = Engine->GetMaterialList ()->NewMaterial (mat, name);
   return mw;

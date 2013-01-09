@@ -82,12 +82,12 @@ public:
   virtual void SetName (const char* name) = 0;
   
   /**
-   * Get the 'bone to socket transform' of the socket
+   * Get the 'bone to socket' transform of the socket
    */
   virtual const csReversibleTransform& GetTransform () const = 0;
 
   /**
-   * Set the 'bone to socket transform' of the socket
+   * Set the 'bone to socket' transform of the socket
    */
   virtual void SetTransform (csReversibleTransform& transform) = 0;
   
@@ -174,15 +174,6 @@ public:
  *
  * These meshes are animated by the skeletal animation system (see
  * CS::Animation::iSkeletonFactory) and by morphing (see CS::Mesh::iAnimatedMeshMorphTarget).
- * 
- * To improve the morphing process, mesh factories are segmented into subsets. All
- * vertices of a subset are influenced by the same morph targets (i.e. the offsets
- * corresponding to these vertices in the morph targets are non-zero). All null 
- * entries of a morph target are removed from the offset buffer. Thus, segmentation 
- * into subsets improves memory usage and computational resources since morph targets 
- * are only applied to a vertex when they contain deformations. Subset with index 0
- * regroups the vertices which are not influenced by any morph target and
- * consequently will never be morphed.
  */
 struct iAnimatedMeshFactory : public virtual iBase
 {
@@ -328,19 +319,21 @@ struct iAnimatedMeshFactory : public virtual iBase
    */
   virtual bool SetColors (iRenderBuffer* renderBuffer) = 0;
 
+  /** @} */
+
   /**
    * Update the mesh after modifying its geometry.
-   * It generates automatically a segmentation of the mesh and
-   * morph targets into subsets to optimize the morphing process.
    *
-   * \warning Invalidate() must be called once all morph targets
-   *   have been created on the animated mesh factory.
+   * Many internal data is updated or pre-computed during that process,
+   * such as the bone bounding boxes and the mesh subsets.
+   *
+   * \warning You must call this method whenever you changed the bone mapping,
+   * the size of the vertex buffers, the subsets, the bone bounding boxes or
+   * the list of morph targets.
    */
   virtual void Invalidate () = 0;
 
-  /** @} */
-
-  /**\name Bone interface and influence
+  /**\name Skeleton
   * @{ */
 
   /**
@@ -354,6 +347,11 @@ struct iAnimatedMeshFactory : public virtual iBase
    * Get the skeleton factory associated with the mesh factory.
    */
   virtual CS::Animation::iSkeletonFactory* GetSkeletonFactory () const = 0;
+
+  /** @} */
+
+  /**\name Bone influences
+  * @{ */
 
   /**
    * Set the requested number of bone influences per vertex.
@@ -419,7 +417,7 @@ struct iAnimatedMeshFactory : public virtual iBase
   /**
    * Create a new socket
    * \param bone ID of the bone to connect the socket
-   * \param transform Initial transform
+   * \param transform Initial transform of the socket, in 'bone to socket' coordinate
    * \param name Name of the socket, optional
    */
   virtual void CreateSocket (CS::Animation::BoneID bone, 
@@ -457,19 +455,36 @@ struct iAnimatedMeshFactory : public virtual iBase
   * @{ */
 
   /**
-   * Set the bounding box of the given bone, in bone space. Bone bounding boxes 
-   * are used to update the global bounding box of the animated mesh factory and 
-   * to speed up hitbeam tests. If you don't specify a bounding box for a bone,
-   * a bounding box is automatically generated: it includes all the mesh vertices 
-   * which have a non zero weight for this bone.
-   * You must call Invalidate() after modifying it.
-   * \param bone The ID of the bone.
-   * \param box The bounding box of the given bone, in bone space.
+   * Set the bounding box of the given bone. Bone bounding boxes are used to update
+   * the global bounding box of the animated mesh, and to speed up hitbeam tests. Each
+   * bounding box should enclose all the vertices that are influenced by the given bone,
+   * even when the morph targets are active.
+   *
+   * If you don't specify any bounding boxes, then they will be generated automatically
+   * by taking all the vertices that have a bone influence bigger than zero.
+   *
+   * If you specify at least one bounding box, then no other boxes will be used at all.
+   * You should therefore either declare no boxes at all, or all the boxes that might be
+   * needed, not partial definition.
+   *
+   * \warning You must call Invalidate() after modifying it in order to recompute the
+   * global bounding box of the factory..
+   *
+   * \param bone The ID of the bone. It is valid to use CS::Animation::InvalidBoneID
+   * as a parameter, in this case it will refer to the bounding box of the vertices that
+   * aren't influenced by any bone.
+   * \param box The bounding box of the given bone. The corners of the box are expressed
+   * in bone space.
    */
   virtual void SetBoneBoundingBox (CS::Animation::BoneID bone, const csBox3& box) = 0; 
 
   /**
-   * Get the bounding box of the bone with the given ID, in bone space.
+   * Get the bounding box of the bone with the given ID. The corners of the box
+   * are expressed in bone space.
+   *
+   * It is valid to use CS::Animation::InvalidBoneID as a parameter, in this case
+   * it will return the bounding box of the vertices that aren't influenced by any
+   * bone.
    */
   virtual const csBox3& GetBoneBoundingBox (CS::Animation::BoneID bone) const = 0; 
 
@@ -480,8 +495,16 @@ struct iAnimatedMeshFactory : public virtual iBase
 
   /**
    * Create a new user-defined subset and return its index.
+   * 
+   * To improve the morphing process, mesh factories are segmented into subsets. All
+   * vertices of a subset are influenced by the same morph targets (i.e. the offsets
+   * corresponding to these vertices in the morph targets are non-zero). All null 
+   * entries of a morph target are removed from the offset buffer. Thus, segmentation 
+   * into subsets improves memory usage and computational resources since morph targets 
+   * are only applied to a vertex when they contain deformations.
+   * 
    * The first subset (with index 0) regroups the vertices of the mesh object 
-   * which are not influenced by any morph target, e.i. all corresponding 
+   * which are not influenced by any morph target, i.e. all corresponding 
    * offsets are null.
    */
   virtual size_t AddSubset () = 0;
@@ -529,7 +552,7 @@ struct iAnimatedMeshFactory : public virtual iBase
  */
 struct iAnimatedMeshSubMeshFactory : public virtual iBase
 {
-  SCF_INTERFACE(CS::Mesh::iAnimatedMeshSubMeshFactory, 1, 2, 1);
+  SCF_INTERFACE(CS::Mesh::iAnimatedMeshSubMeshFactory, 1, 2, 2);
 
   /**
    * Get the index buffer for this submesh. Defines a triangle list.
@@ -590,6 +613,11 @@ struct iAnimatedMeshSubMeshFactory : public virtual iBase
    * Get the Z-buf drawing mode of this submesh.
    */
   virtual csZBufMode GetZBufMode () const = 0;
+
+  /**
+   * Get the shader variable context for this submesh.
+   */
+  virtual iShaderVariableContext* GetShaderVariableContext (size_t buffer) const = 0;
 };
 
 /**
@@ -600,7 +628,7 @@ struct iAnimatedMeshSubMeshFactory : public virtual iBase
  */
 struct iAnimatedMesh : public virtual iBase
 {
-  SCF_INTERFACE(CS::Mesh::iAnimatedMesh, 1, 0, 2);
+  SCF_INTERFACE(CS::Mesh::iAnimatedMesh, 1, 0, 3);
 
   /**
    * Set the skeleton to use for this mesh.
@@ -660,31 +688,48 @@ struct iAnimatedMesh : public virtual iBase
   virtual iRenderBufferAccessor* GetRenderBufferAccessor () const = 0;
 
   /**
-   * Set the bounding box of the given bone, in bone space. Bone bounding boxes 
-   * are used to update the global bounding box of the animated mesh and 
-   * to speed up HitBeam tests. They should cover all vertices belonging to
-   * the bone, even when the morph targets are active.
+   * Set the bounding box of the given bone. Bone bounding boxes are used to update
+   * the global bounding box of the animated mesh, and to speed up hitbeam tests. Each
+   * bounding box should enclose all the vertices that are influenced by the given bone,
+   * even when the morph targets are active.
    *
-   * If you don't specify a bounding box for a bone, then it will be generated
-   * automatically but may not be optimized nor correct when the morph targets
-   * are active.
+   * If you don't specify a bounding box, then the one from the factory will be used
+   * instead.
    *
-   * \param bone The ID of the bone.
-   * \param box The bounding box of the given bone, in bone space.
+   * \param bone The ID of the bone. It is valid to use CS::Animation::InvalidBoneID
+   * as a parameter, in this case it will refer to the bounding box of the vertices that
+   * aren't influenced by any bone.
+   * \param box The bounding box of the given bone. The corners of the box are expressed
+   * in bone space.
    */
   virtual void SetBoneBoundingBox (CS::Animation::BoneID bone, const csBox3& box) = 0; 
 
   /**
-   * Get the bounding box of the bone with the given ID, in bone space.
+   * Get the bounding box of the bone with the given ID. The corners of the box
+   * are expressed in bone space.
+   *
+   * If no bounding box has been defined for this bone on the animated mesh, then the
+   * one from the factory will be returned instead. If the factory has no box neither,
+   * then a default, empty one will be returned.
+   *
+   * It is valid to use CS::Animation::InvalidBoneID as a parameter, in this case
+   * it will return the bounding box of the vertices that aren't influenced by any
+   * bone.
    */
   virtual const csBox3& GetBoneBoundingBox (CS::Animation::BoneID bone) const = 0; 
 
   /**
    * Unset the custom bounding box of this animated mesh. It will now be again
-   * computed and updated automatically.
-   * \sa iObjectModel::SetObjectBoundingBox()
+   * computed and updated automatically. At the inverse, using
+   * iObjectModel::SetObjectBoundingBox() on this mesh will force a given box to
+   * be used.
    */
   virtual void UnsetObjectBoundingBox () = 0;
+
+  /**
+   * Clear the weight of all active morph targets
+   */
+  virtual void ClearMorphTargetWeights () = 0;
 };
 
 /**
@@ -711,7 +756,7 @@ struct iAnimatedMeshSubMesh : public virtual iBase
   virtual bool IsRendering () const = 0;
 
   /**
-   * Get a shader variable context for this submesh.
+   * Get the shader variable context for this submesh.
    */
   virtual iShaderVariableContext* GetShaderVariableContext (size_t buffer) const = 0;
 

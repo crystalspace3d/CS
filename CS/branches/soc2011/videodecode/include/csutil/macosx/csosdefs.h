@@ -21,10 +21,18 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
+#ifdef CS_HAVE_SYS_PARAM_H
 #include <sys/param.h>
+#endif
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <dirent.h>
+
+#include <AvailabilityMacros.h>
+#if defined(MAC_OS_X_VERSION_10_6) && \
+  MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#define CS_OSX_10_6
+#endif
 
 #if defined(CS_UNIVERSAL_BINARY)
 #undef CS_BIG_ENDIAN
@@ -69,14 +77,11 @@
 #define CS_PATH_DELIMITER ':'
 #define CS_PATH_SEPARATOR '/'
 
-#define CS_MKDIR(p) mkdir(p,0755)
-
+// The default 2D graphics driver used by renderers on this platform.
 #undef  CS_OPENGL_2D_DRIVER
 #define CS_OPENGL_2D_DRIVER "crystalspace.graphics2d.glosx"
 
-#undef  CS_SOUND_DRIVER
-#define CS_SOUND_DRIVER "crystalspace.sound.driver.coreaudio"
-
+// The default sound driver used on this platform.
 #undef  CS_SNDSYS_DRIVER
 #define CS_SNDSYS_DRIVER "crystalspace.sndsys.software.driver.coreaudio"
 

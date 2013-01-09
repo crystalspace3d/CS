@@ -139,13 +139,27 @@ enum DebugMode
 };
 
 /**
+ * The mode of duplication used for the faces of the mesh. That is, if the mesh is double sided,
+ * and whether the vertices and triangles that are duplicated are interleaved or contiguous.
+ */
+enum MeshDuplicationMode
+{
+  MESH_DUPLICATION_NONE = 0,     /*!< The faces of the mesh are not double sided, i.e. the vertices and
+				   triangles are not duplicated. */
+  MESH_DUPLICATION_INTERLEAVED,  /*!< The faces of the mesh are double sided, and the duplicated vertices
+				   and triangles are interleaved with the original ones. */
+  MESH_DUPLICATION_CONTIGUOUS    /*!< The faces of the mesh are double sided, and the duplicated vertices
+				   and triangles are packed contiguously at the end of their buffer. */
+};
+
+/**
  * The Bullet implementation of iDynamicSystem also implements this
  * interface.
  * \sa iDynamicSystem iODEDynamicSystemState
  */
 struct iDynamicSystem : public virtual iBase
 {
-  SCF_INTERFACE(CS::Physics::Bullet::iDynamicSystem, 3, 0, 1);
+  SCF_INTERFACE(CS::Physics::Bullet::iDynamicSystem, 4, 0, 0);
 
   /**
    * Draw the debug informations of the dynamic system. This has to be called
@@ -269,10 +283,13 @@ struct iDynamicSystem : public virtual iBase
    * Create a volumetric soft body from a genmesh.
    * \param genmeshFactory The genmesh factory to use.
    * \param bodyTransform The initial transform of the soft body.
+   * \param duplicationMode The duplication mode of the mesh. This is useful for double sided meshes
+   * since it allows to create a soft body with an halfed count of vertices and triangles.
    * \remark You must call SetSoftBodyWorld() prior to this.
    */
   virtual iSoftBody* CreateSoftBody (iGeneralFactoryState* genmeshFactory,
-				     const csOrthoTransform& bodyTransform) = 0;
+				     const csOrthoTransform& bodyTransform,
+				     MeshDuplicationMode duplicationMode = MESH_DUPLICATION_NONE) = 0;
 
   /**
    * Create a custom volumetric soft body.
@@ -546,11 +563,11 @@ struct SoftBodyHelper
 {
   /**
    * Create a genmesh from the given cloth soft body.
-   * The genmesh will be double-sided, in order to have correct normals on both
+   *
+   * The genmesh will be double sided, in order to have correct normals on both
    * sides of the cloth (ie the vertices of the soft body will be duplicated for the
-   * genmesh).
-   * \warning Don't forget to use doubleSided = true in
-   * CS::Animation::iSoftBodyAnimationControl::SetSoftBody()
+   * genmesh). The duplication mode of the faces of the mesh generated is CS::Physics::Bullet::MESH_DUPLICATION_CONTIGUOUS,
+   * that parameter can therefore be used e.g. in CS::Animation::iSoftBodyAnimationControl::SetSoftBody().
    */
   static csPtr<iMeshFactoryWrapper> CreateClothGenMeshFactory
   (iObjectRegistry* object_reg, const char* factoryName, iSoftBody* cloth)
@@ -568,7 +585,7 @@ struct SoftBodyHelper
 
     // Create the vertices of the genmesh
     size_t vertexCount = cloth->GetVertexCount ();
-    gmstate->SetVertexCount (vertexCount * 2);
+    gmstate->SetVertexCount (int (vertexCount * 2));
     csVector3* vertices = gmstate->GetVertices ();
     for (size_t i = 0; i < vertexCount; i++)
     {
@@ -577,15 +594,15 @@ struct SoftBodyHelper
     }
 
     // Create the triangles of the genmesh
-    gmstate->SetTriangleCount (cloth->GetTriangleCount () * 2);
+    gmstate->SetTriangleCount (int (cloth->GetTriangleCount () * 2));
     csTriangle* triangles = gmstate->GetTriangles ();
     for (size_t i = 0; i < cloth->GetTriangleCount (); i++)
     {
       csTriangle triangle = cloth->GetTriangle (i);
       triangles[i * 2] = triangle;
-      triangles[i * 2 + 1] = csTriangle (triangle[2] + vertexCount,
-					 triangle[1] + vertexCount,
-					 triangle[0] + vertexCount);
+      triangles[i * 2 + 1] = csTriangle (int (triangle[2] + vertexCount),
+					 int (triangle[1] + vertexCount),
+					 int (triangle[0] + vertexCount));
     }
 
     gmstate->CalculateNormals ();
@@ -717,7 +734,7 @@ struct iKinematicCallback : public virtual iBase
  */
 struct iPivotJoint : public virtual iBase
 {
-  SCF_INTERFACE (CS::Physics::Bullet::iPivotJoint, 1, 0, 0);
+  SCF_INTERFACE (CS::Physics::Bullet::iPivotJoint, 1, 0, 1);
 
   /**
    * Attach a rigid body to the joint.
@@ -740,6 +757,18 @@ struct iPivotJoint : public virtual iBase
    * Get the current position of the joint, in world coordinates.
    */
   virtual csVector3 GetPosition () const = 0;
+
+  /**
+   * Set pivot joint parameters.
+   */
+  virtual void SetParameters (float impulseClamp, float tau, float damping) = 0;
+
+  /// Get impulse clamp.
+  virtual float GetImpulseClamp () const = 0;
+  /// Get tau.
+  virtual float GetTau () const = 0;
+  /// Get damping.
+  virtual float GetDamping () const = 0;
 };
 
 /**

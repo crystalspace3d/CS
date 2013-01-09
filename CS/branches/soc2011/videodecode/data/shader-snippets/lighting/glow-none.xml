@@ -19,10 +19,15 @@
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 
     <input name="surfaceColor" type="rgba" />
    
     <block location="cg:fragmentMain">
+      surfaceWithGlow = surfaceColor;
+    </block>
+    
+    <block location="glsl:fragmentMain">
       surfaceWithGlow = surfaceColor;
     </block>
     

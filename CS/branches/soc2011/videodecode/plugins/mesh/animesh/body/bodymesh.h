@@ -22,7 +22,8 @@
 #define __CS_BODYMESH_H__
 
 #include "csutil/scf_implementation.h"
-#include "iutil/comp.h"
+#include "csgeom/matrix3.h"
+#include "csgeom/plane3.h"
 #include "csutil/weakref.h"
 #include "csutil/leakguard.h"
 #include "csutil/hash.h"
@@ -30,13 +31,13 @@
 #include "csutil/refarr.h"
 #include "imesh/animesh.h"
 #include "imesh/bodymesh.h"
+#include "iutil/comp.h"
 #include "ivaria/dynamics.h"
-#include <csgeom/matrix3.h>
-#include <csgeom/plane3.h>
-#include <csgeom/sphere.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 {
+  using namespace CS::Animation;
+
   class BodyBone;
   class BodyChainNode;
 
@@ -118,7 +119,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     virtual bool SetCylinderGeometry (float length, float radius);
     virtual bool SetMeshGeometry (iMeshWrapper *mesh);
     virtual bool SetPlaneGeometry (const csPlane3 &plane);
-    virtual bool SetSphereGeometry (const csSphere &sphere);
+    virtual bool SetSphereGeometry (float radius);
  
     virtual csColliderGeometryType GetGeometryType () const;
 
@@ -128,7 +129,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     virtual bool GetCylinderGeometry (float &length, float &radius) const;
     virtual bool GetMeshGeometry (iMeshWrapper *&mesh) const;
     virtual bool GetPlaneGeometry (csPlane3 &plane) const;
-    virtual bool GetSphereGeometry (csSphere &sphere) const;
+    virtual bool GetSphereGeometry (float &radius) const;
 
     virtual void SetTransform (const csOrthoTransform &transform);
     virtual csOrthoTransform GetTransform () const;
@@ -157,7 +158,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     float radius;
     csRef<iMeshWrapper> mesh;
     csPlane3 plane;
-    csSphere sphere;
   };
 
   class BodyManager : public scfImplementation2<BodyManager, 
@@ -202,14 +202,27 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     virtual CS::Animation::iBodyBone* CreateBodyBone (CS::Animation::BoneID boneID);
     virtual CS::Animation::iBodyBone* FindBodyBone (const char *name) const;
     virtual CS::Animation::iBodyBone* FindBodyBone (CS::Animation::BoneID bone) const;
+    virtual csPtr<CS::Animation::iBoneIDIterator> GetBodyBones () const;
+    virtual void RemoveBodyBone (CS::Animation::BoneID bone);
     virtual void ClearBodyBones ();
 
-    virtual CS::Animation::iBodyChain* CreateBodyChain (const char *name,
-							CS::Animation::BoneID rootBone);
+    virtual CS::Animation::iBodyChain* CreateBodyChain
+      (const char *name, CS::Animation::BoneID rootBone);
     virtual CS::Animation::iBodyChain* FindBodyChain (const char *name) const;
+    virtual csPtr<CS::Animation::iBodyChainIterator> GetBodyChains () const;
+    virtual void RemoveBodyChain (const char* name);
     virtual void ClearBodyChains ();
 
+    virtual void PopulateDefaultColliders
+      (const CS::Mesh::iAnimatedMeshFactory* animeshFactory,
+       ColliderType colliderType = COLLIDER_CAPSULE);
+    virtual void PopulateDefaultBodyChains ();
+
   private:
+    void PopulateDefaultBodyChainNode (BodyChainNode* parentNode,
+				       const csArray<CS::Animation::BoneID> &bones,
+				       size_t index);
+
     csString name;
     BodyManager* manager;
     // This is a weakref to avoid circular references between animesh,
@@ -247,34 +260,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     csRefArray<BodyBoneCollider> colliders;
 
     friend class BodyChainNode;
-  };
-
-  class BodyChain : public scfImplementation1<BodyChain, CS::Animation::iBodyChain>
-  {
-  public:
-    CS_LEAKGUARD_DECLARE(BodyChain);
-
-    BodyChain (BodySkeleton* bodySkeleton, const char *name,
-	       CS::Animation::BoneID rootBone);
-
-    virtual const char* GetName () const;
-    virtual CS::Animation::iBodySkeleton* GetBodySkeleton () const;
-    virtual CS::Animation::iBodyChainNode* GetRootNode () const;
-
-    virtual bool AddSubChain (CS::Animation::BoneID subBone);
-    virtual bool AddAllSubChains ();
-
-    virtual void DebugPrint () const;
-
-    virtual void PopulateBoneMask (csBitArray& boneMask) const;
-
-  private:
-    void Print (BodyChainNode* node, size_t level = 0) const;
-    void PopulateMask (BodyChainNode* node, csBitArray& boneMask) const;
-
-    csString name;
-    csRef<BodySkeleton> bodySkeleton;
-    csRef<BodyChainNode> rootNode;
+    friend class BodySkeleton;
   };
 
   class BodyChainNode : public scfImplementation1<BodyChainNode,
@@ -300,10 +286,38 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     void Print (size_t level = 0) const;
 
     CS::Animation::BoneID boneID;
-    csWeakRef<BodyChainNode> parent;
+    BodyChainNode* parent;
     csRefArray<BodyChainNode> children;
 
     friend class BodyChain;
+  };
+
+  class BodyChain : public scfImplementation1<BodyChain, CS::Animation::iBodyChain>
+  {
+  public:
+    CS_LEAKGUARD_DECLARE(BodyChain);
+
+    BodyChain (BodySkeleton* bodySkeleton, const char *name,
+	       CS::Animation::BoneID rootBone);
+
+    virtual const char* GetName () const;
+    virtual CS::Animation::iBodySkeleton* GetBodySkeleton ();
+    virtual CS::Animation::iBodyChainNode* GetRootNode ();
+
+    virtual bool AddSubChain (CS::Animation::BoneID subBone);
+    virtual bool AddAllSubChains ();
+
+    virtual void DebugPrint () const;
+
+    virtual void PopulateBoneMask (csBitArray& boneMask) const;
+
+  private:
+    void Print (const BodyChainNode* node, size_t level = 0) const;
+    void PopulateMask (const BodyChainNode* node, csBitArray& boneMask) const;
+
+    csString name;
+    BodySkeleton* bodySkeleton;
+    BodyChainNode rootNode;
   };
 
 }

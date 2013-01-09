@@ -236,7 +236,7 @@ error2:
     uint8 *imagedata = (uint8*)Image->GetImageData();
     while (n > 0)
     {
-      max_color = MAX(max_color, *imagedata);
+      max_color = csMax (max_color, int (*imagedata));
       imagedata++;
       n--;
     }
@@ -538,6 +538,9 @@ nomem2:
   else if (bit_depth < 8)
     // Expand pictures with less than 8bpp to 8bpp
     png_set_packing (png);
+
+  // Let the PNG lib handle any interlacing
+  png_set_interlace_handling (png);
 
   // Update structure with the above settings
   png_read_update_info (png, info);

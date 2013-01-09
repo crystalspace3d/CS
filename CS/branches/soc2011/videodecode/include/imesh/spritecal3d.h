@@ -96,7 +96,7 @@ struct CalAnimationCallback;
  */
 struct iSpriteCal3DFactoryState : public virtual iBase
 {
-  SCF_INTERFACE (iSpriteCal3DFactoryState, 2, 0, 0);
+  SCF_INTERFACE (iSpriteCal3DFactoryState, 2, 1, 0);
 
   /// Initialize internal Cal3d data structures.
   virtual bool Create(const char *name) = 0;
@@ -109,7 +109,7 @@ struct iSpriteCal3DFactoryState : public virtual iBase
   virtual void ReportLastError () = 0;
 
   /**
-   * \deprecated Deprecated in 1.9. Pass load flags to Load*() functions instead.
+   * \deprecated Deprecated in 2.0. Pass load flags to Load*() functions instead.
    */
   CS_DEPRECATED_METHOD_MSG("Pass load flags to Load*() functions instead")
   virtual void SetLoadFlags(int flags) = 0;
@@ -340,6 +340,11 @@ struct iSpriteCal3DFactoryState : public virtual iBase
    */
   virtual void AbsoluteRescaleFactory(float factor) = 0;
 
+  /**
+   * Gets the current scaling factor of this mesh.
+   * \return The factor this mesh is currently resized.
+   */
+  virtual float GetScaleFactor() = 0;
 };
 
 /**

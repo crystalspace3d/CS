@@ -104,8 +104,8 @@ csGenmeshMeshObject::csGenmeshMeshObject (csGenmeshMeshObjectFactory* factory) :
   anim_ctrl_colors = false;
   anim_ctrl_bbox = false;
 
-  subMeshes.GetDefaultSubmesh()->parentSubMesh =
-    factory->subMeshes.GetDefaultSubmesh();
+  subMeshes.GetDefaultSubmesh()->SetParentSubMesh (
+    factory->subMeshes.GetDefaultSubmesh());
 
   svcontext.AttachNew (new csShaderVariableContext);
   bufferHolder.AttachNew (new csRenderBufferHolder);
@@ -221,7 +221,7 @@ void csGenmeshMeshObject::UpdateSubMeshProxies () const
         csRef<SubMeshProxy> proxy = subMeshes.FindSubMesh (name);
         if (!proxy.IsValid())
           proxy.AttachNew (new SubMeshProxy);
-        proxy->parentSubMesh = sm[i];
+        proxy->SetParentSubMesh (sm[i]);
         // Exploit fact that factory SMs are sorted already
         newSubMeshes.Push (proxy);
       }
@@ -482,7 +482,7 @@ csRenderMesh** csGenmeshMeshObject::GetRenderMeshes (
       static_cast<iShaderVariableContext*> (&subMesh), svcontext));
     meshPtr->variablecontext = mergedSVContext;
     meshPtr->object2world = o2wt;
-    meshPtr->bbox = anim_ctrl_bbox ? bboxes[i] : subMesh.parentSubMesh->GetObjectBoundingBox (positions);
+    meshPtr->bbox = anim_ctrl_bbox ? bboxes[i] : subMesh.GetParentSubMesh()->GetObjectBoundingBox (positions);
 
     meshPtr->buffers = smBufferHolder;
     meshPtr->geometryInstance = (void*)factory;
@@ -554,7 +554,7 @@ bool csGenmeshMeshObject::HitBeamOutline (const csVector3& start,
 
 bool csGenmeshMeshObject::HitBeamObject (const csVector3& start,
   const csVector3& end, csVector3& isect, float *pr, int* polygon_idx,
-  iMaterialWrapper** material)
+  iMaterialWrapper** material, bool bf)
 {
   if (polygon_idx) *polygon_idx = -1;
   // This is the slow version. Use for an accurate hit on the object.
@@ -580,10 +580,13 @@ bool csGenmeshMeshObject::HitBeamObject (const csVector3& start,
       CS_MESHTYPE_TRIANGLES);
     while (triangles.HasNext())
     {
-      CS::TriangleT<uint> t (triangles.Next());
-      if (csIntersect3::SegmentTriangle (seg, 
-	vrt[t.a], vrt[t.b], vrt[t.c], 
-	tmp))
+      CS::TriangleT<uint> t = triangles.Next();
+      bool hit;
+      if (bf)
+        hit = csIntersect3::SegmentTriangleBF (seg, vrt[t.a], vrt[t.b], vrt[t.c], tmp);
+      else
+        hit = csIntersect3::SegmentTriangle (seg, vrt[t.a], vrt[t.b], vrt[t.c], tmp);
+      if (hit)
       {
 	temp = csSquaredDist::PointPoint (start, tmp);
 	if (temp < dist)
@@ -1860,9 +1863,7 @@ csPtr<iMeshObjectFactory> csGenmeshMeshObjectType::NewFactory ()
   csRef<csGenmeshMeshObjectFactory> cm;
   cm.AttachNew (new csGenmeshMeshObjectFactory (this,
     object_reg));
-  csRef<iMeshObjectFactory> ifact (
-    scfQueryInterface<iMeshObjectFactory> (cm));
-  return csPtr<iMeshObjectFactory> (ifact);
+  return csPtr<iMeshObjectFactory> (cm);
 }
 
 bool csGenmeshMeshObjectType::Initialize (iObjectRegistry* object_reg)

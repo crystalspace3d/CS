@@ -71,12 +71,16 @@ public:
     
     csVector4 vec4;
     CS::Math::Matrix4 matrix;
+
+    uint GetHash() const;
   };
 
   struct oper 
   {
     uint8 opcode, acc;
-    oper_arg arg1, arg2;
+    oper_arg arg1, arg2, arg3;
+
+    uint GetHash() const;
   };
 
   typedef csArray<oper> oper_array;
@@ -125,9 +129,21 @@ private:
   /// Compile an IF pseudo-op
   bool compile_if (const cons*, int& acc_top, int acc);
 
-  /// Evaluate away constant values 
+  /**\name Optimization functions
+   * @{ */
+  /// Evaluate away constant values, build operations array
   bool eval_const (cons*&);
+  /**
+   * Eliminate common subexpressions
+   * \returns Whether an optimization was applied
+   */
+  bool optimize_cse (oper_array&);
+  /** @} */
 
+  /// Helper function: resolve an argument if it's a variable
+  bool resolve_arg (oper_arg& arg);
+  /// Evaluate an operator and 3 arguments
+  bool eval_oper (int oper, oper_arg arg1, oper_arg arg2, oper_arg arg3, oper_arg& output);
   /// Evaluate an operator and 2 arguments
   bool eval_oper (int oper, oper_arg arg1, oper_arg arg2, oper_arg& output);
   /// Evaluate an operator with a single argument
@@ -192,6 +208,15 @@ private:
   template<typename Comparator>
   bool eval_compare (const Comparator& cmp, const oper_arg& arg1,
     const oper_arg& arg2, oper_arg& output) const;
+    
+  /// Evaluate logical AND
+  bool eval_and (const oper_arg& arg1, const oper_arg& arg2,
+        oper_arg& output) const;
+  /// Evaluate logical OR
+  bool eval_or (const oper_arg& arg1, const oper_arg& arg2,
+        oper_arg& output) const;
+  /// Evaluate logical NOT
+  bool eval_not (const oper_arg& arg, oper_arg& output) const;
   	
   bool eval_matrix_column (const oper_arg& arg1, const oper_arg& arg2,
   	oper_arg& output) const;
@@ -204,14 +229,17 @@ private:
   /// Internal set vector element 1 and 2
   bool eval_selt12 (const oper_arg& arg1, const oper_arg& arg2,
   	oper_arg & output) const;
+  /// Internal set vector element 3
+  bool eval_selt3 (const oper_arg & arg1, const oper_arg & arg2,
+    oper_arg& output) const;
   /// Internal set vector element 3 and 4
   bool eval_selt34 (const oper_arg & arg1, const oper_arg & arg2,
-  	oper_arg& output) const;
+  	const oper_arg & arg3, oper_arg& output) const;
   /// Internal load operator
   bool eval_load (const oper_arg& arg1, oper_arg& output) const;
   /// Internal select operator
   bool eval_select (const oper_arg& arg1, const oper_arg& arg2,
-    oper_arg& output) const;
+    const oper_arg& arg3, oper_arg& output) const;
 
   /// Evaluate a variable into an oper_arg
   bool eval_variable (csShaderVariable*, oper_arg& out);
@@ -224,6 +252,8 @@ private:
   void print_cons (const cons*) const;
   /// Dump the opcode list
   void print_ops (const oper_array&) const;
+  /// String representation of a single argument
+  const char* oper_arg_str (const oper_arg&) const;
   /// Dump the result of an operation
   void print_result (const oper_arg&) const;
 
@@ -244,6 +274,8 @@ private:
   mutable csString errorMsg;
   void ParseError (const char* message, ...) const;
   void EvalError (const char* message, ...) const;
+
+  mutable csString* tmpOperArgStr;
 public:
   csShaderExpression (iObjectRegistry*);
   ~csShaderExpression ();

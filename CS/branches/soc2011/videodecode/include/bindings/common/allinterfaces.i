@@ -90,15 +90,6 @@
   INTERFACE_APPLY(iMeshObject)
   INTERFACE_APPLY(iMeshObjectFactory)
   INTERFACE_APPLY(iMeshObjectType)
-  INTERFACE_APPLY(iGenMeshSkeletonControlState)
-  INTERFACE_APPLY(iSkeleton)
-  INTERFACE_APPLY(iSkeletonBone)
-  INTERFACE_APPLY(iSkeletonBoneFactory)
-  INTERFACE_APPLY(iSkeletonBoneRagdollInfo)
-  INTERFACE_APPLY(iSkeletonFactory)
-  INTERFACE_APPLY(iSkeletonGraveyard)
-  INTERFACE_APPLY(iSkeletonSocket)
-  INTERFACE_APPLY(iSkeletonSocketFactory)
   INTERFACE_APPLY(iSprite2DState)
   INTERFACE_APPLY(iSprite3DState)
   INTERFACE_APPLY(iSpriteCal3DState)
@@ -119,6 +110,16 @@
   INTERFACE_APPLY(iObjectModel)
   INTERFACE_APPLY(iObjectModelListener)
   INTERFACE_APPLY(iTriangleMeshIterator)
+  // Deprecated gmeshskelanim interfaces
+  INTERFACE_APPLY(iGenMeshSkeletonControlState)
+  INTERFACE_APPLY(iSkeleton)
+  INTERFACE_APPLY(iSkeletonBone)
+  INTERFACE_APPLY(iSkeletonBoneFactory)
+  INTERFACE_APPLY(iSkeletonBoneRagdollInfo)
+  INTERFACE_APPLY(iSkeletonFactory)
+  INTERFACE_APPLY(iSkeletonGraveyard)
+  INTERFACE_APPLY(iSkeletonSocket)
+  INTERFACE_APPLY(iSkeletonSocketFactory)
 %enddef
 
 %define ISNDSYS_APPLY_FOR_EACH_INTERFACE
@@ -136,6 +137,13 @@
 %enddef
 
 %define IVARIA_APPLY_FOR_EACH_INTERFACE
+  INTERFACE_APPLY(iImageModifier)
+  INTERFACE_APPLY(iBlob)
+  INTERFACE_APPLY(iGeom)
+  INTERFACE_APPLY(iMovingObject)
+  INTERFACE_APPLY(iBlobImage)
+  INTERFACE_APPLY(iBlobManager)
+  INTERFACE_APPLY(iBlobViewPort)
   INTERFACE_APPLY(iBodyGroup)
   INTERFACE_APPLY(iBugPlug)
   INTERFACE_APPLY(iDynamics)

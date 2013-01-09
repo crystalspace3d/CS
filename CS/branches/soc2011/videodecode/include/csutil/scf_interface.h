@@ -30,6 +30,7 @@
 
 // -- Forward declarations
 struct iDocument;
+struct iDocumentNode;
 #if defined(CS_DEBUG) || defined(CS_MEMORY_TRACKER)
   struct iObjectRegistry;
 #endif
@@ -183,7 +184,7 @@ public:
    * environment each thread holding a weak reference to an object should
    * also hold a normal reference somewhere.
    */
-  virtual void AddRefOwner (void** ref_owner) = 0;
+  virtual void AddRefOwner (void** ref_owner, CS::Threading::Mutex* mutex) = 0;
   /**
    * For weak references: remove a reference owner.
    * Thread-safe - it is possible to add reference owners from
@@ -191,6 +192,8 @@ public:
    * on weak references in a multithreaded environment.
    */
   virtual void RemoveRefOwner (void** ref_owner) = 0;
+  
+  typedef csRef<iBase> WeakReferencedKeepAlive;
 
   /**
    * Request the meta-data for the interfaces implemented by this object.
@@ -211,7 +214,7 @@ typedef iBase* (*scfFactoryFunc)(iBase*);
  */
 struct iSCF : public virtual iBase
 {
-  SCF_INTERFACE(iSCF, 3,0,0);
+  SCF_INTERFACE(iSCF, 4,0,0);
   /**
    * This is the global instance of iSCF.  On most platforms, this variable is
    * module-global; for instance, the application has an iSCF::SCF variable,
@@ -321,6 +324,13 @@ struct iSCF : public virtual iBase
   virtual csRef<iDocument> GetPluginMetadata (char const *iClassID) = 0;
 
   /**
+   * Given a registered class name, returns the meta information associated
+   * with the iClassID rather than the whole plugin module.
+   * (it will return the <class> node for the given iClassID)
+   */
+  virtual csRef<iDocumentNode> GetPluginMetadataNode (char const *iClassID) = 0;
+
+  /**
   * Unload all unused shared libraries (also called inside scfCreateInstance).
   * If you want to be sure that all unused shared libraries are unloaded, call
   * this function.  It is automatically invoked inside scfCreateInstance(),
@@ -393,12 +403,13 @@ struct iSCF : public virtual iBase
 
   /**
    * Retrieve a list of class names whose prefix matches a pattern string.  For
-   * example, QueryClassList("crystalspace.sound.loader.") will return a list
-   * of class names which begin with the string "crystalspace.sound.loader.".
-   * If pattern is zero length or the null pointer, then all registered class
-   * names are returned.  If any class names match the pattern, then the return
-   * value is a list of strings.  If no class names match the pattern string,
-   * then the returned list is empty.
+   * example, QueryClassList("crystalspace.graphics3d.shadercompiler.") will
+   * return a list of class names which begin with the string
+   * "crystalspace.graphics3d.shadercompiler.". If pattern is zero length or  
+   * the null pointer, then all registered class names are returned.  If any 
+   * class names match the pattern, then the return value is a list of 
+   * strings.  If no class names match the pattern string, then the returned 
+   * list is empty.
    */
   virtual csRef<iStringArray> QueryClassList (char const* pattern) = 0;
 

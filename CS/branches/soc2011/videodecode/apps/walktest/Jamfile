@@ -31,7 +31,9 @@ WALKALL.PLUGINLIST =
   csopcode
   csparser
   cssynldr
+  cstgaimg
   decal
+  docpreproc
   dsplex
   dynavis
   particles
@@ -52,6 +54,7 @@ WALKALL.PLUGINLIST =
   skeleton2
   skeleton2ldr
   skelldr
+  slcombiner
   vproc_std
   haze
   hazeldr
@@ -114,7 +117,7 @@ if $(X11.AVAILABLE) = "yes"
 
 if $(GL.AVAILABLE) = "yes"
 {
-  WALKALL.PLUGINLIST += gl3d glshader_arb glshader_fixed ;
+  WALKALL.PLUGINLIST += gl3d glshader_arb glshader_fixed glshader_glsl ;
   
   # GL canvases
   if $(GLX.AVAILABLE) = "yes" { WALKALL.PLUGINLIST += glx2d ; }
@@ -138,7 +141,6 @@ WALKTEST_STATIC.PLUGINLIST =
   bruteblock
   bindoc
   csbmpimg
-  rendstep_stencil
   ;
 
 Description walktest_static : "WalkTest demo (static build)" ;
@@ -149,7 +151,9 @@ Application walktest_static : [ Wildcard *.cpp *.h ] :
 CFlags walktest_static : [ FDefines CS_STATIC_LINKED ] ;
 MsvcDefine walktest_static : CS_STATIC_LINKED ;
 LinkWith walktest_static : crystalspace ;
-LinkStaticPlugins walktest_static : $(WALKTEST_STATIC.PLUGINLIST) ;
+LinkStaticPlugins walktest_static : $(WALKTEST_STATIC.PLUGINLIST) : : : :
+  # Trigger update of generated code when the plugins list changes
+  $(SUBDIR)/Jamfile ;
 FileListEntryApplications walktest_static : app-demo-static ;
 
 SubVariant ;

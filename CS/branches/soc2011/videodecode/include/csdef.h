@@ -41,17 +41,6 @@
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
-#ifdef CS_HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-
-#ifndef MIN
-  #define MIN(a,b) ((a)<(b)?(a):(b))
-#endif
-
-#ifndef MAX
-  #define MAX(a,b) ((a)>(b)?(a):(b))
-#endif
 
 #ifndef ABS
  #define ABS(x) ((x)<0?-(x):(x))
@@ -66,6 +55,9 @@
 #endif
 #ifndef HALF_PI
   #define HALF_PI (PI / 2.0f)
+#endif
+#ifndef QUARTER_PI
+  #define QUARTER_PI (PI / 4.0f)
 #endif
 #ifndef TWO_PI
   #define TWO_PI (PI * 2.0f)
@@ -103,18 +95,21 @@
 #endif
 
 // Platforms which have the PRIx99 printf()-formatting directives should define
-// CS_HAVE_C_FORMAT_MACROS. For platforms which do not provide these macros, we
-// fake up the commonly used ones.
-#if CS_LONG_SIZE == 8
-  #define __CS_PRI64_PREFIX	"l"
-#else
-  #define __CS_PRI64_PREFIX	"ll"
-#endif
+// CS_HAVE_C_FORMAT_MACROS. Platforms which also have macros for 64-bit
+// data-types should further define CS_HAVE_C_FORMAT64_MACROS.  For platforms
+// which do not provide these macros, we fake up the commonly used ones.
+#if !defined(CS_HAVE_C_FORMAT64_MACROS)
+  #if CS_LONG_SIZE == 8
+    #define __CS_PRI64_PREFIX "l"
+  #else
+    #define __CS_PRI64_PREFIX "ll"
+  #endif
 
-#define CS_PRId64 __CS_PRI64_PREFIX "d"
-#define CS_PRIu64 __CS_PRI64_PREFIX "u"
-#define CS_PRIx64 __CS_PRI64_PREFIX "x"
-#define CS_PRIX64 __CS_PRI64_PREFIX "X"
+  #define PRId64 __CS_PRI64_PREFIX "d"
+  #define PRIu64 __CS_PRI64_PREFIX "u"
+  #define PRIx64 __CS_PRI64_PREFIX "x"
+  #define PRIX64 __CS_PRI64_PREFIX "X"
+#endif
 
 #if !defined(CS_HAVE_C_FORMAT_MACROS)
   #ifndef PRId8

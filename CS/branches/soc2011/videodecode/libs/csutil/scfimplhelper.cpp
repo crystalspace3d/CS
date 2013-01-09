@@ -19,8 +19,22 @@
 
 #include "csutil/scf_implementation.h"
 
+scfImplementationHelper::~scfImplementationHelper()
+{
+  if (CS::Threading::AtomicOperations::Read ((void**)(void*)&scfAuxData) != 0)
+    FreeAuxData();
+}
+
+iBase* scfImplementationHelper::GetSCFParent()
+{
+  bool hasAuxData (CS::Threading::AtomicOperations::Read ((void**)(void*)&scfAuxData) != 0);
+  return hasAuxData ? scfAuxData->scfParent : 0;
+}
+
 void scfImplementationHelper::EnsureAuxData()
 {
+  if (CS::Threading::AtomicOperations::Read ((void**)(void*)&scfAuxData) != 0)
+    return;
   ScfImplAuxData* newAuxData = new ScfImplAuxData;
   // Double-cast to cheat strict-aliasing rules
   if (CS::Threading::AtomicOperations::CompareAndSet ((void**)(void*)&scfAuxData,
@@ -33,7 +47,7 @@ void scfImplementationHelper::EnsureAuxData()
 
 void scfImplementationHelper::FreeAuxData()
 {
-  delete scfAuxData;
+  scfAuxData->DecRef ();
 }
 
 void scfImplementationHelper::AllocMetadata (size_t numEntries)
@@ -53,7 +67,7 @@ void scfImplementationHelper::AllocMetadata (size_t numEntries)
 
 void scfImplementationHelper::CleanupMetadata ()
 {
-  CS_ASSERT(HasAuxData());
+  CS_ASSERT(CS::Threading::AtomicOperations::Read ((void**)(void*)&scfAuxData) != 0);
 
   scfInterfaceMetadataList* metadataList = scfAuxData->metadataList;
   if (metadataList)
@@ -61,23 +75,6 @@ void scfImplementationHelper::CleanupMetadata ()
     cs_free (metadataList);
     metadataList = 0;
   }
-}
-
-void scfImplementationHelper::scfRemoveRefOwners ()
-{
-  CS_ASSERT(HasAuxData());
-
-  WeakRefOwnerArray* scfWeakRefOwners = scfAuxData->scfWeakRefOwners;
-  if (!scfWeakRefOwners)
-    return;
-
-  for (size_t i = 0; i < scfWeakRefOwners->GetSize (); i++)
-  {
-    void** p = (*scfWeakRefOwners)[i];
-    *p = 0;
-  }
-  delete scfWeakRefOwners;
-  scfWeakRefOwners = 0;
 }
 
 size_t scfImplementationHelper::GetInterfaceMetadataCount () const

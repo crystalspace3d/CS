@@ -1580,7 +1580,7 @@ void csODECollider::FillWithColliderGeometry (csRef<iGeneralFactoryState> genmes
       csRef<iMeshObjectFactory> collider_fact = 
         scfQueryInterface<iMeshObjectFactory> (genmesh_fact);
       collider_fact->HardTransform (
-        csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (0)));
+        csReversibleTransform (csYRotMatrix3 (HALF_PI), csVector3 (0)));
     }
     break;
   case PLANE_COLLIDER_GEOMETRY:
@@ -2784,7 +2784,7 @@ void csODEJoint::BuildHinge ()
   csVector3 pos = transform.GetOrigin();
   dJointSetHingeAnchor (jointID, pos.x, pos.y, pos.z);
   csMatrix3 rot = transform.GetO2T();
-  csVector3 axis;
+  csVector3 axis (0.0f);
   if (rotConstraint[0])
   {
     axis = rot.Col1();

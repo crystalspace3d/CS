@@ -257,7 +257,7 @@ void Primitives::GenerateCylinder (float l, float r, uint sides,
 {
   const uint n = sides * 4;
   l *= 0.5;
-  float a = float(PI*2.0)/float(n);
+  float a = TWO_PI / float(n);
   float sa = (float) sin(a);
   float ca = (float) cos(a);
 
@@ -319,7 +319,7 @@ void Primitives::GenerateCapsule (float l, float r, uint sides,
 {
   const uint n = sides * 4;
   l *= 0.5;
-  float a = float(PI*2.0)/float(n);
+  float a = TWO_PI / float(n);
   float sa = (float) sin(a);
   float ca = (float) cos(a);
 
@@ -434,11 +434,17 @@ void Primitives::GenerateCone (float l, float r, uint sides,
       csDirtyAccessArray<csTriangle>& mesh_triangles,
       TextureMapper* mapper)
 {
+  // clear old data
+  mesh_vertices.DeleteAll ();
+  mesh_texels.DeleteAll ();
+  mesh_normals.DeleteAll ();
+  mesh_triangles.DeleteAll ();
+
   /* Generates a cone aligned along the positive y-axis with the base 
    * centered on the origin. */
 
   // Make sure we have enough sides to actually make a cone.
-  sides = MAX(3, sides);
+  sides = csMax (uint (3), sides);
 
   // The top-point.
   mesh_vertices.Push (csVector3 (0, l, 0));

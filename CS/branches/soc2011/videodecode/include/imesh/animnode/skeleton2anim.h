@@ -116,7 +116,7 @@ enum SynchronizationMode
  */
 struct iSkeletonAnimPacketFactory : public virtual iBase
 {
-  SCF_INTERFACE(CS::Animation::iSkeletonAnimPacketFactory, 2, 0, 2);
+  SCF_INTERFACE(CS::Animation::iSkeletonAnimPacketFactory, 2, 0, 3);
   
   /**
    * Create an instance of this animation packet
@@ -199,6 +199,11 @@ struct iSkeletonAnimPacketFactory : public virtual iBase
    * \return The index of the animation, if found, else (size_t) -1.
    */
   virtual size_t FindAnimationIndex (const char* name) = 0;
+
+  /**
+   * Get the name of this animation packet factory
+   */
+  virtual const char* GetName () const = 0;
 };
 
 /**
@@ -229,30 +234,30 @@ struct iSkeletonAnimPacket : public virtual iBase
 };
 
 /**
- * Data structure for raw skeletal animations. It defines the key frames of the
- * animation but not its current playing state. You need to use a
- * CS::Animation::iSkeletonAnimationNode in order to play this animation.
+ * Data structure for raw skeletal animations. It defines a base animation to be
+ * played eg by a CS::Animation::iSkeletonAnimationNode.
  *
  * Each animation is made up of one or more channels, where each channel is
  * associated to a bone of the skeleton. Each channel can contain one or more
- * keyframes defining the configuration of the bone at a given time. When the
- * animation is played, the configuration of the bone is blended between the two
- * closest keyframes of the given playback time.
+ * key frames defining the configuration of the bone at a given time. When the
+ * animation is played by an CS::Animation::iSkeletonAnimationNode, it
+ * calls the BlendState() method who will blend the configuration of each bone
+ * between the two closest key frames of the given playback time.
  *
- * For a given channel, if there is no keyframe defined before the current playing
- * time (ie there are no keyframe defined for the time 0), then the last keyframe
- * will be used as the first closest keyframe. Similarly, if there is no keyframe
- * defined after the current playing time, then the first keyframe will be used as
- * the second closest keyframe.
+ * It is allowed to use negative time stamps for the key frames, the main
+ * drawback is that the \a playbackTime parameter of the BlendState() method
+ * will then be shifted, and that you must therefore use it more carefully.
  *
- * This behavior of the transition bewteen the last and the first keyframes is useful
- * for cyclic animations but may be surprising for animations which are not. A good
- * practice when defining non cyclic animations is therefore to always define a
- * keyframe for all channels at time 0 and at the last key time.
+ * When playing the animation and for a given channel, if there is no key frame
+ * defined before the current playing time, then the last key frame
+ * will be used as the first closest key frame. Similarly, if there is no key frame
+ * defined after the current playing time, then the first key frame will be used as
+ * the second closest key frame.
  *
- * When this animation is played by an CS::Animation::iSkeletonAnimationNode, it
- * calls the BlendState() method who will blend the animation at a given time
- * into the state of the skeleton.
+ * This behavior of the transition bewteen the last and the first key frames is useful
+ * for cyclic animations but may be surprising for animations that are not cyclic.
+ * Therefore, a good practice when defining non cyclic animations is to always define
+ * a key frame for all channels at the first and last key frame time.
  *
  * Main creators of instances implementing this interface:
  * - CS::Animation::iSkeletonAnimPacketFactory::CreateAnimation()
@@ -266,7 +271,7 @@ struct iSkeletonAnimPacket : public virtual iBase
  */
 struct iSkeletonAnimation : public virtual iBase
 {
-  SCF_INTERFACE(CS::Animation::iSkeletonAnimation, 2, 0, 4);
+  SCF_INTERFACE(CS::Animation::iSkeletonAnimation, 2, 0, 5);
 
   /**
    * Get the name of the animation.
@@ -290,7 +295,7 @@ struct iSkeletonAnimation : public virtual iBase
   /**
    * Add a key frame at the given time within the given channel.
    * \param channel Id of the channel.
-   * \param time The time of the key frame.
+   * \param time The time of the key frame, in seconds.
    * \param rotation The rotation of the bone for the key frame.
    * \param offset The position of the bone for the key frame.
    * \remark The rotation and offset must be in the space defined by
@@ -310,7 +315,7 @@ struct iSkeletonAnimation : public virtual iBase
    * \param channel The id of the channel.
    * \param keyframe The index of the key frame to get.
    * \param bone The id of the bone associated with the channel.
-   * \param time The time associated with the key frame.
+   * \param time The time associated with the key frame, in seconds.
    * \param rotation The rotation of the bone for the key frame.
    * \param offset The position of the bone for the key frame.
    */
@@ -330,7 +335,7 @@ struct iSkeletonAnimation : public virtual iBase
    * \param afterRot The rotation of the bone for the key frame after the given time.
    * \param afterOffset The position of the bone for the key frame after the given time.
    */
-  CS_DEPRECATED_METHOD_MSG("Deprecated in 1.9. Don't use it anymore (or complain if you found a good reason to).")
+  CS_DEPRECATED_METHOD_MSG("Deprecated in 2.0. Don't use it anymore (or complain if you found a good reason to).")
   virtual void GetTwoKeyFrames (ChannelID channel, float time, BoneID& bone,
     float& timeBefore, csQuaternion& beforeRot, csVector3& beforeOffset,
     float& timeAfter, csQuaternion& afterRot, csVector3& afterOffset) = 0;
@@ -343,12 +348,13 @@ struct iSkeletonAnimation : public virtual iBase
    * \param playbackTime The current playback time.
    * \param isPlayingCyclic If the playing should be cyclic or not. This parameter is now ignored.
    */
-  CS_DEPRECATED_METHOD_MSG("Deprecated in 1.9. Use instead the version without the 'isPlayingCyclic' parameter.")
+  CS_DEPRECATED_METHOD_MSG("Deprecated in 2.0. Use instead the version without the 'isPlayingCyclic' parameter.")
   virtual void BlendState (AnimatedMeshState* state, 
     float baseWeight, float playbackTime, bool isPlayingCyclic) const = 0;
 
   /**
-   * Get the total duration of the animation.
+   * Get the total duration of the animation, ie the difference between
+   * the first and last key frame of the animation, in seconds.
    */
   virtual float GetDuration () const = 0;
 
@@ -382,8 +388,8 @@ struct iSkeletonAnimation : public virtual iBase
   virtual bool GetFramesInBindSpace () const = 0;
 
   /**
-   * Convert the frames from bone space to bind space if needed. GetFramesInBindSpace() will
-   * now return true.
+   * Convert the frames from bone space to bind space if needed.
+   * GetFramesInBindSpace() will now return true.
    */
   virtual void ConvertFrameSpace (CS::Animation::iSkeletonFactory* skeleton) = 0;
 
@@ -399,6 +405,8 @@ struct iSkeletonAnimation : public virtual iBase
 
   /**
    * Set the id of the bone associated with the given channel.
+   * \warning Leaving an animation with more than one channel per bone is
+   * inconsistent and may lead to a random behaviour.
    */
   virtual void SetChannelBone (ChannelID channel, BoneID bone) = 0;
 
@@ -411,7 +419,7 @@ struct iSkeletonAnimation : public virtual iBase
   /**
    * Add or reset the rotation at the given time within the given channel.
    * \param channel Id of the channel.
-   * \param time The time of the key frame.
+   * \param time The time of the key frame, in seconds.
    * \param rotation The rotation of the bone for the key frame.
    * \remark The rotation must be in the space defined by
    * GetFramesInBoneSpace().
@@ -422,7 +430,7 @@ struct iSkeletonAnimation : public virtual iBase
   /**
    * Add or reset the position at the given time within the given channel.
    * \param channel Id of the channel.
-   * \param time The time of the key frame.
+   * \param time The time of the key frame, in seconds.
    * \param offset The position of the bone for the key frame.
    * \remark The offset must be in the space defined by
    * GetFramesInBoneSpace().
@@ -431,14 +439,27 @@ struct iSkeletonAnimation : public virtual iBase
     const csVector3& offset) = 0;
 
   /**
-   * Blend the animation into a skeletal state buffer at a specific playback 
+   * Blend the animation into an animesh state buffer at a specific playback 
    * position.
    * \param state The skeletal state where the result will be blended.
    * \param baseWeight The base weight to be used for blending.
-   * \param playbackTime The current playback time.
+   * \param playbackTime The current playback time, in seconds.
+   * \warning The \a playbackTime will be shifted if there is any key frame
+   * defined with a negative time stamp in the animation. The amount of time
+   * shifted is equal to the smallest negative time stamp of the animation.
+   * As a result, the total time range available for the playback ranges from
+   * zero to GetDuration().
    */
-  virtual void BlendState (AnimatedMeshState* state, 
+  virtual void BlendState (AnimatedMeshState* state,
     float baseWeight, float playbackTime) const = 0;
+
+  /**
+   * Apply a time shift on all key frames in the given channel. The time stamp
+   * of all key frames will therefore be shifted with the given time offset.
+   * \param channel The ID of the channel to apply the time shift
+   * \param offset The time offset to apply on each time stamps, in seconds.
+   */
+  virtual void ApplyTimeShift (ChannelID channel, float offset) = 0;
 };
 
 

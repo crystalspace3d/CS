@@ -284,9 +284,8 @@ namespace lighter
       // How many photons does this light get (proportional to the fraction
       // of power this light contributes to the sector)?
       double powerScale = ((pow.red + pow.green + pow.blue)/3.0)/sectorLumenPower;
-      size_t photonsForCurLight = floor(powerScale*numPhotonsPerSector + 0.5);
-
-      size_t causticPhotonsForCurLight = 0;
+      int photonsForCurLight = floor(powerScale*numPhotonsPerSector + 0.5);
+      int causticPhotonsForCurLight = 0;
       
       if (enableCaustics)
       {
@@ -297,8 +296,9 @@ namespace lighter
 
       // Setting one time light properties
 
-      float spLength , spRadius, innerFalloff, outterFalloff;
-      csVector3 lightDir;
+      float spRadius, innerFalloff, outterFalloff;
+      spRadius = innerFalloff = outterFalloff = 0.0f;
+      csVector3 lightDir (0.0f);
       switch (curLightType) 
       {
 
@@ -307,7 +307,6 @@ namespace lighter
         {
 
           lightDir = ((DirectionalLight*)curLight)->GetDirection();
-          spLength = ((DirectionalLight*)curLight)->GetLength();
           spRadius = ((DirectionalLight*)curLight)->GetRadius();
         }
         break;
@@ -346,7 +345,7 @@ namespace lighter
 	  {
 
 		  #pragma omp parallel for
-		  for (size_t num = 0; num < photonsForCurLight; ++num)
+		  for (int num = 0; num < photonsForCurLight; ++num)
 		  {
 			// Get direction to emit the photon
 			csVector3 dir;
@@ -410,12 +409,15 @@ namespace lighter
           csSphere sphere = itr.Next();
           float radius = 0;
           radius = sphere.GetRadius();
-          size_t causticPhotonsForMesh = floor(causticPhotonsForCurLight*(radius*radius*radius/totalVolume) + 0.5);
+          int causticPhotonsForMesh = floor(causticPhotonsForCurLight*(radius*radius*radius/totalVolume) + 0.5);
 
           // Setting one time light properties
       
-          float spLength , spRadius, spanAngle;
-          csVector3 lightDir, objDir, pseudoPos;
+          float spRadius, spanAngle;
+	  spRadius = spanAngle = 0.0f;
+          csVector3 lightDir (0.0f);
+	  csVector3 objDir (0.0f);
+	  csVector3 pseudoPos (0.0f);
 
           switch (curLightType)
           {
@@ -424,7 +426,6 @@ namespace lighter
           case CS_LIGHT_DIRECTIONAL:
             {
               lightDir = ((DirectionalLight*)curLight)->GetDirection();
-              spLength = ((DirectionalLight*)curLight)->GetLength();
               spRadius = ((DirectionalLight*)curLight)->GetRadius();
 
               csVector3 posDir = sphere.GetCenter()-pos;
@@ -435,7 +436,7 @@ namespace lighter
 
               if (spRadius >= parallelDist)
               {
-                float tempDist = MAX(0,parallelDist + radius - spRadius);
+                float tempDist = csMax (0.f, parallelDist + radius - spRadius);
                 pseudoPos = pos + radVector*(1 - tempDist/(parallelDist*2.0f));
                 spRadius = radius - tempDist/2.0f;
               }
@@ -498,7 +499,7 @@ namespace lighter
 		  if(!stop)
 		  {
 			  #pragma omp parallel for
-			  for (size_t cnum = 0; cnum < causticPhotonsForMesh; ++cnum)
+			  for (int cnum = 0; cnum < causticPhotonsForMesh; ++cnum)
 			  {
 				// Get direction to emit the photon
 				csVector3 dir;
@@ -678,7 +679,7 @@ namespace lighter
 
     // Compute the angles of rotation around the optical axis
     double theta = acos(cosTheta)*e1;
-    double phi = 2.0*PI*e2;
+    double phi = TWO_PI * e2;
 
     return RotateAroundN(dir, theta, phi);
   }
@@ -694,7 +695,7 @@ namespace lighter
 
     // Compute the angles of rotation around the optical axis
     double theta = outerFalloffAngle*e1;
-    double phi = 2.0*PI*e2;
+    double phi = TWO_PI * e2;
 
     return RotateAroundN(dir, theta, phi);
   }
@@ -710,9 +711,9 @@ namespace lighter
     double e2 = randGen.Get();
 
     // Compute the angle of rotation around the normal
-    double phi = 2.0*PI*e1;
+    double phi = TWO_PI * e1;
 
-    csVector3 deflectionDir = RotateAroundN(dir, PI/2, phi);
+    csVector3 deflectionDir = RotateAroundN(dir, HALF_PI, phi);
 
     return pos + deflectionDir*(spRadius*e2);
 
@@ -729,8 +730,8 @@ namespace lighter
 
     // Compute the angles of rotation around the normal
     // Up to 90 and 360 respectively.
-    double theta = PI/2.0*e1;
-    double phi = 2.0*PI*e2;
+    double theta = HALF_PI * e1;
+    double phi = TWO_PI * e2;
 
     return RotateAroundN(n, theta, phi);
   }
@@ -747,7 +748,7 @@ namespace lighter
     // Compute the angles of rotation around the normal
     // Note: altitude is weighted by cosine just like Lambert's law
     double theta = acos(sqrt(e1));
-    double phi = 2.0*PI*e2;
+    double phi = TWO_PI * e2;
 
     return RotateAroundN(n, theta, phi);
   }
@@ -766,7 +767,7 @@ namespace lighter
     // jittered samples in a grid across the hemisphere weighted
     // by the cos function again (lambert's law).
     double theta = acos(sqrt((j-e1)/M));
-    double phi = 2.0*PI*( (i-e2)/N );
+    double phi = TWO_PI * ( (i-e2)/N );
 
     return RotateAroundN(n, theta, phi);
   }

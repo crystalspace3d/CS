@@ -208,14 +208,23 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
   alGetSourcei (m_Source, AL_BUFFERS_PROCESSED, &processedBuffers);
 
   // Did OpenAL finish processing some buffers? Are we going to seek in another position of the stream?
-  if (!m_Stream->PendingSeek() && processedBuffers > 0)
+  if (!m_Stream->PendingSeek())
   {
     if (useStaticBuffer)
     {
-      alSourcei (m_Source, AL_BUFFER, 0);
-      isStaticBufferEmpty = true;
+      //According to the openal-soft developer AL_BUFFERS_PROCESSED for
+      //AL_STATIC sources must be always 0 as we aren't queuing them.
+      //So to support 1.13+ we need to check for the source state to know
+      //if openal has finished playing the buffer.
+      ALint currentState = 0;
+      alGetSourcei (m_Source, AL_SOURCE_STATE, &currentState);
+      if (currentState != AL_PLAYING)
+      {
+        alSourcei (m_Source, AL_BUFFER, 0);
+        isStaticBufferEmpty = true;
+      }
     }
-    else
+    else if (processedBuffers > 0)
     {
       // Unqueue any processed buffers
       CS_ALLOC_STACK_ARRAY(ALuint, unqueued, s_NumberOfBuffers);
@@ -252,6 +261,8 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
         alSourceQueueBuffers (m_Source, 1, &m_Buffers[m_EmptyBuffer]);
         // Advance the empty pointer;
         m_EmptyBuffer = (m_EmptyBuffer + 1) % s_NumberOfBuffers;
+        // Increasing the number of queues
+        queuedBuffers++;
       }
       else
       {
@@ -286,6 +297,16 @@ void SndSysSourceOpenAL2D::PerformUpdate ( bool ExternalUpdates )
   // the attached buffers and set paused, while we still want it to play. 
   int currentState;
   alGetSourcei (m_Source, AL_SOURCE_STATE, &currentState);
+  if (m_Stream->GetPauseState() == CS_SNDSYS_STREAM_COMPLETED)
+  {
+    if (queuedBuffers == 0)
+    {
+      // Set state to paused so that it will be
+      // removed if auto unregistration is set
+      m_Stream->Pause();
+    }
+  }
+
   if (m_Stream->GetPauseState() == CS_SNDSYS_STREAM_PAUSED)
   {
     if (currentState != AL_PAUSED || currentState != AL_INITIAL)

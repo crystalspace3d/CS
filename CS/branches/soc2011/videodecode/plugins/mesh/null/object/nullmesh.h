@@ -73,7 +73,7 @@ public:
   
 private:
   iMeshFactoryWrapper* logparent_factory;
-  iMeshObjectType* nullmesh_type;
+  csRef<iMeshObjectType> nullmesh_type;
   iObjectModel* collision_data;
   float radius;
   csBox3 box;
@@ -133,7 +133,7 @@ public:
     csVector3& isect, float *pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
     csVector3& isect, float* pr, int* polygon_idx = 0,
-    iMaterialWrapper** material = 0);
+    iMaterialWrapper** material = 0, bool bf = false);
   virtual void SetMeshWrapper (iMeshWrapper* lp) { logparent = lp; }
   virtual iMeshWrapper* GetMeshWrapper () const { return logparent; }
 
@@ -163,7 +163,7 @@ public:
 
 
 private:
-  iMeshObjectFactory* factory;
+  csRef<iMeshObjectFactory> factory;
   iMeshObjectType* nullmesh_type;
   iMeshWrapper* logparent;
   iMeshObject* hitbeam_mesh;

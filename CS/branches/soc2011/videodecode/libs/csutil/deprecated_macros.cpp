@@ -22,3 +22,24 @@
 
 #include "cssysdef.h"
 
+#include "csutil/syspath.h"
+
+#undef CS_MKDIR
+
+namespace CS
+{
+  namespace deprecated
+  {
+    int CS_MKDIR (const char* path)
+    {
+      int err (Platform::CreateDirectory (path));
+      if (err != 0)
+      {
+        errno = err;
+        return -1;
+      }
+      else
+        return 0;
+    }
+  } // namespace deprecated
+} // namespace CS

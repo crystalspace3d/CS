@@ -22,9 +22,10 @@
 #include "cssysdef.h"
 
 #include "csutil/scf.h"
-#include "bodymesh.h"
-#include <iengine/mesh.h>
+#include "csutil/stringquote.h"
+#include "iengine/mesh.h"
 #include "ivaria/reporter.h"
+#include "bodymesh.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 {
@@ -95,8 +96,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 			      CS::Animation::iSkeletonFactory* skeletonFactory)
     : scfImplementationType (this), name (name), manager (manager),
     skeletonFactory (skeletonFactory)
-  {
-  }
+  {}
 
   const char* BodySkeleton::GetName () const
   {
@@ -157,6 +157,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     return boneHash.Get (bone, 0);
   }
 
+  class BoneIDIterator : public scfImplementation1<BoneIDIterator, CS::Animation::iBoneIDIterator>
+  {
+  private:
+    csHash<csRef<BodyBone>, CS::Animation::BoneID>::ConstGlobalIterator it;
+
+  public:
+    BoneIDIterator (const csHash<csRef<BodyBone>, CS::Animation::BoneID>::ConstGlobalIterator& it) :
+      scfImplementationType (this), it (it) { }
+    virtual ~BoneIDIterator () { }
+    virtual bool HasNext () const { return it.HasNext (); }
+    virtual CS::Animation::BoneID Next ()
+    {
+      CS::Animation::BoneID boneID;
+      csRef<BodyBone> bone = it.Next (boneID);
+      return boneID;
+    }
+  };
+
+  csPtr<CS::Animation::iBoneIDIterator> BodySkeleton::GetBodyBones () const
+  {
+    BoneIDIterator* iterator = new BoneIDIterator (boneHash.GetIterator ());
+    return iterator;
+  }
+
+  void BodySkeleton::RemoveBodyBone (CS::Animation::BoneID bone)
+  {
+    boneHash.DeleteAll (bone);
+  }
+
   void BodySkeleton::ClearBodyBones ()
   {
     boneHash.DeleteAll ();
@@ -194,11 +223,196 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     return chainHash.Get (name, 0);
   }
 
+  class BodyChainIterator : public scfImplementation1<BodyChainIterator, CS::Animation::iBodyChainIterator>
+  {
+  private:
+    csHash<csRef<CS::Animation::iBodyChain>, csString>::ConstGlobalIterator it;
+
+  public:
+    BodyChainIterator (const csHash<csRef<CS::Animation::iBodyChain>, csString>::ConstGlobalIterator& it) :
+      scfImplementationType (this), it (it) { }
+    virtual ~BodyChainIterator () { }
+    virtual bool HasNext () const { return it.HasNext (); }
+    virtual CS::Animation::iBodyChain* Next ()
+    {
+      csString name;
+      csRef<CS::Animation::iBodyChain> chain = it.Next (name);
+      return chain;
+    }
+  };
+
+  csPtr<CS::Animation::iBodyChainIterator> BodySkeleton::GetBodyChains () const
+  {
+    BodyChainIterator* iterator = new BodyChainIterator (chainHash.GetIterator ());
+    return iterator;
+  }
+
+  void BodySkeleton::RemoveBodyChain (const char* name)
+  {
+    chainHash.DeleteAll (name);
+  }
+
   void BodySkeleton::ClearBodyChains ()
   {
     chainHash.DeleteAll ();
   }
 
+  void BodySkeleton::PopulateDefaultColliders
+    (const CS::Mesh::iAnimatedMeshFactory* animeshFactory,
+     ColliderType colliderType)
+  {
+    // Check that the animesh uses the same skeleton factory
+    if (skeletonFactory != animeshFactory->GetSkeletonFactory ())
+    {
+      manager->Report (CS_REPORTER_SEVERITY_WARNING,
+		       "Creation of the default chains failed: the skeleton factory of "
+		       "this chain is different than the one of the animesh");
+      return;
+    }
+
+    const csArray<CS::Animation::BoneID> &bones = skeletonFactory->GetBoneOrderList ();
+
+    // Check that there are any bones in the skeleton
+    if (!bones.GetSize ())
+      return;
+
+    // Iterate on all bones
+    for (size_t i = 0; i < bones.GetSize (); i++)
+    {
+      const CS::Animation::BoneID &boneID = bones.Get (i);
+
+      // Check that the bounding box is not empty
+      const csBox3 &box = animeshFactory->GetBoneBoundingBox (boneID);
+      if (box.Empty ()) continue;
+
+      // Find or create the body bone
+      BodyBone* bone;
+      if (!boneHash.Contains (boneID))
+      {
+	csRef<BodyBone> newFact;
+	newFact.AttachNew (new BodyBone (boneID));
+	bone = boneHash.PutUnique (boneID, newFact);
+      }
+
+      else bone = *boneHash.GetElementPointer (boneID);
+
+      // Create a default collider if there are none previously defined
+      if (!bone->colliders.GetSize ())
+      {
+	iBodyBoneCollider* collider = bone->CreateBoneCollider ();
+
+	switch (colliderType)
+	{
+	case COLLIDER_BOX:
+	  collider->SetBoxGeometry (box.GetSize ());
+	  collider->SetTransform (csOrthoTransform (csMatrix3 (), box.GetCenter ()));
+	  break;
+	case COLLIDER_SPHERE:
+	  collider->SetSphereGeometry (box.GetSize ().Norm () * 0.4f);
+	  collider->SetTransform (csOrthoTransform (csMatrix3 (), box.GetCenter ()));
+	  break;
+	case COLLIDER_CYLINDER:
+	{
+	  const csVector3 size = box.GetSize ();
+	  collider->SetCylinderGeometry (size[2], csQsqrt (size[0] * size[0] + size[1] * size[1]) * 0.4f);
+	  collider->SetTransform (csOrthoTransform (csMatrix3 (), box.GetCenter ()));
+	  break;
+	}
+	case COLLIDER_CAPSULE:
+	{
+	  const csVector3 size = box.GetSize ();
+	  float radius = csQsqrt (size[0] * size[0] + size[1] * size[1]) * 0.4f;
+	  collider->SetCapsuleGeometry (size[2] - radius, radius);
+	  collider->SetTransform (csOrthoTransform (csMatrix3 (), box.GetCenter ()));
+	  break;
+	}
+	default:
+	  break;
+	}
+      }
+
+      // Create a default joint if it has not been previously defined
+      // and if there is a valid collider for the parent bone
+      if (!bone->joint)
+      {
+	CS::Animation::BoneID parentBoneID = skeletonFactory->GetBoneParent (boneID);
+	if (parentBoneID == CS::Animation::InvalidBoneID)
+	  continue;
+
+	if (!boneHash.Contains (parentBoneID))
+	  continue;
+
+	BodyBone* parentBone = *boneHash.GetElementPointer (parentBoneID);
+	if (!parentBone->colliders.GetSize ())
+	  continue;
+
+	iBodyBoneJoint* joint = bone->CreateBoneJoint ();
+
+	// Constraint the translation by default
+	joint->SetTransConstraints (true, true, true);
+      }
+    }
+  }
+
+  void BodySkeleton::PopulateDefaultBodyChains ()
+  {
+    const csArray<CS::Animation::BoneID> &bones = skeletonFactory->GetBoneOrderList ();
+
+    // Check that there are any bones in the skeleton
+    if (!bones.GetSize ())
+      return;
+
+    // Start the recursion on all root bones
+    for (size_t i = 0; i < bones.GetSize (); i++)
+    {
+      const CS::Animation::BoneID &boneID = bones.Get (i);
+
+      if (skeletonFactory->GetBoneParent (boneID) == CS::Animation::InvalidBoneID)
+	PopulateDefaultBodyChainNode (nullptr, bones, i);
+    }
+  }
+
+  void BodySkeleton::PopulateDefaultBodyChainNode
+    (BodyChainNode* parentNode,
+     const csArray<CS::Animation::BoneID> &bones,
+     size_t index)
+  {
+    const CS::Animation::BoneID &boneID = bones.Get (index);
+
+    // Check if there is any collider defined for this bone
+    csRef<BodyChainNode> node;
+    if (boneHash.Contains (boneID)
+	&& (*boneHash.GetElementPointer (boneID))->colliders.GetSize ())
+    {
+      // If there are no parent node then create a new chain
+      if (!parentNode)
+      {
+	csString name = "default_";
+	name += skeletonFactory->GetBoneName (boneID);
+	CS::Animation::iBodyChain* chain = CreateBodyChain (name, boneID);
+	node = dynamic_cast<BodyChainNode*> (chain->GetRootNode ());
+      }
+
+      // Else create a new chain node
+      else
+      {
+	node.AttachNew (new BodyChainNode (boneID));
+	parentNode->AddChild (node);
+      }
+    }
+
+    // Recurse on all children bones
+    for (size_t i = index + 1; i < bones.GetSize (); i++)
+    {
+      const CS::Animation::BoneID &boneIDIt = bones.Get (i);
+
+      // Check that this bone is a child of the parent one
+      if (skeletonFactory->GetBoneParent (boneIDIt) != boneID)
+	continue;
+
+      PopulateDefaultBodyChainNode (node, bones, i);
+    }
+  }
 
   /********************
    *  BodyBone
@@ -266,24 +480,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 
   BodyChain::BodyChain (BodySkeleton* bodySkeleton, const char *name,
 			CS::Animation::BoneID rootBone)
-    : scfImplementationType (this), name (name), bodySkeleton (bodySkeleton)
-  {
-    rootNode.AttachNew (new BodyChainNode (rootBone));
-  }
+    : scfImplementationType (this), name (name), bodySkeleton (bodySkeleton), rootNode (rootBone)
+  {}
 
   const char* BodyChain::GetName () const
   {
     return name;
   }
 
-  CS::Animation::iBodySkeleton* BodyChain::GetBodySkeleton () const
+  CS::Animation::iBodySkeleton* BodyChain::GetBodySkeleton ()
   {
     return bodySkeleton;
   }
 
-  CS::Animation::iBodyChainNode* BodyChain::GetRootNode () const
+  CS::Animation::iBodyChainNode* BodyChain::GetRootNode ()
   {
-    return rootNode;
+    return &rootNode;
   }
 
   void CollectAllNodes (csHash<csRef<BodyChainNode>, CS::Animation::BoneID>& nodeHash,
@@ -310,7 +522,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 
     // collect all nodes of this chain
     csHash<csRef<BodyChainNode>, CS::Animation::BoneID> currentHash;
-    CollectAllNodes (currentHash, rootNode);
+    CollectAllNodes (currentHash, &rootNode);
 
     // check that the sub bone is not already in the chain
     if (currentHash.Contains (subBone))
@@ -334,7 +546,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 	bodySkeleton->manager->Report (CS_REPORTER_SEVERITY_ERROR,
 			 "The specified child bone %i (%s) is not really a child of root bone %i (%s)",
 			 subBone, bodySkeleton->skeletonFactory->GetBoneName (subBone),
-			 rootNode->boneID, bodySkeleton->skeletonFactory->GetBoneName (rootNode->boneID));
+			 rootNode.boneID, bodySkeleton->skeletonFactory->GetBoneName (rootNode.boneID));
 	return false;
       }
 
@@ -364,7 +576,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
   {
 #ifdef CS_DEBUG
     // check if the chain is really empty
-    if (rootNode->children.GetSize ())
+    if (rootNode.children.GetSize ())
     {
       bodySkeleton->manager->Report (CS_REPORTER_SEVERITY_ERROR,
 				     "The chain %s is not empty while trying to add all sub chains",
@@ -377,14 +589,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     // When this method will return, all the bones that are not sub child of this chain will
     // be decref'd and therefore deleted.
     csHash<csRef<BodyChainNode>, CS::Animation::BoneID> nodeHash;
-    nodeHash.Put (rootNode->boneID, rootNode);
+    nodeHash.Put (rootNode.boneID, &rootNode);
     CS::Animation::BoneID maxBoneID = bodySkeleton->skeletonFactory->GetTopBoneID ();
     CS::Animation::BoneID rootBoneID = 0;
 
     for (CS::Animation::BoneID boneIt = 0; boneIt < maxBoneID; boneIt++)
     {
       // check if this is the root of this chain
-      if (rootNode->boneID == boneIt)
+      if (rootNode.boneID == boneIt)
 	continue;
 
       // find or create an entry in the node hash
@@ -423,18 +635,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
   void BodyChain::DebugPrint () const
   {
     csPrintf ("Bone chain %s:\n", name.GetData ());
-    Print (rootNode);
+    Print (&rootNode);
   }
 
-  void BodyChain::Print (BodyChainNode* node, size_t level) const
+  void BodyChain::Print (const BodyChainNode* node, size_t level) const
   {
     for (size_t i = 0; i < level; i++)
       csPrintf (" ");
-    csPrintf ("+ node %zu: %s\n", node->boneID, bodySkeleton->skeletonFactory->GetBoneName (node->boneID));
+    csPrintf ("+ bone %zu: %s\n", node->boneID,
+	      bodySkeleton->skeletonFactory->GetBoneName (node->boneID));
 
-    for (csRefArray<BodyChainNode>::Iterator it = node->children.GetIterator (); it.HasNext (); )
+    for (csRefArray<BodyChainNode>::ConstIterator it = node->children.GetIterator (); it.HasNext (); )
     {
-      BodyChainNode*& node = it.Next ();
+      csRef<BodyChainNode> node = it.Next ();
       Print (node, level + 1);
     }
   }
@@ -442,10 +655,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
   void BodyChain::PopulateBoneMask (csBitArray& boneMask) const
   {
     boneMask.SetSize (bodySkeleton->skeletonFactory->GetTopBoneID () + 1);
-    PopulateMask (rootNode, boneMask);
+    PopulateMask (&rootNode, boneMask);
   }
 
-  void BodyChain::PopulateMask (BodyChainNode* node, csBitArray& boneMask) const
+  void BodyChain::PopulateMask (const BodyChainNode* node, csBitArray& boneMask) const
   {
     boneMask.SetBit (node->GetAnimeshBone ());
     for (size_t i = 0; i < node->GetChildCount (); i++)
@@ -570,8 +783,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
 
   BodyBoneJoint::BodyBoneJoint ()
     : scfImplementationType (this), bounce (0.0f),
-    maxAngle (-PI, -PI/2.0f, -PI/2.0f), maxDistance (-1.0f),
-    minAngle (PI, PI/2.0f, PI/2.0f), minDistance (1.0f)
+    maxAngle (-PI, -HALF_PI, -PI), maxDistance (-1.0f),
+    minAngle (PI, HALF_PI, PI), minDistance (1.0f)
   {
     rotConstraints[0] = false;
     rotConstraints[1] = false;
@@ -692,8 +905,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
   CS_LEAKGUARD_IMPLEMENT(BodyBoneCollider);
 
   BodyBoneCollider::BodyBoneCollider ()
-    : scfImplementationType (this), friction (0.0f), softness (0.0f),
-    elasticity (0.0f), density (0.0f), geometryType (NO_GEOMETRY),
+    : scfImplementationType (this), friction (0.5f), softness (0.0f),
+    elasticity (0.2f), density (0.1f), geometryType (NO_GEOMETRY),
     box_size (0.0f), length (0.0f), radius (0.0f)
   {
   }
@@ -742,10 +955,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     return true;
   }
 
-  bool BodyBoneCollider::SetSphereGeometry (const csSphere &sphere)
+  bool BodyBoneCollider::SetSphereGeometry (float radius)
   {
     geometryType = SPHERE_COLLIDER_GEOMETRY;
-    this->sphere = sphere;
+    this->radius = radius;
     return true;
   }
  
@@ -810,12 +1023,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bodymesh)
     return true;
   }
 
-  bool BodyBoneCollider::GetSphereGeometry (csSphere &sphere) const
+  bool BodyBoneCollider::GetSphereGeometry (float &radius) const
   {
     if (geometryType != SPHERE_COLLIDER_GEOMETRY)
       return false;
 
-    sphere = this->sphere;
+    radius = this->radius;
     return true;
   }
 

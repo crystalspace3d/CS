@@ -24,6 +24,7 @@
  */
 
 #include "csextern.h"
+#include "csgeom/math.h"
 #include "csutil/array.h"
 #include "csutil/comparator.h"
 #include "csutil/util.h"
@@ -165,7 +166,7 @@ protected:
     Modulo = *p;
     CS_ASSERT (Modulo);
 
-    Elements.SetSize (Modulo, ElementArray (0, MIN(Modulo / GrowRate, 4)));
+    Elements.SetSize (Modulo, ElementArray (size_t (0), csMin (Modulo / GrowRate, size_t (4))));
 
     for (size_t i = 0; i < elen; i++)
     {
@@ -202,7 +203,7 @@ public:
    */
   csHash (size_t size = 23, size_t grow_rate = 5, size_t max_size = 20000)
     : Modulo (size), Size(0), InitModulo (size),
-      GrowRate (MIN (grow_rate, size)), MaxSize (max_size)
+      GrowRate (csMin (grow_rate, size)), MaxSize (max_size)
   {
   }
 
@@ -613,6 +614,9 @@ public:
 
     friend class csHash<T, K, ArrayMemoryAlloc, ArrayElementHandler>;
   public:
+    /// Empty constructor.
+    GlobalIterator () : hash (0), size (0) { Zero (); }
+
     /// Copy constructor.
     GlobalIterator (const GlobalIterator &o) :
       hash (o.hash),
@@ -793,6 +797,9 @@ public:
 
     friend class csHash<T, K, ArrayMemoryAlloc, ArrayElementHandler>;
   public:
+    /// Empty constructor.
+    ConstGlobalIterator () : hash (0), size (0) { Zero (); }
+
     /// Copy constructor.
     ConstGlobalIterator (const ConstGlobalIterator &o) :
       hash (o.hash),

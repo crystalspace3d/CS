@@ -42,12 +42,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
   /**
    * Type conversion
    */
-  inline csVector3 Assimp2CS (aiVector3D& v)
+  inline csVector3 Assimp2CS (const aiVector3D& v)
   {
     return csVector3 (v.x, v.y, v.z);
   }
 
-  inline csColor4 Assimp2CS (aiColor4D& c)
+  inline csColor4 Assimp2CS (const aiColor4D& c)
   {
     return csColor4 (c.r, c.g, c.b, c.a);
   }
@@ -57,7 +57,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     return csTriangle (t[0], t[1], t[2]);
   }
 
-  inline csQuaternion Assimp2CS (aiQuaternion& q)
+  inline csQuaternion Assimp2CS (const aiQuaternion& q)
   {
     return csQuaternion (q.x, q.y, q.z, q.w);
   }
@@ -175,12 +175,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
   class csIOSystem : public Assimp::IOSystem
   {
   public:
-    csIOSystem (iVFS* vfs, const char* filename)
+    csIOSystem (iVFS* vfs, csString* file)
       : vfs (vfs), changer (vfs)
     {
-      csString file = filename;
-      if (filename && file.FindFirst ('/') != (size_t) -1)
-	changer.ChangeTo (filename);
+      // Check for a root path to move to
+      if (!file) return;
+
+      size_t index = file->FindLast ('/');
+      if (index == (size_t) -1) return;
+
+      changer.ChangeToFull (file->Slice (0, index));
+      *file = file->Slice (index + 1);
     }
 
     ~csIOSystem () {}
@@ -195,10 +200,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 
     Assimp::IOStream* Open (const char *pFile, const char *pMode="rb")
     {
-      printf ("Opening file [%s]...", pFile); 
-      csRef<iFile> file = vfs->Open (pFile,
-				     *pMode == 'w' ? VFS_FILE_WRITE : VFS_FILE_READ);
-      printf (file ? "Success\n" : "Failed!\n");
+      csRef<iFile> file = vfs->Open
+	(pFile, *pMode == 'w' ? VFS_FILE_WRITE : VFS_FILE_READ);
       return new csIOStream (file);
     }
 
@@ -208,6 +211,34 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
   private:
     csRef<iVFS> vfs;
     csVfsDirectoryChanger changer;
+  };
+
+  /**
+   * Progress reporting
+   */
+
+  struct AssimpProgressHandler : public Assimp::ProgressHandler
+  {
+    //-- Assimp::ProgressHandler
+    bool Update (float percentage);  
+  };
+
+  /**
+   * Logging
+   */
+
+  class Logger : public Assimp::LogStream
+  {
+  public:
+    Logger (iObjectRegistry* objectRegistry, int severity)
+      : objectRegistry (objectRegistry), severity (severity) {}
+
+    //-- Assimp::LogStream
+    void write (const char* message);
+
+  private:
+    iObjectRegistry* objectRegistry;
+    int severity;
   };
 
 }

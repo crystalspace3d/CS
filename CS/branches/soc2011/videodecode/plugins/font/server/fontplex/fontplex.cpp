@@ -271,7 +271,7 @@ csPtr<iFont> csFontServerMultiplexer::LoadFont (const char *filename,
   {
     ParseFontLoaderOrder (*order, orderStr, false);
   }
-  else
+  else if (filename != 0)
   {
     order->PushSmart (csFontLoadOrderEntry (fontservers, filename, 1.0f, false));
   }
@@ -523,8 +523,8 @@ void csFontPlexer::GetDimensions (const char *text, int &oW, int &oH, int &desc)
 	  int fW, fH, fDesc = font->GetDescent ();;
 	  font->GetMaxSize (fW, fH);
 
-	  oH = MAX (oH, fH);
-	  desc = MAX (desc, fDesc);
+	  oH = csMax (oH, fH);
+	  desc = csMax (desc, fDesc);
 	  break;
 	}
       }

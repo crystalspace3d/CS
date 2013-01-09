@@ -19,7 +19,9 @@
 #ifndef __CSUTIL_NULLPTR_H__
 #define __CSUTIL_NULLPTR_H__
 
-#if !defined(CS_NO_PROVIDE_NULLPTR) && !defined(CS_HAS_NULLPTR)
+#if !defined(CS_NO_PROVIDE_NULLPTR)
+#if !defined(CS_HAS_NULLPTR) \
+    || (defined(__STRICT_ANSI__) && !defined(CS_HAS_NULLPTR_STRICT_ANSI))
 
 /*
   Based on "library implementation" in C++ Standards Committee paper 2431
@@ -47,9 +49,21 @@ namespace std
   };
 }
 
+#ifndef CS_NO_NULLPTR_RENAME_HACK
+/* Hack around the “identifier ‘nullptr’ will become a keyword in C++0x”
+ * warnings gcc 4.6 emits.
+ * The “proper” way – using a #pragma GCC diagnostic – is, unfortunately,
+ * broken: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48914
+ * Instead, to avoid use of that identifier, rename that identifier.
+ */
+#define nullptr CS_nullptr
+#endif
+
 using ::std::nullptr_t;
 const nullptr_t nullptr = {};
 
-#endif // #if !defined(CS_NO_PROVIDE_NULLPTR) && !defined(CS_HAS_NULLPTR)
+#endif /* !defined(CS_HAS_NULLPTR) \
+	  || (defined(__STRICT_ANSI__) && !defined(CS_HAS_NULLPTR_STRICT_ANSI)) */
+#endif // !defined(CS_NO_PROVIDE_NULLPTR)
 
 #endif // __CSUTIL_NULLPTR_H__

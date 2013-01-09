@@ -30,7 +30,7 @@ static float GetAngle (float x, float y)
 
   float angle = acos (x);
   if (y < 0)
-    angle = 2*PI - angle;
+    angle = TWO_PI - angle;
 
   return angle;
 }
@@ -62,7 +62,7 @@ bool Monster::Initialize (const char* name, iSector* sector, csTransform& transf
   size_t dotpos = filename.find_first_of(".");
   filename = filename.substr(0, dotpos);
 
-  std::string path = "/data/bias/models/";
+  std::string path = "/biasmodels/";
   path += filename;
   path += "/";
   path += filename;
@@ -103,7 +103,7 @@ bool Monster::Initialize (const char* name, iSector* sector, csTransform& transf
   if (factoryName == "knight")
   {
     // Create the mesh
-    sword = LoadMesh (object_reg, "sword", "/data/bias/models/knight/factories/sword");
+    sword = LoadMesh (object_reg, "sword", "/biasmodels/knight/factories/sword");
     if (!sword)
     {
       eventQueue->RemoveListener (this);
@@ -166,9 +166,11 @@ void Monster::Behaviour()
     {
       float len = sqrt (csSquaredDist::PointPoint (v1, v2));
       float angle = acos ((v2.x-v1.x) / len);
-      if ((v2.z-v1.z) > 0) angle = 2*PI - angle;
-      angle += PI / 2.0f;
-      if (angle > 2*PI) angle -= 2*PI;
+      if ((v2.z-v1.z) > 0)
+        angle = TWO_PI - angle;
+      angle += HALF_PI;
+      if (angle > TWO_PI)
+        angle -= TWO_PI;
 
       desiredAngle = angle;
       angleToReachFlag = true;
@@ -273,7 +275,7 @@ void Monster::Explode()
     engine->WantToDie(sword);
 
   // Change the mesh.
-  mesh = LoadMesh(object_reg, "gibs", "/data/bias/models/iceblocks/gibs");
+  mesh = LoadMesh(object_reg, "gibs", "/biasmodels/iceblocks/gibs");
   if (!mesh) return;
   mesh->GetMovable()->SetPosition(sector, pos);
   mesh->GetMovable()->UpdateMove();

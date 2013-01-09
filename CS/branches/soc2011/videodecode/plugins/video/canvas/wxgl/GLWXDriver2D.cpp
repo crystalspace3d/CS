@@ -75,6 +75,32 @@ SCF_IMPLEMENT_FACTORY (csGraphics2DWX)
 csGraphics2DWX::csGraphics2DWX (iBase *iParent) :
     scfImplementationType (this, iParent), myParent (0), theCanvas (0)
 {
+#if WIN32
+  cursorIsHidden = false;
+#endif
+}
+
+void csGraphics2DWX::AlertV (int type, const char* title,
+    const char* okMsg, const char* msg, va_list args)
+{
+  csString message;
+  message.FormatV (msg, args);
+  switch (type)
+  {
+    case CS_ALERT_ERROR:
+      wxMessageBox (wxString::FromUTF8 (message), wxT("Error!"),
+	  wxICON_ERROR, myParent);
+      break;
+    case CS_ALERT_WARNING:
+      wxMessageBox (wxString::FromUTF8 (message), wxT("Warning!"),
+	  wxICON_EXCLAMATION, myParent);
+      break;
+    default:
+    case CS_ALERT_NOTE:
+      wxMessageBox (wxString::FromUTF8 (message), wxT("Note!"),
+	  wxICON_INFORMATION, myParent);
+      break;
+  }
 }
 
 void csGraphics2DWX::Report (int severity, const char* msg, ...)
@@ -107,9 +133,63 @@ bool csGraphics2DWX::Initialize (iObjectRegistry *object_reg)
   return true;
 }
 
+bool csGraphics2DWX::SetMousePosition (int x, int y)
+{
+  myParent->WarpPointer (x, y);
+  return true;
+}
+
+bool csGraphics2DWX::SetMouseCursor (csMouseCursorID shape)
+{
+  int cursorId;
+  switch (shape)
+  {
+    case csmcNone:
+      cursorId = wxCURSOR_BLANK;
+#if WIN32
+      // Workaround for windows where setting a blank cursor doesn't appear to work otherwise.
+      {
+        wxCursor cursor (cursorId);
+        myParent->SetCursor (cursor);
+	if (!cursorIsHidden)
+	{
+	  ShowCursor (0);
+	  cursorIsHidden = true;
+	}
+	return true;
+      }
+#endif
+      break;
+    case csmcArrow: cursorId = wxCURSOR_ARROW; break;
+    case csmcLens: cursorId = wxCURSOR_MAGNIFIER; break;
+    case csmcCross: cursorId = wxCURSOR_CROSS; break;
+    case csmcPen: cursorId = wxCURSOR_PENCIL; break;
+    case csmcMove: cursorId = wxCURSOR_LEFT_BUTTON; break;
+    case csmcSizeNWSE: cursorId = wxCURSOR_SIZENWSE; break;
+    case csmcSizeNESW: cursorId = wxCURSOR_SIZENESW; break;
+    case csmcSizeNS: cursorId = wxCURSOR_SIZENS; break;
+    case csmcSizeEW: cursorId = wxCURSOR_SIZEWE; break;
+    case csmcStop: cursorId = wxCURSOR_NO_ENTRY; break;
+    case csmcWait: cursorId = wxCURSOR_WAIT; break;
+    default: cursorId = wxCURSOR_ARROW; break;
+  }
+#if WIN32
+  if (cursorIsHidden)
+  {
+    ShowCursor (1);
+    cursorIsHidden = false;
+  }
+#endif
+  wxCursor cursor (cursorId);
+  //myParent->SetCursor (cursor);
+  theCanvas->SetCursor (cursor);
+  return true;
+}
+
 void csGraphics2DWX::SetParent(wxWindow* wx)
 {
   myParent = wx;
+  if (myParent && theCanvas) theCanvas->Reparent(myParent);
 }
 
 wxWindow* csGraphics2DWX::GetWindow()
@@ -531,6 +611,7 @@ BEGIN_EVENT_TABLE(csGLCanvas, wxGLCanvas)
   EVT_ERASE_BACKGROUND(csGLCanvas::OnEraseBackground)
   EVT_KEY_DOWN( csGLCanvas::OnKeyDown )
   EVT_KEY_UP( csGLCanvas::OnKeyUp )
+  EVT_CHAR( csGLCanvas::OnKeyChar )
   EVT_ENTER_WINDOW( csGLCanvas::OnEnterWindow )
   EVT_LEAVE_WINDOW( csGLCanvas::OnLeaveWindow )
   EVT_MOUSE_EVENTS( csGLCanvas::OnMouseEvent )
@@ -542,7 +623,8 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
                        const wxSize& size, long style,
                        const wxString& name, int* attr)
   : wxGLCanvas(parent, id, pos, size, style | wxWANTS_CHARS, name, attr),
-    g2d(g)
+    g2d(g),
+    lastKeyCode (-1)
 {
   int w, h;
   GetClientSize(&w, &h);
@@ -561,7 +643,7 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
     p = p->GetParent();
   }
   if (visible) SetCurrent();
-  g2d->Resize(w, h);
+  g2d->ResizeNotify (w, h);
 }
 
 
@@ -752,28 +834,67 @@ void csGLCanvas::EmitKeyEvent(wxKeyEvent& event, bool down)
   utf32_char cskey_raw = 0, cskey_cooked = 0, cskey_cooked_new = 0;
   wxCodeToCSCode (event.GetKeyCode(), cskey_raw, cskey_cooked);
 
-#if wxHAS_UNICODE
-  cskey_cooked_new = event.GetUnicodeKey();
-#else
   // Argh! Seems there is no way to get the character code for non-ASCII keys
   // in non-Unicode builds... not even a character in the local charset...
   if (event.GetKeyCode() <= 127)
+  {
     cskey_cooked_new = event.GetKeyCode();
+  }
+#if wxUSE_UNICODE
+  else
+  {
+    cskey_cooked_new = event.GetUnicodeKey();
+  }
 #endif
-  if (cskey_raw == 0)
-    csUnicodeTransform::MapToLower (cskey_cooked_new, &cskey_raw, 1,
-      csUcMapSimple);
-  if (cskey_cooked == 0) cskey_cooked = cskey_cooked_new;
-  if (cskey_raw != 0) g2d->EventOutlet->Key (cskey_raw, cskey_cooked, down);
+
+  if (down)
+  {
+    if (cskey_raw == 0)
+      cskey_raw = csUnicodeTransform::MapToLower (cskey_cooked_new);
+    if (cskey_cooked == 0) cskey_cooked = cskey_cooked_new;
+    if ((cskey_raw != 0) && (lastKeyCode >= 0))
+    {
+      // Store away the key codes so we restore them in the KEY_UP event
+      keyCodeToCS.PutUnique (lastKeyCode, KeyEventCodes (cskey_raw, cskey_cooked));
+      lastKeyCode = -1;
+    }
+  }
+  else
+  {
+    const KeyEventCodes* codes = keyCodeToCS.GetElementPointer (event.KeyCode());
+    if (codes)
+    {
+      cskey_raw = codes->raw;
+      cskey_cooked = codes->cooked;
+    }
+    keyCodeToCS.DeleteAll (event.KeyCode());
+  }
+  if (cskey_raw != 0)
+  {
+    g2d->EventOutlet->Key (cskey_raw, cskey_cooked, down);
+  }
 }
 
 void csGLCanvas::OnKeyDown( wxKeyEvent& event )
 {
+  if ((event.GetKeyCode() >= 32) && (event.GetKeyCode() < WXK_START))
+  {
+    // Non-special characters: defer to EVT_CHAR handling to produce event
+    lastKeyCode = event.GetKeyCode();
+    event.Skip ();
+    return;
+  }
+
   EmitKeyEvent(event, true);
 }
 
 void csGLCanvas::OnKeyUp( wxKeyEvent& event )
 {
   EmitKeyEvent(event, false);
+}
+
+void csGLCanvas::OnKeyChar( wxKeyEvent& event )
+{
+  EmitKeyEvent(event, true);
 }
 

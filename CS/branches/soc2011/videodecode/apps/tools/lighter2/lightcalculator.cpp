@@ -150,24 +150,18 @@ namespace lighter
     // Loop through all submesh elements
     for (size_t submesh = 0; submesh < submeshArray.GetSize (); ++submesh)
     {
-      // Reset area/pixel ratio
-      float area2pixel = 1.0f;
-
       // Loop through all element primitives    
       PrimitiveArray& primArray = submeshArray[submesh];
 
-    #pragma omp parallel for
-      for (size_t pidx = 0; pidx < primArray.GetSize (); ++pidx)
+      // OpenMP 2.5 expects iterator to be signed, so cast size_t to signed.
+      int pidxN = static_cast<int>(primArray.GetSize());
+      #pragma omp parallel for
+      for (int pidx = 0; pidx < pidxN; ++pidx)
       {
         // Get next primitive
         Primitive& prim = primArray[pidx];
 
-        // Compute area/pixel ratio
-        area2pixel = 
-          1.0f / (prim.GetuFormVector () % prim.GetvFormVector ()).Norm();
-
         // Get reference to this primitive's lightmap (non pseudo-dynamic)
-        size_t numElements = prim.GetElementCount ();        
         Lightmap* normalLM = sector->scene->GetLightmap (
           prim.GetGlobalLightmapID (), subLightmapNum, (Light*)0);
 
@@ -198,8 +192,10 @@ namespace lighter
         const size_t vOffs = size_t (floorf (minUV.y));
 
         // Iterate all primitive elements
-		#pragma omp parallel for
-        for (size_t eidx = 0; eidx < numElements; ++eidx)
+        // OpenMP 2.5 expects iterator to be signed, so cast size_t to signed.
+        int numElements = static_cast<int>(prim.GetElementCount());
+        #pragma omp parallel for
+        for (int eidx = 0; eidx < numElements; ++eidx)
         {
           // Skip empty elements
           Primitive::ElementType elemType = prim.GetElementType (eidx);

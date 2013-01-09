@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 Christian Van Brussel, Institute of Information
+  Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -71,6 +71,19 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
 						  const char* factoryName,
 						  const char* filename);
 
+  struct BBoxPopulationData
+  {
+    csBox3 bbox;
+    int childrenCount;
+    size_t index1;
+    size_t index2;
+    size_t index3;
+
+    BBoxPopulationData ()
+    : childrenCount (0), index1 (0), index2 (0), index3 (0) {}
+  };
+
+
  public:
 
   /**
@@ -111,8 +124,9 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
    * \param baseMesh The base animesh where the morph target will be imported.
    * \param morphMesh The animesh to import into the other as a new morph target.
    * \param morphName The name of the new morph target
-   * \param deleteMesh Whether or not the animesh \a morphMesh should be
-   * removed from the engine.
+   * \param deleteMesh Whether or not the animesh \a morphMesh will be deleted
+   * after the call to this method. If \a true, then it allows to reuse the
+   * render buffers of this mesh, this is therefore more optimal.
    *
    * \warning The two animeshes must have the same vertices in the same order.
    */
@@ -127,12 +141,31 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
    *
    * \param object_reg The object registry
    * \param genmesh The genmesh to be imported
-   * \param deleteMesh Whether or not the genmesh should be removed from the engine.
+   * \param deleteMesh Whether or not the genmesh will be deleted
+   * after the call to this method. If \a true, then it allows to reuse the
+   * render buffers of this mesh, this is therefore more optimal.
    */
   static csPtr<iAnimatedMeshFactory> ImportGeneralMesh
     (iObjectRegistry* object_reg, iGeneralFactoryState* genmesh,
      bool deleteMesh = true);
 
+  /**
+   * Populate an animesh factory with bone bounding boxes that are based only on
+   * the topology of the skeleton of the animesh.
+   *
+   * The behavior of this method is different from the default computing of the
+   * bone bounding boxes that is integrated in the animesh. The default behavior
+   * is based on the vertices of the animesh and their bone influences, while this
+   * method will compute the bone bounding boxes only based on the topology of the
+   * skeleton, not on the envelope of the mesh.
+   *
+   * \param animeshFactory The animesh to manipulate.
+   * \param boneMask An optional bone mask specifying the bones for which a bounding
+   * box has to be defined. All the bones that are not present in the mask will have
+   * their bounding box untouched.
+   */
+  static void PopulateSkeletonBoundingBoxes
+    (CS::Mesh::iAnimatedMeshFactory* animeshFactory, csBitArray* boneMask = nullptr);
 };
 
 } //namespace Mesh

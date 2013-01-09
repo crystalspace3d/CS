@@ -60,14 +60,55 @@ class csRenderMeshList;
 class csReversibleTransform;
 class csVector3;
 
-
+/// Modes for per-sector fog
 enum csFogMode
 {
+  /// Fog is disabled.
   CS_FOG_MODE_NONE = 0,
-  CS_FOG_MODE_LINEAR,
+  /**
+   * Combination of linear fog and &ldquo;CrystalSpace&rdquo; fog.
+   * This computes a linear fog for the sector: there is no fog until the
+   * distance csFog::start, and it will linearly increase until it's fully
+   * opaque at the distance csFog::end. (For a distance \em d, the fog function
+   * is <em>1 - ((e - d)/(e - s))</em>.
+   * 
+   * There's also the specialty that the
+   * fog is cut off (fully transparent) at the distance csFog::limit if that
+   * distance is greated than the end distance:
+   * 
+   * \em And this computed linear fog is modulated with the sector fog value
+   * from CS_FOG_MODE_CRYSTALSPACE.
+   */
+  CS_FOG_MODE_LINEAR_CRYSTALSPACE,
+  /**
+   * &ldquo;CrystalSpace&rdquo; fog.
+   * This fog has the special property to be correct across portals, even if
+   * the sectors have different fog densities (or colors).
+   * 
+   * The basis for this fog mode is an exponential fog, the fog function for a
+   * distance \em d is <em>1 - exp(-(d-0.1)*density*7)</em>.
+   * The distance is either the distance from the viewer, or, if portals are
+   * involved, the distance from the portal.
+   */
   CS_FOG_MODE_CRYSTALSPACE,
-  CS_FOG_MODE_EXP, // Not implemented
-  CS_FOG_MODE_EXP2 // Not implemented
+  /**
+   * Exponential fog.
+   * The fog function for a distance \em d is <em>1 - exp(-d*density)</em>.
+   * The distance is the distance from the viewer.
+   * 
+   * Note this fog will look wrong if viewed through a portal.
+   */
+  CS_FOG_MODE_EXP,
+  /**
+   * Exponential fog.
+   * The fog function for a distance \em d is <em>1 - exp(-(d*density)^2)</em>.
+   * The distance is the distance from the viewer.
+   * 
+   * Note this fog will look wrong if viewed through a portal.
+   */
+  CS_FOG_MODE_EXP2,
+  /// Alternative name for CS_FOG_MODE_LINEAR_CRYSTALSPACE
+  CS_FOG_MODE_LINEAR = CS_FOG_MODE_LINEAR_CRYSTALSPACE
 };
 
 /**
@@ -75,15 +116,18 @@ enum csFogMode
  */
 struct csFog
 {
-  /// Density (for CS_FOG_MODE_LINEAR, CS_FOG_MODE_EXP, CS_FOG_MODE_EXP2, CS_FOG_MODE_CRYSTALSPACE)
+  /**
+   * Density (for #CS_FOG_MODE_LINEAR_CRYSTALSPACE, #CS_FOG_MODE_EXP,
+   * #CS_FOG_MODE_EXP2, #CS_FOG_MODE_CRYSTALSPACE)
+   */
   float density;
   /// Color
   csColor4 color;
-  /// Fog fade start distance (for CS_FOG_MODE_LINEAR).
+  /// Fog fade start distance (for #CS_FOG_MODE_LINEAR).
   float start;
-  /// Fog fade end distance (for CS_FOG_MODE_LINEAR).
+  /// Fog fade end distance (for #CS_FOG_MODE_LINEAR).
   float end;
-  /// The limit after which the fog is no longer shown (for rings of fog) (for CS_FOG_MODE_LINEAR).
+  /// The limit after which the fog is no longer shown (for rings of fog) (for #CS_FOG_MODE_LINEAR).
   float limit;
   /// Fog mode.
   csFogMode mode;
@@ -408,11 +452,13 @@ struct iSector : public virtual iBase
    * containing the 'start' point. 'isect' will be the intersection point
    * if a polygon is returned. This function returns -1 if no polygon
    * was hit or the polygon index otherwise.
+   * If 'bf' is set to true then backface culling will be used on the
+   * set of triangles.
    * \sa csSectorHitBeamResult HitBeam() iMeshWrapper::HitBeam()
    * CS::Physics::Bullet::iDynamicSystem::HitBeam()
    */
   virtual csSectorHitBeamResult HitBeamPortals (const csVector3& start,
-  	const csVector3& end) = 0;
+  	const csVector3& end, bool bf = false) = 0;
 
   /**
    * Follow a beam from start to end and return the first object
@@ -420,11 +466,14 @@ struct iSector : public virtual iBase
    * filled with the indices of the polygon that was hit.
    * If polygon_idx is null then the polygon will not be filled in.
    * This function doesn't support portals.
+   * If 'bf' is set to true then backface culling will be used on the
+   * set of triangles. Note that in this case 'accurate' must be set to true
+   * as well.
    * \sa csSectorHitBeamResult HitBeamPortals() iMeshWrapper::HitBeam()
    * CS::Physics::Bullet::iDynamicSystem::HitBeam()
    */
   virtual csSectorHitBeamResult HitBeam (const csVector3& start,
-  	const csVector3& end, bool accurate = false) = 0;
+  	const csVector3& end, bool accurate = false, bool bf = false) = 0;
 
   /**
    * Follow a segment starting at this sector. If the segment intersects
@@ -436,17 +485,35 @@ struct iSector : public virtual iBase
    * These should be used as the new camera transformation when you decide to
    * really go to the new position.<p>
    *
-   * This function returns the resulting sector and new_position will be set
+   * This function returns the resulting sector, and \a new_position will be set
    * to the last position that you can go to before hitting a wall.<p>
    *
-   * If only_portals is true then only portals will be checked. This
+   * If \a only_portals is true then only portals will be checked. This
    * means that intersection with normal polygons is not checked. This
    * is a lot faster but it does mean that you need to use another
    * collision detection system to test with walls.
+   *
+   * \param t The transform to the start of the segment
+   * \param new_position The end of the segment, in world coordinates
+   * \param mirror Unused parameter...
+   * \param only_portals Whether the collision has to be checked only with the portals, or also
+   * with all meshes
+   * \param crossed_portals The list where will be stored all portals that are crossed during
+   * the following of this segment
+   * \param portal_meshes The list where will be stored the portal container of all the portals
+   * that are crossed during the following of this segment
+   * \param firstIndex The starting index where the portals will be stored in the
+   * \a crossed_portals and \a portal_meshes lists.
+   * \param lastIndex The place where will be stored the index of the last portal crossed
+   *
+   * \warning The \a crossed_portals and \a portal_meshes arrays must be allocated to a
+   * sufficient size
+   * \warning The \a crossed_portals and \a portal_meshes arrays won't be filled with crossed
+   * portals if \a lastIndex is not provided
    */
   virtual iSector* FollowSegment (csReversibleTransform& t,
       csVector3& new_position, bool& mirror, bool only_portals = false,
-      iPortal** transversed_portals = 0, iMeshWrapper** portal_meshes = 0,
+      iPortal** crossed_portals = 0, iMeshWrapper** portal_meshes = 0,
       int firstIndex = 0, int* lastIndex = 0) = 0;
   /** @} */
 

@@ -1562,7 +1562,7 @@ csArray<iMaterialWrapper*> csTerrainObject::GetMaterialPalette ()
 }
 
 
-CS_DEPRECATED_METHOD bool csTerrainObject::SetMaterialAlphaMaps (
+bool csTerrainObject::SetMaterialAlphaMaps (
 	const csArray<csArray<char> >& data, int w, int h)
 {
   csRef<iSimpleFormerState> state = 
@@ -1711,8 +1711,7 @@ printf("%s\n",fn.GetData());
   return true;
 }
 
-CS_DEPRECATED_METHOD bool csTerrainObject::SetMaterialAlphaMaps (const 
-csArray<iImage*>& maps)
+bool csTerrainObject::SetMaterialAlphaMaps (const csArray<iImage*>& maps)
 {
   csRef<iSimpleFormerState> state = 
     scfQueryInterface<iSimpleFormerState> (terraformer);
@@ -1789,8 +1788,7 @@ csArray<iImage*>& maps)
 }
 
 
-CS_DEPRECATED_METHOD bool csTerrainObject::SetMaterialMap (const 
-csArray<char>& data, int w, int h)
+bool csTerrainObject::SetMaterialMap (const csArray<char>& data, int w, int h)
 {
   csRef<iSimpleFormerState> state = 
     scfQueryInterface<iSimpleFormerState> (terraformer);
@@ -1897,7 +1895,7 @@ printf("%s\n",fn.GetData());
   return true;
 }
 
-CS_DEPRECATED_METHOD bool csTerrainObject::SetMaterialMap (iImage* map)
+bool csTerrainObject::SetMaterialMap (iImage* map)
 {
   csRef<iSimpleFormerState> state = 
     scfQueryInterface<iSimpleFormerState> (terraformer);
@@ -2425,14 +2423,16 @@ bool csTerrainObject::HitBeamObject (const csVector3& start,
                                      const csVector3& end, 
                                      csVector3& isect, float* pr,
                                      int* polygon_idx,
-				     iMaterialWrapper** material)
+				     iMaterialWrapper** material,
+				     bool bf)
 {
+  // @@@ TODO: implement bf?
   if (polygon_idx) *polygon_idx = -1;
   csSegment3 seg (start, end);
   bool rc;
 
-  if(!rootblock)
-	  SetupObject();
+  if (!rootblock)
+    SetupObject();
 
   if (fabs (start.x-end.x) < .00001 && fabs (start.z-end.z) < .00001)
   {

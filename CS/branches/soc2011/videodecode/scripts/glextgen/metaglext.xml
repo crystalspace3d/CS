@@ -795,7 +795,7 @@
     <token name="GL_OBJECT_INFO_LOG_LENGTH" value="0x8B84" />
     <token name="GL_OBJECT_ATTACHED_OBJECTS" value="0x8B85" />
     <token name="GL_OBJECT_ACTIVE_UNIFORMS" value="0x8B86" />
-    <token name="GL_OBJECT_ACTIVE_UNIFORMS_MAX_LENGTH" value="0x8B87" />
+    <token name="GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH" value="0x8B87" />
     <token name="GL_OBJECT_SHADER_SOURCE_LENGTH" value="0x8B88" />
     <token name="GL_SHADER_OBJECT" value="0x8B48" />
     <token name="GL_FLOAT_VEC2" value="0x8B50" />
@@ -811,11 +811,16 @@
     <token name="GL_FLOAT_MAT2" value="0x8B5A" />
     <token name="GL_FLOAT_MAT3" value="0x8B5B" />
     <token name="GL_FLOAT_MAT4" value="0x8B5C" />
+    <token name="GL_SAMPLER_1D" value="0x8B5D" />
+    <token name="GL_SAMPLER_2D" value="0x8B5E" />
+    <token name="GL_SAMPLER_3D" value="0x8B5F" />
+    <token name="GL_SAMPLER_CUBE" value="0x8B60" />
+    <token name="GL_SAMPLER_1D_SHADOW" value="0x8B61" />
+    <token name="GL_SAMPLER_2D_SHADOW" value="0x8B62" />
+    <token name="GL_SAMPLER_2D_RECT" value="0x8B63" />
+    <token name="GL_SAMPLER_2D_RECT_SHADOW" value="0x8B64" />
     <function name="glDeleteShader" return="GLvoid" pointer="false">
       <arg name="obj" type="GLuint" const="false" pointer="false" />
-    </function>
-    <function name="glGetHandle" return="GLuint" pointer="false">
-      <arg name="pname" type="GLenum" const="false" pointer="false" />
     </function>
     <function name="glDetachShader" return="GLvoid" pointer="false">
       <arg name="containerObj" type="GLuint" const="false" pointer="false" />
@@ -833,7 +838,7 @@
     <function name="glCompileShader" return="GLvoid" pointer="false">
       <arg name="shaderObj" type="GLuint" const="false" pointer="false" />
     </function>
-    <function name="glCreateProgramObject" return="GLuint" pointer="false" />
+    <function name="glCreateProgram" return="GLuint" pointer="false" />
     <function name="glAttachShader" return="GLvoid" pointer="false">
       <arg name="containerObj" type="GLuint" const="false" pointer="false" />
       <arg name="Obj" type="GLuint" const="false" pointer="false" />
@@ -952,27 +957,33 @@
       <arg name="transpose" type="GLboolean" const="false" pointer="false" />
       <arg name="value" type="GLfloat" const="false" pointer="true" />
     </function>
-    <function name="glGetObjectParameterfv" return="GLvoid" pointer="false">
-      <arg name="obj" type="GLuint" const="false" pointer="false" />
-      <arg name="pname" type="GLenum" const="false" pointer="false" />
-      <arg name="params" type="GLfloat" const="false" pointer="true" />
-    </function>
-    <function name="glGetObjectParameteriv" return="GLvoid" pointer="false">
-      <arg name="obj" type="GLuint" const="false" pointer="false" />
+    <function name="glGetShaderiv" return="GLvoid" pointer="false">
+      <arg name="shader" type="GLuint" const="false" pointer="false" />
       <arg name="pname" type="GLenum" const="false" pointer="false" />
       <arg name="params" type="GLint" const="false" pointer="true" />
     </function>
-    <function name="glGetInfoLog" return="GLvoid" pointer="false">
-      <arg name="obj" type="GLuint" const="false" pointer="false" />
+    <function name="glGetProgramiv" return="GLvoid" pointer="false">
+      <arg name="program" type="GLuint" const="false" pointer="false" />
+      <arg name="pname" type="GLenum" const="false" pointer="false" />
+      <arg name="params" type="GLint" const="false" pointer="true" />
+    </function>
+    <function name="glGetShaderInfoLog" return="GLvoid" pointer="false">
+      <arg name="shader" type="GLuint" const="false" pointer="false" />
       <arg name="maxLength" type="GLsizei" const="false" pointer="false" />
       <arg name="length" type="GLsizei" const="false" pointer="true" />
       <arg name="infoLog" type="GLchar" const="false" pointer="true" />
     </function>
-    <function name="glGetAttachedObjects" return="GLvoid" pointer="false">
-      <arg name="containerObj" type="GLuint" const="false" pointer="false" />
+    <function name="glGetProgramInfoLog" return="GLvoid" pointer="false">
+      <arg name="program" type="GLuint" const="false" pointer="false" />
+      <arg name="maxLength" type="GLsizei" const="false" pointer="false" />
+      <arg name="length" type="GLsizei" const="false" pointer="true" />
+      <arg name="infoLog" type="GLchar" const="false" pointer="true" />
+    </function>
+    <function name="glGetAttachedShaders" return="GLvoid" pointer="false">
+      <arg name="program" type="GLuint" const="false" pointer="false" />
       <arg name="maxCount" type="GLsizei" const="false" pointer="false" />
       <arg name="count" type="GLsizei" const="false" pointer="true" />
-      <arg name="obj" type="GLuint" const="false" pointer="true" />
+      <arg name="shaders" type="GLuint" const="false" pointer="true" />
     </function>
     <function name="glGetUniformLocation" return="GLint" pointer="false">
       <arg name="programObj" type="GLuint" const="false" pointer="false" />
@@ -1335,6 +1346,12 @@
       <arg name="transpose" type="GLboolean" const="false" pointer="false" />
       <arg name="value" type="GLfloat" const="false" pointer="true" />
     </function>
+    <token name="GL_FLOAT_MAT2x3" value="0x8B65" />
+    <token name="GL_FLOAT_MAT2x4" value="0x8B66" />
+    <token name="GL_FLOAT_MAT3x2" value="0x8B67" />
+    <token name="GL_FLOAT_MAT3x4" value="0x8B68" />
+    <token name="GL_FLOAT_MAT4x2" value="0x8B69" />
+    <token name="GL_FLOAT_MAT4x3" value="0x8B6A" />
     <!-- promoted: ARB_pixel_buffer_objects -->
     <token name="GL_PIXEL_PACK_BUFFER" value="0x88EB" />
     <token name="GL_PIXEL_UNPACK_BUFFER" value="0x88EC" />
@@ -1639,6 +1656,7 @@
       <arg name="target" type="GLenum" const="false" pointer="false" />
       <arg name="internalformat" type="GLenum" const="false" pointer="false" />
       <arg name="width" type="GLsizei" const="false" pointer="false" />
+
       <arg name="height" type="GLsizei" const="false" pointer="false" />
       <arg name="format" type="GLenum" const="false" pointer="false" />
       <arg name="type" type="GLenum" const="false" pointer="false" />
@@ -3426,6 +3444,7 @@
     <token name="GL_OUTPUT_TEXTURE_COORD26_EXT" value="34743" />
     <token name="GL_OUTPUT_TEXTURE_COORD27_EXT" value="34744" />
     <token name="GL_OUTPUT_TEXTURE_COORD28_EXT" value="34745" />
+
     <token name="GL_OUTPUT_TEXTURE_COORD29_EXT" value="34746" />
     <token name="GL_OUTPUT_TEXTURE_COORD30_EXT" value="34747" />
     <token name="GL_OUTPUT_TEXTURE_COORD31_EXT" value="34748" />
@@ -3837,6 +3856,7 @@
     <function name="glDeleteOcclusionQueriesNV" return="GLvoid" pointer="false">
       <arg name="n" type="GLsizei" const="false" pointer="false" />
       <arg name="ids" type="GLuint" const="true" pointer="true" />
+
     </function>
     <function name="glIsOcclusionQueryNV" return="GLboolean" pointer="false">
       <arg name="id" type="GLuint" const="false" pointer="false" />
@@ -6423,6 +6443,7 @@
       <arg name="piValue" type="GLint" const="true" pointer="true" />
     </function>
     <function name="wglGetGammaTableI3D" return="BOOL" pointer="false">
+
       <arg name="hDC" type="HDC" const="false" pointer="false" />
       <arg name="iEntries" type="GLint" const="false" pointer="false" />
       <arg name="puRed" type="GLushort" const="false" pointer="true" />
@@ -7234,6 +7255,87 @@
       <arg name="index" type="GLuint" const="false" pointer="false" />
       <arg name="pname" type="GLenum" const="false" pointer="false" />
       <arg name="pointer" type="GLvoid*" const="false" pointer="true" />
+    </function>
+  </extension>
+  <extension name="GL_EXT_geometry_shader4" type="GL">
+    <depends ext="GL_ARB_shader_objects" />
+    <token name="GL_GEOMETRY_SHADER_EXT" value="0x8DD9" />
+    <token name="GL_GEOMETRY_VERTICES_OUT_EXT" value="0x8DDA" />
+    <token name="GL_GEOMETRY_INPUT_TYPE_EXT" value="0x8DDB" />
+    <token name="GL_GEOMETRY_OUTPUT_TYPE_EXT" value="0x8DDC" />
+    <token name="GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_EXT" value="0x8C29" />
+    <token name="GL_MAX_GEOMETRY_VARYING_COMPONENTS_EXT" value="0x8DDD" />
+    <token name="GL_MAX_VERTEX_VARYING_COMPONENTS_EXT" value="0x8DDE" />
+    <token name="GL_MAX_VARYING_COMPONENTS_EXT" value="0x8B4B" />
+    <token name="GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT" value="0x8DDF" />
+    <token name="GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT" value="0x8DE0" />
+    <token name="GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_EXT" value="0x8DE1" />
+    <token name="GL_LINES_ADJACENCY_EXT" value="0xA" />
+    <token name="GL_LINE_STRIP_ADJACENCY_EXT" value="0xB" />
+    <token name="GL_TRIANGLES_ADJACENCY_EXT" value="0xC" />
+    <token name="GL_TRIANGLE_STRIP_ADJACENCY_EXT" value="0xD" />
+    <token name="GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_EXT" value="0x8DA8" />
+    <token name="GL_FRAMEBUFFER_INCOMPLETE_LAYER_COUNT_EXT" value="0x8DA9" />
+    <token name="GL_FRAMEBUFFER_ATTACHMENT_LAYERED_EXT" value="0x8DA7" />
+    <token name="GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER_EXT" value="0x8CD4" />
+    <token name="GL_PROGRAM_POINT_SIZE_EXT" value="0x8642" />
+    <function name="glProgramParameteriEXT" return="GLvoid" pointer="false">
+      <arg name="program" type="GLuint" const="false" pointer="false" />
+      <arg name="pname" type="GLenum" const="false" pointer="false" />
+      <arg name="value" type="GLint" const="false" pointer="false" />
+    </function>
+    <!--
+    <function name="glFramebufferTextureEXT" return="GLvoid" pointer="false">
+      <arg name="target" type="GLenum" const="false" pointer="false" />
+      <arg name="attachment" type="GLenum" const="false" pointer="false" />
+      <arg name="texture" type="GLuint" const="false" pointer="false" />
+      <arg name="level" type="GLint" const="false" pointer="false" />
+    </function>
+    -->
+  </extension>
+  <extension name="GL_ARB_tessellation_shader" type="GL">
+    <depends ext="GL_ARB_shader_objects" />
+    <token name="GL_PATCHES_ARB" value="0xE" />
+    <token name="GL_PATCH_VERTICES_ARB" value="0x8E72" />
+    <token name="GL_PATCH_DEFAULT_INNER_LEVEL_ARB" value="0x8E73" />
+    <token name="GL_PATCH_DEFAULT_OUTER_LEVEL_ARB" value="0x8E74" />
+    <token name="GL_TESS_CONTROL_OUTPUT_VERTICES_ARB" value="0x8E75" />
+    <token name="GL_TESS_GEN_MODE_ARB" value="0x8E76" />
+    <token name="GL_TESS_GEN_SPACING_ARB" value="0x8E77" />
+    <token name="GL_TESS_GEN_VERTEX_ORDER_ARB" value="0x8E78" />
+    <token name="GL_TESS_GEN_POINT_MODE_ARB" value="0x8E79" />
+    <token name="GL_ISOLINES_ARB" value="0x8E7A" />
+    <token name="GL_FRACTIONAL_ODD_ARB" value="0x8E7B" />
+    <token name="GL_FRACTIONAL_EVEN_ARB" value="0x8E7C" />
+    <token name="GL_MAX_PATCH_VERTICES_ARB" value="0x8E7D" />
+    <token name="GL_MAX_TESS_GEN_LEVEL_ARB" value="0x8E7E" />
+    <token name="GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS_ARB" value="0x8E7F" />
+    <token name="GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS_ARB" value="0x8E80" />
+    <token name="GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS_ARB" value="0x8E81" />
+    <token name="GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS_ARB" value="0x8E82" />
+    <token name="GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS_ARB" value="0x8E83" />
+    <token name="GL_MAX_TESS_PATCH_COMPONENTS_ARB" value="0x8E84" />
+    <token name="GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_ARB" value="0x8E85" />
+    <token name="GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_ARB" value="0x8E86" />
+    <token name="GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS_ARB" value="0x8E89" />
+    <token name="GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS_ARB" value="0x8E8A" />
+    <token name="GL_MAX_TESS_CONTROL_INPUT_COMPONENTS_ARB" value="0x886C" />
+    <token name="GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS_ARB" value="0x886D" />
+    <token name="GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS_ARB" value="0x8E1E" />
+    <token name="GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS_ARB" value="0x8E1F" />
+    <token name="GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_CONTROL_SHADER_ARB" value="0x84F0" />
+    <token name="GL_UNIFORM_BLOCK_REFERENCED_BY_TESS_EVALUATION_SHADER_ARB" value="0x84F1" />
+    <token name="GL_TESS_EVALUATION_SHADER_ARB" value="0x8E87" />
+    <token name="GL_TESS_CONTROL_SHADER_ARB" value="0x8E88" />
+    <!-- Antony Martin: GetProcAddress() doesn't find the functions
+                        with the ARB suffix (HD5450 Catalyst 11.7) -->
+    <function name="glPatchParameteri" return="GLvoid" pointer="false">
+      <arg name="pname" type="GLenum" const="false" pointer="false" />
+      <arg name="value" type="GLint" const="false" pointer="false" />
+    </function>
+    <function name="glPatchParameterfv" return="GLvoid" pointer="false">
+      <arg name="pname" type="GLenum" const="false" pointer="false" />
+      <arg name="values" type="GLfloat" const="true" pointer="true" />
     </function>
   </extension>
   <extension name="GL_ARB_pixel_buffer_object" type="GL">

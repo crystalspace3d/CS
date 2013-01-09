@@ -407,7 +407,7 @@ public:
     csVector3& isect, float* pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
     csVector3& isect, float* pr, int* polygon_idx = 0,
-    iMaterialWrapper** material = 0);
+    iMaterialWrapper** material = 0, bool bf = false);
 
   virtual void BuildDecal(const csVector3* pos, float decalRadius,
           iDecalBuilder* decalBuilder);
@@ -494,7 +494,7 @@ class csTerrainFactory :
 private:
   iMeshFactoryWrapper* logparent;
 
-  iMeshObjectType* brute_type;
+  csRef<iMeshObjectType> brute_type;
 
   csFlags flags;
   csBox3 obj_bbox;

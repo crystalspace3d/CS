@@ -165,9 +165,9 @@ void csCoverageTile::PerformOperations ()
       CS_ASSERT (op.y1 < NUM_TILEROW);
       CS_ASSERT (op.y2 >= 0);
       CS_ASSERT (op.y2 < NUM_TILEROW);
-      int x1, y1, x2, y2;
-      if (op.y1 < op.y2) { x1 = op.x1; y1 = op.y1; x2 = op.x2; y2 = op.y2; }
-      else { x1 = op.x2; y1 = op.y2; x2 = op.x1; y2 = op.y1; }
+      int x1, y1, y2;
+      if (op.y1 < op.y2) { x1 = op.x1; y1 = op.y1; y2 = op.y2; }
+      else { x1 = op.x2; y1 = op.y2; y2 = op.y1; }
       int dy = y2-y1;
       int x = x1;
       int y = y1;
@@ -1830,7 +1830,7 @@ void csTiledCoverageBuffer::DrawLine (int x1, int y1, int x2, int y2,
   }
 }
 
-bool csTiledCoverageBuffer::DrawPolygon (csVector2* verts, size_t num_verts,
+bool csTiledCoverageBuffer::DrawPolygon (const csVector2* verts, size_t num_verts,
 	csBox2Int& bbox)
 {
   size_t i, j;
@@ -2332,7 +2332,7 @@ bool csTiledCoverageBuffer::TestPolygon (csVector2* verts, size_t num_verts,
   return rc;
 }
 
-void csTiledCoverageBuffer::InsertPolygonInverted (csVector2* verts,
+void csTiledCoverageBuffer::InsertPolygonInverted (const csVector2* verts,
 	size_t num_verts, float max_depth)
 {
   csBox2Int bbox;
@@ -2353,7 +2353,7 @@ void csTiledCoverageBuffer::InsertPolygonInverted (csVector2* verts,
   }
 }
 
-void csTiledCoverageBuffer::InsertPolygonInvertedNoDepth (csVector2* verts,
+void csTiledCoverageBuffer::InsertPolygonInvertedNoDepth (const csVector2* verts,
 	size_t num_verts)
 {
   csBox2Int bbox;
@@ -2374,7 +2374,7 @@ void csTiledCoverageBuffer::InsertPolygonInvertedNoDepth (csVector2* verts,
   }
 }
 
-int csTiledCoverageBuffer::InsertPolygon (csVector2* verts, size_t num_verts,
+int csTiledCoverageBuffer::InsertPolygon (const csVector2* verts, size_t num_verts,
 	float max_depth, csBox2Int& modified_bbox)
 {
   csBox2Int bbox;
@@ -2413,7 +2413,7 @@ int csTiledCoverageBuffer::InsertPolygon (csVector2* verts, size_t num_verts,
   return modified;
 }
 
-int csTiledCoverageBuffer::InsertPolygonNoDepth (csVector2* verts,
+int csTiledCoverageBuffer::InsertPolygonNoDepth (const csVector2* verts,
 	size_t num_verts)
 {
   csBox2Int bbox;

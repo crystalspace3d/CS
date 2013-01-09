@@ -70,7 +70,7 @@ void ViewMesh::Frame()
   DemoApplication::Frame ();
 
   if (loading)
-    LoadSprite(reloadFilename, reloadFilePath);
+    LoadSprite(reloadFilename, reloadFilePath, loadingFactoryName);
 
   cegui->Render();
 }
@@ -162,6 +162,8 @@ void ViewMesh::PrintHelp ()
     ("L", "Load a library file (for textures/materials)", csVariant (""));
   commandLineHelper.AddCommandLineOption
     ("scale", "Scale the Object", csVariant (1.0f));
+  commandLineHelper.AddCommandLineOption
+    ("factory", "Specify a factory (useful when loading a library)", csVariant (""));
 
   // Printing help
   commandLineHelper.PrintApplicationHelp
@@ -184,25 +186,40 @@ void ViewMesh::HandleCommandLine ()
   {
     if (!loader->LoadLibraryFile (libname))
     {
-      ReportError("Couldn't load lib %s.\n", libname);
+      ReportError("Couldn't load lib %s.\n", CS::Quote::Single (libname));
     }
   }
 
   csString meshfilename = cmdline->GetName (0);
   const char* texturefilename = cmdline->GetName (1);
   const char* texturename = cmdline->GetName (2);
-  const char* scaleTxt = cmdline->GetOption("Scale");
-  const char* realPath = cmdline->GetOption("R");
+  const char* scaleTxt = cmdline->GetOption ("scale");
+  csString realPath = cmdline->GetOption ("R");
+  const char* factoryName = cmdline->GetOption ("factory");
 
-  csString vfsDir = cmdline->GetOption("C");
+  csString vfsDir = cmdline->GetOption ("C");
 
-  if (realPath)
+  if (!realPath.IsEmpty ())
   {
-    vfs->Mount ("/tmp/viewmesh", realPath);
-    vfs->ChDir ("/tmp/viewmesh");
+    const char* tempPath = "/tmp/viewmesh";
+
+    // For some reason vfs Mount likes to have $/ instead of / for paths.
+    realPath.ReplaceAll ("/", "$/");
+
+    if (!vfs->Mount (tempPath, realPath))
+    {
+      ReportError ("Cannot mount real path %s\n",
+		   CS::Quote::Single (realPath.GetData ()));
+    }
+    else
+    {
+      vfs->ChDir (tempPath);
+      if (vfsDir.IsEmpty ())
+        vfsDir = tempPath;
+    }
   }
 
-  if (vfsDir.IsEmpty() && meshfilename)
+  if (vfsDir.IsEmpty () && meshfilename)
   {
     size_t index = meshfilename.FindLast ('/');
     if (index != (size_t) -1)
@@ -212,37 +229,38 @@ void ViewMesh::HandleCommandLine ()
     }
   }
 
-  if (!vfsDir.IsEmpty())
+  if (!vfsDir.IsEmpty ())
   {
     if (!vfs->ChDir (vfsDir))
     {
-      ReportError("Cannot change to path: %s\n", vfsDir.GetData ());
+      ReportError ("Cannot change to path %s\n",
+		   CS::Quote::Single (vfsDir.GetData ()));
     }
     else
     {
       // Update StdDlg path.
       CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
-      CEGUI::Window* window = winMgr->getWindow("StdDlg/Path");
-      window->setProperty("Text", vfs->GetCwd());
-      StdDlgUpdateLists(vfs->GetCwd());
+      CEGUI::Window* window = winMgr->getWindow ("StdDlg/Path");
+      window->setProperty ("Text", vfs->GetCwd ());
+      StdDlgUpdateLists (vfs->GetCwd ());
     }
   }
 
   if (texturefilename && texturename)
   {
-    LoadTexture(texturefilename, texturename);
+    LoadTexture (texturefilename, texturename);
   }
 
   if (meshfilename)
   {
-    LoadSprite(meshfilename);
+    LoadSprite (meshfilename, 0, factoryName);
   }
 
   if (scaleTxt != 0)
   {
     float newScale;
     csScanStr (scaleTxt, "%f", &newScale);
-    ScaleSprite(newScale);
+    ScaleSprite (newScale);
   }
 }
 
@@ -286,11 +304,6 @@ bool ViewMesh::OnInitialize(int argc, char* argv [])
   if (!engine) return ReportError("Failed to locate 3D engine!");
   engine->SetSaveableFlag(true);
 
-  if (!csInitializer::RequestPlugins(GetObjectRegistry(),
-    CS_REQUEST_LEVELSAVER,
-    CS_REQUEST_END))
-    return ReportError("Failed to initialize plugins!");
-
   return true;
 }
 
@@ -307,7 +320,7 @@ bool ViewMesh::Application()
   tloader = csQueryRegistry<iThreadedLoader> (GetObjectRegistry());
   if (!tloader) return ReportError("Failed to locate threaded Loader!");
 
-  saver = csQueryRegistry<iSaver> (GetObjectRegistry());
+  saver = csQueryRegistryOrLoad<iSaver> (GetObjectRegistry(), "crystalspace.level.saver");
   if (!saver) return ReportError("Failed to locate Saver!");
 
   cegui = csQueryRegistry<iCEGUI> (GetObjectRegistry());
@@ -415,7 +428,7 @@ bool ViewMesh::CreateGui()
   return true;
 }
 
-void ViewMesh::LoadSprite (const char* filename, const char* path)
+void ViewMesh::LoadSprite (const char* filename, const char* path, const char* factoryName)
 {
   reloadFilename = filename;
   if (path)
@@ -441,6 +454,7 @@ void ViewMesh::LoadSprite (const char* filename, const char* path)
     fflush (stdout);
 
     loading = tloader->LoadFile (vfs->GetCwd(), filename, collection);
+    loadingFactoryName = factoryName;
   }
 
   if (!loading->IsFinished())
@@ -481,9 +495,20 @@ void ViewMesh::LoadSprite (const char* filename, const char* path)
       iMeshFactoryWrapper* f = factories->Get (i);
       if (collection->IsParentOf (f->QueryObject ()))
       {
-        factwrap = f;
-        break;
+	if (!factoryName || !*factoryName || strcmp (factoryName, f->QueryObject ()->GetName ()) == 0)
+	{
+          factwrap = f;
+          break;
+	}
       }
+    }
+    if (!factwrap)
+    {
+      if (factoryName && *factoryName)
+    	ReportError("Could not find factory '%s' in the library!", factoryName);
+      else
+    	ReportError("Could not find a factory in the library!");
+      loading.Invalidate ();
     }
   }
   else
@@ -887,7 +912,7 @@ bool ViewMesh::StdDlgOkButton (const CEGUI::EventArgs& e)
   }
   else if (purpose == "Load")
   {
-    LoadSprite(file.c_str());
+    LoadSprite(file.c_str(), 0, 0);
   }
   else if (purpose == "LoadLib")
   {
@@ -935,7 +960,7 @@ bool ViewMesh::StdDlgDirSelect (const CEGUI::EventArgs& e)
   CEGUI::String text = item->getText();
   if (text.empty()) return CS_EVENT_HANDLED;
 
-  csPrintf("cd %s\n",text.c_str());
+  csPrintf("cd %s\n", CS::Quote::Single (text.c_str()));
 
   CEGUI::Window* inputpath = winMgr->getWindow("StdDlg/Path");
   CEGUI::String path = inputpath->getProperty("Text");
@@ -971,7 +996,7 @@ bool ViewMesh::StdDlgDirChange (const CEGUI::EventArgs& e)
   CEGUI::String path = inputpath->getProperty("Text");
   if (path.empty()) return CS_EVENT_HANDLED;
 
-  csPrintf("cd %s\n",path.c_str());
+  csPrintf("cd %s\n", CS::Quote::Single (path.c_str()));
 
   vfs->ChDir (path.c_str ());
 

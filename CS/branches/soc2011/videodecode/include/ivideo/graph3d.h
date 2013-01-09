@@ -38,6 +38,8 @@
 
 #include "ivideo/rndbuf.h"
 
+#include <stdarg.h>
+
 struct iClipper2D;
 struct iGraphics2D;
 struct iHalo;
@@ -808,7 +810,7 @@ namespace CS
  */
 struct iGraphics3D : public virtual iBase
 {
-  SCF_INTERFACE(iGraphics3D, 4, 0, 3);
+  SCF_INTERFACE(iGraphics3D, 5, 0, 0);
   
   /// Open the 3D graphics display.
   virtual bool Open () = 0;
@@ -854,7 +856,7 @@ struct iGraphics3D : public virtual iBase
    * \remarks The coordinates are vertically mirrored in comparison to screen
    *   space, i.e. y=0 is at the bottom of the viewport, y=GetHeight() at the 
    *   top.
-   * \deprecated Deprecated in 1.9. Use explicit camera's projection matrix instead
+   * \deprecated Deprecated in 2.0. Use explicit camera's projection matrix instead
    */
   CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual void SetPerspectiveCenter (int x, int y) = 0;
@@ -864,21 +866,21 @@ struct iGraphics3D : public virtual iBase
    * \remarks The coordinates are vertically mirrored in comparison to screen
    *   space, i.e. y=0 is at the bottom of the viewport, y=GetHeight() at the 
    *   top.
-   * \deprecated Deprecated in 1.9. Use explicit camera's projection matrix instead
+   * \deprecated Deprecated in 2.0. Use explicit camera's projection matrix instead
    */
   CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual void GetPerspectiveCenter (int& x, int& y) const = 0;
 
   /**
    * Set aspect ratio for perspective projection.
-   * \deprecated Deprecated in 1.9. Use explicit camera's projection matrix instead
+   * \deprecated Deprecated in 2.0. Use explicit camera's projection matrix instead
    */
   CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual void SetPerspectiveAspect (float aspect) = 0;
 
   /**
    * Get aspect ratio.
-   * \deprecated Deprecated in 1.9. Use explicit camera's projection matrix instead
+   * \deprecated Deprecated in 2.0. Use explicit camera's projection matrix instead
    */
   CS_DEPRECATED_METHOD_MSG("Use explicit projection matrix instead")
   virtual float GetPerspectiveAspect () const = 0;
@@ -900,7 +902,7 @@ struct iGraphics3D : public virtual iBase
    *   penalty so it's recommended to avoid this flag.
    * \param subtexture this specifies the subtexture index if the texture
    *   is a cubemap or volume texture. It is in the range 0 to 5 for cubemaps
-   *   (\sa iTextureHandle::CS_TEXTURE_CUBE_POS_X et al) or the depth index
+   *   (#iTextureHandle::CS_TEXTURE_CUBE_POS_X et al) or the depth index
    *   for volume textures.
    * \param attachment Specifies to what result of the rasterization the
    *   texture should be attached to.
@@ -1002,7 +1004,9 @@ struct iGraphics3D : public virtual iBase
   /**
    * Draw a line in camera space. Warning! This is a 2D operation
    * and must be called while in BeginDraw(CSDRAW_2DGRAPHICS)!
+   * \deprecated Deprecated in 2.0. Use iGraphics2D::DrawLineProjected() instead
    */
+  CS_DEPRECATED_METHOD_MSG("Use iGraphics2D::DrawLineProjected() instead")
   virtual void DrawLine (const csVector3& v1, const csVector3& v2,
     float fov, int color) = 0;
 
@@ -1073,14 +1077,14 @@ struct iGraphics3D : public virtual iBase
 
   /**
    * Set a renderstate value.
-   * \deprecated Deprecated in 1.9. Use SetEdgeDrawing() for sole supported render state.
+   * \deprecated Deprecated in 2.0. Use SetEdgeDrawing() for sole supported render state.
    */
   CS_DEPRECATED_METHOD_MSG("Use SetEdgeDrawing() for sole supported render state")
   virtual bool SetRenderState (G3D_RENDERSTATEOPTION op, long val) = 0;
 
   /**
    * Get a renderstate value.
-   * \deprecated Deprecated in 1.9. Use SetEdgeDrawing() for sole supported render state.
+   * \deprecated Deprecated in 2.0. Use SetEdgeDrawing() for sole supported render state.
    */
   CS_DEPRECATED_METHOD_MSG("Use GetEdgeDrawing() for sole supported render state")
   virtual long GetRenderState (G3D_RENDERSTATEOPTION op) const = 0;
@@ -1159,7 +1163,14 @@ struct iGraphics3D : public virtual iBase
    * commands, so please try to use descriptive command names rather
    * than "a", "b" and so on...
    */
-  virtual bool PerformExtension (char const* command, ...) = 0;
+  bool PerformExtension (char const* command, ...)
+  {
+    va_list args;
+    va_start(args, command);
+    bool x = PerformExtensionV(command, args);
+    va_end(args);
+    return x;
+  }
 
   /**
    * Perform a system specific exension.<p>
@@ -1246,9 +1257,13 @@ struct iGraphics3D : public virtual iBase
   virtual void SetEdgeDrawing (bool flag) = 0;
   /// Get state of edge drawing
   virtual bool GetEdgeDrawing () = 0;
+
+  /// Enable/disable tessellation rendering mode
+  virtual void SetTessellation (bool flag) = 0;
+  /// Get tessellation state
+  virtual bool GetTessellation () = 0;
 };
 
 /** @} */
 
 #endif // __CS_IVIDEO_GRAPH3D_H__
-

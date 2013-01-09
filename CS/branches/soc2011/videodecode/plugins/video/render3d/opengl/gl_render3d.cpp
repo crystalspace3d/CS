@@ -89,7 +89,7 @@ csGLGraphics3D::csGLGraphics3D (iBase *parent) :
   glProfiling (false), explicitProjection (false), needMatrixUpdate (true),
   multisampleEnabled (false),
   imageUnits (0), activeVertexAttribs (0), wantToSwap (false),
-  delayClearFlags (0), currentAttachments (0)
+  delayClearFlags (0), use_patches (false), currentAttachments (0)
 {
   verbose = false;
   frustum_valid = false;
@@ -266,6 +266,7 @@ csZBufMode csGLGraphics3D::GetZModePass2 (csZBufMode mode)
   {
     case CS_ZBUF_NONE:
     case CS_ZBUF_TEST:
+    case CS_ZBUF_INVERT:
     case CS_ZBUF_EQUAL:
       return mode;
     case CS_ZBUF_FILL:
@@ -408,7 +409,7 @@ void csGLGraphics3D::CalculateFrustum ()
     size_t nv = clipper->GetVertexCount ();
     csVector3 v3;
     v3.z = 1;
-    csVector2* v = clipper->GetClipPoly ();
+    const csVector2* v = clipper->GetClipPoly ();
     size_t i;
     for (i = 0 ; i < nv ; i++)
     {
@@ -457,7 +458,7 @@ void csGLGraphics3D::SetupStencil ()
       stencilclipnum = 1;
     }
     size_t nv = clipper->GetVertexCount ();
-    csVector2* v = clipper->GetClipPoly ();
+    const csVector2* v = clipper->GetClipPoly ();
 
     statecache->SetShadeModel (GL_FLAT);
 
@@ -891,7 +892,8 @@ bool csGLGraphics3D::Open ()
   ext->InitGL_AMD_seamless_cubemap_per_texture ();
   ext->InitGL_ARB_half_float_vertex ();
   ext->InitGL_ARB_instanced_arrays ();
-  
+  ext->InitGL_ARB_tessellation_shader (); // glPatchParameteri()
+
   /* Some of the exts checked for above affect the state cache,
      so let it grab the state again */
   statecache->currentContext->InitCache();
@@ -1258,7 +1260,7 @@ void csGLGraphics3D::SetupShaderVariables()
       if (fogindex2 == (CS_FOGTABLE_SIZE - 1))
         fogalpha2 = 255;
       transientfogdata[(fogindex1+fogindex2*CS_FOGTABLE_SIZE)].alpha = 
-        MIN(fogalpha1, fogalpha2);
+        csMin (fogalpha1, fogalpha2);
     }
   }
 
@@ -1413,6 +1415,8 @@ void csGLGraphics3D::UnsetRenderTargets()
   viewwidth = G2D->GetWidth();
   viewheight = G2D->GetHeight();
   needViewportUpdate = true;
+
+  currentAttachments = 0;
 }
 
 void csGLGraphics3D::CopyFromRenderTargets (size_t num,
@@ -1519,6 +1523,12 @@ bool csGLGraphics3D::BeginDraw (int drawflags)
   int i = 0;
   for (i = numImageUnits; i-- > 0;)
     DeactivateTexture (i);
+
+  /* If render attachments are set, but no depth attachment is given
+   * (ie default depth is used), implicitly clear the depth buffer. */
+  if ((currentAttachments != 0)
+      && ((currentAttachments & (1 << rtaDepth)) == 0))
+    drawflags |= CSDRAW_CLEARZBUFFER;
 
   // if 2D graphics is not locked, lock it
   if ((drawflags & (CSDRAW_2DGRAPHICS | CSDRAW_3DGRAPHICS))
@@ -1661,7 +1671,6 @@ void csGLGraphics3D::FinishDraw ()
     RecordProfileEvent ("Unset render targets");
     r2tbackend->FinishDraw ((current_drawflags & CSDRAW_READBACK) != 0);
     UnsetRenderTargets();
-    currentAttachments = 0;
   }
   
   current_drawflags = 0;
@@ -1704,43 +1713,8 @@ void csGLGraphics3D::DrawLine (const csVector3 & v1, const csVector3 & v2,
 	float fov, int color)
 {
   SwapIfNeeded();
-
-  if (v1.z < SMALL_Z && v2.z < SMALL_Z)
-    return;
-
-  float x1 = v1.x, y1 = v1.y, z1 = v1.z;
-  float x2 = v2.x, y2 = v2.y, z2 = v2.z;
-
-  if (z1 < SMALL_Z)
-  {
-    // x = t*(x2-x1)+x1;
-    // y = t*(y2-y1)+y1;
-    // z = t*(z2-z1)+z1;
-    float t = (SMALL_Z - z1) / (z2 - z1);
-    x1 = t * (x2 - x1) + x1;
-    y1 = t * (y2 - y1) + y1;
-    z1 = SMALL_Z;
-  }
-  else if (z2 < SMALL_Z)
-  {
-    // x = t*(x2-x1)+x1;
-    // y = t*(y2-y1)+y1;
-    // z = t*(z2-z1)+z1;
-    float t = (SMALL_Z - z1) / (z2 - z1);
-    x2 = t * (x2 - x1) + x1;
-    y2 = t * (y2 - y1) + y1;
-    z2 = SMALL_Z;
-  }
-  float iz1 = fov / z1;
-  int px1 = csQint (x1 * iz1 + (viewwidth / 2));
-  int py1 = viewheight - 1 - csQint (y1 * iz1 + (viewheight / 2));
-  float iz2 = fov / z2;
-  int px2 = csQint (x2 * iz2 + (viewwidth / 2));
-  int py2 = viewheight - 1 - csQint (y2 * iz2 + (viewheight / 2));
-
-  G2D->DrawLine (px1, py1, px2, py2, color);
+  G2D->DrawLineProjected (v1, v2, fov, color);
 }
-
 
 bool csGLGraphics3D::ActivateBuffers (csRenderBufferHolder *holder, 
                                       csRenderBufferName mapping[CS_VATTRIB_SPECIFIC_LAST+1])
@@ -1854,7 +1828,6 @@ bool csGLGraphics3D::ActivateTexture (iTextureHandle *txthandle, int unit)
   if (ext->CS_GL_ARB_multitexture)
   {
     statecache->SetCurrentImageUnit (unit);
-    statecache->ActivateImageUnit ();
   }
   else if (unit != 0) return false;
 
@@ -1972,7 +1945,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -1989,7 +1961,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -2079,9 +2050,11 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
 
   GLenum primitivetype = GL_TRIANGLES;
   int primNum_divider = 1, primNum_sub = 0;
+  int primVertices = -1;
   switch (mymesh->meshtype)
   {
     case CS_MESHTYPE_QUADS:
+      primVertices = 4;
       primNum_divider = 2;
       primitivetype = GL_QUADS;
       break;
@@ -2094,6 +2067,7 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       primitivetype = GL_TRIANGLE_FAN;
       break;
     case CS_MESHTYPE_POINTS:
+      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     case CS_MESHTYPE_POINT_SPRITES:
@@ -2102,10 +2076,12 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       {
         break;
       }
+      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     }
     case CS_MESHTYPE_LINES:
+      primVertices = 2;
       primNum_divider = 2;
       primitivetype = GL_LINES;
       break;
@@ -2115,6 +2091,7 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       break;
     case CS_MESHTYPE_TRIANGLES:
     default:
+      primVertices = 3;
       primNum_divider = 3;
       primitivetype = GL_TRIANGLES;
       break;
@@ -2125,6 +2102,14 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
       statecache->Enable_GL_POINT_SPRITE_ARB();
     else
       statecache->Disable_GL_POINT_SPRITE_ARB();
+  }
+
+  if (use_patches && primVertices > 0)
+  {
+    csGLGraphics3D::ext->glPatchParameteri (GL_PATCH_VERTICES_ARB,
+      primVertices);
+    // update primitive type
+    primitivetype = GL_PATCHES_ARB;
   }
 
   // Based on the kind of clipping we need we set or clip mask.
@@ -3222,7 +3207,7 @@ void csGLGraphics3D::SetClipper (iClipper2D* clipper, int cliptype)
 	old2dClip.xmax, old2dClip.ymax);
     hasOld2dClip = true;
 
-    csVector2* clippoly = clipper->GetClipPoly ();
+    const csVector2* clippoly = clipper->GetClipPoly ();
     csBox2 scissorbox;
     scissorbox.AddBoundingVertex (clippoly[0]);
     for (i=1; i<clipper->GetVertexCount (); i++)
@@ -3246,8 +3231,8 @@ void csGLGraphics3D::SetClipper (iClipper2D* clipper, int cliptype)
       r2tbackend->SetClipRect (scissorRect);
     else
     {
-      GLint vp[4];
-      glGetIntegerv (GL_VIEWPORT, vp);
+      int vp[4];
+      G2D->GetViewport (vp[0], vp[1], vp[2], vp[3]);
       glScissor (vp[0] + scissorRect.xmin, vp[1] + scissorRect.ymin, scissorRect.Width(),
 	scissorRect.Height());
     }
@@ -3471,7 +3456,6 @@ void csGLGraphics3D::DrawSimpleMeshes (const csSimpleRenderMesh* meshes,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (0);
-	statecache->ActivateImageUnit ();
 	statecache->SetCurrentTCUnit (0);
 	statecache->ActivateTCUnit (csGLStateCache::activateTexCoord);
       }
@@ -3626,15 +3610,6 @@ bool csGLGraphics3D::PerformExtensionV (char const* command, va_list /*args*/)
     return true;
   }
   return false;
-}
-
-bool csGLGraphics3D::PerformExtension (char const* command, ...)
-{
-  va_list args;
-  va_start (args, command);
-  bool rc = PerformExtensionV(command, args);
-  va_end (args);
-  return rc;
 }
 
 void csGLGraphics3D::OQInitQueries(unsigned int* queries,int num_queries)
@@ -4174,7 +4149,7 @@ void csGLGraphics3D::DumpZBuffer (const char* path)
 	zv *= zMul;
 	float cif = zv * (float)colorMax;
 	int ci = csQint (cif);
-	ci = MAX (0, MIN (ci, colorMax));
+	ci = csMax (0, csMin (ci, colorMax));
 	if (ci == colorMax)
 	{
 	  (imgPtr++)->Set (zBufColors[ci][0], zBufColors[ci][1],
@@ -4280,9 +4255,11 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
 
   GLenum primitivetype = GL_TRIANGLES;
   int primNum_divider = 1, primNum_sub = 0;
+  int primVertices = -1;
   switch (mymesh->meshtype)
   {
     case CS_MESHTYPE_QUADS:
+      primVertices = 4;
       primNum_divider = 2;
       primitivetype = GL_QUADS;
       break;
@@ -4295,6 +4272,7 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       primitivetype = GL_TRIANGLE_FAN;
       break;
     case CS_MESHTYPE_POINTS:
+      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     case CS_MESHTYPE_POINT_SPRITES:
@@ -4303,10 +4281,12 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       {
         break;
       }
+      primVertices = 1;
       primitivetype = GL_POINTS;
       break;
     }
     case CS_MESHTYPE_LINES:
+      primVertices = 2;
       primNum_divider = 2;
       primitivetype = GL_LINES;
       break;
@@ -4316,6 +4296,7 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       break;
     case CS_MESHTYPE_TRIANGLES:
     default:
+      primVertices = 3;
       primNum_divider = 3;
       primitivetype = GL_TRIANGLES;
       break;
@@ -4328,7 +4309,16 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
       statecache->Disable_GL_POINT_SPRITE_ARB();
   }
 
+  if (use_patches && primVertices > 0)
+  {
+    csGLGraphics3D::ext->glPatchParameteri (GL_PATCH_VERTICES_ARB,
+      primVertices);
+    // update primitive type
+    primitivetype = GL_PATCHES_ARB;
+  }
+
   // Based on the kind of clipping we need we set or clip mask.
+  // @@@ TODO: use clip values
   int clip_mask, clip_value;
   if (clipportal_floating)
   {

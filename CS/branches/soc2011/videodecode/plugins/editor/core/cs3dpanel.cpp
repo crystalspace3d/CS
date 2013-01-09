@@ -31,6 +31,7 @@
 #include "iutil/plugin.h"
 #include "iutil/virtclk.h"
 #include "iengine/campos.h"
+#include "iengine/rendermanager.h"
 #include "iengine/sector.h"
 #include "iengine/scenenode.h"
 #include "iengine/mesh.h"
@@ -56,6 +57,7 @@ SCF_IMPLEMENT_FACTORY (CS3DPanel);
 
 BEGIN_EVENT_TABLE(CS3DPanel::Panel, wxPanel)
   EVT_SIZE(CS3DPanel::Panel::OnSize)
+  EVT_IDLE(CS3DPanel::Panel::OnIdle)
 END_EVENT_TABLE()
 
 
@@ -104,11 +106,11 @@ bool CS3DPanel::Initialize (iObjectRegistry* obj_reg)
   g2d->AllowResize (true);
 
   csRef<iWxWindow> wxwin = scfQueryInterface<iWxWindow> (g2d);
-  if( !wxwin )
+  if(!wxwin)
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
               "crystalspace.application.editor",
-              "Canvas is no iWxWindow plugin!");
+              "The drawing canvas is not a iWxWindow plugin!");
     return false;
   }
   window = new CS3DPanel::Panel (this, editor->GetWindow (), -1, wxPoint(0,0), wxSize(200,150));
@@ -155,7 +157,7 @@ bool CS3DPanel::Initialize (iObjectRegistry* obj_reg)
   the timer triggers the next frame.
   */
   
-  pump = new Pump(this);
+  pump.Reset (new Pump());
   pump->Start (20);
   
   return true;
@@ -164,7 +166,6 @@ bool CS3DPanel::Initialize (iObjectRegistry* obj_reg)
 CS3DPanel::~CS3DPanel()
 {
   q->RemoveListener (this);
-  delete pump;
 }
 
 wxWindow* CS3DPanel::GetWindow ()
@@ -416,14 +417,11 @@ void CS3DPanel::MoveCamera ()
 void CS3DPanel::ProcessFrame ()
 {
   MoveCamera ();
-  
-  // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_CLEARSCREEN | CSDRAW_3DGRAPHICS))
-    return;
+  csRef<iGraphics2D> g2d = g3d->GetDriver2D ();
 
-  // Tell the camera to render into the frame buffer.
-  view->Draw ();
-  
+  // Render the 3D view
+  engine->GetRenderManager ()->RenderView (view);
+
   // draw helpers here
   csArray<csSimpleRenderMesh>* helperm = editor->GetHelperMeshes ();
   if (helperm && editor->GetTransformStatus () != iEditor::NOTHING)
@@ -482,7 +480,7 @@ void CS3DPanel::ProcessFrame ()
     return;
   
   csTransform tr_w2c = view->GetCamera ()->GetTransform ();
-  int fov = g3d->GetDriver2D ()->GetHeight ();
+  const CS::Math::Matrix4& projection (g3d->GetProjectionMatrix ());
 
   csRef<iEditorObjectIterator> it = selection->GetIterator ();
   while (it->HasNext ())
@@ -499,29 +497,10 @@ void CS3DPanel::ProcessFrame ()
     iMovable* mov = mesh->GetMovable ();
     csReversibleTransform tr_o2c = tr_w2c / mov->GetFullTransform ();
     
-    int bbox_color = g3d->GetDriver2D ()->FindRGB (128, 255, 128);
+    int bbox_color = g2d->FindRGB (128, 255, 128);
     const csBox3& bbox = mesh->GetMeshObject ()
         ->GetObjectModel ()->GetObjectBoundingBox ();
-    csVector3 vxyz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xyz);
-    csVector3 vXyz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_Xyz);
-    csVector3 vxYz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xYz);
-    csVector3 vxyZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xyZ);
-    csVector3 vXYz = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_XYz);
-    csVector3 vXyZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_XyZ);
-    csVector3 vxYZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_xYZ);
-    csVector3 vXYZ = tr_o2c * bbox.GetCorner (CS_BOX_CORNER_XYZ);
-    g3d->DrawLine (vxyz, vXyz, fov, bbox_color);
-    g3d->DrawLine (vXyz, vXYz, fov, bbox_color);
-    g3d->DrawLine (vXYz, vxYz, fov, bbox_color);
-    g3d->DrawLine (vxYz, vxyz, fov, bbox_color);
-    g3d->DrawLine (vxyZ, vXyZ, fov, bbox_color);
-    g3d->DrawLine (vXyZ, vXYZ, fov, bbox_color);
-    g3d->DrawLine (vXYZ, vxYZ, fov, bbox_color);
-    g3d->DrawLine (vxYZ, vxyZ, fov, bbox_color);
-    g3d->DrawLine (vxyz, vxyZ, fov, bbox_color);
-    g3d->DrawLine (vxYz, vxYZ, fov, bbox_color);
-    g3d->DrawLine (vXyz, vXyZ, fov, bbox_color);
-    g3d->DrawLine (vXYz, vXYZ, fov, bbox_color);
+    g2d->DrawBoxProjected (bbox, tr_o2c, projection, bbox_color);
   }
 }
 
@@ -529,13 +508,6 @@ void CS3DPanel::FinishFrame ()
 {
   g3d->FinishDraw ();
   g3d->Print (0);
-}
-
-void CS3DPanel::PushFrame ()
-{
-  vc->Advance();
-  q->Process();
-  wxYield();
 }
 
 void CS3DPanel::OnSize (wxSizeEvent& event)
@@ -561,6 +533,12 @@ void CS3DPanel::OnSize (wxSizeEvent& event)
   view->SetRectangle (0, 0, size.x, size.y);
 
   event.Skip();
+}
+
+void CS3DPanel::OnIdle (wxIdleEvent& event)
+{
+  vc->Advance();
+  q->Process();
 }
 
 void CS3DPanel::OnDrop (wxCoord x, wxCoord y, iEditorObject* obj)

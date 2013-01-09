@@ -39,6 +39,7 @@
 #include "iutil/document.h"
 #include "iutil/objreg.h"
 #include "iutil/plugin.h"
+#include "iutil/verbositymanager.h"
 #include "iutil/vfs.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/material.h"
@@ -47,13 +48,26 @@
 
 #include "assimpldr.h"
 
+// The name of those values is different from Assimp 2.0 and above versions
+#if (CS_ASSIMP_VERSION == 2)
+#define LOGGER_ERROR Assimp::Logger::ERR
+#define LOGGER_WARNING Assimp::Logger::WARN
+#define LOGGER_NOTIFY Assimp::Logger::INFO
+#define LOGGER_DEBUG Assimp::Logger::DEBUGGING
+#else
+#define LOGGER_ERROR Assimp::Logger::Err
+#define LOGGER_WARNING Assimp::Logger::Warn
+#define LOGGER_NOTIFY Assimp::Logger::Info
+#define LOGGER_DEBUG Assimp::Logger::Debugging
+#endif
+
 CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 {
 
   SCF_IMPLEMENT_FACTORY (AssimpLoader);
 
-  AssimpLoader::AssimpLoader (iBase* pParent) :
-    scfImplementationType (this, pParent)
+  AssimpLoader::AssimpLoader (iBase* parent) :
+    scfImplementationType (this, parent)
   {
     importFlags =
       aiProcess_CalcTangentSpace // needed only for advanced shaders
@@ -83,9 +97,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
   {
   }
 
-  bool AssimpLoader::Initialize (iObjectRegistry* object_reg)
+  bool AssimpLoader::Initialize (iObjectRegistry* objectRegistry)
   {
-    AssimpLoader::object_reg = object_reg;
+    AssimpLoader::objectRegistry = objectRegistry;
     return true;
   }
 
@@ -99,7 +113,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 
   bool AssimpLoader::IsRecognized (iDataBuffer* buffer)
   {
-    // TODO: this is dangerous...
+    // TODO: this is VERY dangerous...
     return true;
   }
 
@@ -111,25 +125,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     loaderContext = ldr_context;
 
     // Find the VFS
-    vfs = csQueryRegistry<iVFS> (object_reg);
+    vfs = csQueryRegistry<iVFS> (objectRegistry);
     if (!vfs)
     {
       ReportError ("Could not load VFS system!");
       return (iBase*) nullptr;
     }
 
+    // Setup the logger
+    SetupLogger ();
+
     // Create an Assimp importer and parse the file
     Assimp::Importer importer;
     importer.SetIOHandler (new csIOSystem (vfs, nullptr));
     importer.SetProgressHandler (new AssimpProgressHandler ());
-    printf ("Loading...");
+    if (doVerbose) printf ("Loading...");
     scene = importer.ReadFileFromMemory
       (**buffer, buffer->GetSize (), importFlags, "");
 
-    // If the import failed, report it
+    // If the import failed then report it
     if (!scene)
     {
-      printf ("FAILED!\n");
+      if (doVerbose) printf ("FAILED!\n");
       ReportError ("Failed to load binary file: %s",
 		   importer.GetErrorString());
       return (iBase*) nullptr;
@@ -141,6 +158,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 
     // TODO: list of failed factories
 
+    // Close the logger
+    Assimp::DefaultLogger::kill ();
+
     firstMesh->IncRef ();
     return csPtr<iBase> (firstMesh);
   }
@@ -149,25 +169,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 					   iDataBuffer* buffer)
   {
     // Find the VFS
-    vfs = csQueryRegistry<iVFS> (object_reg);
+    vfs = csQueryRegistry<iVFS> (objectRegistry);
     if (!vfs)
     {
       ReportError ("Could not load VFS system!");
       return nullptr;
     }
 
+    // Setup the logger
+    SetupLogger ();
+
     // Create an Assimp importer and parse the file
     Assimp::Importer importer;
     importer.SetIOHandler (new csIOSystem (vfs, nullptr));
     importer.SetProgressHandler (new AssimpProgressHandler ());
-    printf ("Loading...");
+    if (doVerbose) printf ("Loading...");
     scene = importer.ReadFileFromMemory
       (**buffer, buffer->GetSize (), importFlags, "");
 
-    // If the import failed, report it
+    // If the import failed then report it
     if (!scene)
     {
-      printf ("FAILED!\n");
+      if (doVerbose) printf ("FAILED!\n");
       ReportError ("Failed to load factory %s: %s",
 		   CS::Quote::Single (factname),
 		   importer.GetErrorString());
@@ -178,13 +201,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     importType = IMPORT_MODEL;
     ImportScene ();
 
+    // Close the logger
+    Assimp::DefaultLogger::kill ();
+
     return firstMesh;
   }
 
   iMeshFactoryWrapper* AssimpLoader::Load (const char* factname,
 					   const char* filename)
   {
-    // TODO: implement iPluginConfig, use iVerbosityManager, iProgressMeter
+    // TODO: implement iPluginConfig, use iProgressMeter
     // TODO: custom options: scale, genmesh/animesh/scene/factories,
     //   find duplicates/optimize, save default animesh pose, fast/optimized
     // TODO: if forced to be a genmesh then don't read animations,
@@ -192,24 +218,29 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     // TODO: if forced to be a mesh then load only the textures/materials needed for it
 
     // Find the VFS
-    vfs = csQueryRegistry<iVFS> (object_reg);
+    vfs = csQueryRegistry<iVFS> (objectRegistry);
     if (!vfs)
     {
       ReportError ("Could not load VFS system!");
       return nullptr;
     }
 
+    // Setup the logger
+    SetupLogger ();
+
     // Create an Assimp importer and parse the file
     Assimp::Importer importer;
-    importer.SetIOHandler (new csIOSystem (vfs, filename));
+    //importer.SetIOHandler (new csIOSystem (vfs, filename));
+    csString file = filename;
+    importer.SetIOHandler (new csIOSystem (vfs, &file));
     importer.SetProgressHandler (new AssimpProgressHandler ());
-    printf ("Loading...");
-    scene = importer.ReadFile (filename, importFlags);
+    if (doVerbose) printf ("Loading...");
+    scene = importer.ReadFile (file.GetData (), importFlags);
 
-    // If the import failed, report it
+    // If the import failed then report it
     if (!scene)
     {
-      printf ("FAILED!\n");
+      if (doVerbose) printf ("FAILED!\n");
       ReportError ("Failed to load factory %s from file %s: %s",
 		   CS::Quote::Single (factname),
 		   CS::Quote::Single (filename),
@@ -221,35 +252,67 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     importType = IMPORT_MODEL;
     ImportScene ();
 
+    // Close the logger
+    Assimp::DefaultLogger::kill ();
+
     return firstMesh;
+  }
+
+  void AssimpLoader::SetupLogger ()
+  {
+    // Read the verbosity level from the manager
+    csRef<iVerbosityManager> verbosityManager
+      (csQueryRegistry<iVerbosityManager> (objectRegistry));
+    doVerbose = false;
+    if (verbosityManager) 
+      doVerbose = verbosityManager->Enabled ("assimpldr");
+
+    // Register the log streams
+    Assimp::DefaultLogger::create ("", Assimp::Logger::VERBOSE);
+    Assimp::DefaultLogger::get ()->attachStream
+      (new Logger (objectRegistry, CS_REPORTER_SEVERITY_ERROR), LOGGER_ERROR);
+    Assimp::DefaultLogger::get ()->attachStream
+      (new Logger (objectRegistry, CS_REPORTER_SEVERITY_WARNING), LOGGER_WARNING);
+    if (doVerbose)
+    {
+      Assimp::DefaultLogger::get ()->attachStream
+	(new Logger (objectRegistry, CS_REPORTER_SEVERITY_NOTIFY), LOGGER_NOTIFY);
+#ifdef CS_DEBUG
+      Assimp::DefaultLogger::get ()->attachStream
+	(new Logger (objectRegistry, CS_REPORTER_SEVERITY_DEBUG), LOGGER_DEBUG);
+#endif
+    }
   }
 
   void AssimpLoader::ImportScene ()
   {
-    printf ("SUCCESS!\n");
-    printf ("animations: %i\n", scene->mNumAnimations);
-    printf ("meshes: %i\n", scene->mNumMeshes);
-    printf ("materials: %i\n", scene->mNumMaterials);
-    printf ("camera: %i\n", scene->mNumCameras);
-    printf ("textures: %i\n", scene->mNumTextures);
-    printf ("lights: %i\n", scene->mNumLights);
+    if (doVerbose)
+    {
+      printf ("SUCCESS!\n");
+      printf ("animations: %i\n", scene->mNumAnimations);
+      printf ("meshes: %i\n", scene->mNumMeshes);
+      printf ("materials: %i\n", scene->mNumMaterials);
+      printf ("camera: %i\n", scene->mNumCameras);
+      printf ("textures: %i\n", scene->mNumTextures);
+      printf ("lights: %i\n", scene->mNumLights);
 
-    printf ("\nScene tree:\n");
-    PrintNode (scene, scene->mRootNode, "");
-    printf ("\n");
+      printf ("\nScene tree:\n");
+      PrintNode (scene, scene->mRootNode, "");
+      printf ("\n");
+    }
 
     // Clear any previous imported first mesh
     firstMesh = nullptr;
 
     // Find pointers to engine data
-    engine = csQueryRegistry<iEngine> (object_reg);
+    engine = csQueryRegistry<iEngine> (objectRegistry);
     if (!engine)
     {
       ReportError ("Could not find the engine");
       return;
     }
 
-    g3d = csQueryRegistry<iGraphics3D> (object_reg);
+    g3d = csQueryRegistry<iGraphics3D> (objectRegistry);
     if (!g3d)
     {
       ReportError ("Could not find the 3D graphics");
@@ -263,14 +326,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
       return;
     }
 
-    loader = csQueryRegistry<iLoader> (object_reg);
+    loader = csQueryRegistry<iLoader> (objectRegistry);
     if (!loader)
     {
       ReportError ("Could not find the main loader!");
       return;
     }
 
-    imageLoader = csQueryRegistry<iImageIO> (object_reg);
+    imageLoader = csQueryRegistry<iImageIO> (objectRegistry);
     if (!imageLoader)
     {
       ReportError ("Failed to find an image loader!");
@@ -278,13 +341,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     }
 
     shaderVariableNames = csQueryRegistryTagInterface<iShaderVarStringSet>
-      (object_reg, "crystalspace.shader.variablenameset");
+      (objectRegistry, "crystalspace.shader.variablenameset");
     if (!shaderVariableNames)
       ReportWarning ("Could not find the shader variable set. Import of materials will be limited");
 
     // Find the skeleton manager
     skeletonManager = csQueryRegistryOrLoad<CS::Animation::iSkeletonManager>
-      (object_reg, "crystalspace.skeletalanimation");
+      (objectRegistry, "crystalspace.skeletalanimation");
     if (!skeletonManager)
       ReportWarning ("Could not find the skeleton manager. Importing animesh skeletons and animations won't be possible");
 
@@ -328,9 +391,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
       InitSceneNode (scene->mRootNode);
       AnalyzeSceneNode (scene->mRootNode, nullptr);
 
-      printf ("\nImported scene tree:\n");
-      PrintImportNode (scene->mRootNode, "");
-      printf ("\n");
+      if (doVerbose)
+      {
+	printf ("\nImported scene tree:\n");
+	PrintImportNode (scene->mRootNode, "");
+	printf ("\n");
+      }
 
       // TODO: terrains, lights, cameras, null meshes with extra render meshes
       ImportSceneNode (scene->mRootNode);

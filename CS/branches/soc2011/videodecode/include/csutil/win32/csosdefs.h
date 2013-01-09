@@ -93,12 +93,6 @@
 
   #define CS_HAVE_BITSCAN_INTRINSICS
 
-  #if defined(__CRYSTAL_SPACE__) && !defined(CS_DEBUG)
-    #pragma code_seg("CSpace")	  // Just for fun :)
-    // However, doing this in debug builds prevents Edit & Continue from
-    // functioning properly :/
-  #endif
-
   // VC8 quirks
   #if (_MSC_VER >= 1400)
     // Also note quirk in csconfig.h
@@ -279,11 +273,10 @@
   #define CS_INITIALIZE_PLATFORM_APPLICATION CS_WIN32_MSVC_DEBUG_GOOP
 #endif
 
-// The 2D graphics driver used by renderers on this platform
+// The default 2D graphics driver used by renderers on this platform.
 #define CS_OPENGL_2D_DRIVER "crystalspace.graphics2d.glwin32"
 
-// The sound driver
-#define CS_SOUND_DRIVER "crystalspace.sound.driver.waveout"
+// The default sound driver used on this platform.
 #define CS_SNDSYS_DRIVER "crystalspace.sndsys.software.driver.directsound"
 
 // SCF symbol export facility.
@@ -328,12 +321,6 @@ static inline longlong strtoll(char const* s, char** sN, int base)
 #endif
 #define CS_PATH_DELIMITER ';'
 #define CS_PATH_SEPARATOR '\\'
-
-#if defined (__CYGWIN32__)
-#  define CS_MKDIR(path) mkdir(path, 0755)
-#else
-#  define CS_MKDIR(path) _mkdir(path)
-#endif
 
 // Directory read functions, file access, etc.
 #include <io.h>

@@ -2259,6 +2259,7 @@ struct IntersectSegment_Front2BackData
   int polygon_idx;
   csDynaVis::VistestObjectsArray* vector;	// If not-null we need all objects.
   bool accurate;
+  bool bf;
 };
 
 static bool IntersectSegmentSloppy_Front2Back (csKDTree* treenode,
@@ -2389,7 +2390,8 @@ static bool IntersectSegment_Front2Back (csKDTree* treenode, void* userdata,
 	    int pidx = -1;
 	    if (data->accurate)
 	      rc = visobj_wrap->mesh->GetMeshObject ()->HitBeamObject (
-	      	  obj_start, obj_end, obj_isect, &r, &pidx);
+	      	  obj_start, obj_end, obj_isect, &r, &pidx, 0,
+		  data->bf);
 	    else
 	      rc = visobj_wrap->mesh->GetMeshObject ()->HitBeamOutline (
 	      	  obj_start, obj_end, obj_isect, &r);
@@ -2423,7 +2425,7 @@ static bool IntersectSegment_Front2Back (csKDTree* treenode, void* userdata,
 
 bool csDynaVis::IntersectSegment (const csVector3& start,
     const csVector3& end, csVector3& isect, float* pr,
-    iMeshWrapper** p_mesh, int* poly_idx, bool accurate)
+    iMeshWrapper** p_mesh, int* poly_idx, bool accurate, bool bf)
 {
   UpdateObjects ();
   current_vistest_nr++;
@@ -2437,6 +2439,7 @@ bool csDynaVis::IntersectSegment (const csVector3& start,
   data.polygon_idx = -1;
   data.vector = 0;
   data.accurate = accurate;
+  data.bf = bf;
   kdtree->Front2Back (start, IntersectSegment_Front2Back, (void*)&data, 0);
 
   if (p_mesh) *p_mesh = data.mesh;
@@ -2448,7 +2451,8 @@ bool csDynaVis::IntersectSegment (const csVector3& start,
 }
 
 csPtr<iVisibilityObjectIterator> csDynaVis::IntersectSegment (
-    const csVector3& start, const csVector3& end, bool accurate)
+    const csVector3& start, const csVector3& end, bool accurate,
+    bool bf)
 {
   UpdateObjects ();
   current_vistest_nr++;
@@ -2460,6 +2464,7 @@ csPtr<iVisibilityObjectIterator> csDynaVis::IntersectSegment (
   data.polygon_idx = -1;
   data.vector = new csDynaVis::VistestObjectsArray ();
   data.accurate = accurate;
+  data.bf = bf;
   kdtree->Front2Back (start, IntersectSegment_Front2Back, (void*)&data, 0);
 
   csDynVisObjIt* vobjit = new csDynVisObjIt (data.vector, 0);
@@ -2561,7 +2566,7 @@ void csDynaVis::Dump (iGraphics3D* g3d)
       	  reason_colors[i].g, reason_colors[i].b);
       }
       csReversibleTransform trans = debug_camera->GetTransform ();
-      trans = csTransform (csYRotMatrix3 (-PI/2.0), csVector3 (0)) * trans;
+      trans = csTransform (csYRotMatrix3 (-HALF_PI), csVector3 (0)) * trans;
       float fov = g3d->GetPerspectiveAspect ();
       int sx, sy;
       g3d->GetPerspectiveCenter (sx, sy);
@@ -2593,40 +2598,40 @@ void csDynaVis::Dump (iGraphics3D* g3d)
         csVisibilityObjectWrapper* visobj_wrap = visobj_vector[i];
         int col = reason_cols[visobj_wrap->history->reason];
         const csBox3& b = visobj_wrap->child->GetBBox ();
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xyz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_Xyz)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xyz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xYz)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xyz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xyZ)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XYZ)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xYZ)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XYZ)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XyZ)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XYZ)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XYz)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_Xyz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XYz)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_Xyz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XyZ)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xYz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xYZ)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xYz)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XYz)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xyZ)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_XyZ)), fov, col);
-        g3d->DrawLine (
+        g2d->DrawLineProjected (
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xyZ)),
       	  trans.Other2This (b.GetCorner (CS_BOX_CORNER_xYZ)), fov, col);
       }

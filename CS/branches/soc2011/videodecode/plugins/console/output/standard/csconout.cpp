@@ -455,7 +455,7 @@ void csConsoleOutput::SetPosition(int x, int y, int width, int height)
   invalid.Set (size);
 
   // Update cursor coordinates
-  cy = MIN (cy, buffer->GetPageSize ());
+  cy = csMin (cy, buffer->GetPageSize ());
   // now check how many chars do fit in the current width
   const csString *text = buffer->GetLine (cy);
   if (!text)
@@ -513,7 +513,7 @@ void csConsoleOutput::ScrollTo(int top, bool snap)
   switch (top)
   {
     case csConPageUp:
-      buffer->SetTopLine(MAX(0, buffer->GetTopLine() - buffer->GetPageSize()));
+      buffer->SetTopLine(csMax (0, buffer->GetTopLine() - buffer->GetPageSize()));
       break;
     case csConPageDown:
       buffer->SetTopLine(buffer->GetTopLine () + buffer->GetPageSize ());
@@ -531,7 +531,7 @@ void csConsoleOutput::ScrollTo(int top, bool snap)
 
   if ((buffer->GetCurLine () >= buffer->GetTopLine()) &&
       (buffer->GetCurLine () <= buffer->GetTopLine() + buffer->GetPageSize()))
-    cy = MAX (buffer->GetCurLine () - buffer->GetTopLine (), 0);
+    cy = csMax (buffer->GetCurLine () - buffer->GetTopLine (), 0);
   else
     cy = -1;
   do_snap = snap;
@@ -585,15 +585,6 @@ void csConsoleOutput::SetVisible (bool iShow)
   if (Client)
     Client->ConsoleVisibilityChanged(this, iShow);
   invalid.Set (size);
-}
-
-bool csConsoleOutput::PerformExtension (const char *iCommand, ...)
-{
-  va_list args;
-  va_start (args, iCommand);
-  bool rc = PerformExtensionV(iCommand, args);
-  va_end (args);
-  return rc;
 }
 
 bool csConsoleOutput::PerformExtensionV (const char *iCommand, va_list args)

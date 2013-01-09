@@ -223,6 +223,14 @@ public:
       iEngine* engine, iCollection* collection = 0);
 
   /**
+   * Initialize collision detection (ie create csColliderWrapper) for
+   * all objects in a sector. If the optional collection is given only
+   * the objects from that collection will be initialized.
+   */
+  static void InitializeCollisionWrappers (iCollideSystem* colsys,
+      iSector* sector, iCollection* collection = 0);
+
+  /**
    * Test collision between one collider and an array of colliders.
    * This function is mainly used by CollidePath() below.
    * \param colsys is the collider system.
@@ -351,7 +359,6 @@ public:
 class CS_CRYSTALSPACE_EXPORT csColliderActor
 {
 private:
-  bool revertMove;
   bool onground;
   bool cd;
   csArray<csCollisionPair> our_cd_contact;
@@ -376,8 +383,6 @@ private:
   csVector3 topSize;
   csVector3 bottomSize;
   csVector3 intervalSize;
-
-  int revertCount;
 
   /**
    * Performs the collision detection for the provided csColliderWrapper vs
@@ -501,11 +506,6 @@ public:
    * Enable/disable collision detection (default enabled).
    */
   void SetCD (bool c) { cd = c; }
-
-  /**
-   * Check if we should revert a move (revert rotation).
-   */
-  bool CheckRevertMove () const { return revertMove; }
 
   /**
    * Enable remembering of the meshes we hit.

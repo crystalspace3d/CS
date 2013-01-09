@@ -258,11 +258,17 @@ struct csIEEEfloat
     if(exponent == 0)
     {
       unsigned long index;
-      CS::Utility::BitOps::ScanBitReverse (mantissa, index);
-
-      exponent -= (index - 9);
-      mantissa <<= (index - 8);
-      mantissa &= 0x007FFFFF;
+      if (CS::Utility::BitOps::ScanBitReverse (mantissa, index))
+      {
+        exponent -= (index - 9);
+        mantissa <<= (index - 8);
+        mantissa &= 0x007FFFFF;
+      }
+      else
+      {
+        // 0 mantissa -> force float to be 0
+        return (sign != 0) ? -0.0f : 0.0f;
+      }
     }
 
     // Convert the exponent...
@@ -437,7 +443,7 @@ struct csSetToAddress
 /**
  * Convert a float to a cross-platform 32-bit format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
+ * \deprecated Deprecated in 2.0. Use csIEEEfloat methods instead.
  */
 CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
 static inline int32 csFloatToLong (float f)
@@ -453,7 +459,7 @@ static inline int32 csFloatToLong (float f)
 /**
  * Convert a 32-bit cross-platform float to native format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
+ * \deprecated Deprecated in 2.0. Use csIEEEfloat methods instead.
  */
 CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
 static inline float csLongToFloat (int32 l)
@@ -476,7 +482,7 @@ static inline float csLongToFloat (int32 l)
 /**
  * Convert a double to a cross-platform 64-bit format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
+ * \deprecated Deprecated in 2.0. Use csIEEEfloat methods instead.
  */
 CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
 static inline int64 csDoubleToLongLong (double d)
@@ -493,7 +499,7 @@ static inline int64 csDoubleToLongLong (double d)
 /**
  * Convert a 64-bit cross-platform double to native format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
+ * \deprecated Deprecated in 2.0. Use csIEEEfloat methods instead.
  */
 CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
 static inline double csLongLongToDouble (int64 i)
@@ -517,7 +523,7 @@ static inline double csLongLongToDouble (int64 i)
 /**
  * Convert a float to a cross-platform 16-bit format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
+ * \deprecated Deprecated in 2.0. Use csIEEEfloat methods instead.
  */
 CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
 static inline short csFloatToShort (float f)
@@ -533,7 +539,7 @@ static inline short csFloatToShort (float f)
 /**
  * Convert a 16-bit cross-platform float to native format (no endianess
  * adjustments!)
- * \deprecated Deprecated in 1.9. Use csIEEEfloat methods instead.
+ * \deprecated Deprecated in 2.0. Use csIEEEfloat methods instead.
  */
 CS_DEPRECATED_METHOD_MSG("Use csIEEEfloat methods instead")
 static inline float csShortToFloat (short s)

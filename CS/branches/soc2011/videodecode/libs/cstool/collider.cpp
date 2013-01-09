@@ -24,19 +24,18 @@
 #include "csgeom/quaternion.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/trimesh.h"
+#include "cstool/collider.h"
 
-#include "cstool/collider.h"
-#include "iengine/collection.h"
-#include "cstool/collider.h"
 #include "iengine/camera.h"
+#include "iengine/collection.h"
 #include "iengine/engine.h"
 #include "iengine/mesh.h"
 #include "iengine/movable.h"
 #include "iengine/portal.h"
 #include "iengine/portalcontainer.h"
+#include "iengine/scenenode.h"
 #include "iengine/sector.h"
 #include "iengine/viscull.h"
-#include "iengine/scenenode.h"
 
 #include "imesh/objmodel.h"
 #include "imesh/object.h"
@@ -311,6 +310,20 @@ void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
   }
 }
 
+void csColliderHelper::InitializeCollisionWrappers (iCollideSystem* colsys,
+    iSector* sector, iCollection* collection)
+{
+  // Initialize all mesh objects for collision detection.
+  int i;
+  iMeshList* meshes = sector->GetMeshes ();
+  for (i = 0 ; i < meshes->GetCount () ; i++)
+  {
+    iMeshWrapper* sp = meshes->Get (i);
+    if (collection && !collection->IsParentOf(sp->QueryObject ())) continue;
+    InitializeCollisionWrapper (colsys, sp);
+  }
+}
+
 #include "csutil/deprecated_warn_on.h"
 
 bool csColliderHelper::CollideArray (
@@ -533,16 +546,16 @@ float csColliderHelper::TraceBeam (iCollideSystem* cdsys, iSector* sector,
           obj_isect, 0, &polygon_idx))
       {
         if (!movable->IsFullTransformIdentity ())
-    obj_isect = trans.This2Other (obj_isect);
-  float squared_dist = csSquaredDist::PointPoint (obj_isect, start);
-  if (squared_dist < best_squared_dist)
-  {
-    have_hit = true;
-    best_squared_dist = squared_dist;
-    closest_isect = obj_isect;
-    last_portal_index = polygon_idx;
-    best_mesh = mesh;
-  }
+    	  obj_isect = trans.This2Other (obj_isect);
+	float squared_dist = csSquaredDist::PointPoint (obj_isect, start);
+  	if (squared_dist < best_squared_dist)
+  	{
+    	  have_hit = true;
+    	  best_squared_dist = squared_dist;
+    	  closest_isect = obj_isect;
+    	  last_portal_index = polygon_idx;
+    	  best_mesh = mesh;
+  	}
       }
     }
   }
@@ -619,18 +632,18 @@ void csColliderActor::InitializeColliders (
   csColliderActor::shift = shift;
   bottomSize = legs;
   topSize = body;
-  intervalSize.x = MIN(topSize.x, bottomSize.x);
-  intervalSize.y = MIN(topSize.y, bottomSize.y);
-  intervalSize.z = MIN(topSize.z, bottomSize.z);
+  intervalSize.x = csMin (topSize.x, bottomSize.x);
+  intervalSize.y = csMin (topSize.y, bottomSize.y);
+  intervalSize.z = csMin (topSize.z, bottomSize.z);
 
-  float maxX = MAX(body.x, legs.x)+shift.x;
-  float maxZ = MAX(body.z, legs.z)+shift.z;
-  float maxDim = MAX(maxX, maxZ);
+  float maxX = csMax (body.x, legs.x)+shift.x;
+  float maxZ = csMax (body.z, legs.z)+shift.z;
+  float maxDim = csMax (maxX, maxZ);
 
   csRef<iTriangleMesh> pm;
 
-  float bX2 = MAX(body.x, legs.x) / 2.0f;
-  float bZ2 = MAX(body.z, legs.z) / 2.0f;
+  float bX2 = csMax (body.x, legs.x) / 2.0f;
+  float bZ2 = csMax (body.z, legs.z) / 2.0f;
   float bYtop = legs.y + body.y;
 
   csBox3 top (csVector3 (-bX2, -legs.y/2.0f, -bZ2) + shift,  // Extend the bottom so we can check collision on stepping down
@@ -700,7 +713,7 @@ static float GetAngle (float x, float y)
 
   float angle = acos (x);
   if (y < 0)
-    angle = 2*PI - angle;
+    angle = TWO_PI - angle;
 
   return angle;
 }
@@ -1064,7 +1077,7 @@ bool csColliderActor::AdjustForCollisions (
 	if(fabs(unit.y) >= 0.7f)
           onground = true;
         // This is a ground triangle so we can move on top of it
-        max_y = MIN(MAX(MAX(line[0].y, line[1].y),max_y), jumpY);
+        max_y = csMin (csMax (csMax (line[0].y, line[1].y),max_y), jumpY);
       }
       
 
@@ -1194,9 +1207,9 @@ bool csColliderActor::AdjustForCollisions (
         (line[0].y > newpos.y + bottomSize.y + topSize.y && line[1].y > newpos.y + bottomSize.y + topSize.y))
       continue;
 
-    csVector3 unit = normal / norm;
-
+    //csVector3 unit = normal / norm;
     // printf("final check hit y %g %g %g", unit.y, line[0].y, line[1].y);
+
     hits++;
     break;
   }
@@ -1246,9 +1259,8 @@ bool csColliderActor::AdjustForCollisions (
           (line[0].y > newpos.y + bottomSize.y + topSize.y && line[1].y > newpos.y + bottomSize.y + topSize.y))
         continue;
 
-      csVector3 unit = normal / norm;
-
 #ifdef COLLDEBUG
+      csVector3 unit = normal / norm;
       printf("final check hit y %g %g %g", unit.y, line[0].y, line[1].y);
 #endif
       hits++;
@@ -1505,7 +1517,7 @@ static float ComputeLocalMaxInterval (
   const csVector3& intervalSize)
 {
   float local_max_interval =
-    MIN (MIN ((fabs (bodyVel.y) < SMALL_EPSILON)
+    csMin (csMin ((fabs (bodyVel.y) < SMALL_EPSILON)
     ? MAX_CD_INTERVAL
   : fabs (intervalSize.y/bodyVel.y), (fabs (bodyVel.x) < SMALL_EPSILON)
     ? MAX_CD_INTERVAL

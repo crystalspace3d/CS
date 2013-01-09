@@ -155,12 +155,13 @@ csRef<iLight> WalkTestLights::CreateRandomLight (const csVector3& pos, iSector* 
 
 csReversibleTransform WalkTestLights::FlashlightShift (const csReversibleTransform& tf)
 {
-  csReversibleTransform newTF (tf);
-  // Tilt flashlight a bit down
-  csMatrix3 newmat (tf.GetT2O());
-  newmat *= csXRotMatrix3 (float ((10.0/180.0)*PI));
-  newTF.SetT2O (newmat);
-  return newTF;
+  // Move the flashlight a bit down in order to be able to see
+  // the shadows that are cast
+  csMatrix3 rotation (tf.GetO2T ());
+  rotation *= csXRotMatrix3 (float ((-5.0/180.0)*PI));
+  csVector3 origin (tf.GetOrigin ());
+  origin += csVector3 (0.3f, -0.5f, 0.0f);
+  return csReversibleTransform (rotation, origin);
 }
 
 void WalkTestLights::EnableFlashlight (bool enable)
@@ -176,7 +177,7 @@ void WalkTestLights::EnableFlashlight (bool enable)
       CS_LIGHT_DYNAMICTYPE_DYNAMIC);
     flashlight->SetType (CS_LIGHT_SPOTLIGHT);
     flashlight->SetAttenuationMode (CS_ATTN_INVERSE);
-    flashlight->SetSpotLightFalloff (1, cosf ((25.0/180.0)*PI));
+    flashlight->SetSpotLightFalloff (1, cosf ((25.0f/180.0f)*PI));
       
     iLightList* ll = walktest->views->GetCamera ()->GetSector ()->GetLights ();
     ll->Add (flashlight);

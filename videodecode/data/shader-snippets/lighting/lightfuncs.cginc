@@ -22,6 +22,7 @@
 #define __LIGHTFUNCS_CG_INC__
 
 #define MAX_LIGHTS 8
+#define MAX_OSM 8
 
 half Attenuation_Linear (float d, float invLightRadius)
 {
@@ -49,28 +50,24 @@ half Light_Spot (half3 surfToLight, half3 lightDir, half falloffInner, half fall
 }
 
 
-struct LightProperties
-{
-  // Number of lights provided
-  int count;
-  // Light world-space position
-  float4 posWorld[MAX_LIGHTS];
-  // Transformation from light space to world space
-  float4x4 transform[MAX_LIGHTS];
-  // Transformation from world space to light space
-  float4x4 transformInv[MAX_LIGHTS];
-  // Diffuse color
-  float3 colorDiffuse[MAX_LIGHTS];
-  // Specular color
-  float3 colorSpecular[MAX_LIGHTS];
-  // Attenuation vector (XYZ are CLQ coefficients; W is light radius)
-  float4 attenuationVec[MAX_LIGHTS];
-  // Cosine of inner falloff angle
-  float falloffInner[MAX_LIGHTS];
-  // Cosine of outerr falloff angle
-  float falloffOuter[MAX_LIGHTS];
-};
-LightProperties lightProps;
+// Number of lights provided
+int lightProps_count;
+// Light world-space position
+float4 lightProps_posWorld[MAX_LIGHTS];
+// Transformation from light space to world space
+float4x4 lightProps_transform[MAX_LIGHTS];
+// Transformation from world space to light space
+float4x4 lightProps_transformInv[MAX_LIGHTS];
+// Diffuse color
+float3 lightProps_colorDiffuse[MAX_LIGHTS];
+// Specular color
+float3 lightProps_colorSpecular[MAX_LIGHTS];
+// Attenuation vector (XYZ are CLQ coefficients; W is light radius)
+float4 lightProps_attenuationVec[MAX_LIGHTS];
+// Cosine of inner falloff angle
+float lightProps_falloffInner[MAX_LIGHTS];
+// Cosine of outerr falloff angle
+float lightProps_falloffOuter[MAX_LIGHTS];
 
 interface LightSpace
 {
@@ -87,8 +84,8 @@ struct LightSpaceWorld : LightSpace
 
   void Init (int lightNum, float4 surfPositionWorld)
   {
-    float4 pos = lightProps.posWorld[lightNum];
-    float4x4 lightTransform = lightProps.transform[lightNum];
+    float4 pos = lightProps_posWorld[lightNum];
+    float4x4 lightTransform = lightProps_transform[lightNum];
     float3 lightDirW = mul (lightTransform, float4 (0, 0, 1, 0)).xyz;
     dir = lightDirW;
     /* Compute distance between surface and light with float precision to
@@ -112,8 +109,8 @@ struct LightSpaceTangent : LightSpace
                float4x4 world2tangent, float4 surfPositionWorld,
                out half3 vp_dir, out float3 vp_surfToLight)
   {
-    float4 pos = lightProps.posWorld[lightNum];
-    float4x4 lightTransform = lightProps.transform[lightNum];
+    float4 pos = lightProps_posWorld[lightNum];
+    float4x4 lightTransform = lightProps_transform[lightNum];
     float4 lightDirW = mul (lightTransform, float4 (0, 0, 1, 0));
     vp_dir = mul (world2tangent, lightDirW).xyz;
     vp_surfToLight = mul (world2tangent, float4 ((pos - surfPositionWorld).xyz, 0)).xyz;
@@ -169,19 +166,30 @@ struct ShadowShadowShadowMapWrapper : Shadow
   half GetVisibility() { return shadow.GetVisibility(); }
 };
 
-struct LightPropertiesShadowMap
-{
-  // Transformation from light to shadow map space
-  float4x4 shadowMapTF[MAX_LIGHTS];
-  // Shadow map
-  sampler2D shadowMap[MAX_LIGHTS];
-  // Shadow map pixel size + dimensions
-  float4 shadowMapPixels[MAX_LIGHTS];
-  float4 shadowMapUnscale[MAX_LIGHTS];
+// Transformation from light to shadow map space
+float4x4 lightPropsSM_shadowMapTF[MAX_LIGHTS];
+// Shadow map
+sampler2D lightPropsSM_shadowMap[MAX_LIGHTS];
+// Shadow map pixel size + dimensions
+float4 lightPropsSM_shadowMapPixels[MAX_LIGHTS];
+float4 lightPropsSM_shadowMapUnscale[MAX_LIGHTS];
   
-  sampler2D shadowMapNoise;
-};
-LightPropertiesShadowMap lightPropsSM;
+sampler2D lightPropsSM_shadowMapNoise;
+
+// Added properties for opacity shadow maps
+// Transformation from light to shadow map space
+float4x4 lightPropsOM_opacityMapTF[MAX_LIGHTS];
+// Depth map start
+sampler2D lightPropsOM_shadowMapStart[MAX_LIGHTS];  
+// Depth map end
+sampler2D lightPropsOM_shadowMapEnd[MAX_LIGHTS];  
+// Depth map size
+float lightPropsOM_size[MAX_LIGHTS];
+// Split function
+sampler2D lightPropsOM_splitFunc[MAX_LIGHTS];    
+// OSM
+sampler2D lightPropsOM_opacityMap[MAX_OSM * MAX_LIGHTS];
+int lightPropsOM_opacityMapNumSplits[MAX_LIGHTS];
 
 // Common interface for all light types
 interface Light
@@ -205,7 +213,7 @@ struct LightDirectional : Light
   half GetAttenuation() { return 1; }
 };
 
-// Directional light
+// Point light
 struct LightPoint : Light
 {
   half3 dir;
@@ -218,7 +226,7 @@ struct LightPoint : Light
   half GetAttenuation() { return 1; }
 };
 
-// Directional light
+// Spot light
 struct LightSpot : Light
 {
   half3 dir;
@@ -243,8 +251,8 @@ Light GetCurrentLight (LightSpace lightSpace, int lightNum)
 <?elsif vars."light type".int == consts.CS_LIGHT_SPOTLIGHT ?>
   LightSpot ls;
   ls.Init (lightSpace, 
-    lightProps.falloffInner[lightNum],
-    lightProps.falloffOuter[lightNum]);
+    lightProps_falloffInner[lightNum],
+    lightProps_falloffOuter[lightNum]);
   return ls;
 <?else?>
 <?! Assume point light ?>
@@ -255,6 +263,42 @@ Light GetCurrentLight (LightSpace lightSpace, int lightNum)
 }
 
 <![CDATA[
+void ComputeLightKajiyaKay (LightSpace lightSpace, Light light, 
+                   half3 eyeToSurf, half3 surfNormal,
+                   half surfShininess, 
+                   float3 lightDiffuse, float3 lightSpecular,
+                   float4 lightAttenuationVec,
+                   half shadowFactor,
+                   out float3 d, out float3 s)
+{
+  half3 L = light.GetIncidence();
+  half3 H = normalize (lightSpace.GetSurfaceToLight() - eyeToSurf);
+  half spot = light.GetAttenuation();
+
+  float4 lightCoeff = lit (dot (surfNormal, L), dot (surfNormal, H),
+    surfShininess);
+  
+  float lightDist = lightSpace.GetLightDistance();
+  half attn;
+  float invAttnRadius = lightAttenuationVec.w;
+  if (invAttnRadius > 0)
+    attn = Attenuation_Linear (lightDist, invAttnRadius);
+  else
+    attn = Attenuation_CLQ (lightDist, lightAttenuationVec.xyz);
+  
+  attn *= shadowFactor;
+
+  d = lightDiffuse * lightCoeff.y * spot * attn;
+  
+  float tangentEye = dot(surfNormal, eyeToSurf);
+  float tangentLight = dot(surfNormal, -lightSpace.GetSurfaceToLight());
+  
+  float3 specularColor = pow( tangentLight * tangentEye + sin( acos( tangentLight ) ) * sin( acos( tangentEye ) ) , 60.0);
+  specularColor *= lightSpecular * spot * attn;
+  specularColor = max (0.0, specularColor);
+  s = specularColor;
+}
+
 void ComputeLight (LightSpace lightSpace, Light light, 
                    half3 eyeToSurf, half3 surfNormal,
                    half surfShininess, 

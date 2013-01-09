@@ -31,9 +31,9 @@
 #include "iengine/rendersteps/ilightiter.h"
 #include "ivideo/shader/shader.h"
 
-#include "csplugincommon/renderstep/basesteptype.h"
-#include "csplugincommon/renderstep/basesteploader.h"
-#include "csplugincommon/renderstep/parserenderstep.h"
+#include "basesteptype.h"
+#include "basesteploader.h"
+#include "parserenderstep.h"
 #include <csutil/dirtyaccessarray.h>
 
 #include <iutil/eventh.h>
@@ -57,7 +57,7 @@ private:
   iObjectRegistry* object_reg;
 
 public:
-  csShadowmapRenderStepFactory (iObjectRegistry* object_reg);
+  csShadowmapRenderStepFactory (iBase* scfParent, iObjectRegistry* object_reg);
   virtual ~csShadowmapRenderStepFactory ();
 
   virtual csPtr<iRenderStep> Create ();
@@ -100,7 +100,7 @@ private:
   csRenderMeshList *mesh_list;
 
 public:
-  csShadowmapRenderStep (iObjectRegistry* object_reg);
+  csShadowmapRenderStep (iBase* scfParent, iObjectRegistry* object_reg);
   virtual ~csShadowmapRenderStep ();
 
   virtual void Perform (iRenderView* rview, iSector* sector,

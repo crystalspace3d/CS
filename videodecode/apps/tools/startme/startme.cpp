@@ -17,8 +17,16 @@
 */
 
 #include "startme.h"
+#include "csutil/floatrand.h"
 
+// Wheel default rotation speed
 #define DEFAULT_ROTATION_SPEED 0.0005f
+
+// Font definitions
+#define FONT_NORMAL "DejaVuSerif-10"
+#define FONT_NORMAL_ITALIC "DejaVuSerif-Italic-10"
+#define FONT_TITLE "DejaVuSerif-Bold-15"
+#define FONT_TITLE_ITALIC "DejaVuSerif-BoldItalic-15"
 
 CS_IMPLEMENT_APPLICATION
 
@@ -37,14 +45,8 @@ StartMe::~StartMe ()
 
 void SizeWindow (CEGUI::Window* w)
 {//Size window to contents.
-  const CEGUI::RenderedString& rs(w->getRenderedString());
   float height(20.0f);
-  for (size_t i = 0; i < rs.getLineCount(); ++i)
-  {
-    const CEGUI::Size line_sz(rs.getPixelSize(i));
-    height += line_sz.d_height;
-  }
-  height += rs.getLineCount()*10.0f;
+  height += CEGUI::PropertyHelper::stringToFloat (w->getProperty ("VertExtent"));
   w->setHeight(cegui_absdim(height));
   w->setYPosition(CEGUI::UDim(0.5f, -height/2));
 }
@@ -54,13 +56,15 @@ void StartMe::Frame ()
   // First get elapsed time from the virtual clock.
   double time = vc->GetElapsedTicks ();
 
-  // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
+  // Since there are no 3D objects in the scene, nothing will be rendered and
+  // the render buffer will therefore not be cleared correctly. Work around that
+  // problem by clearing the render buffer manually.
+  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARSCREEN))
     return;
-
-  // Tell the camera to render into the frame buffer.
-  view->Draw ();
   
+  // Render the 3D view
+  engine->GetRenderManager ()->RenderView (view);
+
   /* CEGUI rendering is done by the CEGUI plugin itself since
      we called SetAutoRender (true). */
 
@@ -163,7 +167,7 @@ void StartMe::Frame ()
     if (selected && rotationStatus != OVER_EXIT)
     {
       CEGUI::Window* description = cegui->GetWindowManagerPtr()->getWindow("Description");
-      description->setText(demos[i].description);
+      description->setText((const utf8_char*)demos[i].description.c_str());
       SizeWindow(description);
       csString alphas;
       alphas += alpha2;
@@ -175,7 +179,7 @@ void StartMe::Frame ()
   if (rotationStatus == OVER_EXIT)
   {
     CEGUI::Window* description = cegui->GetWindowManagerPtr()->getWindow("Description");
-    description->setText("Click to exit application");
+    description->setText("Click to exit the application");
     description->setProperty("Alpha", "1.0");
     SizeWindow(description);
   }
@@ -262,7 +266,7 @@ bool StartMe::Application()
   if (!OpenApplication(GetObjectRegistry()))
     return ReportError("Error opening system!");
 
-  // The window is open, so lets make it dissappear! 
+  // The window is open, so lets make it disappear! 
   if (natwin)
   {
     natwin->SetWindowDecoration (iNativeWindow::decoCaption, false);
@@ -293,14 +297,13 @@ bool StartMe::Application()
   confman = csQueryRegistry<iConfigManager> (GetObjectRegistry());
   if (!confman) return ReportError("Failed to locate Config Manager!");
 
-   cegui = csQueryRegistry<iCEGUI> (GetObjectRegistry());
+  cegui = csQueryRegistry<iCEGUI> (GetObjectRegistry());
   if (!cegui) return ReportError("Failed to locate CEGUI plugin");
 
-  // Initialize CEGUI wrapper
+  // Initialize the CEGUI wrapper
   cegui->Initialize ();
   
-  /* Let CEGUI plugin install an event handler that takes care of rendering
-     every frame */
+  // Let the CEGUI plugin take care of the rendering by itself
   cegui->SetAutoRender (true);
   
   // Set the logging level
@@ -308,24 +311,30 @@ bool StartMe::Application()
 
   vfs->ChDir ("/cegui/");
 
-  // Load the ice skin (which uses Falagard skinning system)
+  // Load the 'ice' skin (which uses the Falagard skinning system)
   cegui->GetSchemeManagerPtr ()->create("ice.scheme");
 
   cegui->GetSystemPtr ()->setDefaultMouseCursor("ice", "MouseArrow");
 
-  cegui->GetFontManagerPtr ()->createFreeTypeFont("DejaVuSans-Bold", 10, true, "/fonts/ttf/DejaVuSans.ttf");
+  // Setup the fonts
+  cegui->GetFontManagerPtr ()->createFreeTypeFont
+    (FONT_NORMAL, 10, true, "/fonts/ttf/DejaVuSerif.ttf");
+  cegui->GetFontManagerPtr ()->createFreeTypeFont
+    (FONT_NORMAL_ITALIC, 10, true, "/fonts/ttf/DejaVuSerif-Italic.ttf");
+  cegui->GetFontManagerPtr ()->createFreeTypeFont
+    (FONT_TITLE, 15, true, "/fonts/ttf/DejaVuSerif-Bold.ttf");
+  cegui->GetFontManagerPtr ()->createFreeTypeFont
+    (FONT_TITLE_ITALIC, 15, true, "/fonts/ttf/DejaVuSerif-BoldItalic.ttf");
 
   CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
 
-  // Load layout and set as root
+  // Load the CEGUI layout and set it as the root layout
   vfs->ChDir ("/data/startme/");
-  cegui->GetSchemeManagerPtr ()->create("crystal.scheme");
-  cegui->GetSystemPtr ()->setGUISheet(winMgr->loadWindowLayout("startme.layout"));
+  cegui->GetSchemeManagerPtr ()->create ("crystal.scheme");
+  cegui->GetSystemPtr ()->setGUISheet(winMgr->loadWindowLayout ("startme.layout"));
 
   // We need a View to the virtual world.
-  view.AttachNew(new csView (engine, g3d));
-  // We use the full window to draw the world.
-  view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
+  view.AttachNew (new csView (engine, g3d));
 
   LoadConfig ();
 
@@ -353,33 +362,26 @@ bool StartMe::Application()
 
     CEGUI::ImagesetManager* imsetmgr = cegui->GetImagesetManagerPtr();
     if (!imsetmgr->isDefined(demos[i].image))
-    {
       imsetmgr->createFromImageFile(demos[i].image, demos[i].image);
-      std::string img = "set:"+std::string(demos[i].image)+" image:full_image";
-      demos[i].window->setProperty("Image", img);
-    }
+    std::string img = "set:"+std::string(demos[i].image)+" image:full_image";
+    demos[i].window->setProperty("Image", img);
+
     root->addChildWindow(demos[i].window);
 
     demos[i].window->subscribeEvent(CEGUI::Window::EventMouseClick,
       CEGUI::Event::Subscriber(&StartMe::OnClick, this));
   }
 
-  // Here we create our world.
-  CreateRoom ();
+  // Initialize the starting position of the demo wheel to a random value
+  csRandomFloatGen frandomGenerator;
+  position = frandomGenerator.Get (demos.GetSize () - 1);
 
-  // Let the engine prepare all lightmaps for use and also free all images 
-  // that were loaded for the texture manager.
+  // Let the engine prepare everything
   engine->Prepare ();
-
-  // Now we need to position the camera in our world.
-  view->GetCamera ()->SetSector (room);
-  view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 0, 0));
-  view->GetCamera ()->SetViewportSize (g2d->GetWidth(), g2d->GetHeight ());
-
   printer.AttachNew (new FramePrinter (object_reg));
 
   // This calls the default runloop. This will basically just keep
-  // broadcasting process events to keep the game going.
+  // broadcasting process events to keep the application going on.
   Run();
 
   return true;
@@ -387,6 +389,7 @@ bool StartMe::Application()
 
 bool StartMe::OnClick (const CEGUI::EventArgs& e)
 {
+  // TODO: don't relaunch if it was multi clicked
   if (rotationStatus != ROTATE_SELECTING)
     return true;
 
@@ -397,11 +400,12 @@ bool StartMe::OnClick (const CEGUI::EventArgs& e)
     {
       csRef<iCommandLineParser> cmdline = csQueryRegistry<iCommandLineParser> (GetObjectRegistry());
       csString appdir = cmdline->GetAppDir ();
-      system (csString("\"") << appdir << CS_PATH_SEPARATOR <<
-        csInstallationPathsHelper::GetAppFilename (
-          demos[i].exec) << "\" " << 
-          demos[i].args);
-      break;
+      if (system (csString("\"") << appdir << CS_PATH_SEPARATOR <<
+		  csInstallationPathsHelper::GetAppFilename (
+		    demos[i].exec) << "\" " << 
+		  demos[i].args))
+	break;
+      else break;
     }
   return true;
 }
@@ -475,19 +479,38 @@ bool StartMe::OnMouseMove (iEvent& ev)
   return false;
 }
 
-void StartMe::CreateRoom ()
+const char* StartMe::ParseDescriptionLine (const char* text, bool title)
 {
-    // We create a new sector called "room".
-  room = engine->CreateSector ("room");
+  descriptionLine = text;
+  csString leftQuote;
+  csString rightQuote;
 
-  // Note: no walls are created - to get the point of this demo across...
+  // Replace the '<emp>' tags by italic fonts with quotes
+  if (title)
+  {
+    leftQuote.Format ("%s[font=\'%s\']", CS::Quote::SingleLeft (), FONT_TITLE_ITALIC);
+    rightQuote.Format ("[font='%s']%s", FONT_TITLE, CS::Quote::SingleRight ());
+  }
+  else
+  {
+    leftQuote.Format ("%s[font=\'%s\']", CS::Quote::SingleLeft (), FONT_NORMAL_ITALIC);
+    rightQuote.Format ("[font='%s']%s", FONT_NORMAL, CS::Quote::SingleRight ());
+  }
 
-  // Now we need light to see something.
-  csRef<iLight> light;
-  iLightList* ll = room->GetLights ();
+  descriptionLine.ReplaceAll ("<emp>", leftQuote);
+  descriptionLine.ReplaceAll ("</emp>", rightQuote);
 
-  light = engine->CreateLight (0, csVector3 (-3, 5, -3), 20, csColor (1, 1, 1));
-  ll->Add (light);
+  // Emphasize the title
+  if (title)
+  {
+    descriptionLine.Insert (0, "[font='']");
+    descriptionLine.Insert (7, FONT_TITLE);
+    descriptionLine.Append ("[font='");
+    descriptionLine.Append (FONT_NORMAL);
+    descriptionLine.Append ("']");
+  }
+
+  return descriptionLine;
 }
 
 void StartMe::LoadConfig ()
@@ -507,22 +530,34 @@ void StartMe::LoadConfig ()
       key.SubString (leaf,
           key.FindLast ('.', key.Length ()) + 1,
           key.Length ());
-      if (!strcmp(leaf.GetData (), "name"))
+      if (!strcmp (leaf.GetData (), "name"))
+      {
         demo.name = iterator->GetStr ();
-      else if (!strcmp(leaf.GetData (), "exec"))
+
+	// Add this name as the title of the description
+	demo.description = ParseDescriptionLine (iterator->GetStr (), true);
+        demo.description += "\n \n";
+      }
+      else if (!strcmp (leaf.GetData (), "exec"))
         demo.exec = iterator->GetStr ();
-      else if (!strcmp(leaf.GetData (), "args"))
+      else if (!strcmp (leaf.GetData (), "args"))
         demo.args = iterator->GetStr ();
-      else if (!strcmp(leaf.GetData (), "image"))
+      else if (!strcmp (leaf.GetData (), "image"))
         demo.image = iterator->GetStr ();
       else
       {
-	// CECGUI will throw away all empty lines, therefore we add a single space in place
-	if (strcmp (iterator->GetStr (), "") != 0)
-	  demo.description += iterator->GetStr ();
-	else
-	  demo.description += " ";
-        demo.description += "\n";
+	csString line (iterator->GetStr ());
+
+	// Only emit a 'paragraph break' when encountering a single empty line
+	if (line.IsEmpty ())
+          /* CEGUI will throw away all empty lines, therefore we use a single 
+           * space to force an empty line */
+          demo.description += "\n \n";
+        else
+	{
+	  demo.description += ParseDescriptionLine (line, false);
+          demo.description += " ";
+	}
       }
     }
     demos.Push (demo);

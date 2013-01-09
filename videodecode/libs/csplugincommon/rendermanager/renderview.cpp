@@ -58,9 +58,13 @@ RenderView::RenderView (iCamera *c, iClipper2D *v, iGraphics3D *ig3d) :
   scfPooledImplementationType (this),
   ctxt (nullptr),
   engine(0),
-  g3d(ig3d),
-  g2d(g3d->GetDriver2D ())
+  g3d(ig3d)
 {
+  if(g3d)
+  {
+    g2d = g3d->GetDriver2D();
+  }
+
   InitialiseFromCamera (c);
 
   ctxt->iview = v;
@@ -154,7 +158,7 @@ RenderView::RenderView (const RenderView& other, bool keepCamera) :
   engine = other.engine;
   g3d = other.g3d;
   g2d = other.g2d;
-  original_camera = 0;	// @@@ Right?
+  //original_camera = 0;	// @@@ Right?
   leftx = other.leftx;
   rightx = other.rightx;
   topy = other.topy;
@@ -233,7 +237,7 @@ void RenderView::UpdateFrustum ()
   size_t i;
   csBox2 bbox;
   iClipper2D* clip = ctxt->iview;
-  csVector2 *poly = clip->GetClipPoly ();
+  const csVector2 *poly = clip->GetClipPoly ();
   bbox.StartBoundingBox (poly[0]);
   for (i = 1; i < clip->GetVertexCount (); i++)
     bbox.AddBoundingVertexSmart (poly[i]);

@@ -20,6 +20,7 @@
 
 #include <algorithm>
 
+#include "filetools.h"
 #include "lighter.h"
 #include "lightmap.h"
 #include "lightmapuv.h"
@@ -394,6 +395,9 @@ namespace lighter
       if (smInfo->sourceSubmesh)
       {
         newEntry.name = smInfo->sourceSubmesh->GetName();
+        // Assign default submesh name
+        if (newEntry.name.IsEmpty())
+          newEntry.name.Format ("SM%zu", submeshIndex);
         int n = 0;
         while (usedNames.Contains (newEntry.name))
         {
@@ -450,15 +454,35 @@ namespace lighter
           CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT, 
           minIndex, maxIndex);
       indices->SetData (indexArray.GetArray ());
-      indices = lighter::WrapBuffer (indices, csString().Format ("i%zu", i),
+      csString indicesName;
+      if (!allocatedSubmeshes[i].name.IsEmpty())
+        indicesName.Format ("%s_i", MakeFilename (allocatedSubmeshes[i].name).GetData());
+      else
+        indicesName.Format ("i%zu", i);
+      indices = lighter::WrapBuffer (indices, indicesName,
         factFN);
 
       const ObjectFactory_Genmesh::Submesh* srcSubmesh = 
         factory->submeshes.GetKeyPointer (allocatedSubmeshes[i].submeshIndex);
       iMaterialWrapper* material = srcSubmesh->sourceSubmesh ? 
         srcSubmesh->sourceSubmesh->GetMaterial() : srcSubmesh->material;
-      genFact->AddSubMesh (indices, material, 
+      iGeneralMeshSubMesh* new_submesh = genFact->AddSubMesh (indices, material,
         allocatedSubmeshes[i].name);
+      new_submesh->SetZMode (srcSubmesh->sourceSubmesh->GetZMode());
+      new_submesh->SetRenderPriority (srcSubmesh->sourceSubmesh->GetRenderPriority());
+      new_submesh->SetMixmode (srcSubmesh->sourceSubmesh->GetMixmode());
+      new_submesh->SetBack2Front (srcSubmesh->sourceSubmesh->GetBack2Front());
+
+      csRef<iShaderVariableContext> src_svc =
+        scfQueryInterface<iShaderVariableContext> (srcSubmesh->sourceSubmesh);
+      csRef<iShaderVariableContext> new_svc =
+        scfQueryInterface<iShaderVariableContext> (new_submesh);
+      const csRefArray<csShaderVariable>& shadervars =
+        src_svc->GetShaderVariables ();
+      for (size_t s = 0; s < shadervars.GetSize(); s++)
+      {
+        new_svc->AddVariable (shadervars[s]);
+      }
 
       factory->submeshNames->GetExtend (allocatedSubmeshes[i].submeshIndex) =
         allocatedSubmeshes[i].name;

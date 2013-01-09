@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2009 Christian Van Brussel, Institute of Information
+  Copyright (C) 2009-11 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -98,6 +98,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
   {
     CS_ASSERT (delay >= 0.0f);
     listenerMinimumDelay = delay;
+  }
+
+  void LookAtNodeFactory::SetDirection (const csMatrix3& direction)
+  {
+    this->direction.SetMatrix (direction);
+  }
+
+  void LookAtNodeFactory::GetDirection (csMatrix3& direction) const
+  {
+    direction = this->direction.GetMatrix ();
   }
 
   csPtr<CS::Animation::SkeletonAnimNodeSingleBase> LookAtNodeFactory::ActualCreateInstance (
@@ -295,15 +305,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
     csVector3 skeletonOffset;
     skeleton->GetFactory ()->GetTransformBoneSpace (factory->boneID, skeletonRotation,
 						    skeletonOffset);
+    skeletonRotation = skeletonRotation * factory->direction;
 
     // check if a child bone has already set this bone
     bool transformAlreadySet = state->IsBoneUsed (factory->boneID);
+    if (transformAlreadySet)
+      skeletonOffset += skeletonRotation.Rotate (state->GetVector (factory->boneID));
 
     // compute current transform of bone
     // (don't change position if a child node has already made it)
-    csOrthoTransform boneTransform (csMatrix3 (skeletonRotation),
-				    transformAlreadySet ?
-				    state->GetVector (factory->boneID) : skeletonOffset);
+    csOrthoTransform boneTransform (csMatrix3 (skeletonRotation.GetConjugate ()), skeletonOffset);
     boneTransform = boneTransform * parentTransform;
 
     // compute target position
@@ -322,7 +333,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
     }
 
     // compute needed pitch/yaw/roll to achieve the lookat
-    float targetPitch, targetYaw, targetRoll = 0;
+    float targetPitch = 0.0f;
+    float targetYaw = 0.0f;
+    float targetRoll = 0.0f;
     bool wasConstrained = false;
     if (targetMode != TARGET_NONE
 	&& !targetInvalid)
@@ -383,7 +396,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
 	}
 	else if (minimumAngle.y < maximumAngle.y)
 	{
-	  if (minimumAngle.y > -PI * 0.5f)
+	  if (minimumAngle.y > -HALF_PI)
 	  {
 	    if (targetYaw < minimumAngle.y
 		|| targetYaw > PI)
@@ -392,12 +405,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
 	      targetYaw = minimumAngle.y;
 	    }
 	  }
-	  else if (minimumAngle.y <= -PI * 0.5f
+	  else if (minimumAngle.y <= -HALF_PI
 		   && targetYaw > PI
-		   && targetYaw < 2.0f * PI + minimumAngle.y)
+		   && targetYaw < TWO_PI + minimumAngle.y)
 	  {
 	    wasConstrained = true;
-	    targetYaw = 2.0f * PI + minimumAngle.y;
+	    targetYaw = TWO_PI + minimumAngle.y;
 	  }
 
 	  if (targetYaw < PI && targetYaw > maximumAngle.y)
@@ -473,10 +486,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(LookAt)
 	  targetRoll = previousRoll + deltaRoll * ratio;
 
 	  // constraint yaw between -PI/2 and 3*PI/2
-	  if (targetYaw < -PI * 0.5f)
-	    targetYaw = 2.0f * PI - targetYaw;
+	  if (targetYaw < -HALF_PI)
+	    targetYaw = TWO_PI - targetYaw;
 	  else if (targetYaw > PI * 1.5f)
-	    targetYaw = targetYaw - 2.0f * PI;
+	    targetYaw = targetYaw - TWO_PI;
 
 	  wasConstrained = true;
 	}

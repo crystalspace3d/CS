@@ -36,7 +36,7 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 Simple::Simple ()
   : DemoApplication ("CrystalSpace.PhysTut"),
-    isSoftBodyWorld (false), environment (ENVIRONMENT_WALLS), solver (0),
+    isSoftBodyWorld (true), environment (ENVIRONMENT_WALLS), solver (0),
     autodisable (false), do_bullet_debug (false), remainingStepDuration (0.0f),
     debugMode (false), allStatic (false), pauseDynamic (false), dynamicSpeed (1.0f),
     physicalCameraMode (CAMERA_DYNAMIC), dragging (false), softDragging (false)
@@ -124,24 +124,18 @@ void Simple::Frame ()
       // _camera's_ X axis (more on this in a second) and up and down
       // arrows cause the camera to go forwards and backwards.
       if (kbd->GetKeyState (CSKEY_RIGHT))
-	rotY += speed;
+	c->GetTransform ().RotateThis (csVector3 (0.0f, 1.0f, 0.0f), speed);
       if (kbd->GetKeyState (CSKEY_LEFT))
-	rotY -= speed;
+	c->GetTransform ().RotateThis (csVector3 (0.0f, 1.0f, 0.0f), -speed);
       if (kbd->GetKeyState (CSKEY_PGUP))
-	rotX -=speed;
+	c->GetTransform ().RotateThis (csVector3 (1.0f, 0.0f, 0.0f), -speed);
       if (kbd->GetKeyState (CSKEY_PGDN))
-	rotX += speed;
+	c->GetTransform ().RotateThis (csVector3 (1.0f, 0.0f, 0.0f), speed);
       if (kbd->GetKeyState (CSKEY_UP))
 	c->Move (CS_VEC_FORWARD * cameraSpeed * speed);
       if (kbd->GetKeyState (CSKEY_DOWN))
 	c->Move (CS_VEC_BACKWARD * cameraSpeed * speed);
     }
-
-    // We now assign a new rotation transformation to the camera.
-    csQuaternion quaternion;
-    quaternion.SetEulerAngles (csVector3 (rotX, rotY, rotZ));
-    csOrthoTransform ot (quaternion.GetConjugate ().GetMatrix (), c->GetTransform().GetOrigin ());
-    c->SetTransform (ot);
   }
 
   if (dragging)
@@ -791,24 +785,44 @@ bool Simple::OnInitialize (int argc, char* argv[])
   if (!RegisterQueue (GetObjectRegistry (), csevAllEvents (GetObjectRegistry ())))
     return ReportError ("Failed to set up event handler!");
 
+  csRef<iPluginManager> pluginManager = 
+    csQueryRegistry<iPluginManager> (GetObjectRegistry ());
+
   // Checking for choosen dynamic system
-  csRef<iCommandLineParser> clp = csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   phys_engine_name = clp->GetOption ("phys_engine");
+
+  bool odeTried = false;
   if (phys_engine_name == "ode")
   {
     phys_engine_name = "ODE";
     phys_engine_id = ODE_ID;
-    csRef<iPluginManager> plugmgr = 
-      csQueryRegistry<iPluginManager> (GetObjectRegistry ());
-    dynamics = csLoadPlugin<iDynamics> (plugmgr, "crystalspace.dynamics.ode");
+    dynamics = csLoadPlugin<iDynamics> (pluginManager, "crystalspace.dynamics.ode");
+    if (!dynamics)
+    {
+      odeTried = true;
+      ReportWarning ("Could not load ODE plugin, falling back to Bullet");
+    }
   }
-  else 
+
+  if (!dynamics)
   {
     phys_engine_name = "Bullet";
     phys_engine_id = BULLET_ID;
-    csRef<iPluginManager> plugmgr = 
-      csQueryRegistry<iPluginManager> (GetObjectRegistry ());
-    dynamics = csLoadPlugin<iDynamics> (plugmgr, "crystalspace.dynamics.bullet");
+    dynamics = csLoadPlugin<iDynamics> (pluginManager, "crystalspace.dynamics.bullet");
+
+    if (!dynamics && !odeTried)
+    {
+      ReportWarning ("Could not load Bullet plugin, falling back to ODE");
+      phys_engine_name = "ODE";
+      phys_engine_id = ODE_ID;
+      dynamics = csLoadPlugin<iDynamics> (pluginManager, "crystalspace.dynamics.ode");
+
+      if (dynamics)
+	return true;
+    }
+
+    if (!dynamics)
+      return ReportError ("Could not find any suitable iDynamics plugin!");
 
     // Check whether the soft bodies are enabled or not
     isSoftBodyWorld = clp->GetBoolOption ("soft", true);
@@ -818,7 +832,7 @@ bool Simple::OnInitialize (int argc, char* argv[])
     {
       csRef<CS::Animation::iSoftBodyAnimationControlType> softBodyAnimationType =
 	csLoadPlugin<CS::Animation::iSoftBodyAnimationControlType>
-	(plugmgr, "crystalspace.dynamics.softanim");
+	(pluginManager, "crystalspace.dynamics.softanim");
       if (!softBodyAnimationType)
 	return ReportError ("Could not load soft body animation for genmeshes plugin!");
 
@@ -830,7 +844,7 @@ bool Simple::OnInitialize (int argc, char* argv[])
 
     // Load the ragdoll plugin
     ragdollManager = csLoadPlugin<CS::Animation::iSkeletonRagdollNodeManager>
-      (plugmgr, "crystalspace.mesh.animesh.animnode.ragdoll");
+      (pluginManager, "crystalspace.mesh.animesh.animnode.ragdoll");
     if (!ragdollManager)
       return ReportError ("Failed to locate ragdoll manager!");
 
@@ -838,9 +852,6 @@ bool Simple::OnInitialize (int argc, char* argv[])
     if (clp->GetBoolOption ("terrain", false))
       environment = ENVIRONMENT_TERRAIN;
   }
-
-  if (!dynamics)
-    return ReportError ("No iDynamics plugin!");
 
   return true;
 }
@@ -1046,15 +1057,6 @@ void Simple::UpdateCameraMode ()
 	dynamicSystem->RemoveBody (cameraBody);
 	cameraBody = 0;
 
-	// Update rotX, rotY, rotZ
-	csQuaternion quaternion;
-	quaternion.SetMatrix
-	  (((csReversibleTransform) view->GetCamera ()->GetTransform ()).GetT2O ());
-	csVector3 eulerAngles = quaternion.GetEulerAngles ();
-	rotX = eulerAngles.x;
-	rotY = eulerAngles.y;
-	rotZ = eulerAngles.z;
-
 	// Update the display of the dynamics debugger
 	dynamicsDebugger->UpdateDisplay ();
 
@@ -1197,7 +1199,7 @@ iRigidBody* Simple::SpawnMesh ()
   {
     // If dynamic collider meshes are not supported
     // we use a cylinder instead.
-    t.RotateThis (csVector3 (1, 0, 0), PI / 2.0f);
+    t.RotateThis (csVector3 (1, 0, 0), HALF_PI);
     rb->AttachColliderCylinder (0.2f, 1, t, 10, 1, 0.8f);
   }
 
@@ -1290,7 +1292,7 @@ iRigidBody* Simple::SpawnCylinder ()
   // We do a hardtransform here to make sure our cylinder has an artificial
   // offset. That way we can test if the physics engine supports that.
   csVector3 artificialOffset (3, 3, 3);
-  csReversibleTransform hardTransform (csYRotMatrix3 (PI/2.0), artificialOffset);
+  csReversibleTransform hardTransform (csYRotMatrix3 (HALF_PI), artificialOffset);
   cylinderFact->HardTransform (hardTransform);
 
   // Create the mesh.
@@ -1341,7 +1343,7 @@ iRigidBody* Simple::SpawnCapsule (float length, float radius)
     scfQueryInterface<iGeneralFactoryState> (capsuleFact->GetMeshObjectFactory ());
   gmstate->GenerateCapsule (length, radius, 10);
   capsuleFact->HardTransform (
-        csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (0)));
+        csReversibleTransform (csYRotMatrix3 (HALF_PI), csVector3 (0)));
 
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
@@ -1389,7 +1391,7 @@ iRigidBody* Simple::SpawnConvexMesh ()
   const float length (rand() % 3 / 50. + .7);
   gmstate->GenerateCapsule (length, radius, 10);
   capsuleFact->HardTransform (
-        csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (0)));
+        csReversibleTransform (csYRotMatrix3 (HALF_PI), csVector3 (0)));
 
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
@@ -1435,7 +1437,7 @@ iRigidBody* Simple::SpawnCompound ()
     scfQueryInterface<iGeneralFactoryState> (capsuleFact->GetMeshObjectFactory ());
   gmstate->GenerateCapsule (0.7f, 0.3f, 10);
   capsuleFact->HardTransform
-    (csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (-0.2f)));
+    (csReversibleTransform (csYRotMatrix3 (HALF_PI), csVector3 (-0.2f)));
 
   // Create the mesh.
   csRef<iMeshWrapper> capsuleMesh (engine->CreateMeshWrapper
@@ -1570,7 +1572,7 @@ void Simple::SpawnChain ()
   rb2->SetLinearVelocity (csVector3 (0.0f));
   rb2->SetAngularVelocity (csVector3 (0.0f));
   rb2->SetPosition (initPos - offset);
-  rb2->SetOrientation (csXRotMatrix3 (PI / 2.0f));
+  rb2->SetOrientation (csXRotMatrix3 (HALF_PI));
 
   iRigidBody* rb3 = SpawnBox ();
   rb3->SetLinearVelocity (csVector3 (0.0f));
@@ -1581,7 +1583,7 @@ void Simple::SpawnChain ()
   rb4->SetLinearVelocity (csVector3 (0.0f));
   rb4->SetAngularVelocity (csVector3 (0.0f));
   rb4->SetPosition (initPos - 3.0f * offset);
-  rb4->SetOrientation (csXRotMatrix3 (PI / 2.0f));
+  rb4->SetOrientation (csXRotMatrix3 (HALF_PI));
 
   iRigidBody* rb5 = SpawnBox ();
   rb5->SetLinearVelocity (csVector3 (0.0f));
@@ -1852,7 +1854,7 @@ void Simple::SpawnCloth ()
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
   csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
     scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
-  animationControl->SetSoftBody (body, true);
+  animationControl->SetSoftBody (body, CS::Physics::Bullet::MESH_DUPLICATION_CONTIGUOUS);
 }
 
 void Simple::SpawnSoftBody ()

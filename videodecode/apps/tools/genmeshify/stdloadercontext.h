@@ -20,6 +20,8 @@
 #ifndef __CS_STDLOADERCONTEXT_H__
 #define __CS_STDLOADERCONTEXT_H__
 
+struct iDocumentNode;
+
 namespace genmeshify
 {
 
@@ -46,6 +48,7 @@ namespace genmeshify
     virtual iMaterialWrapper* FindMaterial (const char* name, bool doLoad = true);
     virtual iMaterialWrapper* FindNamedMaterial (const char* name,
       const char *filename);
+    virtual iLightFactory* FindLightFactory (const char* name, bool notify = true);
     virtual iMeshFactoryWrapper* FindMeshFactory (const char* name, bool notify = true);
     virtual iMeshWrapper* FindMeshObject (const char* name);
     virtual iTextureWrapper* FindTexture (const char* name, bool doLoad = true);
@@ -58,6 +61,8 @@ namespace genmeshify
     virtual bool CurrentCollectionOnly() const { return false; }
     virtual uint GetKeepFlags() const { return 0; }
     virtual void AddToCollection(iObject* obj) { collection->Add(obj); }
+    virtual bool LoadComment (iObject*, iDocumentNode*, bool replace = false)
+    { return false; }
     virtual bool GetVerbose() { return false; }
   };
 

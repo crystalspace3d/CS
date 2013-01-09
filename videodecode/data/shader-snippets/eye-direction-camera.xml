@@ -20,6 +20,7 @@
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+    <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
   
     <input name="position" type="position4_camera" />
     
@@ -27,7 +28,15 @@
       eyeDirectionCamera = -position;
     </block>
   
+    <block location="glsl:vertexMain">
+      eyeDirectionCamera = -position;
+    </block>
+  
     <block location="cg:fragmentMain">
+      eyeDirectionCamera = -position;
+    </block>
+  
+    <block location="glsl:fragmentMain">
       eyeDirectionCamera = -position;
     </block>
   

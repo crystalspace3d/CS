@@ -72,6 +72,8 @@ struct iCameraListener : public virtual iBase
   virtual void CameraMoved (iCamera* camera) = 0;
 };
 
+#include "csutil/deprecated_warn_off.h"
+
 /**
  * Implement this interface if you are interested in learning when
  * the camera changes sector.
@@ -90,6 +92,8 @@ iCameraSectorListener : public iCameraListener
   // Make it compile.
   void CameraMoved (iCamera* camera) {}
 };
+
+#include "csutil/deprecated_warn_on.h"
 
 /**
  * Camera class. This class represents camera objects which can be used to
@@ -216,13 +220,12 @@ struct iCamera : public virtual iBase
 
   /**
    * Moves the camera a relative amount in world coordinates.
-   * If 'cd' is true then collision detection with objects and things
-   * inside the sector is active. Otherwise you can walk through objects
-   * (but portals will still be correctly checked).
+   * \warning The \a cd parameter is not used
    */
   virtual void MoveWorld (const csVector3& v, bool cd = true) = 0;
   /**
    * Moves the camera a relative amount in camera coordinates.
+   * \warning The \a cd parameter is not used
    */
   virtual void Move (const csVector3& v, bool cd = true) = 0;
   /**

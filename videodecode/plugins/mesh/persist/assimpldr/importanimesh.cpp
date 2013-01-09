@@ -162,9 +162,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
       ImportAnimeshSkeleton
 	(&animeshData, node, CS::Animation::InvalidBoneID, aiMatrix4x4 ());
 
-      printf ("Skeleton: %i bones:\n%s\n",
-	      (int) animeshData.factory->GetSkeletonFactory()->GetTopBoneID (),
-	      animeshData.factory->GetSkeletonFactory()->Description().GetData());
+      if (doVerbose)
+	printf ("Skeleton: %i bones:\n%s\n",
+		(int) animeshData.factory->GetSkeletonFactory()->GetTopBoneID (),
+		animeshData.factory->GetSkeletonFactory()->Description().GetData());
       
       if (animeshData.factory->GetVertexCount () > 0)
       {
@@ -421,9 +422,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 					    CS::Animation::BoneID parent,
 					    aiMatrix4x4 transform)
   {
-    // Accumulate the transform from the parent bone
-    transform = transform * node->mTransformation;
-
     // Create a bone if needed
     BoneData* boneData = animeshData->boneNodes[node->mName.data];
     if (boneData && boneData->isBone)
@@ -432,11 +430,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
       CS::Animation::iSkeletonFactory* skeletonFactory =
 	animeshData->factory->GetSkeletonFactory ();
       boneData->boneID = skeletonFactory->CreateBone (parent);
-      parent = boneData->boneID;
       skeletonFactory->SetBoneName (boneData->boneID, node->mName.data);
 
+      // Store the transform if the bone is a root bone
+      if (parent == CS::Animation::InvalidBoneID)
+	rootTransforms.Put (boneData->boneID, transform);
+      parent = boneData->boneID;
+
       // Compute the bone transform
-      // TODO: missing inverse mesh transform
       aiMatrix4x4 boneTransform = boneData->transform.Inverse ();
 
       // Convert it to a CS transform
@@ -462,6 +463,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
     }
 
     // TODO: else skip branch
+
+    // Accumulate the transform from the parent bone
+    transform = transform * node->mTransformation;
 
     // Import all subnodes
     for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -580,7 +584,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 	// Temporary debug: set a debug node as the root of the animation tree
 	csRef<CS::Animation::iSkeletonDebugNodeManager> debugNodeManager =
 	  csQueryRegistryOrLoad<CS::Animation::iSkeletonDebugNodeManager>
-	  (object_reg, "crystalspace.mesh.animesh.animnode.debug");
+	  (objectRegistry, "crystalspace.mesh.animesh.animnode.debug");
 	if (!debugNodeManager)
 	{
 	  ReportWarning ("Failed to locate debug node plugin!");
@@ -599,6 +603,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
 	}
       }
 
+      // If the bone is one of the root of the skeleton, then read its transform
+      aiVector3D rootScaling; 
+      aiQuaternion rootRotation;
+      aiVector3D rootPosition;
+      bool isRootBone = false;
+      if (skeletonFactory->GetBoneParent (animeshNode->boneID) == CS::Animation::InvalidBoneID)
+      {
+	isRootBone = true;
+	rootTransforms[animeshNode->boneID]->Decompose (rootScaling, rootRotation, rootPosition); 
+      }
+
       // Create the animation channel
       CS::Animation::ChannelID channelID = skeletonAnimation->AddChannel (animeshNode->boneID);
 
@@ -607,16 +622,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
       {
 	aiQuatKey& key = channel->mRotationKeys[i];
 
-	// Don't accept negative time values
-	if (key.mTime < 0.0f)
-	  continue;
-
 	// Check ticks are not null
 	float time = animation->mTicksPerSecond > SMALL_EPSILON ?
 	  key.mTime / animation->mTicksPerSecond : key.mTime;
 
-	// Add the keyframe
-	skeletonAnimation->AddOrSetKeyFrame (channelID, time, Assimp2CS (key.mValue));
+	// Add the keyframe (transform it at first if the bone is a root of the skeleton)
+	if (isRootBone)
+	{
+	  aiQuaternion q = key.mValue * rootRotation;
+	  skeletonAnimation->AddOrSetKeyFrame (channelID, time, Assimp2CS (q));
+	}
+
+	else skeletonAnimation->AddOrSetKeyFrame (channelID, time, Assimp2CS (key.mValue));
 	// TODO: the frames without position component are invalid
       }
 
@@ -625,17 +642,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(AssimpLoader)
       {
 	aiVectorKey& key = channel->mPositionKeys[i];
 
-	// Don't accept negative time values
-	if (key.mTime < 0.0f)
-	  continue;
-
 	// Check ticks are not null
 	float time = animation->mTicksPerSecond > SMALL_EPSILON ?
 	  key.mTime / animation->mTicksPerSecond : key.mTime;
 
-	// Add the keyframe
+	// Add the keyframe (transform it at first if the bone is a root of the skeleton)
+	if (isRootBone)
+	{
+	  aiVector3D v = key.mValue + rootPosition;
+	  skeletonAnimation->AddOrSetKeyFrame (channelID, time, Assimp2CS (v));
+	}
+
 	// TODO: really need to scale the offset?
-	skeletonAnimation->AddOrSetKeyFrame (channelID, time, Assimp2CS (key.mValue));
+	else skeletonAnimation->AddOrSetKeyFrame (channelID, time, Assimp2CS (key.mValue));
+	// TODO: the frames without rotation component are invalid
       }
     }
   }

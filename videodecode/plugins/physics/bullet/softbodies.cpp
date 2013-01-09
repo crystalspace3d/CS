@@ -50,12 +50,10 @@ csBulletSoftBody::csBulletSoftBody (csBulletDynamicsSystem* dynSys,
 
 csBulletSoftBody::~csBulletSoftBody ()
 {
-  btSoftRigidDynamicsWorld* softWorld =
-    static_cast<btSoftRigidDynamicsWorld*> (dynSys->bulletWorld);
-  softWorld->removeSoftBody (body);
-  delete body;
+  if (dynSys)
+    dynSys->RemoveSoftBody (this);
 
-  dynSys->anchoredSoftBodies.Delete (this);
+  delete body;
 }
 
 void csBulletSoftBody::DebugDraw (iView* rview)
@@ -127,9 +125,10 @@ void csBulletSoftBody::AnchorVertex (size_t vertexIndex, ::iRigidBody* body)
 void csBulletSoftBody::AnchorVertex (size_t vertexIndex,
 				     iAnchorAnimationControl* controller)
 {
+  if (!animatedAnchors.GetSize ())
+    dynSys->anchoredSoftBodies.Push (this);
   AnimatedAnchor anchor (vertexIndex, controller);
   animatedAnchors.Push (anchor);
-  dynSys->anchoredSoftBodies.Push (this);
 }
 
 void csBulletSoftBody::UpdateAnchor (size_t vertexIndex, csVector3& position)
@@ -166,7 +165,8 @@ void csBulletSoftBody::RemoveAnchor (size_t vertexIndex)
     if (anchor.vertexIndex == vertexIndex)
     {
       animatedAnchors.DeleteIndex (index);
-      dynSys->anchoredSoftBodies.Delete (this);
+      if (!animatedAnchors.GetSize ())
+	dynSys->anchoredSoftBodies.Delete (this);
       return;
     }
   }
@@ -176,6 +176,8 @@ void csBulletSoftBody::RemoveAnchor (size_t vertexIndex)
     if (this->body->m_anchors[i].m_node == &this->body->m_nodes[vertexIndex])
     {
       // TODO: this is not possible within Bullet
+      dynSys->dynamics->ReportWarning
+	("Removal of anchor %zu is not possible within the Bullet API. Expect wrong behavior.", vertexIndex);
       //btSoftBody::Anchor* anchor = this->body->m_anchors[i];
       //this->body->m_anchors.remove (i);
       return;

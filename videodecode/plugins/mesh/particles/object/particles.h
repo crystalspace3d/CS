@@ -51,6 +51,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     /// Create a new factory
     virtual csPtr<iMeshObjectFactory> NewFactory ();
+
+  public:
+    iObjectRegistry* object_reg;
   };
 
 
@@ -284,9 +287,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
     /** @} */
 
-  private:
-    ParticlesMeshObjectType* objectType;
+  public:
+    csRef<ParticlesMeshObjectType> objectType;
 
+  private:
     //-- Needed only for iMeshObjectFactory
     csFlags flags;
     iMeshFactoryWrapper* factoryWrapper;
@@ -393,7 +397,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& isect, float* pr, int* polygon_idx = 0,
-      iMaterialWrapper** material = 0) 
+      iMaterialWrapper** material = 0, bool bf = false) 
     {
       return false;
     }
@@ -637,8 +641,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     
   private:
     friend class ParticlesMeshFactory;
+
+  public:
     ParticlesMeshFactory* factory;
 
+  private:
     iVertexSetup* vertexSetup; //Helper object
 
     // For delayed advance.

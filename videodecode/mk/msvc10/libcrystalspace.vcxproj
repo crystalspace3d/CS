@@ -231,7 +231,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10\build\libcrystalspace\Win32\crystalspace.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_10";WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\libcrystalspace\libcrystalspace.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10\build\libcrystalspace\</AssemblerListingLocation>
@@ -279,7 +279,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10\build\libcrystalspace\Win32\crystalspace-2.1-vc10.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_10";WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\libcrystalspace\libcrystalspace.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10\build\libcrystalspace\</AssemblerListingLocation>
@@ -697,7 +697,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\libcrystalspace\x64\crystalspace.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_10";WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\libcrystalspace\libcrystalspace.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10-x64\build\libcrystalspace\</AssemblerListingLocation>
@@ -745,7 +745,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\libcrystalspace\x64\crystalspace-2.1-vc10-x64.pdb</ProgramDataBaseFileName>
       <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;CS_CRYSTALSPACE_LIB;CS_COMPILER_NAME_AND_VERSION="VC_10";WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;..\..\libs\csutil\ptmalloc\sysdeps\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\libcrystalspace\libcrystalspace.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>..\..\out\release10-x64\build\libcrystalspace\</AssemblerListingLocation>
@@ -1162,6 +1162,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csgeom\csrectrg.cpp" />
     <ClCompile Include="..\..\libs\csgeom\frustum.cpp" />
     <ClCompile Include="..\..\libs\csgeom\kdtree.cpp" />
+    <ClCompile Include="..\..\libs\csgeom\kdtreex.cpp" />
     <ClCompile Include="..\..\libs\csgeom\math.cpp" />
     <ClCompile Include="..\..\libs\csgeom\math2d.cpp" />
     <ClCompile Include="..\..\libs\csgeom\math3d.cpp" />
@@ -1209,7 +1210,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csgfx\shadervarframeholder.cpp" />
     <ClCompile Include="..\..\libs\csgfx\shadervarnameparser.cpp" />
     <ClCompile Include="..\..\libs\csgfx\textureformatstrings.cpp" />
+    <ClCompile Include="..\..\libs\csgfx\universalimageconv.cpp" />
     <ClCompile Include="..\..\libs\csgfx\xorpat.cpp" />
+    <ClCompile Include="..\..\libs\csplugincommon\canvas\canvascommon.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\canvas\cursorconvert.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\canvas\fontcache.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\canvas\graph2d.cpp" />
@@ -1232,9 +1235,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csplugincommon\rendermanager\renderview.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\rendermanager\shadow_common.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\rendermanager\viscullcommon.cpp" />
-    <ClCompile Include="..\..\libs\csplugincommon\renderstep\basesteploader.cpp" />
-    <ClCompile Include="..\..\libs\csplugincommon\renderstep\basesteptype.cpp" />
-    <ClCompile Include="..\..\libs\csplugincommon\renderstep\parserenderstep.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\script\scriptcommon.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\shader\shadercachehelper.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\shader\shaderprogram.cpp" />
@@ -1263,7 +1263,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\cstool\keyval.cpp" />
     <ClCompile Include="..\..\libs\cstool\mapnode.cpp" />
     <ClCompile Include="..\..\libs\cstool\materialbuilder.cpp" />
-    <ClCompile Include="..\..\libs\cstool\memory_pen.cpp" />
     <ClCompile Include="..\..\libs\cstool\meshfilter.cpp" />
     <ClCompile Include="..\..\libs\cstool\meshobjtmpl.cpp" />
     <ClCompile Include="..\..\libs\cstool\noise\latlon.cpp" />
@@ -1384,6 +1383,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csutil\plugmgr.cpp" />
     <ClCompile Include="..\..\libs\csutil\prfxcfg.cpp" />
     <ClCompile Include="..\..\libs\csutil\processor\processorspecdetection_gcc_ppc.cpp" />
+    <ClCompile Include="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_arm.cpp" />
     <ClCompile Include="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_x86.cpp" />
     <ClCompile Include="..\..\libs\csutil\processorcount.cpp" />
     <ClCompile Include="..\..\libs\csutil\ptmalloc\ptmalloc3.c" />
@@ -1404,7 +1404,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csutil\simplejobqueue.cpp" />
     <ClCompile Include="..\..\libs\csutil\snprintf.cpp" />
     <ClCompile Include="..\..\libs\csutil\sparse3d.cpp" />
+    <ClCompile Include="..\..\libs\csutil\stat_common.cpp" />
     <ClCompile Include="..\..\libs\csutil\staticvarcleanup.cpp" />
+    <ClCompile Include="..\..\libs\csutil\strcasestr.cpp" />
     <ClCompile Include="..\..\libs\csutil\strhashr.cpp" />
     <ClCompile Include="..\..\libs\csutil\stringconv.cpp" />
     <ClCompile Include="..\..\libs\csutil\stringquote.cpp" />
@@ -1431,10 +1433,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csutil\win32\instpath.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\loadlib.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\memutil_impl.cpp" />
+    <ClCompile Include="..\..\libs\csutil\win32\mkdir.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\mmap.cpp" />
+    <ClCompile Include="..\..\libs\csutil\win32\platformfile.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\processorcount_impl.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\registrycfg.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\setenv.cpp" />
+    <ClCompile Include="..\..\libs\csutil\win32\stat.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\syminit.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\sysroot.cpp" />
     <ClCompile Include="..\..\libs\csutil\win32\timing32.cpp" />
@@ -1458,6 +1463,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csgeom\fixed.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\frustum.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\kdtree.h" />
+    <ClInclude Include="..\..\libs\..\include\csgeom\kdtreex.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\math.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\math2d.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\math3d.h" />
@@ -1518,9 +1524,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csgfx\shadervarnameparser.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\textureformatstrings.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\trianglestream.h" />
+    <ClInclude Include="..\..\libs\..\include\csgfx\universalimageconv.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\vertexlight.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\vertexlistwalker.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\xorpat.h" />
+    <ClInclude Include="..\..\libs\..\include\csplugincommon\canvas\canvascommon.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\canvas\cursorconvert.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\canvas\fontcache.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\canvas\graph2d.h" />
@@ -1556,9 +1564,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csplugincommon\rendermanager\texturecache.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\rendermanager\viscull.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\rendermanager\viscullcommon.h" />
-    <ClInclude Include="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h" />
-    <ClInclude Include="..\..\libs\..\include\csplugincommon\renderstep\basesteptype.h" />
-    <ClInclude Include="..\..\libs\..\include\csplugincommon\renderstep\parserenderstep.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\script\scriptcommon.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\shader\shadercachehelper.h" />
     <ClInclude Include="..\..\libs\..\include\csplugincommon\shader\shaderplugin.h" />
@@ -1640,6 +1645,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\cstool\noise\vectortable.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\normalcalc.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\numberedfilenamehelper.h" />
+    <ClInclude Include="..\..\libs\..\include\cstool\objectcomment.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\objmodel.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\pen.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\primitives.h" />
@@ -1660,9 +1666,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\cstool\userrndbuf.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\vertexcompress.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\vfsdirchange.h" />
+    <ClInclude Include="..\..\libs\..\include\cstool\wxappargconvert.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\algorithms.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\alignedalloc.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\allocator.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\allocatorimpl.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\ansicommand.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\ansiparse.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\archive.h" />
@@ -1725,6 +1733,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\floatrand.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\formatter.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\fpu80x86.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\frameeventsignpost.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\genericresourcecache.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\getopt.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\graphalg.h" />
@@ -1755,12 +1764,14 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\partialorder.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\physfile.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\platform.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\platformfile.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\plugldr.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\plugmgr.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\pooledscfclass.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\prfxcfg.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\priorityqueue.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\processor\processorspecdetection_gcc_ppc.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\processor\processorspecdetection_nonwin_gcc_arm.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\processor\processorspecdetection_nonwin_gcc_x86.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\processor\processorspecdetection_win.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\processorspecdetection.h" />
@@ -1790,6 +1801,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\scopeddelete.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\scopedlock.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\scopedmutexlock.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\scopedpointer.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\set.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\setenv.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\sha256.h" />
@@ -1810,6 +1822,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csutil\threadevent.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops_gcc_arm.h" />
+    <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops_gcc_generic.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops_gcc_ppc.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops_gcc_x86.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\threading\atomicops_msvc.h" />

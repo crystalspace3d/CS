@@ -46,7 +46,7 @@ namespace RenderManager
    * members which are independent of the template arguments that can be
    * provided to StandardPortalSetup.
    */
-  class StandardPortalSetup_Base
+  class CS_CRYSTALSPACE_EXPORT StandardPortalSetup_Base
   {
   public:
     /**
@@ -90,16 +90,17 @@ namespace RenderManager
       CS::Utility::GenericResourceCache<PortalBuffers, csTicks,
         PortalBufferConstraint> bufCache;
 
+      struct BoxClipperCacheRefCounted;
       /**
        * Cache-helper for box clipper caching
        */
       struct CS_CRYSTALSPACE_EXPORT csBoxClipperCached : public csBoxClipper
       {
-        PersistentData* owningPersistentData;
+        BoxClipperCacheRefCounted* owningCache;
 
-        csBoxClipperCached (PersistentData* owningPersistentData,
+        csBoxClipperCached (BoxClipperCacheRefCounted* owningCache,
           const csBox2& box) : csBoxClipper (box),
-          owningPersistentData (owningPersistentData)
+          owningCache (owningCache)
         { }
 
         void operator delete (void* p, void* q);
@@ -115,11 +116,20 @@ namespace RenderManager
 	  memset (bytes, 0, sizeof (bytes));
 	}
       };
-      CS::Utility::GenericResourceCache<csBoxClipperCachedStore, csTicks,
+      typedef CS::Utility::GenericResourceCache<csBoxClipperCachedStore, csTicks,
         CS::Utility::ResourceCache::SortingNone,
-        CS::Utility::ResourceCache::ReuseConditionFlagged> boxClipperCache;
+        CS::Utility::ResourceCache::ReuseConditionFlagged> BoxClipperCacheType;
+      struct BoxClipperCacheRefCounted : public BoxClipperCacheType,
+                                         public CS::Utility::FastRefCount<BoxClipperCacheRefCounted>
+      {
+        BoxClipperCacheRefCounted (
+          const CS::Utility::ResourceCache::ReuseConditionFlagged& reuse,
+          const CS::Utility::ResourceCache::PurgeConditionAfterTime<uint>& purge)
+          : BoxClipperCacheType (reuse, purge) {}
 
-      void FreeCachedClipper (csBoxClipperCached* bcc);
+        void FreeCachedClipper (csBoxClipperCached* bcc);
+      };
+      csRef<BoxClipperCacheRefCounted> boxClipperCache;
 
       CS::ShaderVarStringID svNameTexPortal;
     #ifdef CS_DEBUG
@@ -169,7 +179,7 @@ namespace RenderManager
         csTicks time = csGetTicks ();
         texCache.AdvanceFrame (time);
         bufCache.AdvanceTime (time);
-        boxClipperCache.AdvanceTime (time);
+        boxClipperCache->AdvanceTime (time);
       }
     };
   
@@ -178,6 +188,47 @@ namespace RenderManager
     {}
   protected:
     PersistentData& persistentData;
+
+    void PortalDebugDraw (RenderTreeBase& renderTree,
+                          iPortal* portal,
+                          size_t count, const csVector2* portalVerts2d,
+                          const csVector3* portalVerts3d,
+                          int screenH,
+                          bool isSimple, int skipRec);
+
+    /// Create a box clipper for the given box
+    csPtr<iClipper2D> CreateBoxClipper(const csBox2& box);
+
+    /// Shift projection for portal rendering to texture.
+    void SetupProjectionShift (iCustomMatrixCamera* newCam,
+                               iCamera* inewcam,
+                               int sb_minX, int sb_minY,
+                               int txt_h,
+                               int real_w, int real_h,
+                               int screenW, int screenH);
+    /**
+     * Fudge transformation of a camera used for portal contents rendering
+     * to reduce cracks. Used when portal is rendered to a texture.
+     */
+    void FudgeTargetCamera (iCamera* inewcam, iCamera* cam,
+                            iPortal* portal, const csFlags& portalFlags,
+                            size_t count, const csVector2* portalVerts2d,
+                            const csVector3* portalVerts3d,
+                            int screenW, int screenH);
+    
+    /// Get render buffers for rendering portal as a mesh
+    csPtr<csRenderBufferHolder> GetPortalBuffers (size_t count,
+                                                  const csVector2* portalVerts2d,
+                                                  const csVector3* portalVerts3d,
+                                                  bool withTCs = false,
+                                                  int txt_h = 0,
+                                                  int real_w = 0, int real_h = 0,
+                                                  int sb_minX = 0, int sb_minY = 0);
+    
+    /// Rendermesh setup for rendering portal as a mesh
+    csRenderMesh* SetupPortalRM (csRenderMesh* rm,
+                                 iPortal* portal, iSector* sector,
+                                 size_t count, RenderView* rview);
   };
 
   /**
@@ -309,36 +360,9 @@ namespace RenderManager
 	  if (debugDraw)
 	  {
 	    bool isSimple = IsSimplePortal (portalFlags);
-	    if (renderTree.IsDebugFlagEnabled (persistentData.dbgDrawPortalOutlines))
-	    {
-	      for (size_t i = 0; i < count; i++)
-	      {
-		size_t next = (i+1)%count;
-		csVector2 v1 (portalVerts2d[i]);
-		csVector2 v2 (portalVerts2d[next]);
-		v1.y = screenH - v1.y;
-		v2.y = screenH - v2.y;
-		renderTree.AddDebugLineScreen (v1, v2,
-		  isSimple ? csRGBcolor (0, 255, int(skipRec) * 255)
-				: csRGBcolor (255, 0, int (skipRec) * 255));
-	      }
-	    }
-	    if (renderTree.IsDebugFlagEnabled (persistentData.dbgDrawPortalPlanes))
-	    {
-	      csVector3 guessedCenter (0);
-	      const csVector3* pv = portal->GetWorldVertices();
-	      const int* pvi = portal->GetVertexIndices();
-	      size_t numOrgVerts = portal->GetVertexIndicesCount ();
-	      for (size_t n = 0; n < numOrgVerts; n++)
-	      {
-		guessedCenter += pv[pvi[n]];
-	      }
-	      guessedCenter /= numOrgVerts;
-	      csTransform identity;
-	      renderTree.AddDebugPlane (portal->GetWorldPlane(), identity,
-		isSimple ? csColor (0, 1, int (skipRec)) : csColor (1, 0, int (skipRec)),
-		guessedCenter);
-	    }
+            PortalDebugDraw (renderTree, portal,
+                             count, portalVerts2d, portalVerts3d,
+                             screenH, isSimple, skipRec);
 	  }
 	  
 	  if (!skipRec)
@@ -347,7 +371,7 @@ namespace RenderManager
 	    if (IsSimplePortal (portalFlags))
 	    {
 	      SetupSimplePortal (context, setupData, portal, sector,
-		  portalVerts2d, count, screenW, screenH, holder);
+		  portalVerts2d, portalVerts3d, count, screenW, screenH, holder);
 	    }
 	    else
 	    {
@@ -401,7 +425,7 @@ namespace RenderManager
     void SetupSimplePortal (
       typename RenderTreeType::ContextNode& context,
       ContextSetupData& setupData, iPortal* portal, iSector* sector,
-      csVector2* portalVerts2d, size_t count,
+      const csVector2* portalVerts2d, const csVector3* portalVerts3d, size_t count,
       int screenW, int screenH,
       typename RenderTreeType::ContextNode::PortalHolder& holder)
     {
@@ -437,6 +461,27 @@ namespace RenderManager
       contextFunction (*portalCtx, setupData);
 
       rview->RestoreRenderContext ();
+      
+      /* Create render mesh for the simple portal. Required to so simple
+       * portals in fogged sectors look right. */
+      if (rview->GetThisSector()->HasFog())
+      {
+        // Synthesize a render mesh for the portal plane
+        bool meshCreated;
+        csRenderMesh* rm = renderTree.GetPersistentData().rmHolder.GetUnusedMesh (
+                    meshCreated, rview->GetCurrentFrameNumber());
+        SetupPortalRM (rm, portal, sector, count, rview);
+        rm->buffers = GetPortalBuffers (count, portalVerts2d, portalVerts3d,
+                                        false);
+        rm->variablecontext.Invalidate();
+          
+        typename RenderTreeType::MeshNode::SingleMesh sm;
+        sm.meshObjSVs = 0;
+
+        CS::Graphics::RenderPriority renderPrio =
+            holder.meshWrapper->GetRenderPriority ();
+        context.AddRenderMesh (rm, renderPrio, sm);
+      }
     }
 
     void SetupHeavyPortal (
@@ -473,101 +518,18 @@ namespace RenderManager
       iCamera* inewcam = newCam->GetCamera();
       newRenderView = renderTree.GetPersistentData().renderViews.GetRenderView (rview, portal, inewcam);
       newRenderView->SetEngine (rview->GetEngine ());
+      newRenderView->SetOriginalCamera (rview->GetOriginalCamera ());
 	
       if (portalFlags.Check (CS_PORTAL_WARP))
       {
 	SetupWarp (inewcam, holder.meshWrapper->GetMovable(), portal);
       }
 
-      {
-        /* Shift projection.
-        
-           What we want is to render the sector behind the portal, as seen
-           from the current camera's viewpoint. The portal has a bounding
-           rectangle. For reasons of efficiency we only want to render this
-           rectangular region of the view. Also, the texture is only large
-           enough to cover this rectangle, so the view needs to be offset
-           to align the upper left corner of the portal rectangle with the
-           upper left corner of the render target texture. This can be done
-           by manipulating the projection matrix.
-           
-           The matrix 'projShift' below does:
-           - Transform projection matrix from normalized space to screen
-             space.
-           - Translate the post-projection space so the upper left corner
-             of the rectangle covering the the portal is in the upper left
-             corner of the render target.
-           - Transform projection matrix from (now) render target space to
-             normalized space.
-           (Each step can be represented as a matrix, and the matrix below
-           is just the result of pre-concatenating these matrices.)
-         */
-      
-	float irw = 1.0f/real_w;
-	float irh = 1.0f/real_h;
-	CS::Math::Matrix4 projShift (
-	  screenW*irw, 0, 0, irw * (screenW-2*sb_minX) - 1,
-	  0, screenH*irh, 0, irh * (screenH+2*((real_h - txt_h) - sb_minY)) - 1,
-	  0, 0, 1, 0,
-	  0, 0, 0, 1);
-	
-	newCam->SetProjectionMatrix (projShift * inewcam->GetProjectionMatrix());
-      }
-      /* Visible cracks can occur on portal borders when the geometry
-	 behind the portal is supposed to fit seamlessly into geometry
-	 before the portal since the rendering of the target geometry
-	 may not exactly line up with the portal area on the portal
-	 texture.
-	 To reduce that effect the camera position in the target sector
-	 is somewhat fudged to move slightly into the target so that
-	 the rendered target sector geometry extends beyond the portal
-	 texture area. */
-      {
-	// - Find portal point with largest Z (pMZ)
-	float maxz = 0;
-	size_t maxc = 0;
-	for (size_t c = 0; c < count; c++)
-	{
-	  float z = portalVerts3d[c].z;
-	  if (z > maxz)
-	  {
-	    maxz = z;
-	    maxc = c;
-	  }
-	}
-	// - Find inverse perspective point of pMZ plus some offset (pMZ2)
-	csVector4 zToPostProject (0, 0, maxz, 1.0f);
-	zToPostProject = cam->GetProjectionMatrix() * zToPostProject;
-	
-	const CS::Math::Matrix4& inverseProj (cam->GetInvProjectionMatrix());
-	csVector2 p (portalVerts2d[maxc]);
-	p.x += 1.5f;
-	p.y += 1.5f;
-	p.x /= 0.5f*screenW;
-	p.y /= 0.5f*screenH;
-	p.x -= 1;
-	p.y -= 1;
-	csVector4 p_proj (p.x*zToPostProject.w, p.y*zToPostProject.w,
-	  zToPostProject.z, zToPostProject.w);
-	csVector4 p_proj_inv = inverseProj * p_proj;
-	csVector3 pMZ2 (p_proj_inv[0], p_proj_inv[1], p_proj_inv[2]);
-	// - d = distance pMZ, pMZ2
-	float d = sqrtf (csSquaredDist::PointPoint (portalVerts3d[maxc], pMZ2));
-	// - Get portal target plane in target world space
-	csVector3 portalDir;
-	if (portalFlags.Check (CS_PORTAL_WARP))
-	{
-	  portalDir = portal->GetWarp().Other2ThisRelative (
-	    portal->GetWorldPlane().Normal());
-	}
-	else
-	  portalDir = portal->GetWorldPlane().Normal();
-	/* - Offset target camera into portal direction in target sector,
-	     amount of offset 'd' */
-	csVector3 camorg (inewcam->GetTransform().GetOrigin());
-	camorg += d * portalDir;
-	inewcam->GetTransform().SetOrigin (camorg);
-      }
+      SetupProjectionShift (newCam, inewcam, sb_minX, sb_minY, txt_h,
+                            real_w, real_h, screenW, screenH);
+      FudgeTargetCamera (inewcam, cam,
+                         portal, portalFlags, count, portalVerts2d, portalVerts3d,
+                         screenW, screenH);
 	
       // Add a new context with the texture as the target
       // Setup simple portal
@@ -578,105 +540,38 @@ namespace RenderManager
       /* @@@ FIXME Without the +1 pixels of the portal stay unchanged upon
        * rendering */
       csBox2 clipBox (0, real_h - (txt_h+1), txt_w+1, real_h);
-      csRef<iClipper2D> newView;
+      csRef<iClipper2D> newView (CreateBoxClipper (clipBox));
       /* @@@ Consider PolyClipper?
 	A box has an advantage when the portal tex is rendered
 	distorted: texels from outside the portal area still have a
 	good color. May not be the case with a (more exact) poly
 	clipper. */
-      typename ThisType::PersistentData::csBoxClipperCachedStore* bccstore;
-      bccstore = persistentData.boxClipperCache.Query ();
-      if (bccstore == 0)
-      {
-	typename ThisType::PersistentData::csBoxClipperCachedStore dummy;
-	bccstore = persistentData.boxClipperCache.AddActive (dummy);
-      }
-#include "csutil/custom_new_disable.h"
-      newView.AttachNew (new (bccstore) typename ThisType::PersistentData::csBoxClipperCached (
-		  &persistentData, clipBox));
-#include "csutil/custom_new_enable.h"
       newRenderView->SetClipper (newView);
 
       typename RenderTreeType::ContextNode* portalCtx =
 		renderTree.CreateContext (newRenderView);
       portalCtx->renderTargets[rtaColor0].texHandle = tex;
 
+      portalCtx->drawFlags |= CSDRAW_CLEARSCREEN;
+
       // Setup the new context
       ContextSetupData newSetup (portalCtx);
       contextFunction (*portalCtx, newSetup);
 
       // Synthesize a render mesh for the portal plane
-      iMaterialWrapper* mat = portal->GetMaterial ();
       csRef<csShaderVariableContext> svc;
       svc.AttachNew (new csShaderVariableContext);
       csRef<csShaderVariable> svTexPortal =
 		svc->GetVariableAdd (persistentData.svNameTexPortal);
       svTexPortal->SetValue (tex);
 
-      typename ThisType::PersistentData::PortalBuffers* bufs =
-	persistentData.bufCache.Query (count);
-	
-      if (bufs == 0)
-      {
-	typename ThisType::PersistentData::PortalBuffers newBufs;
-	newBufs.coordBuf = csRenderBuffer::CreateRenderBuffer (count, CS_BUF_STREAM, CS_BUFCOMP_FLOAT, 3);
-	newBufs.tcBuf = csRenderBuffer::CreateRenderBuffer (count, CS_BUF_STREAM, CS_BUFCOMP_FLOAT, 4);
-	newBufs.indexBuf = csRenderBuffer::CreateIndexRenderBuffer (count, CS_BUF_STREAM,
-		    CS_BUFCOMP_UNSIGNED_INT, 0, count-1);
-	newBufs.holder.AttachNew (new csRenderBufferHolder);
-	newBufs.holder->SetRenderBuffer (CS_BUFFER_INDEX, newBufs.indexBuf);
-	newBufs.holder->SetRenderBuffer (CS_BUFFER_POSITION, newBufs.coordBuf);
-	newBufs.holder->SetRenderBuffer (CS_BUFFER_TEXCOORD0, newBufs.tcBuf);
-	bufs = persistentData.bufCache.AddActive (newBufs);
-      }
-
-      {
-	csRenderBufferLock<csVector3> coords (bufs->coordBuf);
-	for (size_t c = 0; c < count; c++)
-	{
-	  coords[c].Set (portalVerts3d[c]);
-	}
-      }
-      {
-	float xscale = (float)1.0f/(float)real_w;
-	float yscale = (float)1.0f/(float)real_h;
-	csRenderBufferLock<csVector4> tcoords (bufs->tcBuf);
-	for (size_t c = 0; c < count; c++)
-	{
-	  float z = portalVerts3d[c].z;
-	  const csVector2& p2 = portalVerts2d[c];
-	  tcoords[c].Set ((p2.x - sb_minX) * xscale * z,
-	    (txt_h - (p2.y - sb_minY)) * yscale * z, 0, z);
-	}
-      }
-      {
-	csRenderBufferLock<uint> indices (bufs->indexBuf);
-	for (size_t c = 0; c < count; c++)
-	  *indices++ = uint (c);
-      }
-
       bool meshCreated;
       csRenderMesh* rm = renderTree.GetPersistentData().rmHolder.GetUnusedMesh (
 		  meshCreated, rview->GetCurrentFrameNumber());
-#ifdef CS_DEBUG
-      bool created;
-      csStringBase& nameStr = persistentData.stringHolder.GetUnusedData (
-		created,  rview->GetCurrentFrameNumber());
-      nameStr.Format ("[portal from %s to %s]",
-		rview->GetThisSector()->QueryObject()->GetName(),
-		sector->QueryObject()->GetName());
-      rm->db_mesh_name = nameStr;
-#else
-      rm->db_mesh_name = "[portal]";
-#endif
-      rm->material = mat;
-      rm->meshtype = CS_MESHTYPE_TRIANGLEFAN;
-      rm->buffers = bufs->holder;
-      rm->z_buf_mode = CS_ZBUF_USE;
-      rm->object2world = rview->GetCamera()->GetTransform();
-      rm->indexstart = 0;
-      rm->indexend = uint (count);
-      rm->mixmode = CS_MIXMODE_BLEND(ONE, ZERO);
+      SetupPortalRM (rm, portal, sector, count, rview);
+      rm->buffers = GetPortalBuffers (count, portalVerts2d, portalVerts3d,
+                                      true, txt_h, real_w, real_h,
+                                      sb_minX, sb_minY);
       rm->variablecontext = svc;
 	
       typename RenderTreeType::MeshNode::SingleMesh sm;

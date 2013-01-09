@@ -180,6 +180,20 @@ public:
   }
 
   /**
+   * Delete the given element from the array.
+   * \return True if the item has been found and deleted, false otherwise.
+   * \remarks Performs a linear search of the array to locate \c item, thus it
+   *   may be slow for large arrays.
+   */
+  bool Delete (const char* item)
+  {
+    size_t const n = Find (item);
+    if (n != csArrayItemNotFound)
+      return superclass::DeleteIndex (n);
+    return false;
+  }
+
+  /**
    * Find a string, case-insensitive.
    * \return csArrayItemNotFound if not found, else item index.
    * \remarks Works with sorted and unsorted arrays, but FindSortedKey() is
@@ -293,6 +307,21 @@ public:
     this->Push (currentString);
     return num + 1;
   }
+
+  /// Join all strings in the array into a single string, insert \a separator between them.
+  csString Join (const char* separator = "")
+  {
+    if (this->GetSize() == 0) return csString();
+
+    csString str (this->Get (0));
+    for (size_t i = 1; i < this->GetSize(); i++)
+    {
+      str.Append (separator);
+      str.Append (this->Get (i));
+    }
+
+    return str;
+  }
 };
 } // namespace Utility
 } // namespace CS
@@ -305,11 +334,27 @@ class csStringArray :
                                   csArrayCapacityDefault>
 {
 public:
+  /**
+   * Constructor for an empty array of strings.
+   * \param limit Initial count of elements that are allocated in the array.
+   * \param threshold Amount of additional elements that are allocated when the
+   * maximum count is reached.
+   */
   csStringArray (size_t limit = 0, size_t threshold = 0)
     : CS::Utility::StringArray<CS::Memory::AllocatorMalloc, 
                                csArrayCapacityDefault> (limit, threshold)
   {
   }
+
+  /**
+   * Constructor for an array of string initialized by splitting a given string.
+   * \param str The string to split and place in this array.
+   * \param delimiters The delimiters to use to split the string.
+   * \param delimMode The way to split this array
+   * \param limit Initial count of elements that are allocated in the array.
+   * \param threshold Amount of additional elements that are allocated when the
+   * maximum count is reached.
+   */
   csStringArray (const char* str, const char* delimiters, 
                ConsecutiveDelimiterMode delimMode = delimSplitEach,
                size_t limit = 0, size_t threshold = 0)

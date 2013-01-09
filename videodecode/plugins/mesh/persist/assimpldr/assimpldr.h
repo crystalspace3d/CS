@@ -33,12 +33,27 @@
 #include "imesh/skeleton2.h"
 #include "iutil/comp.h"
 
-#include "assimp/assimp.hpp"      // C++ importer interface
-#include "assimp/aiScene.h"       // Output data structure
-#include "assimp/aiPostProcess.h" // Post processing flags
+// The header files to be included are not the same between Assimp 2.0 and
+// above versions
+#if (CS_ASSIMP_VERSION == 2)
+#include "assimp/assimp.hpp"
+#include "assimp/aiScene.h"
+#include "assimp/aiPostProcess.h"
+#include "assimp/DefaultLogger.h"
 #include "assimp/IOStream.h"
 #include "assimp/IOSystem.h"
+#include "assimp/Logger.h"
 #include "assimp/ProgressHandler.h"
+#else
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "assimp/DefaultLogger.hpp"
+#include "assimp/Importer.hpp"
+#include "assimp/IOStream.hpp"
+#include "assimp/IOSystem.hpp"
+#include "assimp/Logger.hpp"
+#include "assimp/ProgressHandler.hpp"
+#endif
 
 #include "common.h"
 
@@ -135,12 +150,6 @@ struct AnimeshData
   csHash<AnimeshSubmesh, aiMesh*> submeshes;
 };
 
-struct AssimpProgressHandler : public Assimp::ProgressHandler
-{
-  //-- Assimp::ProgressHandler
-  bool Update (float percentage);  
-};
-
 class AssimpLoader : 
   public scfImplementation3<AssimpLoader,
 			    iBinaryLoaderPlugin,
@@ -149,11 +158,11 @@ class AssimpLoader :
 {
 public:
 
-  AssimpLoader (iBase*);
+  AssimpLoader (iBase* parent);
   virtual ~AssimpLoader ();
 
   //-- iComponent
-  virtual bool Initialize (iObjectRegistry *object_reg);
+  virtual bool Initialize (iObjectRegistry *objectRegistry);
 
   //-- iBinaryLoaderPlugin
   virtual bool IsThreadSafe () { return false; }
@@ -169,6 +178,12 @@ public:
   virtual bool IsRecognized (iDataBuffer* buffer);
 
  private:
+  // Error reporting
+  void ReportError (const char* description, ...);
+  void ReportWarning (const char* description, ...);
+
+  void SetupLogger ();
+
   void ImportScene ();
 
   iTextureWrapper* FindTexture (const char* filename);
@@ -205,16 +220,13 @@ public:
   void ImportAnimation (aiAnimation* animation, size_t index);
   void ConvertAnimationFrames ();
 
-  void ReportError (const char* description, ...);
-  void ReportWarning (const char* description, ...);
-
   void PrintMesh (aiMesh* mesh, const char* prefix);
   void PrintNode (const aiScene* scene, aiNode* node,
 		  const char* prefix);
   void PrintImportNode (aiNode* node, const char* prefix);
 
 private:
-  iObjectRegistry* object_reg;
+  iObjectRegistry* objectRegistry;
 
   csRef<iVFS> vfs;
   csRef<iEngine> engine;
@@ -228,6 +240,8 @@ private:
 
   csRefArray<iTextureWrapper> textures;
   csRefArray<iMaterialWrapper> materials;
+
+  bool doVerbose;
 
   ImportType importType;
 
@@ -252,6 +266,9 @@ private:
     CS::Animation::BoneID boneID;
   };
   csHash<AnimeshNode, csString> animeshNodes;
+
+  // Array of transformations of the root bones of the animesh skeletons
+  csHash<aiMatrix4x4, CS::Animation::BoneID> rootTransforms;
 };
 
 }

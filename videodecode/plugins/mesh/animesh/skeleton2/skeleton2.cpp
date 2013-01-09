@@ -62,7 +62,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
   {
     // Check name uniqueness
     csRef<CS::Animation::iSkeletonAnimPacketFactory> newFact = 
-      csPtr<CS::Animation::iSkeletonAnimPacketFactory> (new AnimationPacketFactory);
+      csPtr<CS::Animation::iSkeletonAnimPacketFactory> (new AnimationPacketFactory (name));
 
     return animPackets.PutUnique (name, newFact);
   }
@@ -140,10 +140,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     CS_ASSERT(bone < allBones.GetSize () && allBones[bone].created);
 
     // If the bone is the last of the list then resize the list
-    if (bone == allBones.GetSize ()-1)
+    if (bone == allBones.GetSize () - 1)
     {
-      allBones.SetSize (bone);
-      boneNames.SetSize (bone);
+      // Find the index of the first bone still allocated
+      size_t index = bone;
+      while (index-1 && !allBones[index-1].created)
+	index--;
+
+      allBones.SetSize (index);
+      boneNames.SetSize (index);
     }
 
     // Else mark the bone as deleted
@@ -738,6 +743,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Skeleton2)
     }
 
     cachedTransformsDirty = false;
+  }
+
+  void Skeleton::RecreateAnimationTree ()
+  {
+    RecreateAnimationTreeP ();
+
+    // Restart the animation tree if we are in 'autostart' mode
+    if (factory->autostart && animationPacket)
+    {
+      CS::Animation::iSkeletonAnimNode* node = animationPacket->GetAnimationRoot ();
+      if (node)
+	node->Play ();
+    }
   }
 
   void Skeleton::RecreateAnimationTreeP ()

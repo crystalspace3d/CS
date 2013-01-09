@@ -40,7 +40,7 @@ struct iImage;
 /// Document me! @@@
 struct iXWindow : public virtual iBase
 {
-  SCF_INTERFACE (iXWindow, 2, 0, 2);
+  SCF_INTERFACE (iXWindow, 2, 1, 0);
 
   // These should be inherited from csNativeWindow
   virtual bool Open () = 0;
@@ -58,7 +58,7 @@ struct iXWindow : public virtual iBase
    *  @param image the iImage to set as the icon of this window.
    */
   virtual void SetIcon (iImage *image) = 0;
-  virtual void SetCanvas (iGraphics2D *canvas) = 0;
+  virtual void SetCanvas (iGraphicsCanvas *canvas) = 0;
 
   // These are X specific
   virtual Display *GetDisplay () = 0;
@@ -88,6 +88,11 @@ struct iXWindow : public virtual iBase
   
   virtual bool SetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool flag) = 0;
   virtual bool GetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool& result) = 0;
+  
+  virtual void Resize (int w, int h) = 0;
+
+  virtual bool GetWorkspaceDimensions (int& width, int& height) = 0;
+  virtual bool AddWindowFrameDimensions (int& width, int& height) = 0;
 };
 
 #endif // __CS_IVIDEO_XWINDOW_H__

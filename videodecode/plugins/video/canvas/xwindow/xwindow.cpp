@@ -416,7 +416,7 @@ void csXWindow::SetVideoMode (bool full, bool up, bool down)
       {
         wm_width = w;
         wm_height = h;
-        if (Canvas->Resize (wm_width, wm_height))
+        if (Canvas->CanvasResize (wm_width, wm_height))
           XResizeWindow (dpy, ctx_win, wm_width, wm_height);
       }
     }
@@ -581,15 +581,23 @@ void csXWindow::AllowResize (bool iAllow)
     normal_hints.min_height =
     normal_hints.max_height = wm_height;
   }
-  XSetWMNormalHints (dpy, wm_win, &normal_hints);
+  if (wm_win) XSetWMNormalHints (dpy, wm_win, &normal_hints);
   allow_resize = iAllow;
 }
 
-void csXWindow::SetCanvas (iGraphics2D *canvas)
+void csXWindow::Resize (int w, int h)
+{
+  if ((wm_width == w) && (wm_height == h)) return;
+  wm_width = w;
+  wm_height = h;
+  if (ctx_win) XResizeWindow (dpy, ctx_win, w, h);
+  AllowResize (allow_resize); // updates size in window hints
+}
+
+void csXWindow::SetCanvas (iGraphicsCanvas *canvas)
 {
   Canvas = canvas;
-  wm_width = Canvas->GetWidth ();
-  wm_height = Canvas->GetHeight ();
+  Canvas->GetFramebufferDimensions (wm_width, wm_height);
 }
 
 static Bool CheckKeyPress (Display* /*dpy*/, XEvent *event, XPointer arg)
@@ -960,7 +968,7 @@ bool csXWindow::HandleEvent (iEvent &Event)
 
   if (resize)
   {
-    if (Canvas->Resize (wm_width, wm_height))
+    if (Canvas->CanvasResize (wm_width, wm_height))
       XResizeWindow (dpy, ctx_win, wm_width, wm_height);
   }
   return false;
@@ -1311,5 +1319,70 @@ bool csXWindow::GetWindowDecoration (iNativeWindow::WindowDecoration decoration,
   }
   
   if (wmHints) XFree (wmHints);
+  return ret;
+}
+
+bool csXWindow::GetWorkspaceDimensions (int& width, int& height)
+{
+  bool ret (false);
+  Atom xaNetWorkArea (XInternAtom (dpy, "_NET_WORKAREA", True));
+  if (xaNetWorkArea != None)
+  {
+    Atom type;
+    int format;
+    unsigned long items;
+    unsigned long bytesRemaining;
+    long* workArea = nullptr;
+    int result (XGetWindowProperty (dpy, RootWindow (dpy, screen_num), xaNetWorkArea,
+                                    0, 4,
+                                    False, AnyPropertyType,
+                                    &type, &format, &items, &bytesRemaining,
+                                    reinterpret_cast<unsigned char**> (&workArea)));
+    if ((result == Success) && (type == XA_CARDINAL) && (format == 32)
+      && (items == 4))
+    {
+      // Working area is stored as left, rightop, width, height
+      width = workArea[2];
+      height = workArea[3];
+      ret = true;
+    }
+    
+    if (workArea) XFree (workArea);
+  }
+  return ret;
+}
+
+bool csXWindow::AddWindowFrameDimensions (int& width, int& height)
+{
+  bool ret (false);
+  if (wm_win)
+  {
+    // @@@ FIXME: Should create a dummy top-level window if no wm_win exists yet?
+    Atom xaNetFrameExtents (XInternAtom (dpy, "_NET_FRAME_EXTENTS", True));
+    if (xaNetFrameExtents != None)
+    {
+      Atom type;
+      int format;
+      unsigned long items;
+      unsigned long bytesRemaining;
+      long* frameExtents = nullptr;
+      int result (XGetWindowProperty (dpy, wm_win, xaNetFrameExtents,
+                                      0, 4,
+                                      False, AnyPropertyType,
+                                      &type, &format, &items, &bytesRemaining,
+                                      reinterpret_cast<unsigned char**> (&frameExtents)));
+      if ((result == Success) && (type == XA_CARDINAL) && (format == 32)
+        && (items == 4))
+      {
+        // Frame extents ares stored as left, right, top, bottom
+        width += frameExtents[0] + frameExtents[1];
+        height += frameExtents[2] + frameExtents[3];
+        ret = true;
+      }
+      
+      if (frameExtents) XFree (frameExtents);
+    }
+    
+  }
   return ret;
 }

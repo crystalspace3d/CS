@@ -1496,6 +1496,9 @@
 				RelativePath="..\..\libs\csgeom\kdtree.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgeom\kdtreex.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgeom\math.cpp">
 			</File>
 			<File
@@ -1637,7 +1640,13 @@
 				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\universalimageconv.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\canvas\canvascommon.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\canvas\cursorconvert.cpp">
@@ -1704,15 +1713,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\viscullcommon.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\renderstep\basesteploader.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\renderstep\basesteptype.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\renderstep\parserenderstep.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\script\scriptcommon.cpp">
@@ -1797,9 +1797,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\materialbuilder.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\cstool\memory_pen.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\meshfilter.cpp">
@@ -2162,6 +2159,9 @@
 				RelativePath="..\..\libs\csutil\processor\processorspecdetection_gcc_ppc.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_arm.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\processor\processorspecdetection_nonwin_gcc_x86.cpp">
 			</File>
 			<File
@@ -2222,7 +2222,13 @@
 				RelativePath="..\..\libs\csutil\sparse3d.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\stat_common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\staticvarcleanup.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\strcasestr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\strhashr.cpp">
@@ -2303,7 +2309,13 @@
 				RelativePath="..\..\libs\csutil\win32\memutil_impl.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\win32\mkdir.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\win32\mmap.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\win32\platformfile.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\processorcount_impl.cpp">
@@ -2313,6 +2325,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\setenv.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\win32\stat.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\win32\syminit.cpp">
@@ -2380,6 +2395,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\kdtree.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgeom\kdtreex.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgeom\math.h">
@@ -2562,6 +2580,9 @@
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgfx\universalimageconv.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgfx\vertexlight.h">
 			</File>
 			<File
@@ -2569,6 +2590,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\xorpat.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\canvas\canvascommon.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\canvas\cursorconvert.h">
@@ -2674,15 +2698,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\viscullcommon.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteptype.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\parserenderstep.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\script\scriptcommon.h">
@@ -2928,6 +2943,9 @@
 				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\objectcomment.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -2988,6 +3006,9 @@
 				RelativePath="..\..\libs\..\include\cstool\vfsdirchange.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\wxappargconvert.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\algorithms.h">
 			</File>
 			<File
@@ -2995,6 +3016,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\allocator.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\allocatorimpl.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\ansicommand.h">
@@ -3183,6 +3207,9 @@
 				RelativePath="..\..\libs\..\include\csutil\fpu80x86.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\frameeventsignpost.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\genericresourcecache.h">
 			</File>
 			<File
@@ -3273,6 +3300,9 @@
 				RelativePath="..\..\libs\..\include\csutil\platform.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\platformfile.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\plugldr.h">
 			</File>
 			<File
@@ -3289,6 +3319,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_gcc_ppc.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_nonwin_gcc_arm.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\processor\processorspecdetection_nonwin_gcc_x86.h">
@@ -3378,6 +3411,9 @@
 				RelativePath="..\..\libs\..\include\csutil\scopedmutexlock.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csutil\scopedpointer.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csutil\set.h">
 			</File>
 			<File
@@ -3436,6 +3472,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_arm.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_generic.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\threading\atomicops_gcc_ppc.h">

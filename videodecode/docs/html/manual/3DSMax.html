@@ -11,10 +11,10 @@ Send bugs and suggestions to <users@texi2html.cvshome.org>
 
 -->
 <head>
-<title>Crystal Space 2.1.0: 5.6 Making Levels and Models in 3DSMax</title>
+<title>Crystal Space 2.1.0: 5.9 Making Levels and Models in 3DSMax</title>
 
-<meta name="description" content="Crystal Space 2.1.0: 5.6 Making Levels and Models in 3DSMax">
-<meta name="keywords" content="Crystal Space 2.1.0: 5.6 Making Levels and Models in 3DSMax">
+<meta name="description" content="Crystal Space 2.1.0: 5.9 Making Levels and Models in 3DSMax">
+<meta name="keywords" content="Crystal Space 2.1.0: 5.9 Making Levels and Models in 3DSMax">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.76">
@@ -43,8 +43,8 @@ ul.toc {list-style: none}
 <a name="g_t3DSMax"></a>
 <a name="0"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="Blender.html#0" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="Using-lighter2.html#0" title="Next section in reading order"> &gt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="io_005fscene_005fcs-ToDo.html#0" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="COLLADA.html#0" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="Working-with-Engine-Content.html#0" title="Up section"> Up </a>]</td>
@@ -59,25 +59,39 @@ ul.toc {list-style: none}
 <td valign="middle" align="left">[<a href="cs_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <hr size="1">
-<h2 class="section"> 5.6 Making Levels and Models in 3DSMax </h2>
+<h2 class="section"> 5.9 Making Levels and Models in 3DSMax </h2>
 
 <p>3DSMax is a very powerful commercial 3D modeller which is supported very
 well by Crystal Space.
 </p>
 <a name="1"></a>
-<h3 class="subheading"> Making Levels </h3>
+<h3 class="subheading"> Exporting Levels </h3>
 
-<p>For making levels you can use the exporter that is included with Crystal
-Space. You can find it in <tt>&lsquo;CS/scripts/max&rsquo;</tt>. There is also a manual
-there which is located at <tt>&lsquo;CS/scripts/max/exporterguide/index.html&rsquo;</tt>.
+<p>An exporter script to be ran from 3DSMax is available in <tt>&lsquo;CS/scripts/max&rsquo;</tt>.
+</p>
+<p>This script has been developed by the team of <a href="http://www.planeshift.it/">PlaneShift</a>,
+and can export complete levels in Crystal Space. See the dedicated manual
+located at <tt>&lsquo;CS/scripts/max/exporterguide/index.html&rsquo;</tt>.
 </p>
 <a name="2"></a>
-<h3 class="subheading"> Making Models </h3>
+<h3 class="subheading"> Exporting Cal3d Models </h3>
 
 <p>Models of type Cal3d (see section <a href="MeshObject-SprCal3D.html#0">SpriteCal3D Mesh Object</a>) can be converted from
 3DSMax.
 </p>
+<a name="3"></a>
+<h3 class="subheading"> Export plugin </h3>
 
+<p>A dedicated plugin also to be ran from 3DSMax is in development. It has
+basic support for static meshes and materials. It can be found in the
+<small>SVN</small> repository <tt>&lsquo;CSExporters/CrystalMax&rsquo;</tt>
+</p>
+<a name="4"></a>
+<h3 class="subheading"> Assimp Library </h3>
+
+<p>Finally, one of the best solution to import static and animated models is
+by using the <a href="Assimp-importer.html#0">Assimp importer</a>.
+</p>
 <hr size="1">
 <p>
  <font size="-1">

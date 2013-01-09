@@ -22,6 +22,7 @@
 #include "csgeom/box.h"
 #include "csutil/flags.h"
 #include "csutil/scf_implementation.h"
+#include "csutil/weakref.h"
 #include "imesh/objmodel.h"
 #include "imesh/object.h"
 #include "ivideo/graph3d.h"
@@ -50,7 +51,7 @@ class csShadow :
 {
 private:
   iMeshWrapper* logparent;
-  iMeshWrapper* wrap;
+  csWeakRef<iMeshWrapper> wrap;
   bool do_bbox;	// Show bounding box.
   bool do_rad;	// Show bounding sphere.
   bool do_normals; // Show normals
@@ -133,7 +134,8 @@ public:
         csVector3&, float*)
   { return false; }
   virtual bool HitBeamObject (const csVector3&, const csVector3&,
-  	csVector3&, float*, int* = 0, iMaterialWrapper** = 0) { return false; }
+  	csVector3&, float*, int* = 0, iMaterialWrapper** = 0,
+	bool bf = false) { return false; }
   virtual void SetMeshWrapper (iMeshWrapper* lp) { logparent = lp; }
   virtual iMeshWrapper* GetMeshWrapper () const { return logparent; }
 

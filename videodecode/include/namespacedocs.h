@@ -41,6 +41,12 @@ namespace CS
   {}
 
   /**
+   * Collision detection and utilities
+   */
+  namespace Collisions
+  {}
+
+  /**
    * Container classes
    */
   namespace Container
@@ -66,6 +72,12 @@ namespace CS
   {}
 
   /**
+   * Loading and saving helper classes.
+   */
+  namespace Persistence
+  {}
+
+  /**
    * General tools for the edition of Crystal Space objects.
    */
   namespace Editor
@@ -88,6 +100,12 @@ namespace CS
    * Graphics and rendering related classes.
    */
   namespace Graphics
+  {}
+
+  /**
+   * Material and texture related classes.
+   */
+  namespace Material
   {}
 
   /**
@@ -242,6 +260,12 @@ namespace CS
    * else
    */
   namespace Utility
+  {}
+
+  /**
+   * Classes/helpers for wxWidgets integration
+   */
+  namespace WX
   {}
 }
 

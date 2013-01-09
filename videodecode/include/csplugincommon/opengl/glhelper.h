@@ -36,7 +36,7 @@
 static inline void makeGLMatrix (const csReversibleTransform& t, 
   float matrix[16], bool rowMajor = false)
 {
-  const csMatrix3 &orientation = t.GetO2T();
+  const csMatrix3 &orientation = t.GetT2O();
   const csVector3 &translation = t.GetO2TTranslation();
 
   int row, col;
@@ -50,17 +50,17 @@ static inline void makeGLMatrix (const csReversibleTransform& t,
   }
 
   matrix[col*0+row*0] = orientation.m11;
-  matrix[col*0+row*1] = orientation.m12;
-  matrix[col*0+row*2] = orientation.m13;
+  matrix[col*0+row*1] = orientation.m21;
+  matrix[col*0+row*2] = orientation.m31;
   matrix[col*0+row*3] = 0.0f;
 
-  matrix[col*1+row*0] = orientation.m21;
+  matrix[col*1+row*0] = orientation.m12;
   matrix[col*1+row*1] = orientation.m22;
-  matrix[col*1+row*2] = orientation.m23;
+  matrix[col*1+row*2] = orientation.m32;
   matrix[col*1+row*3] = 0.0f;
 
-  matrix[col*2+row*0] = orientation.m31;
-  matrix[col*2+row*1] = orientation.m32;
+  matrix[col*2+row*0] = orientation.m13;
+  matrix[col*2+row*1] = orientation.m23;
   matrix[col*2+row*2] = orientation.m33;
   matrix[col*2+row*3] = 0.0f;
 

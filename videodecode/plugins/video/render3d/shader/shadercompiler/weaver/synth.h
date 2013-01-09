@@ -105,9 +105,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
     class SynthesizeTechnique :
       public scfImplementation1<SynthesizeTechnique, iJob>
     {
+    public:
+      /// Result for the synthesis of one technique
+      struct Result
+      {
+        /// Flag whether synthesis was successful
+        bool status;
+        /// Messages to be emitted to a comment in the generated technique
+        csString message;
+        
+        Result (bool status) : status (status) {}
+        Result (const Result& other) : status (other.status), message (other.message) {}
+      };
+    private:
       friend class SynthesizeNodeTree;
     
-      bool status;
+      Result status;
       csString techniqueConditions;
     
       const WeaverCompiler* compiler;
@@ -134,8 +147,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	return annotateString.GetData();
       }
       
+      /// Structure to track what default inputs to emit.
+      struct EmittedInput;
+      typedef csArray<EmittedInput> EmittedInputArray;
+      void EmitInputs (const Snippet::Technique::CombinerPlugin& comb,
+        const EmittedInputArray& emitInputs);
+
       bool FindOutput (const TechniqueGraph& graph,
 	const char* desiredType,
+	CS::PluginCommon::ShaderWeaver::iCombiner* combiner,
+	const Snippet::Technique*& outTechnique,
+	Snippet::Technique::Output& theOutput);
+
+      bool FindExplicitOutput (const TechniqueGraph& graph,
+	const char* outputName, const char* desiredType,
 	CS::PluginCommon::ShaderWeaver::iCombiner* combiner,
 	const Snippet::Technique*& outTechnique,
 	Snippet::Technique::Output& theOutput);
@@ -160,18 +185,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
       CS::PluginCommon::ShaderWeaver::iCombiner* GetCombiner (
 	CS::PluginCommon::ShaderWeaver::iCombiner* used, 
 	const Snippet::Technique::CombinerPlugin& comb,
-	const Snippet::Technique::CombinerPlugin& requested,
-	const char* requestedName);
+	const char* requestedName,
+        const Snippet::Technique* tech);
       
       csString GetInputTag (CS::PluginCommon::ShaderWeaver::iCombiner* combiner,
 	const Snippet::Technique::CombinerPlugin& comb,
-	const Snippet::Technique::CombinerPlugin& combTech,
-	const Snippet::Technique::Input& input);
+	const Snippet::Technique::Input& input,
+    const Snippet::Technique* tech);
 	
       csPtr<iDocumentNode> EncloseInCondition (iDocumentNode* node,
         const char* condition) const;
 	
-      bool operator() (ShaderVarNodesHelper& shaderVarNodes, 
+      Result operator() (ShaderVarNodesHelper& shaderVarNodes, 
         iDocumentNode* errorNode, const Snippet* snippet,
         const TechniqueGraph& graph);
     public:
@@ -186,7 +211,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
          snippet (snippet), graph (graph), combiners (combiners)
       {}
     
-      bool GetStatus() const { return status; }
+      const Result& GetStatus() const { return status; }
       void Run()
       { 
         status =  (*this) (shaderVarNodes, errorNode, snippet, graph);
@@ -293,15 +318,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(ShaderWeaver)
 	  return array.GetSize(); 
 	}
       };
-    };
-
-    /// Structure to track what default inputs to emit.
-    struct EmittedInput
-    {
-      const SynthesizeNodeTree::Node* node;
-      const Snippet::Technique::Input* input;
-      csArray<csString> conditions;
-      csString tag;
     };
   public:
     WeaverCompiler* compiler;

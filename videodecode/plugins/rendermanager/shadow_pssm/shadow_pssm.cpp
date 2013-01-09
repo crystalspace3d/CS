@@ -51,10 +51,11 @@ SCF_IMPLEMENT_FACTORY(RMShadowedPSSM)
 
 /* Template magic to deal with different initializers for different
    ShadowType::ShadowParameter types. */
-template<typename ShadowType>
+template<typename ShadowType, typename RenderTreeType>
 struct WrapShadowParams
 {
   static typename ShadowType::ShadowParameters Create (
+    typename RenderTreeType::ContextNode& context,
     RMShadowedPSSM::ShadowType::PersistentData& persist,
     CS::RenderManager::RenderView* rview)
   {
@@ -62,15 +63,28 @@ struct WrapShadowParams
   }
 };
 
-template<>
-struct WrapShadowParams<RMShadowedPSSM::ShadowType>
+template<typename RenderTreeType>
+struct WrapShadowParams<RMShadowedPSSM::ShadowType, RenderTreeType>
 {
-  static RMShadowedPSSM::ShadowType::ViewSetup Create (
+  static RMShadowedPSSM::ShadowType::ShadowParameters Create (
+    typename RenderTreeType::ContextNode& context,
     RMShadowedPSSM::ShadowType::PersistentData& shadowPersist,
     CS::RenderManager::RenderView* rview)
   {
-    return RMShadowedPSSM::ShadowType::ViewSetup (
-      shadowPersist, rview);
+    RMShadowedPSSM::ShadowType::ShadowParameters shadowParam (shadowPersist, context.owner, rview);
+
+    // setup shadows for all lights
+    iLightList *list = context.sector->GetLights ();
+    for(int i = 0; i < list->GetCount(); ++i)
+      shadowParam(list->Get(i));
+
+    // setup shadows for all meshes
+    ForEachMeshNode (context, shadowParam);
+
+    // finish shadow setup
+    shadowParam();
+
+    return shadowParam;
   }
 };
 
@@ -162,8 +176,8 @@ public:
     iSector* sector = rview->GetThisSector ();
 
     typename ShadowType::ShadowParameters shadowViewSetup (
-      WrapShadowParams<ShadowType>::Create (
-        rmanager->lightPersistent.shadowPersist, rview));
+      WrapShadowParams<ShadowType, RenderTreeType>::Create (
+        context, rmanager->lightPersistent.shadowPersist, rview));
     
     // Sort the mesh lists  
     {
@@ -356,6 +370,7 @@ bool RMShadowedPSSM::RenderView (iView* view, bool recursePortals)
   view->UpdateClipper ();
   csRef<CS::RenderManager::RenderView> rview;
   rview = treePersistent.renderViews.GetRenderView (view);
+  rview->SetOriginalCamera (view->GetCamera ());
   iPerspectiveCamera* c = view->GetPerspectiveCamera ();
   iGraphics3D* G3D = rview->GetGraphics3D ();
   int frameWidth = G3D->GetWidth ();
@@ -459,6 +474,7 @@ bool RMShadowedPSSM::HandleTarget (RenderTreeType& renderTree,
   // Prepare
   csRef<CS::RenderManager::RenderView> rview;
   rview = treePersistent.renderViews.GetRenderView (settings.view);
+  rview->SetOriginalCamera (settings.view->GetCamera ());
 
   iSector* startSector = rview->GetThisSector ();
 

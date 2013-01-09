@@ -169,7 +169,6 @@ class csColliderActor(object):
     def SetOnGround(*args): return _cstool.csColliderActor_SetOnGround(*args)
     def HasCD(*args): return _cstool.csColliderActor_HasCD(*args)
     def SetCD(*args): return _cstool.csColliderActor_SetCD(*args)
-    def CheckRevertMove(*args): return _cstool.csColliderActor_CheckRevertMove(*args)
     def EnableHitMeshes(*args): return _cstool.csColliderActor_EnableHitMeshes(*args)
     def CheckHitMeshes(*args): return _cstool.csColliderActor_CheckHitMeshes(*args)
     def GetHitMeshes(*args): return _cstool.csColliderActor_GetHitMeshes(*args)
@@ -538,39 +537,51 @@ CS_PEN_FILL = _cstool.CS_PEN_FILL
 CS_PEN_SWAPCOLORS = _cstool.CS_PEN_SWAPCOLORS
 CS_PEN_TEXTURE_ONLY = _cstool.CS_PEN_TEXTURE_ONLY
 CS_PEN_TEXTURE = _cstool.CS_PEN_TEXTURE
-class iPen(object):
+class csPenCoordinate(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
-    def SetFlag(*args): return _cstool.iPen_SetFlag(*args)
-    def ClearFlag(*args): return _cstool.iPen_ClearFlag(*args)
-    def SetMixMode(*args): return _cstool.iPen_SetMixMode(*args)
-    def SetColor(*args): return _cstool.iPen_SetColor(*args)
-    def SetTexture(*args): return _cstool.iPen_SetTexture(*args)
-    def SwapColors(*args): return _cstool.iPen_SwapColors(*args)
-    def SetPenWidth(*args): return _cstool.iPen_SetPenWidth(*args)
-    def ClearTransform(*args): return _cstool.iPen_ClearTransform(*args)
-    def PushTransform(*args): return _cstool.iPen_PushTransform(*args)
-    def PopTransform(*args): return _cstool.iPen_PopTransform(*args)
-    def SetOrigin(*args): return _cstool.iPen_SetOrigin(*args)
-    def Translate(*args): return _cstool.iPen_Translate(*args)
-    def DrawLine(*args): return _cstool.iPen_DrawLine(*args)
-    def DrawPoint(*args): return _cstool.iPen_DrawPoint(*args)
-    def DrawRect(*args): return _cstool.iPen_DrawRect(*args)
-    def DrawMiteredRect(*args): return _cstool.iPen_DrawMiteredRect(*args)
-    def DrawRoundedRect(*args): return _cstool.iPen_DrawRoundedRect(*args)
-    def DrawArc(*args): return _cstool.iPen_DrawArc(*args)
-    def DrawTriangle(*args): return _cstool.iPen_DrawTriangle(*args)
-    def Write(*args): return _cstool.iPen_Write(*args)
-    def WriteBoxed(*args): return _cstool.iPen_WriteBoxed(*args)
-    def _Rotate(*args): return _cstool.iPen__Rotate(*args)
-    def Rotate(self,a):
-         return _cspace.iPen__Rotate(a)
+    x = _swig_property(_cstool.csPenCoordinate_x_get, _cstool.csPenCoordinate_x_set)
+    y = _swig_property(_cstool.csPenCoordinate_y_get, _cstool.csPenCoordinate_y_set)
+    def __init__(self, *args): 
+        this = _cstool.new_csPenCoordinate(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _cstool.delete_csPenCoordinate
+    __del__ = lambda self : None;
+csPenCoordinate_swigregister = _cstool.csPenCoordinate_swigregister
+csPenCoordinate_swigregister(csPenCoordinate)
 
-iPen_swigregister = _cstool.iPen_swigregister
-iPen_swigregister(iPen)
+class csPenCoordinatePair(object):
+    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    c1 = _swig_property(_cstool.csPenCoordinatePair_c1_get, _cstool.csPenCoordinatePair_c1_set)
+    c2 = _swig_property(_cstool.csPenCoordinatePair_c2_get, _cstool.csPenCoordinatePair_c2_set)
+    def __init__(self, *args): 
+        this = _cstool.new_csPenCoordinatePair(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _cstool.delete_csPenCoordinatePair
+    __del__ = lambda self : None;
+csPenCoordinatePair_swigregister = _cstool.csPenCoordinatePair_swigregister
+csPenCoordinatePair_swigregister(csPenCoordinatePair)
 
-class csPen(iPen):
+class csPenCache(object):
+    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    def PushMesh(*args): return _cstool.csPenCache_PushMesh(*args)
+    def Render(*args): return _cstool.csPenCache_Render(*args)
+    def Clear(*args): return _cstool.csPenCache_Clear(*args)
+    def SetTransform(*args): return _cstool.csPenCache_SetTransform(*args)
+    def __init__(self, *args): 
+        this = _cstool.new_csPenCache(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _cstool.delete_csPenCache
+    __del__ = lambda self : None;
+csPenCache_swigregister = _cstool.csPenCache_swigregister
+csPenCache_swigregister(csPenCache)
+
+class csPen(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
@@ -579,6 +590,7 @@ class csPen(iPen):
         except: self.this = this
     __swig_destroy__ = _cstool.delete_csPen
     __del__ = lambda self : None;
+    def SetActiveCache(*args): return _cstool.csPen_SetActiveCache(*args)
     def SetFlag(*args): return _cstool.csPen_SetFlag(*args)
     def ClearFlag(*args): return _cstool.csPen_ClearFlag(*args)
     def SetMixMode(*args): return _cstool.csPen_SetMixMode(*args)
@@ -591,8 +603,12 @@ class csPen(iPen):
     def PopTransform(*args): return _cstool.csPen_PopTransform(*args)
     def SetOrigin(*args): return _cstool.csPen_SetOrigin(*args)
     def Translate(*args): return _cstool.csPen_Translate(*args)
+    def SetTransform(*args): return _cstool.csPen_SetTransform(*args)
+    def ClipLine(*args): return _cstool.csPen_ClipLine(*args)
     def DrawLine(*args): return _cstool.csPen_DrawLine(*args)
     def DrawThickLine(*args): return _cstool.csPen_DrawThickLine(*args)
+    def DrawLines(*args): return _cstool.csPen_DrawLines(*args)
+    def DrawThickLines(*args): return _cstool.csPen_DrawThickLines(*args)
     def DrawPoint(*args): return _cstool.csPen_DrawPoint(*args)
     def DrawRect(*args): return _cstool.csPen_DrawRect(*args)
     def DrawMiteredRect(*args): return _cstool.csPen_DrawMiteredRect(*args)
@@ -600,44 +616,52 @@ class csPen(iPen):
     def DrawArc(*args): return _cstool.csPen_DrawArc(*args)
     def DrawTriangle(*args): return _cstool.csPen_DrawTriangle(*args)
     def Write(*args): return _cstool.csPen_Write(*args)
+    def WriteLines(*args): return _cstool.csPen_WriteLines(*args)
     def WriteBoxed(*args): return _cstool.csPen_WriteBoxed(*args)
+    def WriteLinesBoxed(*args): return _cstool.csPen_WriteLinesBoxed(*args)
+    def _Rotate(*args): return _cstool.csPen__Rotate(*args)
+    def Rotate(self,a):
+         return _cspace.csPen__Rotate(a)
+
 csPen_swigregister = _cstool.csPen_swigregister
 csPen_swigregister(csPen)
 
-class csMemoryPen(iPen):
+class csPen3DCoordinatePair(object):
+    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
+    __repr__ = _swig_repr
+    c1 = _swig_property(_cstool.csPen3DCoordinatePair_c1_get, _cstool.csPen3DCoordinatePair_c1_set)
+    c2 = _swig_property(_cstool.csPen3DCoordinatePair_c2_get, _cstool.csPen3DCoordinatePair_c2_set)
+    def __init__(self, *args): 
+        this = _cstool.new_csPen3DCoordinatePair(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _cstool.delete_csPen3DCoordinatePair
+    __del__ = lambda self : None;
+csPen3DCoordinatePair_swigregister = _cstool.csPen3DCoordinatePair_swigregister
+csPen3DCoordinatePair_swigregister(csPen3DCoordinatePair)
+
+class csPen3D(object):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
     __repr__ = _swig_repr
     def __init__(self, *args): 
-        this = _cstool.new_csMemoryPen(*args)
+        this = _cstool.new_csPen3D(*args)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _cstool.delete_csMemoryPen
+    __swig_destroy__ = _cstool.delete_csPen3D
     __del__ = lambda self : None;
-    def Clear(*args): return _cstool.csMemoryPen_Clear(*args)
-    def Draw(*args): return _cstool.csMemoryPen_Draw(*args)
-    def SetFlag(*args): return _cstool.csMemoryPen_SetFlag(*args)
-    def ClearFlag(*args): return _cstool.csMemoryPen_ClearFlag(*args)
-    def SetMixMode(*args): return _cstool.csMemoryPen_SetMixMode(*args)
-    def SetColor(*args): return _cstool.csMemoryPen_SetColor(*args)
-    def SetTexture(*args): return _cstool.csMemoryPen_SetTexture(*args)
-    def SwapColors(*args): return _cstool.csMemoryPen_SwapColors(*args)
-    def SetPenWidth(*args): return _cstool.csMemoryPen_SetPenWidth(*args)
-    def ClearTransform(*args): return _cstool.csMemoryPen_ClearTransform(*args)
-    def PushTransform(*args): return _cstool.csMemoryPen_PushTransform(*args)
-    def PopTransform(*args): return _cstool.csMemoryPen_PopTransform(*args)
-    def SetOrigin(*args): return _cstool.csMemoryPen_SetOrigin(*args)
-    def Translate(*args): return _cstool.csMemoryPen_Translate(*args)
-    def DrawLine(*args): return _cstool.csMemoryPen_DrawLine(*args)
-    def DrawPoint(*args): return _cstool.csMemoryPen_DrawPoint(*args)
-    def DrawRect(*args): return _cstool.csMemoryPen_DrawRect(*args)
-    def DrawMiteredRect(*args): return _cstool.csMemoryPen_DrawMiteredRect(*args)
-    def DrawRoundedRect(*args): return _cstool.csMemoryPen_DrawRoundedRect(*args)
-    def DrawArc(*args): return _cstool.csMemoryPen_DrawArc(*args)
-    def DrawTriangle(*args): return _cstool.csMemoryPen_DrawTriangle(*args)
-    def Write(*args): return _cstool.csMemoryPen_Write(*args)
-    def WriteBoxed(*args): return _cstool.csMemoryPen_WriteBoxed(*args)
-csMemoryPen_swigregister = _cstool.csMemoryPen_swigregister
-csMemoryPen_swigregister(csMemoryPen)
+    def SetActiveCache(*args): return _cstool.csPen3D_SetActiveCache(*args)
+    def SetMixMode(*args): return _cstool.csPen3D_SetMixMode(*args)
+    def SetColor(*args): return _cstool.csPen3D_SetColor(*args)
+    def SetTransform(*args): return _cstool.csPen3D_SetTransform(*args)
+    def SetLocal2ObjectTransform(*args): return _cstool.csPen3D_SetLocal2ObjectTransform(*args)
+    def GetLocal2ObjectTransform(*args): return _cstool.csPen3D_GetLocal2ObjectTransform(*args)
+    def DrawLine(*args): return _cstool.csPen3D_DrawLine(*args)
+    def DrawLines(*args): return _cstool.csPen3D_DrawLines(*args)
+    def DrawBox(*args): return _cstool.csPen3D_DrawBox(*args)
+    def DrawArc(*args): return _cstool.csPen3D_DrawArc(*args)
+    def DrawCylinder(*args): return _cstool.csPen3D_DrawCylinder(*args)
+csPen3D_swigregister = _cstool.csPen3D_swigregister
+csPen3D_swigregister(csPen3D)
 
 class scfProcTexture(core.csObject,iengine.iTextureWrapper,csgfx.iProcTexture):
     thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')

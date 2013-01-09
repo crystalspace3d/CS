@@ -17,6 +17,8 @@
 */
 
 #include "isotest.h"
+#include "imesh/gmeshskel2.h"
+#include "imesh/skeleton.h"
 
 CS_IMPLEMENT_APPLICATION
 
@@ -328,7 +330,7 @@ bool IsoTest::SetupModules ()
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
   font = g3d->GetDriver2D ()->GetFontServer()->LoadFont
-    ("/fonts/ttf/Vera.ttf", 10);
+    ("/fonts/ttf/DejaVuSans.ttf", 10);
   if(!font) // fallback
     font = g3d->GetDriver2D ()->GetFontServer()->LoadFont(CSFONT_LARGE);
 

@@ -35,9 +35,6 @@
         <texture name="fpart">
             <file>/lib/stdtex/fpart.png</file>
         </texture>
-        <texture name="fp2">
-            <file>/lib/stdtex/fp2.png</file>
-        </texture>
         <texture name="hazecirc">
             <file>/lib/stdtex/hazecirc.jpg</file>
         </texture>
@@ -124,11 +121,6 @@
             <shader type="diffuse">*null</shader>
             <shader type="ambient">particles_basic</shader>
         </material>
-        <material name="fp2">
-            <texture>fp2</texture>
-            <shader type="diffuse">*null</shader>
-            <shader type="ambient">particles_basic</shader>
-        </material>
         <material name="hazecirc">
             <texture>hazecirc</texture>
             <shader type="diffuse">*null</shader>
@@ -168,6 +160,7 @@
     </plugins>
     <library>/data/particles/fire1.cslib</library>
     <library>/data/particles/fire2.cslib</library>
+    <library>/data/particles/fire3.cslib</library>
     <library>/data/particles/flame.cslib</library>
     <library>/data/particles/rain.cslib</library>
     <library>/data/particles/snow.cslib</library>
@@ -181,6 +174,7 @@
         <params />
     </meshfact>
     <library>/data/particles/fountain.cslib</library>
+    <library>/data/particles/fountain2.cslib</library>
     <meshfact name="factory_room_walls">
         <plugin>crystalspace.mesh.loader.factory.genmesh</plugin>
         <params>
@@ -704,6 +698,15 @@
             </params>
             <move>
                 <v x="10" y="0" z="-15" />
+            </move>
+        </meshobj>
+        <meshobj name="fount3">
+            <plugin>crystalspace.mesh.loader.particles</plugin>
+            <params>
+                <factory>fountainFACT2</factory>
+            </params>
+            <move>
+                <v x="15" y="0" z="-15" />
             </move>
         </meshobj>
     </sector>
@@ -2805,6 +2808,17 @@
                     <scale>1</scale>
                 </aging>
             </params>
+        </meshobj>
+        <meshobj name="largefire3">
+            <plugin>crystalspace.mesh.loader.particles</plugin>
+            <params>
+                <factory>largefireFACT</factory>
+            </params>
+            <move>
+                <v x="-35" y="0" z="90" />
+            </move>
+            <priority>alpha</priority>
+            <ztest />
         </meshobj>
         <meshobj name="emit10">
             <priority>alpha</priority>

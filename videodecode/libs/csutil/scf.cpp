@@ -150,6 +150,7 @@ public:
   virtual const char *GetClassDescription (const char *iClassID);
   virtual const char *GetClassDependencies (const char *iClassID);
   virtual csRef<iDocument> GetPluginMetadata (char const *iClassID);
+  virtual csRef<iDocumentNode> GetPluginMetadataNode (char const *iClassID);
   virtual bool UnregisterClass (const char *iClassID);
   virtual void UnloadUnusedModules ();
   virtual void ScanPluginsPath (const char* path, bool recursive = false,
@@ -346,8 +347,23 @@ protected:
   /* SCF goop, this class cannot use scfImplementation1 due to its special 
     ref-counting usage */
   int scfRefCount;
-  typedef csArray<void**,
-    csArrayElementHandler<void**>,
+  struct WeakRefOwner
+  {
+    void** ownerObj;
+    CS::Threading::Mutex* ownerObjMutex;
+    
+    WeakRefOwner (void** p, CS::Threading::Mutex* mutex)
+      : ownerObj (p), ownerObjMutex (mutex) {}
+      
+    bool operator<(const WeakRefOwner& other) const
+    { return ownerObj < other.ownerObj; }
+    bool operator<(void** other) const
+    { return ownerObj < other; }
+    friend bool operator<(void** o1, const WeakRefOwner& o2)
+    { return o1 < o2.ownerObj; }
+  };
+  typedef csArray<WeakRefOwner,
+    csArrayElementHandler<WeakRefOwner>,
     CS::Memory::AllocatorMalloc,
     csArrayCapacityLinear<csArrayThresholdFixed<4> > > WeakRefOwnerArray;
   WeakRefOwnerArray* scfWeakRefOwners;
@@ -355,7 +371,7 @@ protected:
   virtual void IncRef ();
   virtual void DecRef ();
   virtual int GetRefCount ();
-  virtual void AddRefOwner (void** ref_owner);
+  virtual void AddRefOwner (void** ref_owner, CS::Threading::Mutex* mutex);
   virtual void RemoveRefOwner (void** ref_owner);
   scfInterfaceMetadataList* GetInterfaceMetadata () { return 0; }
   virtual void *QueryInterface (scfInterfaceID iInterfaceID, int iVersion);
@@ -430,7 +446,8 @@ scfFactory::~scfFactory ()
   {
     for (size_t i = 0; i < scfWeakRefOwners->GetSize (); i++)
     {
-      void** p = (*scfWeakRefOwners)[i];
+      const WeakRefOwner& wro ((*scfWeakRefOwners)[i]);
+      void** p = wro.ownerObj;
       *p = 0;
     }
     delete scfWeakRefOwners;
@@ -504,11 +521,11 @@ void scfFactory::DecRef ()
   }
 }
 
-void scfFactory::AddRefOwner (void** ref_owner)
+void scfFactory::AddRefOwner (void** ref_owner, CS::Threading::Mutex* mutex)
 {
   if (!scfWeakRefOwners)						
     scfWeakRefOwners = new WeakRefOwnerArray (0, 4);			
-  scfWeakRefOwners->InsertSorted (ref_owner);				
+  scfWeakRefOwners->InsertSorted (WeakRefOwner (ref_owner, mutex));				
 }
 
 void scfFactory::RemoveRefOwner (void** ref_owner)
@@ -516,7 +533,7 @@ void scfFactory::RemoveRefOwner (void** ref_owner)
   if (!scfWeakRefOwners)						
     return;
   size_t index = scfWeakRefOwners->FindSortedKey (			
-    csArrayCmp<void**, void**> (ref_owner)); 				
+    csArrayCmp<WeakRefOwner, void**> (ref_owner)); 				
   if (index != csArrayItemNotFound) scfWeakRefOwners->DeleteIndex (	
     index); 								
 }
@@ -998,7 +1015,11 @@ iBase *csSCF::CreateInstance (const char *iClassID)
  
   } /* endif */
 
+  /* Aggressively unload modules in debug mode, as this can trigger crashes
+   * when a plugin is released too early. */
+#ifdef CS_DEBUG
   UnloadUnusedModules ();
+#endif
 
   return object;
 }
@@ -1241,6 +1262,28 @@ csRef<iDocument> csSCF::GetPluginMetadata (char const *iClassID)
       csGetPluginMetadata (get_library_name(cf->LibraryName), metadata);
   }
   return metadata;
+}
+
+csRef<iDocumentNode> csSCF::GetPluginMetadataNode (char const *iClassID)
+{
+  csRef<iDocument> doc = GetPluginMetadata (iClassID);
+  csRef<iDocumentNode> node;
+  if (doc
+      && (node = doc->GetRoot()) 
+      && (node = node->GetNode("plugin")) 
+      && (node = node->GetNode("scf")) 
+      && (node = node->GetNode("classes")))
+  {
+    csRef<iDocumentNodeIterator > it = node->GetNodes("class");
+    while (it->HasNext()) 
+    {
+      csRef<iDocumentNode> klass = it->Next ();
+      if (klass && (node = klass->GetNode("name")) 
+          && !strcmp(iClassID, node->GetContentsValue ()))
+        return klass;
+    }
+  }
+  return csRef<iDocumentNode>();
 }
 
 bool csSCF::ClassRegistered (const char *iClassID)

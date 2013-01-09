@@ -28,9 +28,11 @@
 
 #include "csutil/array.h"
 #include "csutil/customallocated.h"
+#include "csutil/ref.h"
 #include "csutil/reftrackeraccess.h"
 #include "csutil/threading/atomicops.h"
 #include "csutil/threading/mutex.h"
+#include "csutil/weakreferenced.h"
 
 // Needs to have iBase etc
 #include "csutil/scf_interface.h"
@@ -151,26 +153,20 @@ protected:
 #endif
   }
 
-  typedef csArray<void**,
-    csArrayElementHandler<void**>,
-    CS::Memory::AllocatorMalloc,
-    csArrayCapacityLinear<csArrayThresholdFixed<4> > > WeakRefOwnerArray;
-  struct ScfImplAuxData : public CS::Memory::CustomAllocated
+  struct ScfImplAuxData : public CS::Memory::CustomAllocated,
+			  public CS::Utility::AtomicRefCount,
+			  public CS::Utility::Implementation::WeakReferenced
   {
     CS::Threading::Mutex lock;
     iBase *scfParent;
-    WeakRefOwnerArray* scfWeakRefOwners;
     scfInterfaceMetadataList* metadataList;
 
-    ScfImplAuxData () : scfParent (0), scfWeakRefOwners (0), metadataList (0) {}
+    ScfImplAuxData () : scfParent (0), metadataList (0) {}
+    
+    bool HasWeakRefOwners() const { return weakref_owners != 0; }
   };
   ScfImplAuxData* scfAuxData;
 
-  CS_FORCEINLINE bool HasAuxData()
-  {
-    // Double-cast to cheat strict-aliasing rules
-    return CS::Threading::AtomicOperations::Read ((void**)(void*)&scfAuxData) != 0; 
-  }
   void EnsureAuxData();
   void FreeAuxData();
 
@@ -178,15 +174,13 @@ protected:
   void AllocMetadata (size_t numEntries);
   void CleanupMetadata ();
 
-  void scfRemoveRefOwners ();
-
-  iBase* GetSCFParent() { return HasAuxData() ? scfAuxData->scfParent : 0; }
+  iBase* GetSCFParent();
 
   // Some virtual helpers for the metadata registry
   virtual size_t GetInterfaceMetadataCount () const;
 
   scfImplementationHelper() : scfAuxData (0) {}
-  virtual ~scfImplementationHelper() { if (HasAuxData()) FreeAuxData(); }
+  virtual ~scfImplementationHelper();
 };
 
 /**
@@ -199,6 +193,18 @@ class scfImplementation : public virtual iBase,
   public scfImplementationHelper,
   public CS::Memory::CustomAllocated
 {
+  struct WeakRefOwnersEmptyingHelper
+  {
+    CS::Utility::Implementation::WeakReferenced& weakReffed;
+    bool doEmpty;
+    
+    WeakRefOwnersEmptyingHelper (CS::Utility::Implementation::WeakReferenced& weakReffed)
+      : weakReffed (weakReffed), doEmpty (false) {}
+    ~WeakRefOwnersEmptyingHelper ()
+    {
+      if (doEmpty) weakReffed.DeleteAllOwners();
+    }
+  };
 public:
   /**
    * Constructor. Initialize the SCF-implementation in class named Class.
@@ -240,7 +246,7 @@ public:
     csRefTrackerAccess::TrackDestruction (GetSCFObject(), scfRefCount);
     if (HasAuxData())
     {
-      scfRemoveRefOwners ();
+      scfAuxData->ClearRefOwners();
       CleanupMetadata ();
       iBase *scfParent = scfAuxData->scfParent;
       if (scfParent) scfParent->DecRef();
@@ -262,10 +268,31 @@ public:
     CS_ASSERT_MSG("Refcount decremented for destroyed object", 
       scfRefCount != 0);
     csRefTrackerAccess::TrackDecRef (GetSCFObject(), scfRefCount);
-    if (CS::Threading::AtomicOperations::Decrement (&scfRefCount) == 0)
+    /* Keep a reference to the aux data so we can keep weak ref owner locks
+     * past the destructor call */
+    csRef<ScfImplAuxData> keepAuxData (scfAuxData);
+    int32 refcount;
+    if (keepAuxData)
     {
-      delete GetSCFObject();
+      CS::Threading::ScopedLock<CS::Threading::Mutex> lockAuxData (keepAuxData->lock);
+      /* The weak refs may need to be emptied after clearing and after the weak ref
+       * locks have been released, but before the aux data lock is released */
+      WeakRefOwnersEmptyingHelper emptyWeakRefs (*keepAuxData);
+      CS::Utility::Implementation::WeakReferenced::ScopedWeakRefOwnersLock lockWeakRefs (*keepAuxData);
+      if ((refcount = CS::Threading::AtomicOperations::Decrement (&scfRefCount)) == 0)
+      {
+	/* Remove ref owners now, to avoid deadlock if the dtor triggers the
+	 * destruction of a ref owner */
+	scfAuxData->ClearRefOwners();
+	emptyWeakRefs.doEmpty = true;
+      }
     }
+    else
+    {
+      refcount = CS::Threading::AtomicOperations::Decrement (&scfRefCount);
+    }
+    if (refcount == 0)
+      delete GetSCFObject();
     BumpStat (scfstatDecRef);
   }
 
@@ -283,16 +310,21 @@ public:
     return CS::Threading::AtomicOperations::Read (&scfRefCount);
   }
 
-  virtual void AddRefOwner (void** ref_owner)
+  virtual void AddRefOwner (void** ref_owner, CS::Threading::Mutex* mutex)
   {
     EnsureAuxData();
     CS::Threading::ScopedLock<CS::Threading::Mutex> l (scfAuxData->lock);
-    if (!scfAuxData->scfWeakRefOwners)
+    if (GetRefCount() <= 0)
     {
-      scfAuxData->scfWeakRefOwners = new WeakRefOwnerArray (0);
-      BumpStat (scfstatWeakreffed);
+      /* In the case we are already in destruction, don't allow any new weak
+       * references, just destroy it at once
+       */
+      *ref_owner = 0;
+      return;
     }
-    scfAuxData->scfWeakRefOwners->InsertSorted (ref_owner);
+    scfAuxData->AddRefOwner (ref_owner, mutex);
+    if (!scfAuxData->HasWeakRefOwners())
+      BumpStat (scfstatWeakreffed);
   }
 
   virtual void RemoveRefOwner (void** ref_owner)
@@ -300,15 +332,7 @@ public:
     if (!HasAuxData()) return;
 
     CS::Threading::ScopedLock<CS::Threading::Mutex> l (scfAuxData->lock);
-    WeakRefOwnerArray* scfWeakRefOwners = scfAuxData->scfWeakRefOwners;
-    if (!scfWeakRefOwners)
-      return;
-
-    size_t index = scfWeakRefOwners->FindSortedKey (
-      csArrayCmp<void**, void**>(ref_owner));
-
-    if (index != csArrayItemNotFound)
-      scfWeakRefOwners->DeleteIndex (index);
+    scfAuxData->RemoveRefOwner (ref_owner);
   }
 
   virtual scfInterfaceMetadataList* GetInterfaceMetadata ()
@@ -370,6 +394,13 @@ protected:
     metadataArray[pos].interfaceVersion = scfInterfaceTraits<IF>::GetVersion ();
   }
 
+  /* Note: can't put this into scfImplementationHelper, breaks on MingW shared builds
+   * (possibly a clash between the method being forced inlined and dllexported) */
+  CS_FORCEINLINE bool HasAuxData()
+  {
+    // Double-cast to cheat strict-aliasing rules
+    return CS::Threading::AtomicOperations::Read ((void**)(void*)&scfAuxData) != 0; 
+  }
 };
 
 

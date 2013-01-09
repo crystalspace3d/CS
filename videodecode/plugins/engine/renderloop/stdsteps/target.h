@@ -29,9 +29,9 @@
 #include "iengine/rendersteps/irenderstep.h"
 #include "ivideo/shader/shader.h"
 
-#include "csplugincommon/renderstep/basesteptype.h"
-#include "csplugincommon/renderstep/basesteploader.h"
-#include "csplugincommon/renderstep/parserenderstep.h"
+#include "basesteptype.h"
+#include "basesteploader.h"
+#include "parserenderstep.h"
 
 class csTargetRSType :
   public scfImplementationExt0<csTargetRSType, csBaseRenderStepType>
@@ -70,7 +70,7 @@ private:
   iObjectRegistry* object_reg;
 
 public:
-  csTargetRenderStepFactory (iObjectRegistry* object_reg);
+  csTargetRenderStepFactory (iBase* scfParent, iObjectRegistry* object_reg);
   virtual ~csTargetRenderStepFactory ();
 
   virtual csPtr<iRenderStep> Create ();
@@ -89,7 +89,7 @@ private:
   bool persistent;
 
 public:
-  csTargetRenderStep (iObjectRegistry* object_reg);
+  csTargetRenderStep (iBase* scfParent, iObjectRegistry* object_reg);
   virtual ~csTargetRenderStep ();
 
   virtual void Perform (iRenderView* rview, iSector* sector,

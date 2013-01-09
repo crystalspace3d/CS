@@ -32,9 +32,9 @@
 #include "ivideo/shader/shader.h"
 
 #include "csplugincommon/rendermanager/lightsetup.h"
-#include "csplugincommon/renderstep/basesteptype.h"
-#include "csplugincommon/renderstep/basesteploader.h"
-#include "csplugincommon/renderstep/parserenderstep.h"
+#include "basesteptype.h"
+#include "basesteploader.h"
+#include "parserenderstep.h"
 
 class csLightIterRSType :
   public scfImplementationExt0<csLightIterRSType, csBaseRenderStepType>
@@ -80,7 +80,7 @@ private:
 public:
   CS_LEAKGUARD_DECLARE (csLightIterRenderStepFactory);
 
-  csLightIterRenderStepFactory (iObjectRegistry* object_reg);
+  csLightIterRenderStepFactory (iBase* scfParent, iObjectRegistry* object_reg);
   virtual ~csLightIterRenderStepFactory ();
 
   virtual csPtr<iRenderStep> Create ();
@@ -106,7 +106,7 @@ private:
 public:
   csWeakRef<iGraphics3D> g3d;
 
-  csLightIterRenderStep (iObjectRegistry* object_reg);
+  csLightIterRenderStep (iBase* scfParent, iObjectRegistry* object_reg);
   virtual ~csLightIterRenderStep ();
 
   void Init ();

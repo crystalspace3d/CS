@@ -292,9 +292,6 @@ int vswprintf ();
 #define CS_MAXPATHLEN 1024
 #endif
 #include <stdio.h>
-#ifdef CS_HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
 
 /**\def CS_ALLOC_STACK_ARRAY(type, var, size)
  * Dynamic stack memory allocation.
@@ -866,6 +863,38 @@ extern CS_CRYSTALSPACE_EXPORT void* cs_realloc (void* p, size_t n);
 extern CS_CRYSTALSPACE_EXPORT void* cs_calloc (size_t n, size_t s);
 //@}
 
+namespace CS
+{
+  template <class T>
+  class StackArrayHelper
+  {
+  private:
+    void* memory;
+    bool deleteme;
+
+  public:
+    StackArrayHelper (void* memory, bool deleteme)
+      : memory (memory), deleteme (deleteme) { }
+    ~StackArrayHelper () { if (deleteme) cs_free (memory); }
+  };
+}
+
+/**\def CS_ALLOC_STACK_ARRAY_FALLBACK(type, var, size, thresshold)
+ * Dynamic stack memory allocation. This version fallbacks to normal allocation
+ * in case the number of items on the stack would be too high.
+ * \param type Type of the array elements.
+ * \param var Name of the array to be allocated.
+ * \param size Number of elements to be allocated.
+ * \param Thresshold is the maximum number of items before switching to
+ * normal allocation.
+ */
+#define CS_ALLOC_STACK_ARRAY_FALLBACK(Type, Name, Size, Thresshold) \
+  Type* Name = ((Size) > (Thresshold)) ? \
+        (Type*)cs_malloc((Size)*sizeof(Type)) : \
+        (Type*)alloca((Size)*sizeof(Type)); \
+  CS::StackArrayHelper<Type> Name##Del (Name, ((Size) > (Thresshold)));
+
+
 #ifdef CS_USE_CUSTOM_ISDIR
 static inline bool isdir (const char *path, struct dirent *de)
 {
@@ -1236,6 +1265,17 @@ namespace CS
 # define CS_DEPRECATION_WARNINGS_DISABLE
 # define CS_DEPRECATION_WARNINGS_ENABLE
 #endif
+
+namespace CS
+{
+  namespace deprecated
+  {
+    CS_DEPRECATED_METHOD_MSG("Use CS::Platform::CreateDirectory() instead")
+    CS_CRYSTALSPACE_EXPORT int CS_MKDIR (const char* path);
+  } // namespace deprecated
+} // namespace CS
+
+#define CS_MKDIR(path)    CS::deprecated::CS_MKDIR(path)
 
 // Include nullptr fallback (for convenience).
 #include "csutil/nullptr.h"

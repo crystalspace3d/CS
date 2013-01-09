@@ -47,6 +47,10 @@ class csGraphics2DWX : public scfImplementationExt2<csGraphics2DWX,
   int FindPixelFormat (csGLPixelFormatPicker& picker, PIXELFORMATDESCRIPTOR& pfd);
   int FindPixelFormatGDI (HDC hDC, csGLPixelFormatPicker& picker);
   csGraphics2DGLCommon::csGLPixelFormatPicker* picker;
+  // Because the Win32 API ShowCursor() maintains a counter we have to keep track
+  // of the hidden status of the cursor so that we don't accidently increase or
+  // decrease the counter too much.
+  bool cursorIsHidden;
 #endif
 
 public:
@@ -65,6 +69,9 @@ public:
   virtual bool BeginDraw ();
   /// This routine should be called when you finished drawing
   virtual void FinishDraw ();
+
+  virtual void AlertV (int type, const char* title, const char* okMsg,
+    const char* msg, va_list args);
 
   void Report (int severity, const char* msg, ...);
 
@@ -86,13 +93,11 @@ public:
   { return false; }
   /// Set mouse position.
   // should be the window manager
-  virtual bool SetMousePosition (int x, int y)
-  { return false; }
+  virtual bool SetMousePosition (int x, int y);
 
   /// Set mouse cursor shape
   // should be the window manager
-  virtual bool SetMouseCursor (csMouseCursorID iShape)
-  { return false;}
+  virtual bool SetMouseCursor (csMouseCursorID shape);
 
   /**\name iWxWindow implementation
    * @{ */
@@ -105,12 +110,33 @@ public:
 #endif
   
   void *GetProcAddress (const char *funcname);
+
+  using CS::PluginCommon::CanvasCommonBase::ResizeNotify;
 };
 
 class csGLCanvas: public wxGLCanvas
 {
 private:
   csGraphics2DWX* g2d;
+
+  /**\name Keyboard input state handling
+   * @{ */
+  /// Last keycode received through a EVT_KEY_DOWN event
+  int lastKeyCode;
+  /// CS key codes associated with a keyboard event
+  struct KeyEventCodes
+  {
+    utf32_char raw, cooked;
+
+    KeyEventCodes (utf32_char raw, utf32_char cooked)
+      : raw (raw), cooked (cooked) {}
+  };
+  /**
+   * Mapping of WX KeyCode to CS key codes; used to obtain right codes
+   * for "key up" events
+   */
+  csHash<KeyEventCodes, int> keyCodeToCS;
+  /** @} */
 public:
   csGLCanvas(csGraphics2DWX* g2d, wxWindow *parent, wxWindowID id = wxID_ANY,
              const wxPoint& pos = wxDefaultPosition,
@@ -127,6 +153,7 @@ public:
   void OnEraseBackground(wxEraseEvent& event);
   void OnKeyDown(wxKeyEvent& event);
   void OnKeyUp(wxKeyEvent& event);
+  void OnKeyChar(wxKeyEvent& event);
   void OnMouseEvent(wxMouseEvent& event);
   void OnEnterWindow(wxMouseEvent& event);
   void OnLeaveWindow(wxMouseEvent& event);

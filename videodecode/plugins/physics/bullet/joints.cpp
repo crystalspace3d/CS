@@ -38,7 +38,7 @@ csBulletJoint::csBulletJoint (csBulletDynamicsSystem* dynsys)
   constraint (0), trans_constraint_x (false), trans_constraint_y (false),
   trans_constraint_z (false), min_dist (1.0f, 1.0f, 1.0f), max_dist (-1.0f, -1.0f, -1.0f),
   rot_constraint_x (false), rot_constraint_y (false), rot_constraint_z (false),
-  min_angle (PI / 2.0f), max_angle (- PI / 2.0f), bounce (0.0f),
+  min_angle (PI, HALF_PI, PI), max_angle (-PI, -HALF_PI, -PI), bounce (0.0f),
   desired_velocity (0.0f)
 {
   angular_constraints_axis[0].Set (0.0f, 1.0f, 0.0f);
@@ -114,8 +114,8 @@ bool csBulletJoint::RebuildJoint ()
 	frB = bodies[1]->body->getCenterOfMassTransform().inverse() * jointTransform;
 
 	// create joint
-	btGeneric6DofConstraint* dof6 =
-	  new btGeneric6DofConstraint (*bodies[0]->body, *bodies[1]->body,
+	btGeneric6DofSpringConstraint* dof6 =
+	  new btGeneric6DofSpringConstraint (*bodies[0]->body, *bodies[1]->body,
 				       frA, frB, true);
 
 	// compute min/max values
@@ -175,7 +175,6 @@ bool csBulletJoint::RebuildJoint ()
 
 	if (fabs (desired_velocity[1]) > EPSILON)
 	{
-	  printf ("Setting motor\n");
 	  btRotationalLimitMotor* motor = dof6->getRotationalLimitMotor (1);
 	  motor->m_enableMotor = true;
 	  motor->m_targetVelocity = desired_velocity[1];
@@ -363,6 +362,9 @@ csVector3 csBulletJoint::GetAngularConstraintAxis (int body)
 csBulletPivotJoint::csBulletPivotJoint (csBulletDynamicsSystem* dynSys)
   : scfImplementationType (this), dynSys (dynSys)
 {
+  tau = 0.3f;
+  damping = 1.0f;
+  impulseClamp = 0.0f;
 }
 
 csBulletPivotJoint::~csBulletPivotJoint ()
@@ -386,9 +388,10 @@ void csBulletPivotJoint::Attach (::iRigidBody* body,
 
   constraint = new btPoint2PointConstraint
     (*this->body->body, localPivot);
+  constraint->m_setting.m_impulseClamp = impulseClamp;
+  constraint->m_setting.m_tau = tau;
+  constraint->m_setting.m_damping = damping;
   dynSys->bulletWorld->addConstraint (constraint);
-
-  constraint->m_setting.m_tau = 0.1f;
 }
 
 iRigidBody* csBulletPivotJoint::GetAttachedBody () const

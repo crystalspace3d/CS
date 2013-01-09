@@ -230,6 +230,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           csRef<iRenderBuffer> indexBuffer;
           
           csRef<iMaterialWrapper> material;
+	  csZBufMode zmode = (csZBufMode)~0;
+	  CS::Graphics::RenderPriority renderPriority;
+	  csRefArray<csShaderVariable> shadervars;
 
           csRef<iDocumentNodeIterator> it = child->GetNodes ();
           while (it->HasNext ())
@@ -262,7 +265,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
                 }
               }
               break;
+	    case XMLTOKEN_SHADERVAR:
+	    {
+	      csRef<csShaderVariable> sv;
+	      sv.AttachNew (new csShaderVariable);
+	      if (!synldr->ParseShaderVar (ldr_context, child2, *sv)) return false;
+	      shadervars.Push (sv);
+	      break;
+	    }
+	    case XMLTOKEN_PRIORITY:
+	      renderPriority = engine->GetRenderPriority (child2->GetContentsValue ());
+	      break;
             default:
+	      if (synldr->ParseZMode (child2, zmode)) break;
               synldr->ReportBadToken (child2);
               return 0;
             }
@@ -274,6 +289,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
               child->GetAttributeValue("name"), child->GetAttributeValueAsBool("visible", true));
 	    if (material)
 	      smf->SetMaterial(material);
+	    if (zmode != (csZBufMode)~0)
+	      smf->SetZBufMode (zmode);
+	    if (renderPriority.IsValid ())
+	      smf->SetRenderPriority (renderPriority);
+	    iShaderVariableContext* svc = smf->GetShaderVariableContext (0);
+	    for (size_t i = 0; i < shadervars.GetSize(); i++)
+	      svc->AddVariable (shadervars[i]);
           }
         }
         break;
@@ -294,7 +316,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           CS::Animation::iSkeletonFactory* skelFact = skelMgr->FindSkeletonFactory (skelName);
           if (!skelFact)
           {
-            synldr->ReportError (msgidFactory, child, "Could not find skeleton %s", skelName);
+            synldr->ReportError (msgidFactory, child, "Could not find skeleton %s",
+				 CS::Quote::Single (skelName));
             return 0;
           }
 
@@ -339,7 +362,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
 	  CS::Animation::BoneID bone = skelFact->FindBone (boneName);
           if (bone == CS::Animation::InvalidBoneID)
           {
-            synldr->ReportError (msgidFactory, child, "Could not find bone %s in skeleton", boneName);
+            synldr->ReportError (msgidFactory, child, "Could not find bone %s in skeleton",
+				 CS::Quote::Single (boneName));
             return 0;
           }
 
@@ -460,7 +484,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
         case XMLTOKEN_BBOX:
 	{
 	  currBone = child2->GetAttributeValueAsInt("bone");
-	  if (currBone >= numBones)
+	  if (currBone != CS::Animation::InvalidBoneID && currBone >= numBones)
 	  {
 	    synldr->ReportError (msgidFactory, child2, 
 				 "Invalid bounding box index %d, expected maximum %d bones",
@@ -488,6 +512,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
     object_reg = objReg;
 
     synldr = csQueryRegistry<iSyntaxService> (object_reg);
+    engine = csQueryRegistry<iEngine> (object_reg);
 
     InitTokenTable (xmltokens);
     return true;
@@ -510,13 +535,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
   }
 
   bool AnimeshFactorySaver::WriteDown (iBase *obj, iDocumentNode* parent,
-    iStreamSource*)
+    iStreamSource* source)
   {
     if (!parent) return false; //you never know...
-
-    csRef<iDocumentNode> paramsNode = 
-      parent->CreateNodeBefore(CS_NODE_ELEMENT, 0);
-    paramsNode->SetValue("params");
 
     if (obj)
     {
@@ -527,7 +548,27 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
       if (!factory) return false;
       if (!meshfact) return false;
 
-      // Write material
+      // Write the skeleton factory
+      if (factory->GetSkeletonFactory ())
+      {
+	csRef<iSaverPlugin> saver = csLoadPluginCheck<iSaverPlugin> (
+	  object_reg, "crystalspace.skeletalanimation.saver", false);
+
+	if (!saver)
+	{
+	  synldr->ReportError (msgidFactory, parent, 
+			       "Could not load the skeleton saver plugin!");
+	  return 0;
+	}
+
+	saver->WriteDown (factory->GetSkeletonFactory (), parent, source);
+      }
+
+      csRef<iDocumentNode> paramsNode = 
+	parent->CreateNodeBefore (CS_NODE_ELEMENT);
+      paramsNode->SetValue ("params");
+
+      // Write the material
       iMaterialWrapper* material = nullptr;
 
       for (size_t i = 0; i < factory->GetSubMeshCount (); i++)
@@ -548,11 +589,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
 	  paramsNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
 	materialNode->SetValue ("material");
 	csRef<iDocumentNode> materialNameNode = 
-	  materialNode->CreateNodeBefore(CS_NODE_TEXT, 0);
-	materialNameNode->SetValue (material->QueryObject()->GetName());
+	  materialNode->CreateNodeBefore (CS_NODE_TEXT, 0);
+	materialNameNode->SetValue (material->QueryObject ()->GetName ());
       }
 
-      // Write vertices render buffer
+      // Write the vertex render buffer
       {
 	iRenderBuffer* buffer = factory->GetVertices ();
 	if (buffer)
@@ -758,30 +799,34 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
 	}
       }
 
-      // Write bounding boxes
+      // Write the bounding boxes
       {
 	CS::Animation::iSkeletonFactory* skeletonFact = factory->GetSkeletonFactory ();
 	if (skeletonFact)
 	{
-	  CS::Animation::BoneID numBones = skeletonFact->GetTopBoneID () + 1;
-
-	  if (numBones > 0)
+	  csRef<iDocumentNode> bboxNode;
+	  csArray<CS::Animation::BoneID> boneList = skeletonFact->GetBoneOrderList ();
+	  boneList.Push (CS::Animation::InvalidBoneID);
+	  for (csArray<CS::Animation::BoneID>::Iterator it =
+		 boneList.GetIterator (); it.HasNext (); )
 	  {
-	    csRef<iDocumentNode> bboxNode = 
-	      paramsNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
-	    bboxNode->SetValue ("bboxes");
-	
-	    for (CS::Animation::BoneID i = 0; i < numBones ; i++)
+	    CS::Animation::BoneID boneID = it.Next ();
+	    csBox3 bbox = factory->GetBoneBoundingBox (boneID);
+
+	    // Write only the bboxes that are not empty
+	    if (!bbox.Empty ())
 	    {
-	      if (skeletonFact->HasBone (i))
+	      if (!bboxNode)
 	      {
-		csRef<iDocumentNode> node = 
-		  bboxNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
-		node->SetValue ("bbox");
-		node->SetAttributeAsInt ("bone", i);
-		csBox3 bbox = factory->GetBoneBoundingBox (i);
-		synldr->WriteBox (node, bbox);
+		bboxNode = paramsNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
+		bboxNode->SetValue ("bboxes");
 	      }
+
+	      csRef<iDocumentNode> node = 
+		bboxNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
+	      node->SetValue ("bbox");
+	      node->SetAttributeAsInt ("bone", boneID);
+	      synldr->WriteBox (node, bbox);
 	    }
 	  }
 	}
@@ -832,7 +877,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           if (!amfact)
           {
             synldr->ReportError (msgid, child, 
-              "Factory %s doesn't appear to be a animesh factory!", CS::Quote::Single (factname));
+              "Factory %s doesn't appear to be an animesh factory!", CS::Quote::Single (factname));
             return 0;
           }
 
@@ -841,7 +886,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           if (!ammesh)
           {
             synldr->ReportError (msgid, child, 
-              "Factory %s doesn't appear to be a animesh factory!", CS::Quote::Single (factname));
+              "Factory %s doesn't appear to be an animesh factory!", CS::Quote::Single (factname));
             return 0;
           }
         }
@@ -884,7 +929,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           CS::Animation::iSkeletonFactory* skelFact = skelMgr->FindSkeletonFactory (skelName);
           if (!skelFact)
           {
-            synldr->ReportError (msgid, child, "Could not find skeleton %s", skelName);
+            synldr->ReportError (msgid, child, "Could not find skeleton %s",
+				 CS::Quote::Single (skelName));
             return 0;
           }
 
@@ -916,7 +962,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           CS::Animation::iSkeletonAnimPacketFactory* packetFact = skelMgr->FindAnimPacketFactory (packetName);
           if (!packetFact)
           {
-            synldr->ReportError (msgid, child, "Could not find animation packet %s", packetName);
+            synldr->ReportError (msgid, child, "Could not find animation packet %s",
+				 CS::Quote::Single (packetName));
             return 0;
           }
 
@@ -924,6 +971,30 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animeshldr)
           skeleton->SetAnimationPacket (packet);
         }
         break;
+      case XMLTOKEN_MORPHTARGET:
+        {
+	  csString name = child->GetAttributeValue("name");
+
+	  if (name.Trim ().IsEmpty ())
+          {
+            synldr->Report (msgid, CS_REPORTER_SEVERITY_WARNING, child,
+			    "No name specified for the morph target");
+	    break;
+          }
+
+	  uint targetID = ammesh->GetAnimatedMeshFactory ()->FindMorphTarget (name);
+	  if (targetID == (uint) ~0)
+          {
+            synldr->Report (msgid, CS_REPORTER_SEVERITY_WARNING, child,
+			    "Could not find morph target %s",
+			    CS::Quote::Single (name));
+	    break;
+          }
+
+	  float weight = child->GetAttributeValueAsFloat ("weight", 0.0f);
+	  ammesh->SetMorphTargetWeight (targetID, weight);
+        }
+	break;
       case XMLTOKEN_BBOXES:
         {
           if (!ParseBoundingBoxes (child, ammesh))

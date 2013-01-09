@@ -35,16 +35,19 @@ CSUTIL.GENERIC +=
   getopt.cpp
   loadlib.cpp
   memutil_impl_virtsize.cpp
+  mkdir.cpp
   mmap.cpp
   pathutil.cpp
   platformconfig.cpp 
   platformconfigpath.cpp
+  platformfile.cpp
   printf.cpp
   resdir.cpp
   runloop.cpp 
   setenv.cpp
   sysroot.cpp 
-  vfsplat.cpp ;
+  vfsplat.cpp
+  stat.cpp ;
 
 CSLIB.CFLAGS +=
   [ FDefines CS_PLUGIN_META_EXT='\".csplugin\"' ]

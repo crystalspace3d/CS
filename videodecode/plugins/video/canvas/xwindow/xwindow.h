@@ -52,8 +52,8 @@ class csXWindow : public scfImplementation3<csXWindow, iXWindow,
   /// The name registry
   csRef<iEventNameRegistry> name_reg;
   /// The Canvas
-  iGraphics2D *Canvas;
   /// The event outlet
+  iGraphicsCanvas *Canvas;
   csRef<iEventOutlet> EventOutlet;
   /// The XFree86-VidModeExtension
   csRef<iXExtF86VM> xf86vm;
@@ -147,6 +147,7 @@ public:
   { SetVideoMode (yesno, false, false); }
 
   virtual void AllowResize (bool iAllow);
+  virtual void Resize (int w, int h);
 
   virtual void SetTitle (const char* title);
   
@@ -155,7 +156,7 @@ public:
    *  @param image the iImage to set as the icon of this window.
    */  
   virtual void SetIcon (iImage *image);
-  virtual void SetCanvas (iGraphics2D *canvas);
+  virtual void SetCanvas (iGraphicsCanvas *canvas);
 
   virtual XEvent GetStoredEvent()
   { return storedEvent; }
@@ -196,6 +197,9 @@ public:
   
   bool SetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool flag);
   bool GetWindowDecoration (iNativeWindow::WindowDecoration decoration, bool& result);
+
+  bool GetWorkspaceDimensions (int& width, int& height);
+  bool AddWindowFrameDimensions (int& width, int& height);
 
   struct EventHandler : 
     public scfImplementation1<EventHandler, iEventHandler>

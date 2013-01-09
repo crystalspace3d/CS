@@ -66,7 +66,7 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (int width,
   textureClass (txtmgr->GetTextureClassID ("default")),
   alphaType (csAlphaMode::alphaNone), Handle (0), pbo (0),
   orig_width (width), orig_height (height), orig_d (depth),
-  uploadData(0), G3D (iG3D), texFormat((TextureBlitDataFormat)-1)
+  G3D (iG3D), texFormat((TextureBlitDataFormat)-1)
 {
   switch (imagetype)
   {
@@ -127,7 +127,6 @@ csGLBasicTextureHandle::csGLBasicTextureHandle (
   orig_width (0),
   orig_height (0),
   orig_d (0),
-  uploadData (0),
   G3D (iG3D),
   texType (texType),
   texFormat ((TextureBlitDataFormat)-1)
@@ -256,11 +255,7 @@ bool csGLBasicTextureHandle::SynthesizeUploadData (
 
 void csGLBasicTextureHandle::Clear()
 {
-  if (uploadData != 0)
-  {
-    delete uploadData;
-    uploadData = 0;
-  }
+  uploadData.Reset();
   Unload ();
 }
 
@@ -348,19 +343,19 @@ void csGLBasicTextureHandle::ComputeNewPo2ImageSize (int texFlags,
 
 void csGLBasicTextureHandle::FreshUploadData ()
 {
-  if (uploadData != 0)
+  if (uploadData.IsValid())
     uploadData->DeleteAll();
   else
-    uploadData = new csArray<csGLUploadData>;
+    uploadData.Reset (new csArray<csGLUploadData>);
 }
 
 void csGLBasicTextureHandle::AdjustSizePo2 ()
 {
   if (texFlags.Check (CS_TEXTURE_NPOTS)) 
   {
-    actual_width = MIN(orig_width, G3D->maxNpotsTexSize);
-    actual_height = MIN(orig_height, G3D->maxNpotsTexSize);
-    actual_d = MIN(orig_d, G3D->maxNpotsTexSize);
+    actual_width = csMin (orig_width, (int)G3D->maxNpotsTexSize);
+    actual_height = csMin (orig_height, (int)G3D->maxNpotsTexSize);
+    actual_d = csMin (orig_d, (int)G3D->maxNpotsTexSize);
     return;
   }
 
@@ -664,7 +659,7 @@ void csGLBasicTextureHandle::Load ()
     }
   }
 
-  delete uploadData; uploadData = 0;
+  uploadData.Reset();
   SetUploaded (true);
 }
 

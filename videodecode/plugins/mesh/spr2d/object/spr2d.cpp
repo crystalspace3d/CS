@@ -522,7 +522,7 @@ void csSprite2DMeshObject::StopUVAnimation (int idx)
   {
     if (idx != -1)
     {
-      uvani->frameindex = MIN(MAX(idx, 0), uvani->framecount-1);
+      uvani->frameindex = csMin (csMax (idx, 0), uvani->framecount-1);
       uvani->frame = uvani->ani->GetFrame (uvani->frameindex);
     }
     uvani->halted = true;
@@ -535,7 +535,7 @@ void csSprite2DMeshObject::PlayUVAnimation (int idx, int style, bool loop)
   {
     if (idx != -1)
     {
-      uvani->frameindex = MIN(MAX(idx, 0), uvani->framecount-1);
+      uvani->frameindex = csMin (csMax (idx, 0), uvani->framecount-1);
       uvani->frame = uvani->ani->GetFrame (uvani->frameindex);
     }
     uvani->halted = false;
@@ -730,11 +730,11 @@ bool csSprite2DMeshObject::HitBeamOutline(const csVector3& start,
 
 bool csSprite2DMeshObject::HitBeamObject (const csVector3& start, const csVector3& end,
 					  csVector3& isect, float* pr, int* polygon_idx,
-					  iMaterialWrapper** material)
+					  iMaterialWrapper** material, bool bf)
 {
   if (material) *material = csSprite2DMeshObject::material;
   if (polygon_idx) *polygon_idx = -1;
-  return HitBeamOutline(start, end, isect, pr);
+  return HitBeamOutline (start, end, isect, pr);
 }
 
 //----------------------------------------------------------------------

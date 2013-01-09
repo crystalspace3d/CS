@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2010 Christian Van Brussel, Institute of Information
+  Copyright (C) 2010-2012 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -26,48 +26,63 @@
 #include "cstool/mocapparser.h"
 #include "cstool/noise/noise.h"
 #include "cstool/noise/noisegen.h"
+#include "imesh/bodymesh.h"
+#include "imesh/animnode/debug.h"
+#include "imesh/animnode/noise.h"
 #include "imesh/animnode/retarget.h"
 #include "imesh/animnode/skeleton2anim.h"
+
+#define SEED_COUNT 10
 
 struct iMovieRecorder;
 class csPixmap;
 
-namespace CS {
-namespace Animation {
-
-struct iBodyManager;
-struct iSkeletonDebugNodeManager;
-struct iSkeletonDebugNode;
-
-} // namespace Animation
-} // namespace CS
-
-
 class MocapViewer : public CS::Utility::DemoApplication,
   public scfImplementation1<MocapViewer, CS::Animation::iSkeletonAnimCallback>
 {
+  enum DisplayMode
+  {
+    DISPLAY_WIRE = 0,
+    DISPLAY_PLD,
+    DISPLAY_ELLIPSE
+  };
+
  private:
-  bool CreateAvatar ();
+  bool CreateScene ();
 
   // References to animesh objects
   csRef<iMovieRecorder> movieRecorder;
   csRef<CS::Animation::iBodyManager> bodyManager;
   csRef<CS::Animation::iSkeletonDebugNodeManager> debugNodeManager;
+  csRef<CS::Animation::iSkeletonNoiseNodeManager> noiseNodeManager;
   csRef<CS::Animation::iSkeletonRetargetNodeManager> retargetNodeManager;
   csRef<CS::Animation::iSkeletonDebugNode> debugNode;
   csRef<CS::Animation::iSkeletonAnimNode> animNode;
+  csRef<CS::Mesh::iAnimatedMesh> animesh;
   csRef<iMeshWrapper> meshWrapper;
   CS::Animation::MocapParserResult parsingResult;
+  CS::Animation::BoneID targetBoneID;
 
   // Display of information
   csPixmap* debugImage;
   bool printInfo;
+
+  // Random number generation
+  unsigned int seeds[SEED_COUNT];
 
   // Noise points
   CS::Math::Noise::Module::Perlin noiseX;
   CS::Math::Noise::Module::Perlin noiseY;
   csArray<csVector3> noisePoints;
   float noiseScale;
+
+  // Skeleton noise
+  CS::Math::Noise::Module::Perlin snoiseX;
+  CS::Math::Noise::Module::Perlin snoiseY;
+  CS::Math::Noise::Module::Perlin snoiseZ;
+
+  // Scene duration
+  csTicks duration;
 
  public:
   MocapViewer ();

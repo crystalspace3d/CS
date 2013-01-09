@@ -820,8 +820,6 @@ bool HairTest::OnInitialize (int argc, char* argv[])
   if (!saver) return ReportError("Failed to locate Saver!");
 
   // Check if physical effects are enabled
-  csRef<iCommandLineParser> clp =
-    csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   physicsEnabled = true;
 
   while (physicsEnabled)
@@ -893,6 +891,25 @@ bool HairTest::Application ()
   if(!engine) return ReportError("Failed to locate Engine!");
 
   engine->SetSaveableFlag(true);
+
+  /* NOTE: Config settings for render managers are stored in 'engine.cfg' 
+   * and are needed when loading a render manager. Normally these settings 
+   * are added by the engine when it loads a render manager. However, since
+   * we are loading the shadow_pssm render manager manually we must also manually
+   * add the proper config file. */
+  csRef<iConfigManager> cfg = 
+    csQueryRegistry<iConfigManager> (GetObjectRegistry());
+  cfg->AddDomain 
+    ("/config/engine.cfg", vfs, iConfigManager::ConfigPriorityPlugin);
+
+  csRef<iRenderManager> rm = csLoadPlugin<iRenderManager> 
+    (GetObjectRegistry(), "crystalspace.rendermanager.osm");
+  if (!rm)
+    return ReportError("Failed to load OSM Render Manager!");
+
+  cfg->RemoveDomain ("/config/engine.cfg");
+
+  engine->SetRenderManager(rm);
 
   // Find references to the plugins of the animation nodes
   lookAtManager = 
@@ -1046,15 +1063,32 @@ bool HairTest::Application ()
     }
   }
 
+  // Background doesn't receive or cast shadows
+  csRef<iMeshWrapper> background = engine -> FindMeshObject("background");
+  if (!background) 
+    ReportError ("Can't find background!");
+  else
+    background->SetFlagsRecursive(CS_ENTITY_NOSHADOWCAST);
+
   // Set lights
   room->GetLights()->RemoveAll();
 
   // This light is for the background
   csRef<iLight> light = 
+    engine->CreateLight(0, csVector3(10, 10, 0), 100, csColor (1));
+  light->SetAttenuationMode (CS_ATTN_NONE);
+  light->SetType(CS_LIGHT_DIRECTIONAL);
+  csMatrix3 matrixY (cos(PI/2), -sin(PI/2), 0, sin(PI/2), cos(PI/2), 0, 0, 0, 1);
+  csMatrix3 matrixX (1, 0, 0, 0, cos(PI/2), -sin(PI/2), 0, sin(PI/2), cos(PI/2)); 
+  light->GetMovable()->Transform(matrixX * matrixY);
+  room->GetLights()->Add (light);
+  /*
+  // This light is for the background
+  csRef<iLight> light = 
     engine->CreateLight(0, csVector3(10, 10, -10), 9000, csColor (1));
   light->SetAttenuationMode (CS_ATTN_NONE);
   room->GetLights()->Add (light);
-
+  */
   // Create avatar
   if (avatarSceneType == MODEL_KRYSTAL)
     avatarScene = new KrystalScene (this);

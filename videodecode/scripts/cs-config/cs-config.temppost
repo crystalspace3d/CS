@@ -31,6 +31,17 @@ for libname in lib${libcrystalspace}.so \
 	done
 	IFS=$my_IFS
     fi
+    # Test default locations for cases where CS is installed using a
+    # package manager
+    if test -z "$libdir"; then
+        for p in lib lib64 lib32 ; do
+            if test -r "/usr/${p}/$libname"; then
+                libdir="/usr/${p}"
+                lflags="-L$libdir"
+                break
+            fi
+        done
+    fi
     if test -n "$lflags" ; then
         break
     fi

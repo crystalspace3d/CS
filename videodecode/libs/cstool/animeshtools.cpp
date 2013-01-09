@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2011 Christian Van Brussel, Institute of Information
+  Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -20,7 +20,6 @@
 */
 #include "cssysdef.h"
 
-#include "iengine/engine.h"
 #include "iengine/mesh.h"
 #include "imap/loader.h"
 #include "imesh/animesh.h"
@@ -192,33 +191,12 @@ bool AnimatedMeshTools::ImportMorphMesh
 (iObjectRegistry* object_reg, iAnimatedMeshFactory* baseMesh,
  iAnimatedMeshFactory* morphMesh, const char* morphName, bool deleteMesh)
 {
-  // Find a pointer to the engine
-  csRef<iEngine> engine;
-  if (deleteMesh)
-  {
-    engine = csQueryRegistry<iEngine> (object_reg);
-    if (!engine)
-    {
-      ReportError ("Could not find the engine in order to delete the imported genmesh");
-      deleteMesh = false;
-    }
-  }
-
   // Check that the base mesh has some vertices
   if (!baseMesh->GetVertexCount ())
   {
     ReportWarning
       ("The base animesh has no vertices!",
        CS::Quote::Single (morphName));
-
-    // Delete the mesh if needed
-    if (deleteMesh)
-    {
-      csRef<iMeshObjectFactory> factory =
-	scfQueryInterface<iMeshObjectFactory> (morphMesh);
-      engine->GetMeshFactories ()->Remove (factory->GetMeshFactoryWrapper ());
-    }
-
     return false;
   }
 
@@ -228,15 +206,6 @@ bool AnimatedMeshTools::ImportMorphMesh
     ReportWarning
       ("The animesh for the morph target %s has a different count of vertices (%i VS %i)!",
        CS::Quote::Single (morphName), baseMesh->GetVertexCount (), morphMesh->GetVertexCount ());
-
-    // Delete the mesh if needed
-    if (deleteMesh)
-    {
-      csRef<iMeshObjectFactory> factory =
-	scfQueryInterface<iMeshObjectFactory> (morphMesh);
-      engine->GetMeshFactories ()->Remove (factory->GetMeshFactoryWrapper ());
-    }
-
     return false;
   }
 
@@ -246,7 +215,7 @@ bool AnimatedMeshTools::ImportMorphMesh
 
   csRef<iRenderBuffer> morphBuffer;
   csRef<iRenderBuffer> initialMorphBuffer;
-  csVector3* initialMorphIndices;
+  csVector3* initialMorphIndices = nullptr;
 
   if (deleteMesh)
     morphBuffer = morphMesh->GetVertices ();
@@ -276,39 +245,25 @@ bool AnimatedMeshTools::ImportMorphMesh
   target->SetVertexOffsets (morphBuffer);
   target->Invalidate ();
 
-  // Delete the mesh if needed
-  if (deleteMesh)
-  {
-    csRef<iMeshObjectFactory> factory =
-      scfQueryInterface<iMeshObjectFactory> (morphMesh);
-    engine->GetMeshFactories ()->Remove (factory->GetMeshFactoryWrapper ());
-  }
-
   return true;
 }
 
 csPtr<iAnimatedMeshFactory> AnimatedMeshTools::ImportGeneralMesh
 (iObjectRegistry* object_reg, iGeneralFactoryState* genmesh, bool deleteMesh)
 {
-  // Find a pointer to the engine
-  csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
-  if (!engine)
+  // Find the animesh plugin
+  csRef<iMeshObjectType> animeshType = csLoadPluginCheck<iMeshObjectType> (
+    object_reg, "crystalspace.mesh.object.animesh", false);
+  if (!animeshType)
   {
-    ReportError ("Could not find the engine");
+    ReportError ("Could not load the animesh object plugin");
     return csPtr<iAnimatedMeshFactory> (nullptr);
   }
 
   // Create the animesh factory
-  csRef<iMeshObjectFactory> genmeshFactory =
-    scfQueryInterface<iMeshObjectFactory> (genmesh);
-  csRef<iMeshFactoryWrapper> factoryWrapper = engine->CreateMeshFactory
-    ("crystalspace.mesh.object.animesh",
-     genmeshFactory->GetMeshFactoryWrapper ()->QueryObject ()->GetName ());
-
-  // Find the animesh interface
+  csRef<iMeshObjectFactory> meshFactory = animeshType->NewFactory ();
   csRef<iAnimatedMeshFactory> factory =
-    scfQueryInterface<CS::Mesh::iAnimatedMeshFactory>
-    (factoryWrapper->GetMeshObjectFactory ());
+    scfQueryInterfaceSafe<CS::Mesh::iAnimatedMeshFactory> (meshFactory);
 
   // Copy the render buffers
   csRef<iRenderBuffer> buffer;
@@ -365,20 +320,171 @@ csPtr<iAnimatedMeshFactory> AnimatedMeshTools::ImportGeneralMesh
     // Setup the material of the submesh
     submeshFactory->SetMaterial (subMesh->GetMaterial ());
     if (!i)
-      factoryWrapper->GetMeshObjectFactory ()->SetMaterialWrapper (subMesh->GetMaterial ());
+      meshFactory->SetMaterialWrapper (subMesh->GetMaterial ());
   }
 
   factory->Invalidate ();
 
-  // Delete the genmesh if needed
-  if (deleteMesh)
+  return csPtr<iAnimatedMeshFactory> (factory);
+}
+
+void AnimatedMeshTools::PopulateSkeletonBoundingBoxes
+(CS::Mesh::iAnimatedMeshFactory* animeshFactory, csBitArray* boneMask)
+{
+  csQuaternion rotation;
+  csVector3 offset;
+
+  CS::Animation::iSkeletonFactory* skeletonFactory =
+    animeshFactory->GetSkeletonFactory ();
+  const csArray<CS::Animation::BoneID> &bones =
+    skeletonFactory->GetBoneOrderList ();
+
+  csArray<BBoxPopulationData> bonesData;
+  bonesData.SetSize (skeletonFactory->GetTopBoneID () + 1);
+
+  for (size_t i = 0; i < bones.GetSize (); i++)
   {
-    csRef<iMeshObjectFactory> factory =
-      scfQueryInterface<iMeshObjectFactory> (genmesh);
-    engine->GetMeshFactories ()->Remove (factory->GetMeshFactoryWrapper ());
+    const CS::Animation::BoneID &boneID = bones.Get (i);
+    BBoxPopulationData& boneData = bonesData[boneID];
+
+    // Add the position of all child bones as a bounding vertex of this bone
+    boneData.bbox.AddBoundingVertex (csVector3 (0.0f));
+
+    for (size_t j = i + 1; j < bones.GetSize (); j++)
+    {
+      const CS::Animation::BoneID &childID = bones.Get (j);
+      if (skeletonFactory->GetBoneParent (childID) == boneID)
+      {
+	skeletonFactory->GetTransformBoneSpace (childID, rotation, offset);
+	boneData.bbox.AddBoundingVertex (offset);
+	boneData.childrenCount++;
+      }
+    }
+
+    // Find the principal axis of the bounding box
+    csVector3 boneSize = boneData.bbox.GetSize ();
+    float min1 = boneSize[0];
+    float min2 = boneSize[0];
+
+    if (boneSize[1] < min1)
+    {
+      min1 = boneSize[1];
+      boneData.index1 = 1;
+    }
+
+    else
+    {
+      min2 = boneSize[1];
+      boneData.index2 = 1;
+      boneData.index3 = 1;
+    }
+
+    if (boneSize[2] < min1)
+    {
+      boneData.index2 = boneData.index1;
+      min2 = min1;
+      boneData.index1 = 2;
+      min1 = boneSize[2];
+    }
+
+    else
+    {
+      if (boneSize[2] < min2)
+      {
+	min2 = boneSize[2];
+	boneData.index2 = 2;
+      }
+
+      else boneData.index3 = 2;
+    }
+
+    if (fabs (boneSize[boneData.index3]) > EPSILON)
+    {
+      // Set the size of the less important axis as the value of the middle axis
+      boneSize[boneData.index1] = min2;
+
+      // Scale a bit the bounding box
+      boneSize *= 1.3f;
+
+      // Apply the size to the bounding box
+      boneData.bbox.SetSize (boneSize);
+
+      // Propagate the size upward to the parents of this bone
+      CS::Animation::BoneID parentID = skeletonFactory->GetBoneParent (boneID);
+      while (parentID != CS::Animation::InvalidBoneID)
+      {
+	BBoxPopulationData& parentData = bonesData[parentID];
+	csVector3 parentSize = parentData.bbox.GetSize ();
+	parentSize[parentData.index1] =
+	  csMax (boneSize[boneData.index1], parentSize[parentData.index1]);
+	parentSize[parentData.index2] =
+	  csMax (boneSize[boneData.index2], parentSize[parentData.index2]);
+	parentData.bbox.SetSize (parentSize);
+
+	// Stop whenever we find another subtree
+	if (parentData.childrenCount > 1)
+	  break;
+
+	parentID = skeletonFactory->GetBoneParent (parentID);
+      }
+    }
+
+    // If this is a leaf bone, then propagate downward the size from the root
+    // of the subtree
+    if (!boneData.childrenCount)
+    {
+      // Find the list of bones in the subtree
+      CS::Animation::BoneID parentID = skeletonFactory->GetBoneParent (boneID);
+      csArray<CS::Animation::BoneID> boneList;
+      boneList.Push (boneID);
+
+      BBoxPopulationData* parentData;
+      while (parentID != CS::Animation::InvalidBoneID)
+      {
+	parentData = &bonesData[parentID];
+	if (parentData->childrenCount > 1)
+	  break;
+
+	boneList.Push (parentID);
+	parentID = skeletonFactory->GetBoneParent (parentID);
+      }
+
+      // Propagate the size of the root of the subtree to all bones
+      if (parentID != CS::Animation::InvalidBoneID)
+      {
+	BBoxPopulationData& parentData = bonesData[parentID];
+	csVector3 parentSize = parentData.bbox.GetSize ();
+	float parentSize1 = parentSize[parentData.index1] * 0.6f;
+	float parentSize2 = parentSize[parentData.index2] * 0.6f;
+
+	for (size_t i = 0; i < boneList.GetSize (); i++)
+	{
+	  const CS::Animation::BoneID& boneID = boneList[i];
+	  BBoxPopulationData& boneData = bonesData[boneID];
+	  csVector3 boneSize = boneData.bbox.GetSize ();
+
+	  boneSize[boneData.index1] = csMax (boneSize[boneData.index1], parentSize1);
+	  boneSize[boneData.index2] = csMax (boneSize[boneData.index2], parentSize2);
+	  boneData.bbox.SetSize (boneSize);
+	}
+      }
+    }
   }
 
-  return csPtr<iAnimatedMeshFactory> (factory);
+  // Apply all bounding boxes to the animesh
+  for (size_t i = 0; i < bones.GetSize (); i++)
+  {
+    const CS::Animation::BoneID &boneID = bones.Get (i);
+
+    // Check that the bone is in the bone mask
+    if (boneMask
+	&& (boneMask->GetSize () <= boneID
+	    || !boneMask->IsBitSet (boneID)))
+      continue;
+
+    BBoxPopulationData& boneData = bonesData[boneID];
+    animeshFactory->SetBoneBoundingBox (boneID, boneData.bbox);
+  }
 }
 
 } //namespace Mesh

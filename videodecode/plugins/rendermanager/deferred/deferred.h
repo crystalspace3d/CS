@@ -26,7 +26,11 @@
 #include "csplugincommon/rendermanager/rendertree.h"
 #include "csplugincommon/rendermanager/debugcommon.h"
 #include "csplugincommon/rendermanager/renderlayers.h"
+#include "csplugincommon/rendermanager/autofx_framebuffertex.h"
+#include "csplugincommon/rendermanager/autofx_reflrefr.h"
+#include "csplugincommon/rendermanager/shadow_pssm.h"
 #include "csplugincommon/rendermanager/posteffectssupport.h"
+#include "csplugincommon/rendermanager/hdrexposure.h"
 #include "csplugincommon/rendermanager/viscullcommon.h"
 
 #include "iutil/comp.h"
@@ -34,9 +38,7 @@
 #include "iengine/rendermanager.h"
 #include "itexture.h"
 
-#include "gbuffer.h"
 #include "deferredtreetraits.h"
-#include "deferredlightrender.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 {
@@ -46,8 +48,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   template<typename RenderTreeType, typename LayerConfigType>
   class StandardContextSetup;
 
-  class RMDeferred : public scfImplementation5<RMDeferred, 
+  class RMDeferred : public scfImplementation6<RMDeferred, 
                                                iRenderManager,
+                                               iRenderManagerTargets,
                                                scfFakeInterface<iRenderManagerVisCull>,
                                                iComponent,
                                                scfFakeInterface<iRenderManagerPostEffects>,
@@ -68,14 +71,48 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     virtual bool RenderView(iView *view);
     virtual bool PrecacheView(iView *view);
 
-    typedef StandardContextSetup<RenderTreeType, CS::RenderManager::MultipleRenderLayer> 
+    //---- iRenderManagerTargets Interface ----
+    virtual void RegisterRenderTarget (iTextureHandle* target, 
+      iView* view, int subtexture = 0, uint flags = 0)
+    {
+      targets.RegisterRenderTarget (target, view, subtexture, flags);
+    }
+    virtual void UnregisterRenderTarget (iTextureHandle* target,
+      int subtexture = 0)
+    {
+      targets.UnregisterRenderTarget (target, subtexture);
+    }
+    virtual void MarkAsUsed (iTextureHandle* target)
+    {
+      targets.MarkAsUsed (target);
+    }
+
+    typedef RMDeferred
+      ThisType;
+
+    typedef CS::RenderManager::MultipleRenderLayer
+      RenderLayerType;
+
+    typedef CS::RenderManager::ShadowPSSM<RenderTreeType, RenderLayerType>
+      ShadowType;
+
+    typedef StandardContextSetup<RenderTreeType, RenderLayerType> 
       ContextSetupType;
 
     typedef CS::RenderManager::StandardPortalSetup<RenderTreeType, ContextSetupType> 
       PortalSetupType;
 
-    typedef CS::RenderManager::LightSetup<RenderTreeType, CS::RenderManager::MultipleRenderLayer> 
+    typedef CS::RenderManager::LightSetup<RenderTreeType, RenderLayerType, ShadowType> 
       LightSetupType;
+
+    typedef CS::RenderManager::DependentTargetManager<RenderTreeType, ThisType>
+      TargetManagerType;
+
+    typedef CS::RenderManager::AutoFX::ReflectRefract<RenderTreeType, ContextSetupType>
+      AutoReflectRefractType;
+
+    typedef CS::RenderManager::AutoFX::FramebufferTex<RenderTreeType>
+      AutoFramebufferTexType;
 
     //---- iDebugHelper Interface ----
     virtual bool DebugCommand(const char *cmd);
@@ -83,22 +120,35 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
   public:
 
     bool RenderView(iView *view, bool recursePortals);
-    void AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
-    void AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
+    bool HandleTarget (RenderTreeType& renderTree, 
+      const TargetManagerType::TargetSettings& settings,
+      bool recursePortals, iGraphics3D* g3d);
 
-    int LocateDeferredLayer(const CS::RenderManager::MultipleRenderLayer &layers);
-    int LocateZOnlyLayer(const CS::RenderManager::MultipleRenderLayer &layers);
-    int LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
-                    csStringID shaderType);
+    // Target manager handler
+    bool HandleTargetSetup (CS::ShaderVarStringID svName, csShaderVariable* sv, 
+      iTextureHandle* textureHandle, iView*& localView)
+    {
+      return false;
+    }
 
-    void ShowGBuffer(RenderTreeType &tree);
+    size_t AddLayer(CS::RenderManager::MultipleRenderLayer& layers, csStringID type, const char* name, const char* file);
+    size_t LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers, csStringID shaderType);
+
+    void ShowGBuffer(RenderTreeType &tree, GBuffer* buffer);
 
     iObjectRegistry *objRegistry;
 
     RenderTreeType::PersistentData treePersistent;
     PortalSetupType::PersistentData portalPersistent;
     LightSetupType::PersistentData lightPersistent;
-    DeferredLightRenderer::PersistentData lightRenderPersistent;
+    DeferredLightRenderer<ShadowType>::PersistentData lightRenderPersistent;
+
+    AutoReflectRefractType::PersistentData reflectRefractPersistent;
+    AutoFramebufferTexType::PersistentData framebufferTexPersistent;
+
+    CS::RenderManager::HDRHelper hdr;
+    CS::RenderManager::HDR::Exposure::Configurable hdrExposure;
+    bool doHDRExposure;
 
     CS::RenderManager::MultipleRenderLayer renderLayer;
 
@@ -106,16 +156,22 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     csRef<iLightManager> lightManager;
     csRef<iStringSet> stringSet;
 
-    csRef<iTextureHandle> accumBuffer;
+    TargetManagerType targets;
+    csSet<RenderTreeType::ContextNode*> contextsScannedForTargets;
 
     GBuffer gbuffer;
+    GBuffer::Description gbufferDescription;
 
-    int deferredLayer;
-    int zonlyLayer;
+    size_t deferredLayer;
+    size_t lightingLayer;
+    size_t zonlyLayer;
     int maxPortalRecurse;
+    bool doShadows;
 
     bool showGBuffer;
     bool drawLightVolumes;
+
+    uint dbgFlagClipPlanes;
   };
 }
 CS_PLUGIN_NAMESPACE_END(RMDeferred)

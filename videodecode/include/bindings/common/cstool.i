@@ -21,7 +21,7 @@
 
 %include "cstool/genmeshbuilder.h"
 
-%ignore iPen::Rotate;
+%ignore csPen::Rotate;
 
 %include "cstool/pen.h"
 

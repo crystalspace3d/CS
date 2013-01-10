@@ -776,7 +776,6 @@ public:
   void RemoveHalo (csOpenGLHalo* halo);
   virtual float GetZBuffValue (int, int);
 
-  virtual bool PerformExtension (char const* command, ...);
   virtual bool PerformExtensionV (char const* command, va_list args);
 
   virtual void OQInitQueries(unsigned int* queries, int num_queries);
@@ -852,8 +851,16 @@ public:
       return 0;
     }
     virtual const csHandlerID * GenericSucc (
-      csRef<iEventHandlerRegistry> &, csRef<iEventNameRegistry> &,
-      csEventID) const { return 0; }
+      csRef<iEventHandlerRegistry> & r1, csRef<iEventNameRegistry> &,
+      csEventID) const
+    {
+      static csHandlerID constraint[2] =
+      {
+	r1->GetGenericID("crystalspace.graphics2d.common"),
+	CS_HANDLERLIST_END
+      };
+      return constraint;
+    }
       
     CS_EVENTHANDLER_DEFAULT_INSTANCE_CONSTRAINTS 
   };

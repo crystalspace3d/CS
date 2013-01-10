@@ -208,7 +208,8 @@ AS_IF([test $enable_static_baselibs = yes],
     CS_CHECK_BUILD_FLAGS([for -static-libstdc++],
         [cs_cv_prog_link_static_libstdcxx], [CS_CREATE_TUPLE([-static-libstdc++])],
         [C++], [],
-        [cs_cv_prog_link_static_libstdcxx=$libstdcxx])
+        [cs_cv_prog_link_static_libstdcxx=$libstdcxx],
+        [], [], [], [unrecognized])
     CS_EMIT_BUILD_PROPERTY([COMPILER.LFLAGS], [$cs_cv_prog_link_static_libstdcxx], [+])])
 
 
@@ -403,6 +404,11 @@ CS_COMPILER_IGNORE_NON_VIRTUAL_DTOR([C++],
     [CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS.WARNING.NO_NON_VIRTUAL_DTOR],
         [$cs_cv_prog_cxx_ignore_non_virtual_dtor])])
 
+CS_COMPILER_IGNORE_CONST_STRINGS([C++],
+    [cs_cv_prog_cxx_ignore_const_strings],
+    [CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS.WARNING.NO_CONST_STRINGS],
+        [$cs_cv_prog_cxx_ignore_const_strings])])
+
 
 
 #------------------------------------------------------------------------------
@@ -506,7 +512,8 @@ AC_DEFUN([CS_CHECK_VTABLE_THUNKS],
 		[CS_CREATE_TUPLE([-fvtable-thunks])], [C++],
 		[CS_EMIT_BUILD_PROPERTY([COMPILER.C++FLAGS.MANDATORY],
 		    [$cs_cv_prog_cxx_vtable_thunks], [+])],
-		[], [$cs_cv_prog_cxx_enable_errors])
+		[], [$cs_cv_prog_cxx_enable_errors], [], [],
+		[no longer supported])
 	    ;;
     esac])
 
@@ -1947,16 +1954,45 @@ CS_NOTABLE([alsa], [audio], [unix], [$cs_cv_libasound],
 
 
 #------------------------------------------------------------------------------
-# Check for Open Asset Import Library (Assimp)
+# Check for Open Asset Import Library (Assimp). Also check whether this is the
+# version 2.0 or 3.0/above that is being used, the header files to be included
+# not being the same.
 #------------------------------------------------------------------------------
-CS_NOTABLE([assimp], [models], [], [$cs_cv_libassimp],
-    [CS_CHECK_LIB_WITH([assimp],
-	[AC_LANG_PROGRAM(
-	    [[#include <assimp/assimp.h>
-	      #include <assimp/aiScene.h>]],
+CS_CHECK_LIB_WITH([assimp],
+    [AC_LANG_PROGRAM(
+	[[]],
+	[])],
+    [], [C++],
+    [CS_CHECK_BUILD([for Assimp v3], [cs_cv_assimp3],
+        [AC_LANG_PROGRAM(
+	    [[#include <assimp/Logger.hpp>]],
 	    [])],
-	[], [], [CS_EMIT_BUILD_RESULT([cs_cv_libassimp], [ASSIMP])])])
+	[], [C++],
+	[CS_HEADER_PROPERTY([CS_ASSIMP_VERSION], [3])],
+	[CS_CHECK_BUILD([for Assimp v2], [cs_cv_assimp2],
+            [AC_LANG_PROGRAM(
+                [[#include <assimp/ProgressHandler.h>]],
+	        [])],
+	    [], [C++],
+	    [CS_HEADER_PROPERTY([CS_ASSIMP_VERSION], [2])],
+	    [unset cs_cv_libassimp], [],
+            [$cs_cv_libassimp_cflags], [$cs_cv_libassimp_lflags], [$cs_cv_libassimp_libs], [], [])],
+        [],
+        [$cs_cv_libassimp_cflags], [$cs_cv_libassimp_lflags], [$cs_cv_libassimp_libs], [], [])]
+    [], [], [], [])
 
+unset cs_cv_assimp2
+unset cs_cv_assimp2_cflags
+unset cs_cv_assimp2_lflags
+unset cs_cv_assimp2_libs
+unset cs_cv_assimp3
+unset cs_cv_assimp3_cflags
+unset cs_cv_assimp3_lflags
+unset cs_cv_assimp3_libs
+
+CS_NOTABLE([assimp], [models], [], [$cs_cv_libassimp])
+AS_IF([test "$cs_cv_libassimp" = yes],
+    CS_EMIT_BUILD_RESULT([cs_cv_libassimp], [ASSIMP]))
 
 
 #------------------------------------------------------------------------------
@@ -2257,16 +2293,22 @@ AC_CHECK_TYPE([intmax_t], [CS_HEADER_PROPERTY([CS_HAVE_INTMAX_T])], [],
 # Check if the PRIx99 printf()-formatting adjunct macros are available.
 #------------------------------------------------------------------------------
 AC_CHECK_HEADERS([inttypes.h])
-CS_CHECK_BUILD([for PRIx99 macros], [cs_cv_c_format_macros],
-    [AC_LANG_PROGRAM(
-        [[#include <stddef.h>
-	#define __STDC_FORMAT_MACROS
-	#if HAVE_INTTYPES_H
-        #include <inttypes.h>
-	#endif
-	]],
-        [char const* s = "widget %" PRIu32 " toggled";])],
-    [], [], [CS_HEADER_PROPERTY([CS_HAVE_C_FORMAT_MACROS])])
+AC_DEFUN([CS_CHECK_PRIx99],
+    [CS_CHECK_BUILD([for PRIx99 m4_ifval([$1],[$1-bit ],[])macros],
+	[cs_cv_c_format$1_macros],
+	[AC_LANG_PROGRAM(
+	    [[#include <stddef.h>
+	    #define __STDC_FORMAT_MACROS
+	    #if HAVE_INTTYPES_H
+	    #include <inttypes.h>
+	    #endif
+	    ]],
+	    [char const* s = "widget %" PRIu[]m4_default([$1],[32]);])],
+	[], [], [CS_HEADER_PROPERTY([CS_HAVE_C_FORMAT$1_MACROS])])])
+
+CS_CHECK_PRIx99
+AS_IF([test $cs_cv_c_format_macros = yes],
+  [CS_CHECK_PRIx99([64])])
 
 
 
@@ -2756,21 +2798,7 @@ AC_CHECK_HEADERS([valgrind/memcheck.h],
 #------------------------------------------------------------------------------
 # Determine whether link libraries should be static or shared.
 #------------------------------------------------------------------------------
-AC_MSG_CHECKING([whether to build shared libraries])
-case $host_os in
-    cygwin*|linux*) enable_shared_default=yes ;;
-    *) enable_shared_default=no ;;
-esac
-AC_ARG_ENABLE([shared], [AC_HELP_STRING([--enable-shared],
-    [enable creation of shared libraries (default YES on Win32 and Linux, 
-    NO otherwise)])],
-    [], [enable_shared=$enable_shared_default])
-AC_MSG_RESULT([$enable_shared])
-CS_EMIT_BUILD_PROPERTY([BUILD_SHARED_LIBS], [$enable_shared])
-AS_IF([test $enable_shared = yes], 
-  [CS_HEADER_PROPERTY([CS_USE_SHARED_LIBS])],
-  [CS_HEADER_PROPERTY([CS_USE_STATIC_LIBS])])
-
+CS_CHECK_BUILD_LIBS_SHARED([CS_USE_SHARED_LIBS], [CS_USE_STATIC_LIBS])
 
 
 #------------------------------------------------------------------------------

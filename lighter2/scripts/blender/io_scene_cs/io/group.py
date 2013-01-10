@@ -69,9 +69,10 @@ def GroupAsCSLib(self, path=''):
   # Export group
   fa = open(Join(path, 'factories/', self.uname), 'w')
   self.WriteCSLibHeader(Write(fa))
-  groupDeps = self.GetDependencies()
   use_imposter = self.HasImposter()
-  ExportMaterials(Write(fa), 2, path, groupDeps, use_imposter)
+  if not B2CS.properties.sharedMaterial:
+    groupDeps = self.GetDependencies()
+    ExportMaterials(Write(fa), 2, groupDeps, use_imposter)
   self.WriteCSGroup(Write(fa), 2, use_imposter, dontClose=False)
   fa.close()
 
@@ -107,22 +108,24 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
           matrix = matrix * m
         # Get a deep copy of this object, transformed to its world position
         obCpy = ob.GetTransformedCopy(matrix)
+      # Tessellate the copied object
+      obCpy.data.update_faces()
       meshData.append(obCpy)
       # Generate mapping buffers
-      mapVert, mapBuf, norBuf = ob.data.GetCSMappingBuffers()
+      mapVert, mapBuf, norBuf = obCpy.data.GetCSMappingBuffers()
       numCSVertices = len(mapVert)
-      if B2CS.properties.enableDoublesided and ob.data.show_double_sided:
+      if B2CS.properties.enableDoublesided and obCpy.data.show_double_sided:
         numCSVertices = 2*len(mapVert)
       # Generate submeshes
-      subMeshess.append(ob.data.GetSubMeshes(ob.name,mapBuf,indexV))
+      subMeshess.append(obCpy.data.GetSubMeshes(obCpy.name,mapBuf,indexV))
       mappingBuffers.append(mapBuf)
       mappingVertices.append(mapVert)
       mappingNormals.append(norBuf)
       indexV += numCSVertices
 
       warning = "(WARNING: double sided mesh implies duplication of its vertices)" \
-          if B2CS.properties.enableDoublesided and ob.data.show_double_sided else ""
-      print('number of CS vertices for mesh "%s" = %s  %s'%(ob.name,numCSVertices,warning))
+          if B2CS.properties.enableDoublesided and obCpy.data.show_double_sided else ""
+      print('number of CS vertices for mesh "%s" = %s  %s'%(obCpy.name,numCSVertices,warning))
 
   # Export the group of objects as a general mesh factory
   func(' '*depth + '<meshfact name=\"%s\">'%(self.uname))
@@ -133,7 +136,7 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
     func(' '*depth + '  <instances>')
 
     # Export first object of the group as a basic general mesh
-    m, ob in self.allObjects()[0]
+    m, ob = self.allObjects()[0]
 
     func(' '*depth + '    <meshfact name=\"%s-instance\">'%(self.uname))
     func(' '*depth + '      <plugin>crystalspace.mesh.loader.factory.genmesh</plugin>')
@@ -144,6 +147,18 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
       func(' '*depth + '      <priority>%s</priority>'%(mat.priority))
     if mat != None and mat.zbuf_mode != 'zuse':
       func(' '*depth + '      <%s/>'%(mat.zbuf_mode))
+    if ob.data and ob.data.no_shadow_receive:
+      func(' '*depth + '      <noshadowreceive />')
+    if ob.data and ob.data.no_shadow_cast:
+      func(' '*depth + '      <noshadowcast />')
+    if ob.data and ob.data.limited_shadow_cast:
+      func(' '*depth + '      <limitedshadowcast />')
+    if ob.data.lighter2_vertexlight:
+      func(' '*depth + '      <key name="lighter2" editoronly="yes" vertexlight="yes" />')
+    if ob.data.lighter2_selfshadow:
+      func(' '*depth + '      <key name="lighter2" editoronly="yes" noselfshadow="yes" />')
+    if ob.data.lighter2_lmscale > 0.0:
+      func(' '*depth + '      <key name="lighter2" editoronly="yes" lmscale="%f" />'%(ob.data.lighter2_lmscale))
     func(' '*depth + '      <params>')
 
     # Export render buffers
@@ -206,6 +221,18 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
         func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
       if mat != None and mat.zbuf_mode != 'zuse':
         func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
+      if ob.data and ob.data.no_shadow_receive:
+        func(' '*depth + '  <noshadowreceive />')
+      if ob.data and ob.data.no_shadow_cast:
+        func(' '*depth + '  <noshadowcast />')
+      if ob.data and ob.data.limited_shadow_cast:
+        func(' '*depth + '  <limitedshadowcast />')
+      if ob.data.lighter2_vertexlight:
+        func(' '*depth + '  <key name="lighter2" editoronly="yes" vertexlight="yes" />')
+      if ob.data.lighter2_selfshadow:
+        func(' '*depth + '  <key name="lighter2" editoronly="yes" noselfshadow="yes" />')
+      if ob.data.lighter2_lmscale > 0.0:
+        func(' '*depth + '  <key name="lighter2" editoronly="yes" lmscale="%f" />'%(ob.data.lighter2_lmscale))
     func(' '*depth + '  <params>')
     
     def SubmeshesLackMaterial(subMeshess):

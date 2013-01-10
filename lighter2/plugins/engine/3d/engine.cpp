@@ -25,6 +25,7 @@
 #include "csgfx/imagememory.h"
 #include "csqint.h"
 #include "cstool/vfsdirchange.h"
+#include "cstool/objectcomment.h"
 #include "csutil/cfgacc.h"
 #include "csutil/databuf.h"
 #include "csutil/scf.h"
@@ -516,7 +517,7 @@ csEngine::csEngine (iBase *iParent) :
   sectors (this), textures (new csTextureList (this)), 
   materials (new csMaterialList), sharedVariables (new csSharedVariableList),
   defaultRenderLoopTried (false), renderLoopManager (0),
-  topLevelClipper (0), resize (false),
+  topLevelClipper (0),
   worldSaveable (false), defaultKeepImage (false), maxAspectRatio (0),
   nextframePending (0), currentFrameNumber (0), 
   currentRenderContext (0), weakEventHandler(0),
@@ -681,7 +682,7 @@ bool csEngine::HandleEvent (iEvent &Event)
     if (Event.Name == CanvasResize)
     {
       //if (((iGraphics2D *)csCommandEventHelper::GetInfo(&Event)) == G2D)
-      resize = true;
+      Resize ();
       return false;
     }
     else if (Event.Name == CanvasClose)
@@ -1163,13 +1164,6 @@ void csEngine::StartDraw (iCamera *c, iClipper2D* /*view*/,
 {
   rview.SetEngine (this);
   rview.SetOriginalCamera (c);
-
-  // This flag is set in HandleEvent on a CanvasResize event
-  if (resize)
-  {
-    resize = false;
-    Resize ();
-  }
 
   topLevelClipper = &rview;
 
@@ -2150,23 +2144,6 @@ csPtr<iObjectIterator> csEngine::GetVisibleObjects (
   return 0;
 }
 
-static void HandleStaticLOD (csMeshWrapper* cmesh, const csVector3& pos,
-	csArray<iMeshWrapper*>& list)
-{
-  csStaticLODMesh* static_lod = cmesh->GetStaticLODMesh ();
-  if (!static_lod) return;
-  // We also need to add the child here that is at the right LOD
-  // distance from the start of the segment.
-  float distance = csQsqrt (cmesh->GetSquaredDistance (pos));
-  float lod = static_lod->GetLODValue (distance);
-  csArray<iMeshWrapper*>& meshes = static_lod->GetMeshesForLOD (lod);
-  size_t i;
-  // @@@ We assume here that there will be no portals as children.
-  // This is perhaps a bad assumption.
-  for (i = 0 ; i < meshes.GetSize () ; i++)
-    list.Push (meshes[i]);
-}
-
 void csEngine::GetNearbyMeshList (iSector* sector,
     const csVector3& start, const csVector3& end,
     csArray<iMeshWrapper*>& list,
@@ -2184,8 +2161,6 @@ void csEngine::GetNearbyMeshList (iSector* sector,
     if (imw)
     {
       list.Push (imw); 
-      csMeshWrapper* cmesh = (csMeshWrapper*)imw;
-      HandleStaticLOD (cmesh, start, list);
 
       if (crossPortals && imw->GetPortalContainer ())
       {
@@ -2250,8 +2225,6 @@ void csEngine::GetNearbyMeshList (iSector* sector,
     if (imw)
     {
       list.Push (imw); 
-      csMeshWrapper* cmesh = (csMeshWrapper*)imw;
-      HandleStaticLOD (cmesh, pos, list);
 
       if (crossPortals && imw->GetPortalContainer ())
       {
@@ -2287,8 +2260,6 @@ void csEngine::GetNearbyMeshList (iSector* sector,
     if (imw)
     {
       list.Push (imw); 
-      csMeshWrapper* cmesh = (csMeshWrapper*)imw;
-      HandleStaticLOD (cmesh, pos, list);
       if (crossPortals && imw->GetPortalContainer ())
       {
         iPortalContainer* portals = imw->GetPortalContainer ();
@@ -2639,6 +2610,33 @@ csPtr<iCustomMatrixCamera> csEngine::CreateCustomMatrixCamera (
   return csPtr<iCustomMatrixCamera> (cam);
 }
 
+iLightFactory* csEngine::FindLightFactory (const char* name,
+	iCollection* col)
+{
+  iCollection* collection;
+  bool global;
+  const char* n = SplitCollectionName (name, collection, global);
+  if (!n) return 0;
+
+  iLightFactory* fact;
+  if (collection)
+    fact = collection->FindLightFactory (n);
+  else if (!global && col)
+    fact = col->FindLightFactory (n);
+  else
+    fact = GetLightFactories ()->FindByName (n);
+  return fact;
+}
+
+iLightFactory* csEngine::CreateLightFactory (const char* name)
+{
+  csRef<csLightFactory> lf;
+  lf.AttachNew (new csLightFactory (this));
+  if (name) lf->SetName (name);
+  lightFactories.Add (lf);
+  return lf;
+}
+
 csPtr<iLight> csEngine::CreateLight (
   const char *name,
   const csVector3 &pos,
@@ -2652,6 +2650,32 @@ csPtr<iLight> csEngine::CreateLight (
       color.red, color.green, color.blue,
       dyntype);
   if (name) light->SetName (name);
+
+  return csPtr<iLight> (light);
+}
+
+csPtr<iLight> csEngine::CreateLight (
+  const char *name,
+  const csVector3 &pos,
+  iLightFactory* factory)
+{
+  const csColor& color = factory->GetColor ();
+  csLight *light = new csLight (this,
+      pos.x, pos.y, pos.z,
+      factory->GetCutoffDistance (),
+      color.red, color.green, color.blue,
+      factory->GetDynamicType ());
+  if (name) light->SetName (name);
+  if (factory->IsSpecularColorUsed ())
+    light->SetSpecularColor (factory->GetSpecularColor ());
+  light->SetType (factory->GetType ());
+  light->SetAttenuationMode (factory->GetAttenuationMode ());
+  light->SetAttenuationConstants (factory->GetAttenuationConstants ());
+  light->SetDirectionalCutoffRadius (factory->GetDirectionalCutoffRadius ());
+  float inner, outer;
+  factory->GetSpotLightFalloff (inner, outer);
+  light->SetSpotLightFalloff (inner, outer);
+  light->GetFlags ().SetAll (factory->GetFlags ().Get ());
 
   return csPtr<iLight> (light);
 }
@@ -2738,6 +2762,7 @@ public:
   virtual iMaterialWrapper* FindMaterial (const char* name, bool doLoad = true);
   virtual iMaterialWrapper* FindNamedMaterial (const char* name,
   	const char* filename);
+  virtual iLightFactory* FindLightFactory (const char* name, bool notify = true);
   virtual iMeshFactoryWrapper* FindMeshFactory (const char* name, bool notify = true);
   virtual iMeshWrapper* FindMeshObject (const char* name);
   virtual iTextureWrapper* FindTexture (const char* name, bool doLoad = true);
@@ -2750,6 +2775,11 @@ public:
   virtual uint GetKeepFlags() const { return keepFlags; }
   virtual bool CurrentCollectionOnly() const { return searchCollectionOnly; }
   virtual void AddToCollection(iObject* obj);
+  virtual bool LoadComment (iObject* obj, iDocumentNode* commentNode,
+		  bool replace = false)
+  {
+    return CS::Persistence::LoadComment (Engine, obj, commentNode, replace);
+  }
   bool GetVerbose() { return false; }
 };
 
@@ -2779,6 +2809,11 @@ iMaterialWrapper* EngineLoaderContext::FindNamedMaterial (const char* name,
                                                           const char* /*filename*/)
 {
   return Engine->FindMaterial (name, searchCollectionOnly ? collection : 0);
+}
+
+iLightFactory* EngineLoaderContext::FindLightFactory (const char* name, bool notify)
+{
+  return Engine->FindLightFactory (name, searchCollectionOnly ? collection : 0);
 }
 
 iMeshFactoryWrapper* EngineLoaderContext::FindMeshFactory (const char* name, bool notify)

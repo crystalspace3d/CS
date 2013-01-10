@@ -138,7 +138,7 @@ namespace lighter
       childSizeSq *= childSizeSq;
 
       // Compute distance to center of each child
-      for(size_t i=0; i<8; i++)
+      for(int i=0; i<8; i++)
       {
         float tmp[3], distSq;
         tmp[0] = child[i]->center[0] - samp->pos[0];

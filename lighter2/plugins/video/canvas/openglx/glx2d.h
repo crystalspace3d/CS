@@ -82,7 +82,7 @@ public:
   virtual bool PerformExtensionV (char const* command, va_list);
 
   virtual void AllowResize (bool iAllow);
-  virtual bool Resize (int w, int h);
+  virtual bool ForceCanvasResize (int w, int h);
 
   virtual void AlertV (int type, const char* title, const char* okMsg,
   	const char* msg, va_list arg) 
@@ -95,7 +95,10 @@ public:
   }
 
   virtual void SetTitle (const char* title)
-  { xwin->SetTitle (title); }
+  {
+    csGraphics2DGLCommon::SetTitle (title);
+    xwin->SetTitle (title);
+  }
   
   /** Sets the icon of this window with the provided one.
    *

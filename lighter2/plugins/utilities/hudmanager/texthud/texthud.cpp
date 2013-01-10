@@ -128,16 +128,13 @@ bool TextHUDManager::HandleEvent (iEvent& event)
   if (!g3d->BeginDraw (CSDRAW_2DGRAPHICS))
     return false;
 
-  // Get the elasped time
-  csTicks elapsed_time = vc->GetElapsedTicks ();
-
   // Update the Frame Per Second data
   frameCount++;
-  frameTime += elapsed_time;
+  frameTime += vc->GetElapsedMicroTicks ();
 
-  if (frameTime > 500)
+  if (frameTime > 500000)
   {
-    currentFPS = ((float) (frameCount * 1000)) / (float) frameTime;
+    currentFPS = ((float) (frameCount * 1000000)) / (float) frameTime;
     frameCount = 0;
     frameTime = 0;
   }
@@ -211,29 +208,24 @@ void TextHUDManager::SwitchKeysPage ()
       (currentKeyPage + 1) % (keyDescriptions->GetSize () / maxKeys + 1);
 }
 
-void TextHUDManager::WriteShadow (int x, int y, int fg, const char *str,...) const
+void TextHUDManager::WriteShadowV (int x, int y, int fg, const char *str, va_list arg) const
 {
   csString buf;
-  va_list arg;
-
-  va_start (arg, str);
   buf.FormatV (str, arg);
-  va_end (arg);
-
-  Write (x + 1, y - 1, 0, -1, "%s", buf.GetData ());
-  Write (x, y, fg, -1, "%s", buf.GetData ());
+  WriteStr (x + 1, y - 1, 0, -1, buf.GetData ());
+  WriteStr (x, y, fg, -1, buf.GetData ());
 }
 
-void TextHUDManager::Write (int x, int y, int fg, int bg, const char *str,...) const
+void TextHUDManager::WriteV (int x, int y, int fg, int bg, const char *str, va_list arg) const
 {
   csString buf;
-  va_list arg;
-
-  va_start (arg,str);
   buf.FormatV (str, arg);
-  va_end (arg);
+  WriteStr (x, y, fg, bg, buf.GetData());
+}
 
-  g2d->Write (font, x, y, fg, bg, buf);
+void TextHUDManager::WriteStr (int x, int y, int fg, int bg, const char *str) const
+{
+  g2d->Write (font, x, y, fg, bg, str);
 }
 
 void TextHUDManager::SetEnabled (bool enabled)

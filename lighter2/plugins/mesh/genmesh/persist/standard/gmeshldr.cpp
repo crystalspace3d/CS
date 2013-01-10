@@ -369,6 +369,7 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
   bool auto_normals = false;
   bool auto_normals_nocompress = false;
   bool compress = false;
+  csRefArray<csShaderVariable> shadervars;
 
   csRef<iDocumentNodeIterator> it = node->GetNodes ();
   while (it->HasNext ())
@@ -423,17 +424,25 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
 	break;
       case XMLTOKEN_MATERIAL:
 	{
-    const char* matname = child->GetContentsValue ();
-    iMaterialWrapper* mat = ldr_context->FindMaterial (matname);
-    if (!mat)
-    {
-      synldr->ReportError (
-        "crystalspace.genmeshfactoryloader.parse.unknownmaterial",
-        child, "Couldn't find material %s!", CS::Quote::Single (matname));
-      return 0;
-    }
-    fact->SetMaterialWrapper (mat);
-  }
+	  const char* matname = child->GetContentsValue ();
+	  iMaterialWrapper* mat = ldr_context->FindMaterial (matname);
+	  if (!mat)
+	  {
+	    synldr->ReportError (
+	      "crystalspace.genmeshfactoryloader.parse.unknownmaterial",
+	      child, "Couldn't find material %s!", CS::Quote::Single (matname));
+	    return 0;
+	  }
+	  fact->SetMaterialWrapper (mat);
+	}
+	break;
+      case XMLTOKEN_SHADERVAR:
+	{
+	  csRef<csShaderVariable> sv;
+	  sv.AttachNew (new csShaderVariable);
+	  if (!synldr->ParseShaderVar (ldr_context, child, *sv)) return 0;
+	  shadervars.Push (sv);
+	}
 	break;
       case XMLTOKEN_BOX:
         {
@@ -863,6 +872,19 @@ csPtr<iBase> csGeneralFactoryLoader::Parse (iDocumentNode* node,
     state->Compress ();
   if (auto_normals)
     state->CalculateNormals (!auto_normals_nocompress);
+
+  if (shadervars.GetSize () && state->GetSubMeshCount ())
+  {
+    // Apply the shader variables only on the first submesh of the genmesh.
+    // This is in order to align to the behavior of materials that are also
+    // set only on the first submesh of the genmesh.
+    iGeneralMeshSubMesh* submesh = state->GetSubMesh (0);
+    csRef<iShaderVariableContext> svc = 
+      scfQueryInterface<iShaderVariableContext> (submesh);
+    for (size_t i = 0; i < shadervars.GetSize (); i++)
+      if (!svc->GetVariable (shadervars[i]->GetName ()))
+	svc->AddVariable (shadervars[i]);
+  }
 
   return csPtr<iBase> (fact);
 }
@@ -1482,6 +1504,92 @@ bool csGeneralMeshSaver::Initialize (iObjectRegistry* object_reg)
   return true;
 }
 
+bool csGeneralMeshSaver::WriteSubMesh (iGeneralMeshSubMesh* factSubMesh,
+                                       iGeneralMeshSubMesh* objSubMesh,
+                                       iDocumentNode* paramsNode)
+{
+  csRef<iShaderVariableContext> svc =
+    scfQueryInterface<iShaderVariableContext> (objSubMesh);
+  const csRefArray<csShaderVariable>& shadervars =
+    svc->GetShaderVariables ();
+
+  iMaterialWrapper* smMaterial = objSubMesh->GetMaterial();
+  uint mixmode = objSubMesh->GetMixmode ();
+  csZBufMode zmode = objSubMesh->GetZMode ();
+  CS::Graphics::RenderPriority renderPrio = objSubMesh->GetRenderPriority ();
+  bool b2f = objSubMesh->GetBack2Front ();
+
+  /* @@@ FIXME: shadervars.IsEmpty() only works for same reasons as
+    * below */
+  bool interesting = !shadervars.IsEmpty()
+    || (smMaterial != factSubMesh->GetMaterial())
+    || (mixmode != factSubMesh->GetMixmode())
+    || (zmode != factSubMesh->GetZMode())
+    || (renderPrio != factSubMesh->GetRenderPriority())
+    || (b2f != factSubMesh->GetBack2Front());
+
+  if (interesting)
+  {
+    csRef<iDocumentNode> submeshNode =
+      paramsNode->CreateNodeBefore(CS_NODE_ELEMENT, 0);
+    submeshNode->SetValue("submesh");
+    submeshNode->SetAttribute ("name", objSubMesh->GetName ());
+
+    if (smMaterial != 0)
+    {
+      csRef<iDocumentNode> materialNode =
+        submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
+      materialNode->SetValue ("material");
+      csRef<iDocumentNode> materialContents =
+        materialNode->CreateNodeBefore (CS_NODE_TEXT, 0);
+      materialContents->SetValue (
+        smMaterial->QueryObject()->GetName());
+    }
+
+    if (mixmode != (uint)~0)
+    {
+      csRef<iDocumentNode> mixmodeNode =
+    submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
+      mixmodeNode->SetValue ("mixmode");
+      synldr->WriteMixmode (mixmodeNode, mixmode, true);
+    }
+
+    if (zmode != (csZBufMode)~0)
+    {
+      synldr->WriteZMode (submeshNode, zmode, false);
+    }
+
+    if (renderPrio.IsValid())
+    {
+      csRef<iDocumentNode> prioNode =
+        submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
+      prioNode->SetValue ("priority");
+      csRef<iDocumentNode> prioContents =
+        prioNode->CreateNodeBefore (CS_NODE_TEXT, 0);
+      prioContents->SetValue (engine->GetRenderPriorityName (renderPrio));
+    }
+    if (b2f)
+    {
+      synldr->WriteBool (submeshNode, "back2front", b2f,
+        factSubMesh->GetBack2Front ());
+    }
+
+    /* @@@ FIXME: This loop only works b/c GetShaderVariables() does
+      * not return parent's SVs. Once it does, this code needs to
+      * change, since only really the different SVs should be written
+      * out. */
+    for (size_t i = 0; i < shadervars.GetSize(); i++)
+    {
+      csRef<iDocumentNode> shadervarNode =
+        submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
+      shadervarNode->SetValue ("shadervar");
+      synldr->WriteShaderVar (shadervarNode, *(shadervars[i]));
+    }
+  }
+
+  return true;
+}
+
 bool csGeneralMeshSaver::WriteDown (iBase* obj, iDocumentNode* parent,
 	iStreamSource*)
 {
@@ -1562,84 +1670,8 @@ bool csGeneralMeshSaver::WriteDown (iBase* obj, iDocumentNode* parent,
           gmesh->FindSubMesh (factSubMesh->GetName());
         if (objSubMesh)
         {
-          csRef<iShaderVariableContext> svc = 
-            scfQueryInterface<iShaderVariableContext> (objSubMesh);
-          const csRefArray<csShaderVariable>& shadervars = 
-            svc->GetShaderVariables ();
-
-          iMaterialWrapper* smMaterial = objSubMesh->GetMaterial();
-          uint mixmode = objSubMesh->GetMixmode ();
-          csZBufMode zmode = objSubMesh->GetZMode ();
-	  CS::Graphics::RenderPriority renderPrio = objSubMesh->GetRenderPriority ();
-          bool b2f = objSubMesh->GetBack2Front ();
-
-          /* @@@ FIXME: shadervars.IsEmpty() only works for same reasons as 
-           * below */
-          bool interesting = !shadervars.IsEmpty() 
-            || (smMaterial != factSubMesh->GetMaterial())
-            || (mixmode != factSubMesh->GetMixmode())
-            || (zmode != factSubMesh->GetZMode())
-            || (renderPrio != factSubMesh->GetRenderPriority())
-            || (b2f != factSubMesh->GetBack2Front());
-
-          if (interesting)
-          {
-            csRef<iDocumentNode> submeshNode = 
-              paramsNode->CreateNodeBefore(CS_NODE_ELEMENT, 0);
-            submeshNode->SetValue("submesh");
-            submeshNode->SetAttribute ("name", objSubMesh->GetName ());
-
-            if (smMaterial != 0)
-            {
-              csRef<iDocumentNode> materialNode = 
-                submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
-              materialNode->SetValue ("material");
-              csRef<iDocumentNode> materialContents = 
-                materialNode->CreateNodeBefore (CS_NODE_TEXT, 0);
-              materialContents->SetValue (
-                smMaterial->QueryObject()->GetName());
-            }
-
-	    if (mixmode != (uint)~0)
-	    {
-	      csRef<iDocumentNode> mixmodeNode = 
-		submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
-	      mixmodeNode->SetValue ("mixmode");
-	      synldr->WriteMixmode (mixmodeNode, mixmode, true);
-	    }
-	    
-	    if (zmode != (csZBufMode)~0)
-	    {
-	      synldr->WriteZMode (submeshNode, zmode, false);
-	    }
-	    
-	    if (renderPrio.IsValid())
-	    {
-	      csRef<iDocumentNode> prioNode = 
-		submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
-	      prioNode->SetValue ("priority");
-	      csRef<iDocumentNode> prioContents =
-		prioNode->CreateNodeBefore (CS_NODE_TEXT, 0);
-	      prioContents->SetValue (engine->GetRenderPriorityName (renderPrio));
-	    }
-	    if (b2f)
-	    {
-	      synldr->WriteBool (submeshNode, "back2front", b2f, 
-	        factSubMesh->GetBack2Front ());
-	    }
-	  
-            /* @@@ FIXME: This loop only works b/c GetShaderVariables() does 
-             * not return parent's SVs. Once it does, this code needs to 
-             * change, since only really the different SVs should be written 
-             * out. */
-            for (size_t i = 0; i < shadervars.GetSize(); i++)
-            {
-              csRef<iDocumentNode> shadervarNode = 
-                submeshNode->CreateNodeBefore (CS_NODE_ELEMENT, 0);
-              shadervarNode->SetValue ("shadervar");
-              synldr->WriteShaderVar (shadervarNode, *(shadervars[i]));
-            }
-          }
+          if (!WriteSubMesh (factSubMesh, objSubMesh, paramsNode))
+            return false;
         }
       }
     }

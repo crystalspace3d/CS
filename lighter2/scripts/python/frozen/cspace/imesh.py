@@ -789,6 +789,7 @@ class iAnimatedMeshSubMeshFactory(core.iBase):
     def GetRenderPriority(*args): return _imesh.iAnimatedMeshSubMeshFactory_GetRenderPriority(*args)
     def SetZBufMode(*args): return _imesh.iAnimatedMeshSubMeshFactory_SetZBufMode(*args)
     def GetZBufMode(*args): return _imesh.iAnimatedMeshSubMeshFactory_GetZBufMode(*args)
+    def GetShaderVariableContext(*args): return _imesh.iAnimatedMeshSubMeshFactory_GetShaderVariableContext(*args)
 iAnimatedMeshSubMeshFactory_swigregister = _imesh.iAnimatedMeshSubMeshFactory_swigregister
 iAnimatedMeshSubMeshFactory_swigregister(iAnimatedMeshSubMeshFactory)
 
@@ -1188,6 +1189,7 @@ class iSpriteCal3DFactoryState(core.iBase):
     def RegisterAnimCallback(*args): return _imesh.iSpriteCal3DFactoryState_RegisterAnimCallback(*args)
     def RemoveAnimCallback(*args): return _imesh.iSpriteCal3DFactoryState_RemoveAnimCallback(*args)
     def AbsoluteRescaleFactory(*args): return _imesh.iSpriteCal3DFactoryState_AbsoluteRescaleFactory(*args)
+    def GetScaleFactor(*args): return _imesh.iSpriteCal3DFactoryState_GetScaleFactor(*args)
     __swig_destroy__ = _imesh.delete_iSpriteCal3DFactoryState
     __del__ = lambda self : None;
 iSpriteCal3DFactoryState_swigregister = _imesh.iSpriteCal3DFactoryState_swigregister

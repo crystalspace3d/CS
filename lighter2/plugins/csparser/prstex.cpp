@@ -34,6 +34,7 @@
 
 #include "csthreadedloader.h"
 #include "loadtex.h"
+#include "shadersets.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(csparser)
 {
@@ -528,9 +529,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     csRef<iTextureWrapper> texh = 0;
     csColor col;
 
-    bool shaders_mentioned = false;	// If true there were shaders.
-    csArray<csStringID> shadertypes;
-    csArray<iShader*> shaders;
+    MaterialShaderMappingsArray shaders;
     csRefArray<csShaderVariable> shadervars;
 
     csRefArray<iDocumentNode> key_nodes;
@@ -571,7 +570,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         break;
       case XMLTOKEN_SHADER:
         {
-          shaders_mentioned = true;
           csRef<iShaderManager> shaderMgr = 
             csQueryRegistry<iShaderManager> (object_reg);
           if (!shaderMgr)
@@ -596,8 +594,28 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
               shadername, matname);
             break;
           }
-          shadertypes.Push (stringSet->Request(shadertype));
-          shaders.Push (shader);
+          MaterialShaderMapping mapping;
+          mapping.shaderType = stringSet->Request(shadertype);
+          mapping.shader = shader;
+          shaders.Push (mapping);
+        }
+        break;
+      case XMLTOKEN_SHADERSET:
+        {
+          const char* shaderset = child->GetContentsValue ();
+          if (!shaderset || !*shaderset)
+          {
+            ReportWarning ("crystalspace.maploader", 
+              "Material %s has invalid <shaderset>",
+              matname);
+            break;
+          }
+          if (!shaderSets.ApplyShaderSet (ldr_context, shaderset, shaders))
+          {
+            ReportWarning ("crystalspace.maploader",
+              "Could not apply shaderset %s to material %s",
+              shaderset, matname);
+          }
         }
         break;
       case XMLTOKEN_SHADERVAR:
@@ -645,7 +663,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     size_t i;
     for (i=0; i<shaders.GetSize (); i++)
       //if (shaders[i]->Prepare ())
-      material->SetShader (shadertypes[i], shaders[i]);
+      material->SetShader (shaders[i].shaderType, shaders[i].shader);
     for (i=0; i<shadervars.GetSize (); i++)
       material->AddVariable (shadervars[i]);
 

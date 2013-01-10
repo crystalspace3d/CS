@@ -38,7 +38,13 @@ rule LinkWith
   local i libs ;
   for i in $(rawlibs)
   {
-    libs += [ ConstructLibraryLinkTarget $(i) : $($(i)_SHARED) ] ;
+    local lib_dep = [ ConstructLibraryLinkTarget $(i) : $($(i)_SHARED) ] ;
+    # Also propagate LFlags from static libs
+    if ( "$($(i)_SHARED)" = "" )
+    {
+      lib_dep += $($(i).LFLAGS) ;
+    }
+    libs = [ MergeRemovingDups $(libs) : $(lib_dep) ] ;
   }
 
   Depends $($(<)_TARGET) : $(rawlibs) ;
@@ -77,11 +83,11 @@ rule LFlags
 
   NotFile $(flags) ;
   NEEDLIBS on $($(target)_TARGET) =
-    [ RemoveDupFlags [ on $($(target)_TARGET) GetVar NEEDLIBS ] $(flags) ] ;
-  $(target).LFLAGS = [ RemoveDupFlags $($(target).LFLAGS) $(flags) ] ;
+    [ MergeRemovingDups [ on $($(target)_TARGET) GetVar NEEDLIBS ] : $(flags) ] ;
+  $(target).LFLAGS = [ MergeRemovingDups $($(target).LFLAGS) : $(flags) ] ;
   if ! [ IsElem noexternal : $(3) ]
   {
-    $(target).LFLAGS.EXTERNAL = [ RemoveDupFlags $($(target).LFLAGS.EXTERNAL) $(flags) ] ;
+    $(target).LFLAGS.EXTERNAL = [ MergeRemovingDups $($(target).LFLAGS.EXTERNAL) : $(flags) ] ;
   }
 
   UnitTestLFlags $(target) : $(flags) : $(options) ;
@@ -122,14 +128,24 @@ rule ExternalLibs
 ##      inheritcflags: The mentioned object files will inherit compiler flags
 ##      assigned to target's normal object files (in addition to any flags
 ##      already set manually).
+##      afterlibs: The mentioned object files are put on the command
+##      line _after_ the (current) linked libraries.
 rule ExtraObjects
 {
-  CheckOptions inheritcflags : $(3) : $(<) ;
+  CheckOptions inheritcflags afterlibs : $(3) : $(<) ;
   if [ IsElem inheritcflags : $(3) ]
   {
     $(<)_OBJECTS += $(>) ;
   }
-  EXTRAOBJECTS on $($(<)_TARGET) += $(>) ;
+  if [ IsElem afterlibs : $(3) ]
+  {
+    $(<).LFLAGS += $(>) ;
+    NEEDLIBS on $($(<)_TARGET) += $(>) ;
+  }
+  else
+  {
+    EXTRAOBJECTS on $($(<)_TARGET) += $(>) ;
+  }
   Depends $($(<)_TARGET) : $(>) ;
   Clean $(<)clean : $(>) ;
   Clean clean : $(>) ;
@@ -155,7 +171,7 @@ rule RelayLFlags
   local relay_lflags = $(1) ;
   local relay_libs = $(2) ;
   local minimal_libs = $(3) ;
-  if $(TARGET.OS) = "WIN32" || ! $(CMD.RELAYTOOL)
+  if $(TARGET.OS) != "UNIX" || ! $(CMD.RELAYTOOL)
   {
     return $(relay_lflags) ;
   }
@@ -182,7 +198,7 @@ rule RelayLFlags
 ##  RelayObjs target : relaylibs : identifier
 rule RelayObjs
 {
-  if $(TARGET.OS) = "WIN32" || ! $(CMD.RELAYTOOL)
+  if $(TARGET.OS) != "UNIX" || ! $(CMD.RELAYTOOL)
   {
     # Create fake libwhatever_is_present() symbols
     local stubfile = [ DoObjectGrist $(3).fake_stub.c ] ;

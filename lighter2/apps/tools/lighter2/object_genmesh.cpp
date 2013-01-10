@@ -466,8 +466,23 @@ namespace lighter
         factory->submeshes.GetKeyPointer (allocatedSubmeshes[i].submeshIndex);
       iMaterialWrapper* material = srcSubmesh->sourceSubmesh ? 
         srcSubmesh->sourceSubmesh->GetMaterial() : srcSubmesh->material;
-      genFact->AddSubMesh (indices, material, 
+      iGeneralMeshSubMesh* new_submesh = genFact->AddSubMesh (indices, material,
         allocatedSubmeshes[i].name);
+      new_submesh->SetZMode (srcSubmesh->sourceSubmesh->GetZMode());
+      new_submesh->SetRenderPriority (srcSubmesh->sourceSubmesh->GetRenderPriority());
+      new_submesh->SetMixmode (srcSubmesh->sourceSubmesh->GetMixmode());
+      new_submesh->SetBack2Front (srcSubmesh->sourceSubmesh->GetBack2Front());
+
+      csRef<iShaderVariableContext> src_svc =
+        scfQueryInterface<iShaderVariableContext> (srcSubmesh->sourceSubmesh);
+      csRef<iShaderVariableContext> new_svc =
+        scfQueryInterface<iShaderVariableContext> (new_submesh);
+      const csRefArray<csShaderVariable>& shadervars =
+        src_svc->GetShaderVariables ();
+      for (size_t s = 0; s < shadervars.GetSize(); s++)
+      {
+        new_svc->AddVariable (shadervars[s]);
+      }
 
       factory->submeshNames->GetExtend (allocatedSubmeshes[i].submeshIndex) =
         allocatedSubmeshes[i].name;

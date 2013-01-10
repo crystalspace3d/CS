@@ -165,7 +165,7 @@ struct iPortal : public virtual iBase
   /// Get the name of this portal.
   virtual const char* GetName () const = 0;
 
-  /// Return the sector that this portal points too.
+  /// Return the sector that this portal points to.
   virtual iSector* GetSector () const = 0;
 
   /**
@@ -226,7 +226,7 @@ struct iPortal : public virtual iBase
   virtual bool PointOnPolygon (const csVector3& point) = 0;
 
   /**
-   * Set the sector that this portal points too. To avoid circular
+   * Set the sector that this portal points to. To avoid circular
    * references, the sector is not IncRef'ed!
    */
   virtual void SetSector (iSector* s) = 0;
@@ -376,10 +376,12 @@ struct iPortal : public virtual iBase
    * Returns the intersection point with the polygon in 'isect'.
    * The given transform 't' is used to transform the warping matrix
    * in the portal from object to world space (this==object, other==world).
+   * With the 'bf' flag you can enable backface culling.
    */
   virtual iMeshWrapper* HitBeamPortals (const csReversibleTransform& t,
 	const csVector3& start, const csVector3& end,
-  	csVector3& isect, int* polygon_idx, iSector** final_sector = 0) = 0;
+  	csVector3& isect, int* polygon_idx, iSector** final_sector = 0,
+	bool bf = false) = 0;
 
   /**
    * Get number of vertices in the array returned by GetVertices().

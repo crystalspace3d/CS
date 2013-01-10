@@ -177,7 +177,6 @@ void csSector::UnlinkObjects ()
 void csSector::RegisterEntireMeshToCuller (iMeshWrapper* mesh)
 {
   csMeshWrapper* cmesh = (csMeshWrapper*)mesh;
-  if (cmesh->SomeParentHasStaticLOD ()) return;
 
   csRef<iVisibilityObject> vo = 
         scfQueryInterface<iVisibilityObject> (mesh);
@@ -196,9 +195,6 @@ void csSector::RegisterEntireMeshToCuller (iMeshWrapper* mesh)
 
 void csSector::RegisterMeshToCuller (iMeshWrapper* mesh)
 {
-  csMeshWrapper* cmesh = (csMeshWrapper*)mesh;
-  if (cmesh->SomeParentHasStaticLOD ()) return;
-
   csRef<iVisibilityObject> vo = 
         scfQueryInterface<iVisibilityObject> (mesh);
   culler->RegisterVisObject (vo);
@@ -408,24 +404,7 @@ public:
     csSectorVisibleMeshCallback::sector = sector;
   }
 
-  void MarkMeshAndChildrenVisible (iMeshWrapper* mesh, uint32 frustum_mask,
-                                   bool doFade = false, float fade = 1.0f)
-  {
-    csMeshWrapper* cmesh = (csMeshWrapper*)mesh;
-    ObjectVisible (cmesh, frustum_mask, doFade, fade);
-    size_t i;
-    const csRefArray<iSceneNode>& children = cmesh->GetChildren ();
-    for (i = 0 ; i < children.GetSize () ; i++)
-    {
-      iMeshWrapper* child = children[i]->QueryMesh ();
-      // @@@ Traverse too in case there are lights/cameras?
-      if (child)
-        MarkMeshAndChildrenVisible (child, frustum_mask, doFade, fade);
-    }
-  }
-
-  void ObjectVisible (csMeshWrapper* cmesh, uint32 frustum_mask,
-                      bool doFade = false, float fade = 1.0f)
+  void ObjectVisible (csMeshWrapper* cmesh, uint32 frustum_mask)
   {
     csStaticLODMesh* static_lod = cmesh->GetStaticLODMesh ();
     bool mm = cmesh->DoMinMaxRange ();
@@ -441,36 +420,16 @@ public:
         return;
     }
 
-    if (doFade)
-      cmesh->SetLODFade (fade);
-    else
-      cmesh->UnsetLODFade ();
+    iMeshObject* loddedobject = 0;
 
     if (static_lod)
     {
       float lod = static_lod->GetLODValue (distance);
-      csArray<iMeshWrapper*>* meshes1;
-      csArray<iMeshWrapper*>* meshes2;
-      float lodFade;
-      bool hasFade = static_lod->GetMeshesForLODFaded (lod,
-	meshes1, meshes2, lodFade);
-      size_t i;
-      if (meshes1 != 0)
-      {
-	for (i = 0 ; i < meshes1->GetSize () ; i++)
-	  MarkMeshAndChildrenVisible ((*meshes1)[i], frustum_mask,
-	    hasFade, fade*lodFade);
-      }
-      if (meshes2 != 0)
-      {
-	for (i = 0 ; i < meshes2->GetSize () ; i++)
-	  MarkMeshAndChildrenVisible ((*meshes2)[i], frustum_mask,
-	    hasFade, fade*(1.0f-lodFade));
-      }
+      loddedobject = static_lod->GetMeshObjectForLOD (lod);
     }
 
     int num;
-    csRenderMesh** meshes = cmesh->GetRenderMeshes (num, rview, frustum_mask);
+    csRenderMesh** meshes = cmesh->GetRenderMeshes (num, rview, frustum_mask, loddedobject);
     CS_ASSERT(!((num != 0) && (meshes == 0)));
 #ifdef CS_DEBUG
     for (int i = 0 ; i < num ; i++)
@@ -604,27 +563,8 @@ csRenderMeshList *csSector::GetVisibleMeshes (iRenderView *rview)
   return holder.meshList;
 }
 
-void csSector::MarkMeshAndChildrenVisible (iMeshWrapper* mesh,
-					   iRenderView* rview,
-					   uint32 frustum_mask,
-					   bool doFade, float fade)
-{
-  csMeshWrapper* cmesh = (csMeshWrapper*)mesh;
-  ObjectVisible (cmesh, rview, frustum_mask, doFade, fade);
-  size_t i;
-  const csRefArray<iSceneNode>& children = cmesh->GetChildren ();
-  for (i = 0 ; i < children.GetSize () ; i++)
-  {
-    iMeshWrapper* child = children[i]->QueryMesh ();
-    // @@@ Traverse too in case there are lights/cameras?
-    if (child)
-      MarkMeshAndChildrenVisible (child, rview, frustum_mask, doFade, fade);
-  }
-}
-
 void csSector::ObjectVisible (csMeshWrapper* cmesh, iRenderView* rview,
-			      uint32 frustum_mask,
-			      bool doFade = false, float fade = 1.0f)
+			      uint32 frustum_mask)
 {
   csStaticLODMesh* static_lod = cmesh->GetStaticLODMesh ();
   bool mm = cmesh->DoMinMaxRange ();
@@ -640,38 +580,18 @@ void csSector::ObjectVisible (csMeshWrapper* cmesh, iRenderView* rview,
       return;
   }
 
-  if (doFade)
-    cmesh->SetLODFade (fade);
-  else
-    cmesh->UnsetLODFade ();
+  iMeshObject* loddedobject = 0;
 
   if (static_lod)
   {
     float lod = static_lod->GetLODValue (distance);
-    csArray<iMeshWrapper*>* meshes1;
-    csArray<iMeshWrapper*>* meshes2;
-    float lodFade;
-    bool hasFade = static_lod->GetMeshesForLODFaded (lod,
-      meshes1, meshes2, lodFade);
-    size_t i;
-    if (meshes1 != 0)
-    {
-      for (i = 0 ; i < meshes1->GetSize () ; i++)
-	MarkMeshAndChildrenVisible ((*meshes1)[i], rview, frustum_mask,
-	  hasFade, fade*lodFade);
-    }
-    if (meshes2 != 0)
-    {
-      for (i = 0 ; i < meshes2->GetSize () ; i++)
-	MarkMeshAndChildrenVisible ((*meshes2)[i], rview, frustum_mask,
-	  hasFade, fade*(1.0f-lodFade));
-    }
+    loddedobject = static_lod->GetMeshObjectForLOD (lod);
   }
 
   csSectorVisibleRenderMeshes visMesh;
   visMesh.imesh = cmesh;
   int num;
-  csRenderMesh** meshes = cmesh->GetRenderMeshes (num, rview, frustum_mask);
+  csRenderMesh** meshes = cmesh->GetRenderMeshes (num, rview, frustum_mask, loddedobject);
   CS_ASSERT(!((num != 0) && (meshes == 0)));
 #ifdef CS_DEBUG
   for (int i = 0 ; i < num ; i++)
@@ -703,7 +623,7 @@ csSectorVisibleRenderMeshes* csSector::GetVisibleRenderMeshes (int& num,
   bool mm = cmesh->DoMinMaxRange ();
   if (!static_lod && !mm)
   {
-    csRenderMesh** meshes = cmesh->GetRenderMeshes (num, rview, frustum_mask);
+    csRenderMesh** meshes = cmesh->GetRenderMeshes (num, rview, frustum_mask, 0);
     CS_ASSERT(!((num != 0) && (meshes == 0)));
   #ifdef CS_DEBUG
     for (int i = 0 ; i < num ; i++)
@@ -749,14 +669,14 @@ csSectorVisibleRenderMeshes* csSector::GetVisibleRenderMeshes (int& num,
 }
 
 csSectorHitBeamResult csSector::HitBeamPortals (
-  const csVector3 &start,
-  const csVector3 &end)
+  const csVector3 &start, const csVector3 &end,
+  bool bf)
 {
   csSectorHitBeamResult rc;
   rc.mesh = 0;
   rc.final_sector = static_cast<iSector*> (this);
   int p = IntersectSegment (start, end, rc.isect, 0, false,
-		  &rc.mesh);
+		  &rc.mesh, bf);
   if (p != -1)
   {
     iPortalContainer* portals = rc.mesh->GetPortalContainer ();
@@ -770,7 +690,7 @@ csSectorHitBeamResult csSector::HitBeamPortals (
 	csVector3 new_start = rc.isect;
 	rc.mesh = po->HitBeamPortals (rc.mesh->GetMovable ()
 		->GetFullTransform (),
-		new_start, end, rc.isect, &p, &rc.final_sector);
+		new_start, end, rc.isect, &p, &rc.final_sector, bf);
 	drawBusy--;
       }
     }
@@ -780,9 +700,9 @@ csSectorHitBeamResult csSector::HitBeamPortals (
 }
 
 csSectorHitBeamResult csSector::HitBeam (
-  const csVector3 &start,
-  const csVector3 &end,
-  bool accurate)
+  const csVector3 &start, const csVector3 &end,
+  bool accurate,
+  bool bf)
 {
   GetVisibilityCuller ();
   float r;
@@ -791,7 +711,7 @@ csSectorHitBeamResult csSector::HitBeam (
   rc.polygon_idx = -1;
   rc.final_sector = 0;
   bool result = culler->IntersectSegment (start, end, rc.isect, &r, &rc.mesh,
-  	&rc.polygon_idx, accurate);
+  	&rc.polygon_idx, accurate, bf);
   if (!result) rc.mesh = 0;
   return rc;
 }
@@ -809,12 +729,11 @@ THREADED_CALLABLE_IMPL1(csSector, RemoveSectorCallback, csRef<iSectorCallback> c
 }
 
 int csSector::IntersectSegment (
-  const csVector3 &start,
-  const csVector3 &end,
-  csVector3 &isect,
-  float *pr,
+  const csVector3 &start, const csVector3 &end,
+  csVector3 &isect, float *pr,
   bool only_portals,
-  iMeshWrapper **p_mesh)
+  iMeshWrapper **p_mesh,
+  bool bf)
 {
   GetVisibilityCuller ();
   float r, best_r = 10000000000.;
@@ -826,7 +745,7 @@ int csSector::IntersectSegment (
   {
     iMeshWrapper *mesh;
     int poly;
-    bool rc = culler->IntersectSegment (start, end, isect, &r, &mesh, &poly);
+    bool rc = culler->IntersectSegment (start, end, isect, &r, &mesh, &poly, true, bf);
     if (rc)
     {
       if (poly != -1) best_p = poly;
@@ -871,7 +790,7 @@ int csSector::IntersectSegment (
     // portal.
     int p;
     bool rc = mesh->GetMeshObject ()->HitBeamObject (
-      	obj_start, obj_end, obj_isect, &r, &p);
+      	obj_start, obj_end, obj_isect, &r, &p, 0, bf);
     if (!rc) p = -1;
     if (p != -1 && r < best_r)
     {
@@ -907,13 +826,8 @@ iSector *csSector::FollowSegment (
 {
   csVector3 isect;
   iMeshWrapper* mesh;
-  int p = IntersectSegment (
-    t.GetOrigin (),
-    new_position,
-    isect,
-    0,
-    only_portals,
-    &mesh);
+  int p = IntersectSegment (t.GetOrigin (),
+    new_position, isect, 0, only_portals, &mesh);
 
   if (p != -1)
   {

@@ -28,17 +28,14 @@ namespace CS
 {
   namespace Platform
   {
-    bool IsRegularFile (const char* path)
+    bool IsRegularFile (struct stat* file_stat)
     {
-        struct stat buf;
-        if (Stat (path, &buf) == 0)
-        {
-            if (buf.st_mode & S_IFREG)
-            {
-                return true;
-            }
-        }
-        return false;
+      return file_stat->st_mode & S_IFREG;
+    }
+      
+    bool IsDirectory (struct stat* file_stat)
+    {
+      return file_stat->st_mode & S_IFDIR;
     }
       
     int Stat (const char* path, struct stat* buf)

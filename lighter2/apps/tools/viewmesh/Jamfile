@@ -34,6 +34,16 @@ if $(CEGUI.AVAILABLE) = "yes"
   VIEWMESH.PLUGINLIST =
     animesh
     animeshldr
+    bodymesh
+    debug
+    lookat
+    noise
+    ragdoll
+    ragdoll2
+    retarget
+    speed
+    bodymeshldr
+    splitmorph
     bindoc
     bruteblock
     bugplug
@@ -49,6 +59,7 @@ if $(CEGUI.AVAILABLE) = "yes"
     cssynldr
     docpreproc
     dsplex
+    visualdebug
     emit
     emitldr
     engine
@@ -70,7 +81,6 @@ if $(CEGUI.AVAILABLE) = "yes"
     ptpdlight
     rendloop_loader
     rendstep_std
-    rendstep_stencil
     reporter
     rm_rlcompat
     rm_unshadowed
@@ -130,7 +140,8 @@ if $(CEGUI.AVAILABLE) = "yes"
   }
   if $(GL.AVAILABLE) = "yes"
   {
-    VIEWMESH.PLUGINLIST += gl3d glshader_arb glshader_fixed ;
+    VIEWMESH.PLUGINLIST += gl3d glshader_arb glshader_fixed glshader_glsl ;
+
     # GL canvases
     if $(GLX.AVAILABLE) = "yes" { VIEWMESH.PLUGINLIST += glx2d ; }
     if $(TARGET.OS) = "WIN32" { VIEWMESH.PLUGINLIST += glwin32 ; }
@@ -139,6 +150,8 @@ if $(CEGUI.AVAILABLE) = "yes"
     if $(CG.AVAILABLE) = "yes" { VIEWMESH.PLUGINLIST += glshader_cg ; }
   }
 
-  LinkStaticPlugins viewmesh_static : $(VIEWMESH.PLUGINLIST) ;
+  LinkStaticPlugins viewmesh_static : $(VIEWMESH.PLUGINLIST) : : : :
+    # Trigger update of generated code when the plugins list changes
+    $(SUBDIR)/Jamfile ;
   SubVariant ;
 }

@@ -141,7 +141,6 @@ WALKTEST_STATIC.PLUGINLIST =
   bruteblock
   bindoc
   csbmpimg
-  rendstep_stencil
   ;
 
 Description walktest_static : "WalkTest demo (static build)" ;
@@ -152,7 +151,9 @@ Application walktest_static : [ Wildcard *.cpp *.h ] :
 CFlags walktest_static : [ FDefines CS_STATIC_LINKED ] ;
 MsvcDefine walktest_static : CS_STATIC_LINKED ;
 LinkWith walktest_static : crystalspace ;
-LinkStaticPlugins walktest_static : $(WALKTEST_STATIC.PLUGINLIST) ;
+LinkStaticPlugins walktest_static : $(WALKTEST_STATIC.PLUGINLIST) : : : :
+  # Trigger update of generated code when the plugins list changes
+  $(SUBDIR)/Jamfile ;
 FileListEntryApplications walktest_static : app-demo-static ;
 
 SubVariant ;

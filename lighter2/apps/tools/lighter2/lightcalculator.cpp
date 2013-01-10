@@ -119,7 +119,7 @@ namespace lighter
         Primitive& prim = primArray[pidx];
 
         // Get reference to this primitive's lightmap (non pseudo-dynamic)
-        size_t numElements = prim.GetElementCount ();        
+        size_t numElements = prim.GetElementCount ();
         Lightmap* normalLM = sector->scene->GetLightmap (
           prim.GetGlobalLightmapID (), subLightmapNum, (Light*)0);
 

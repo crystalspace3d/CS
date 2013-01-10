@@ -61,11 +61,13 @@ public:
     csArray<NodeData> availTextures;
     csArray<NodeData> availMaterials;
     csArray<NodeData> availMeshfacts;
+    csArray<NodeData> availLightfacts;
     CS::Threading::Mutex pluginObjects;
     CS::Threading::Mutex shaderObjects;
     CS::Threading::Mutex textureObjects;
     CS::Threading::Mutex materialObjects;
     CS::Threading::Mutex meshfactObjects;
+    CS::Threading::Mutex lightfactObjects;
 
     csLoaderContext(iObjectRegistry* object_reg, iEngine* Engine, csThreadedLoader* loader,
       iCollection* collection,iMissingLoaderData* missingdata, uint keepFlags, bool do_verbose);
@@ -77,6 +79,7 @@ public:
     {
       return FindMaterial(name);
     }
+    virtual iLightFactory* FindLightFactory(const char* name, bool notify = true);
     virtual iMeshFactoryWrapper* FindMeshFactory(const char* name, bool notify = true);
     virtual iMeshWrapper* FindMeshObject(const char* name);
     virtual iTextureWrapper* FindTexture(const char* name, bool doLoad = true);
@@ -90,7 +93,9 @@ public:
     virtual iCollection* GetCollection() const { return collection; }
     virtual bool CurrentCollectionOnly() const { return false; }
     virtual uint GetKeepFlags() const { return keepFlags; }
-    virtual void AddToCollection(iObject* obj);
+    virtual void AddToCollection (iObject* obj);
+    virtual bool LoadComment (iObject* obj, iDocumentNode* commentNode,
+		    bool replace = false);
     virtual bool GetVerbose() { return do_verbose; }
 
     void ReportNotify (const char* description, ...);
@@ -103,6 +108,7 @@ public:
     void ParseAvailableMaterials(iDocumentNode* doc);
     void ParseAvailableAddons(iDocumentNode* doc);
     void ParseAvailableMeshfacts(iDocumentNode* doc);
+    void ParseAvailableLightfacts(iDocumentNode* doc);
   };
 }
 CS_PLUGIN_NAMESPACE_END(csparser)

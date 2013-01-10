@@ -26,7 +26,11 @@
 #include "csplugincommon/rendermanager/rendertree.h"
 #include "csplugincommon/rendermanager/debugcommon.h"
 #include "csplugincommon/rendermanager/renderlayers.h"
+#include "csplugincommon/rendermanager/autofx_framebuffertex.h"
+#include "csplugincommon/rendermanager/autofx_reflrefr.h"
+#include "csplugincommon/rendermanager/shadow_pssm.h"
 #include "csplugincommon/rendermanager/posteffectssupport.h"
+#include "csplugincommon/rendermanager/hdrexposure.h"
 #include "csplugincommon/rendermanager/viscullcommon.h"
 
 #include "iutil/comp.h"
@@ -34,9 +38,7 @@
 #include "iengine/rendermanager.h"
 #include "itexture.h"
 
-#include "gbuffer.h"
 #include "deferredtreetraits.h"
-#include "deferredlightrender.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 {
@@ -85,17 +87,32 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       targets.MarkAsUsed (target);
     }
 
-    typedef StandardContextSetup<RenderTreeType, CS::RenderManager::MultipleRenderLayer> 
+    typedef RMDeferred
+      ThisType;
+
+    typedef CS::RenderManager::MultipleRenderLayer
+      RenderLayerType;
+
+    typedef CS::RenderManager::ShadowPSSM<RenderTreeType, RenderLayerType>
+      ShadowType;
+
+    typedef StandardContextSetup<RenderTreeType, RenderLayerType> 
       ContextSetupType;
 
     typedef CS::RenderManager::StandardPortalSetup<RenderTreeType, ContextSetupType> 
       PortalSetupType;
 
-    typedef CS::RenderManager::LightSetup<RenderTreeType, CS::RenderManager::MultipleRenderLayer> 
+    typedef CS::RenderManager::LightSetup<RenderTreeType, RenderLayerType, ShadowType> 
       LightSetupType;
 
-    typedef CS::RenderManager::DependentTargetManager<RenderTreeType, RMDeferred>
+    typedef CS::RenderManager::DependentTargetManager<RenderTreeType, ThisType>
       TargetManagerType;
+
+    typedef CS::RenderManager::AutoFX::ReflectRefract<RenderTreeType, ContextSetupType>
+      AutoReflectRefractType;
+
+    typedef CS::RenderManager::AutoFX::FramebufferTex<RenderTreeType>
+      AutoFramebufferTexType;
 
     //---- iDebugHelper Interface ----
     virtual bool DebugCommand(const char *cmd);
@@ -114,22 +131,24 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
       return false;
     }
 
-    void AddDeferredLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
-    void AddZOnlyLayer(CS::RenderManager::MultipleRenderLayer &layers, int &addedLayer);
+    size_t AddLayer(CS::RenderManager::MultipleRenderLayer& layers, csStringID type, const char* name, const char* file);
+    size_t LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers, csStringID shaderType);
 
-    int LocateDeferredLayer(const CS::RenderManager::MultipleRenderLayer &layers);
-    int LocateZOnlyLayer(const CS::RenderManager::MultipleRenderLayer &layers);
-    int LocateLayer(const CS::RenderManager::MultipleRenderLayer &layers,
-                    csStringID shaderType);
-
-    void ShowGBuffer(RenderTreeType &tree);
+    void ShowGBuffer(RenderTreeType &tree, GBuffer* buffer);
 
     iObjectRegistry *objRegistry;
 
     RenderTreeType::PersistentData treePersistent;
     PortalSetupType::PersistentData portalPersistent;
     LightSetupType::PersistentData lightPersistent;
-    DeferredLightRenderer::PersistentData lightRenderPersistent;
+    DeferredLightRenderer<ShadowType>::PersistentData lightRenderPersistent;
+
+    AutoReflectRefractType::PersistentData reflectRefractPersistent;
+    AutoFramebufferTexType::PersistentData framebufferTexPersistent;
+
+    CS::RenderManager::HDRHelper hdr;
+    CS::RenderManager::HDR::Exposure::Configurable hdrExposure;
+    bool doHDRExposure;
 
     CS::RenderManager::MultipleRenderLayer renderLayer;
 
@@ -140,17 +159,19 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     TargetManagerType targets;
     csSet<RenderTreeType::ContextNode*> contextsScannedForTargets;
 
-    csRef<iTextureHandle> accumBuffer;
-
     GBuffer gbuffer;
     GBuffer::Description gbufferDescription;
 
-    int deferredLayer;
-    int zonlyLayer;
+    size_t deferredLayer;
+    size_t lightingLayer;
+    size_t zonlyLayer;
     int maxPortalRecurse;
+    bool doShadows;
 
     bool showGBuffer;
     bool drawLightVolumes;
+
+    uint dbgFlagClipPlanes;
   };
 }
 CS_PLUGIN_NAMESPACE_END(RMDeferred)

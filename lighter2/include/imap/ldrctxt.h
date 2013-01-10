@@ -34,9 +34,11 @@ struct iMeshFactoryWrapper;
 struct iMeshWrapper;
 struct iSector;
 struct iTextureWrapper;
+struct iLightFactory;
 struct iLight;
 struct iShader;
 struct iObject;
+struct iDocumentNode;
 
 /**
  * This interface gives the context for the loader.
@@ -53,7 +55,7 @@ struct iObject;
  */
 struct iLoaderContext : public virtual iBase
 {
-  SCF_INTERFACE(iLoaderContext, 4, 2, 0);
+  SCF_INTERFACE(iLoaderContext, 4, 2, 1);
   /// Find a sector.
   virtual iSector* FindSector (const char* name) = 0;
   
@@ -72,6 +74,10 @@ struct iLoaderContext : public virtual iBase
    */
   virtual iMaterialWrapper* FindNamedMaterial (const char* name,
   	const char *filename) = 0;
+
+  /// Find a light factory.
+  virtual iLightFactory* FindLightFactory (const char* name, bool notify = true) = 0;
+
   /// Find a mesh factory.
   virtual iMeshFactoryWrapper* FindMeshFactory (const char* name, bool notify = true) = 0;
   /// Find a mesh object.
@@ -112,28 +118,39 @@ struct iLoaderContext : public virtual iBase
    * Return a collection if we only want to load in that collection.
    * 0 otherwise. If not 0 then all objects will be created in the collection.
    */
-  virtual iCollection* GetCollection() const = 0;
+  virtual iCollection* GetCollection () const = 0;
 
   /**
    * Return true if we only want to look for objects in the region
    * given by GetRegion().
    */
-  virtual bool CurrentCollectionOnly() const = 0;
+  virtual bool CurrentCollectionOnly () const = 0;
 
   /**
    * Returns the flags to tell us what we want to keep.
    */
-  virtual uint GetKeepFlags() const = 0;
+  virtual uint GetKeepFlags () const = 0;
 
   /**
    * Adds the object to the stored collection.
    */
-  virtual void AddToCollection(iObject* obj) = 0;
+  virtual void AddToCollection (iObject* obj) = 0;
+
+  /**
+   * Handle a comment node for a given object. If the engine saveable
+   * flag is on then an iObjectComment is created and add to the object.
+   * Otherwise nothing happens.
+   * This function returns true if a comment was added. False otherwise.
+   * If 'replace' is true then previously existing comments (if any) will be
+   * overwritten by the new comment.
+   */
+  virtual bool LoadComment (iObject* obj, iDocumentNode* commentNode,
+		  bool replace = false) = 0;
 
   /**
    * Get the message verbosity.
    */
-  virtual bool GetVerbose() = 0;
+  virtual bool GetVerbose () = 0;
 };
 
 /** @} */

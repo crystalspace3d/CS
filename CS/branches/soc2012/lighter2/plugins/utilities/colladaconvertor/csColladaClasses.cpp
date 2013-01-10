@@ -351,8 +351,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (ColladaConvertor)
     textureOffset = -1;
     vertexOffset = -1;
 
-    bool foundN = false, foundT = false, foundP = false;
-
     while (inputElements->HasNext())
     {
       currentInputElement = inputElements->Next();
@@ -363,7 +361,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (ColladaConvertor)
       scfString semVal(currentInputElement->GetAttributeValue("semantic"));
       if (semVal.Compare("NORMAL"))
       {
-        foundN = true;
         normalId = currentInputElement->GetAttributeValue("source");
         if (normalId.GetAt(0) == '#')
         {
@@ -374,7 +371,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (ColladaConvertor)
       }
       else if (semVal.Compare("TEXCOORD"))
       {
-        foundT = true;
         textureId = currentInputElement->GetAttributeValue("source");
         if (textureId.GetAt(0) == '#')
         {
@@ -386,7 +382,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (ColladaConvertor)
 
       else if (semVal.Compare("VERTEX"))
       {
-        foundP = true;
         vertexId = currentInputElement->GetAttributeValue("source");
         if (vertexId.GetAt(0) == '#')
         {
@@ -844,7 +839,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (ColladaConvertor)
 
       /// @todo: Add normal information here.
       /* WRITE OUT VERTICES */
-      scfString formatter;
+      csString formatter;
 
       // positions
       currentCrystalVElement = currentCrystalParamsElement->CreateNodeBefore(CS_NODE_ELEMENT);

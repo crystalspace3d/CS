@@ -5,7 +5,13 @@ import shutil
 
 
 def EmptyDependencies():
-  return {'T':{}, 'M':{}, 'A':{}, 'F':{}, 'G':{}, }
+  # 'T'  -> textures
+  # 'M'  -> materials
+  # 'TM' -> texture materials (created for meshes with UV texture but no material)
+  # 'A'  -> armatures
+  # 'F'  -> meshes
+  # 'G'  -> groups of objects
+  return {'T':{}, 'M':{}, 'TM':{}, 'A':{}, 'F':{}, 'G':{}, }
 
   
 def MergeDependencies(dep1, dep2):
@@ -19,10 +25,21 @@ def Join(*args):
   
 UNIQUE_NAMES = {'None': '', }
 def GetUniqueName(obj):
-  library = obj.library.filepath if obj.library else None
-  if str(library) not in UNIQUE_NAMES:
-    UNIQUE_NAMES[str(library)] = str(len(UNIQUE_NAMES))+'-'
-  return bpy.path.clean_name(UNIQUE_NAMES[str(library)] + obj.name)
+  # Images can be packed in Blender files or saved in external locations;
+  # consequently we use the unique filename as unique name for images:
+  # two images sharing the same name and path are considered identical
+  if type(obj) == bpy.types.Image:
+    uname = obj.ufilename
+  # Other types of objects: two objects sharing the same name in
+  # a same Blender file are considered identical
+  else:
+    library = obj.library.filepath if obj.library else None
+    if str(library) not in UNIQUE_NAMES:
+      UNIQUE_NAMES[str(library)] = str(len(UNIQUE_NAMES))+'-'
+    uname = UNIQUE_NAMES[str(library)] + obj.name
+  # All characters of the unique name besides A-Z/a-z, 0-9
+  # are replaced with “_”
+  return bpy.path.clean_name(uname)
 
 UNIQUE_FILENAMES = {}
 def GetUniqueFileName(obj):
@@ -90,7 +107,66 @@ def find (f, seq):
 # Utility method to decompose a matrix
 def DecomposeMatrix (matrix):
   ''' Return the location, rotation and scale parts of a transformation matrix '''
-  loc, quat, scale = matrix.decompose()
+  m = matrix.to_4x4()
+  loc, quat, scale = m.decompose()
   # transform quaternion to a 4x4 rotation matrix
   rot = quat.to_matrix().to_4x4()
   return loc, rot, scale
+
+
+# Utility methods ensuring compatibility with new API of Blender 2.63
+# Blender 2.62                 ->  Blender 2.63
+# bpy.types.Mesh.faces         ->  bpy.types.Mesh.tessfaces
+# bpy.types.Mesh.uv_textures   ->  bpy.types.Mesh.tessface_uv_textures
+# bpy.types.Mesh.vertex_colors ->  bpy.types.Mesh.tessface_vertex_colors
+
+# Tessellation
+def UpdateFaces (self):
+
+  ve = bpy.app.version
+
+  if (ve[0] > 2) or ((ve[0] == 2) and (ve[1] >= 63)):
+    self.update(calc_tessface=True)
+
+bpy.types.Mesh.update_faces = UpdateFaces
+
+# Faces
+def GetFaces(mesh):
+    
+  ve = bpy.app.version
+
+  if (ve[0] > 2) or ((ve[0] == 2) and (ve[1] >= 63)):
+    if len(mesh.tessfaces) > 0:
+      return mesh.tessfaces
+
+    return mesh.polygons
+
+  return mesh.faces
+
+bpy.types.Mesh.all_faces = property(GetFaces)
+
+# UV textures
+def GetUVTextures(mesh):
+    
+  ve = bpy.app.version
+
+  if (ve[0] > 2) or ((ve[0] == 2) and (ve[1] >= 63)):
+    if len(mesh.tessface_uv_textures) > 0:
+      return mesh.tessface_uv_textures
+
+  return mesh.uv_textures
+
+bpy.types.Mesh.all_uv_textures = property(GetUVTextures)
+
+# Vertex colors
+def GetVertexColors(mesh):
+    
+  ve = bpy.app.version
+
+  if (ve[0] > 2) or ((ve[0] == 2) and (ve[1] >= 63)):
+    if len(mesh.tessface_vertex_colors) > 0:
+      return mesh.tessface_vertex_colors
+
+  return mesh.vertex_colors
+
+bpy.types.Mesh.all_vertex_colors = property(GetVertexColors)

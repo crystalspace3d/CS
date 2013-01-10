@@ -1,6 +1,7 @@
+
 import bpy
 
-from io_scene_cs.utilities import rnaType, rnaOperator, B2CS, EnumProperty, SHADERS
+from io_scene_cs.utilities import rnaType, rnaOperator, B2CS, EnumProperty, StringProperty, FloatProperty, SHADERS
 
 from io_scene_cs.utilities import RemovePanels, RestorePanels 
 
@@ -31,43 +32,7 @@ class MATERIAL_PT_B2CS__context_material(csMaterialPanel, bpy.types.Panel):
         layout = self.layout
 
         mat = context.material
-        ob = context.object
-        slot = context.material_slot
-        space = context.space_data
 
-        if ob:
-            row = layout.row()
-
-            row.template_list(ob, "material_slots", ob, "active_material_index", rows=2)
-
-            col = row.column(align=True)
-            col.operator("object.material_slot_add", icon='ZOOMIN', text="")
-            col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
-
-            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
-
-            if ob.mode == 'EDIT':
-                row = layout.row(align=True)
-                row.operator("object.material_slot_assign", text="Assign")
-                row.operator("object.material_slot_select", text="Select")
-                row.operator("object.material_slot_deselect", text="Deselect")
-
-        split = layout.split(percentage=0.65)
-
-        if ob:
-            split.template_ID(ob, "active_material", new="material.new")
-            row = split.row()
-            if mat:
-                row.prop(mat, "use_nodes", icon="NODETREE", text="")
-
-            if slot:
-                row.prop(slot, "link", text="")
-            else:
-                row.label()
-        elif mat:
-            split.template_ID(space, "pin_id")
-            split.separator()
-         
         if mat:   
           layout.separator()    
           row = layout.row()
@@ -80,6 +45,12 @@ class MATERIAL_PT_B2CS__context_material(csMaterialPanel, bpy.types.Panel):
           row.prop(mat, "priority")
           row = layout.row()
           row.prop(mat, "zbuf_mode")
+          row = layout.row()
+          row.prop(mat, "water_fog_color")
+          row = layout.row()
+          row.prop(mat, "water_perturb_scale")
+          row = layout.row()
+          row.prop(mat, "water_fog_density")
 
        
         
@@ -110,3 +81,19 @@ EnumProperty(['Material'], attr="zbuf_mode", name="Z-buffer mode",
             ('ztest','Z-Test',"Test only"),
             ('zuse','Z-Use',"Test, write if successful")],
      default='zuse')
+
+StringProperty(['Material'], attr="water_fog_color",
+        name="Water Fog Color",
+        description="Fog color inside the water surface", 
+        default='0,0.1,0.15,1')
+
+FloatProperty(['Material'], attr="water_fog_density",
+        name="Water Fog Density",
+        description="Fog density inside the water surface", 
+        default=3.0)
+
+StringProperty(['Material'], attr="water_perturb_scale",
+        name="Water Perturb Scale",
+        description="Fog perturb scale", 
+        default='0.9,0.9,0,0')
+

@@ -266,6 +266,7 @@ csZBufMode csGLGraphics3D::GetZModePass2 (csZBufMode mode)
   {
     case CS_ZBUF_NONE:
     case CS_ZBUF_TEST:
+    case CS_ZBUF_INVERT:
     case CS_ZBUF_EQUAL:
       return mode;
     case CS_ZBUF_FILL:
@@ -1414,6 +1415,8 @@ void csGLGraphics3D::UnsetRenderTargets()
   viewwidth = G2D->GetWidth();
   viewheight = G2D->GetHeight();
   needViewportUpdate = true;
+
+  currentAttachments = 0;
 }
 
 void csGLGraphics3D::CopyFromRenderTargets (size_t num,
@@ -1520,6 +1523,12 @@ bool csGLGraphics3D::BeginDraw (int drawflags)
   int i = 0;
   for (i = numImageUnits; i-- > 0;)
     DeactivateTexture (i);
+
+  /* If render attachments are set, but no depth attachment is given
+   * (ie default depth is used), implicitly clear the depth buffer. */
+  if ((currentAttachments != 0)
+      && ((currentAttachments & (1 << rtaDepth)) == 0))
+    drawflags |= CSDRAW_CLEARZBUFFER;
 
   // if 2D graphics is not locked, lock it
   if ((drawflags & (CSDRAW_2DGRAPHICS | CSDRAW_3DGRAPHICS))
@@ -1662,7 +1671,6 @@ void csGLGraphics3D::FinishDraw ()
     RecordProfileEvent ("Unset render targets");
     r2tbackend->FinishDraw ((current_drawflags & CSDRAW_READBACK) != 0);
     UnsetRenderTargets();
-    currentAttachments = 0;
   }
   
   current_drawflags = 0;
@@ -1820,7 +1828,6 @@ bool csGLGraphics3D::ActivateTexture (iTextureHandle *txthandle, int unit)
   if (ext->CS_GL_ARB_multitexture)
   {
     statecache->SetCurrentImageUnit (unit);
-    statecache->ActivateImageUnit ();
   }
   else if (unit != 0) return false;
 
@@ -1938,7 +1945,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -1955,7 +1961,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -2012,7 +2017,6 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    //makeGLMatrixInverted (o2w, matrix);
     makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
@@ -3227,8 +3231,8 @@ void csGLGraphics3D::SetClipper (iClipper2D* clipper, int cliptype)
       r2tbackend->SetClipRect (scissorRect);
     else
     {
-      GLint vp[4];
-      glGetIntegerv (GL_VIEWPORT, vp);
+      int vp[4];
+      G2D->GetViewport (vp[0], vp[1], vp[2], vp[3]);
       glScissor (vp[0] + scissorRect.xmin, vp[1] + scissorRect.ymin, scissorRect.Width(),
 	scissorRect.Height());
     }
@@ -3452,7 +3456,6 @@ void csGLGraphics3D::DrawSimpleMeshes (const csSimpleRenderMesh* meshes,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (0);
-	statecache->ActivateImageUnit ();
 	statecache->SetCurrentTCUnit (0);
 	statecache->ActivateTCUnit (csGLStateCache::activateTexCoord);
       }
@@ -3607,15 +3610,6 @@ bool csGLGraphics3D::PerformExtensionV (char const* command, va_list /*args*/)
     return true;
   }
   return false;
-}
-
-bool csGLGraphics3D::PerformExtension (char const* command, ...)
-{
-  va_list args;
-  va_start (args, command);
-  bool rc = PerformExtensionV(command, args);
-  va_end (args);
-  return rc;
 }
 
 void csGLGraphics3D::OQInitQueries(unsigned int* queries,int num_queries)
@@ -4229,7 +4223,6 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    //makeGLMatrixInverted (o2w, matrix);
     makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
@@ -4325,6 +4318,7 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
   }
 
   // Based on the kind of clipping we need we set or clip mask.
+  // @@@ TODO: use clip values
   int clip_mask, clip_value;
   if (clipportal_floating)
   {

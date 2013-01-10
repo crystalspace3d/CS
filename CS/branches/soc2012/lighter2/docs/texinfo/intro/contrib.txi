@@ -789,7 +789,7 @@ Luca Cappa (@email{groton@@gmx.net})
 Luca applied some various small fixes (engine lights, @sc{aws}, etc.).
 
 @item
-Luca Pancallo (@email{lpancallo@@ptc.com})
+Luca Pancallo (@email{pancallo@@netscape.net})
 
 Luca extended the @sc{ase} importer, and added a Crystal Space sprite exporter.
 He also sent a patch for mdl2spr and made various fixes to 3ds2lev. Luca
@@ -1125,7 +1125,7 @@ Philip Walls (@email{malverian@@lockless.dyndns.org})
 Philip added software cursor drawing to the @sc{svgalib} canvas.
 
 @item
-Philip Wyett (@email{philswyett@@gmx.co.uk})
+Philip Wyett (@email{philip.wyett@@cohere-tech.co.uk})
 
 Philip acted as general maintainer of the Window port for quite a while (and
 performed general maintenance), wrote build instructions for @sc{msvc},

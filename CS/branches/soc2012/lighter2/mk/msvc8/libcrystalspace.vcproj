@@ -1640,7 +1640,13 @@
 				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\universalimageconv.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csplugincommon\canvas\canvascommon.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\canvas\cursorconvert.cpp">
@@ -1707,15 +1713,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\rendermanager\viscullcommon.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\renderstep\basesteploader.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\renderstep\basesteptype.cpp">
-			</File>
-			<File
-				RelativePath="..\..\libs\csplugincommon\renderstep\parserenderstep.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csplugincommon\script\scriptcommon.cpp">
@@ -2225,7 +2222,13 @@
 				RelativePath="..\..\libs\csutil\sparse3d.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\stat_common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\staticvarcleanup.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\csutil\strcasestr.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\csutil\strhashr.cpp">
@@ -2577,6 +2580,9 @@
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgfx\universalimageconv.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgfx\vertexlight.h">
 			</File>
 			<File
@@ -2584,6 +2590,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\xorpat.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csplugincommon\canvas\canvascommon.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\canvas\cursorconvert.h">
@@ -2689,15 +2698,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\rendermanager\viscullcommon.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteploader.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\basesteptype.h">
-			</File>
-			<File
-				RelativePath="..\..\libs\..\include\csplugincommon\renderstep\parserenderstep.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csplugincommon\script\scriptcommon.h">
@@ -2943,6 +2943,9 @@
 				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\objectcomment.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -3001,6 +3004,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\vfsdirchange.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\wxappargconvert.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\algorithms.h">
@@ -3199,6 +3205,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\fpu80x86.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\frameeventsignpost.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\genericresourcecache.h">

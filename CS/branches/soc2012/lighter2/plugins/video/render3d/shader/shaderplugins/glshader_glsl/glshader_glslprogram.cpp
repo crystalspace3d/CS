@@ -241,9 +241,33 @@ CS_PLUGIN_NAMESPACE_BEGIN(GLShaderGLSL)
         SetUniformValue<Mat<GLfloat, 2, 2> > (uniform, var,
                                               glUniformMatrixWrapper (ext->glUniformMatrix2fvARB));
         break;
+      case GL_FLOAT_MAT2x3:
+        SetUniformValue<Mat<GLfloat, 3, 2> > (uniform, var,
+                                              glUniformMatrixWrapper (ext->glUniformMatrix2x3fv));
+        break;
+      case GL_FLOAT_MAT2x4:
+        SetUniformValue<Mat<GLfloat, 4, 2> > (uniform, var,
+                                              glUniformMatrixWrapper (ext->glUniformMatrix2x4fv));
+        break;
+      case GL_FLOAT_MAT3x2:
+        SetUniformValue<Mat<GLfloat, 2, 3> > (uniform, var,
+                                              glUniformMatrixWrapper (ext->glUniformMatrix3x2fv));
+        break;
       case GL_FLOAT_MAT3:
         SetUniformValue<Mat<GLfloat, 3, 3> > (uniform, var,
                                               glUniformMatrixWrapper (ext->glUniformMatrix3fvARB));
+        break;
+      case GL_FLOAT_MAT3x4:
+        SetUniformValue<Mat<GLfloat, 4, 3> > (uniform, var,
+                                              glUniformMatrixWrapper (ext->glUniformMatrix3x4fv));
+        break;
+      case GL_FLOAT_MAT4x2:
+        SetUniformValue<Mat<GLfloat, 2, 4> > (uniform, var,
+                                              glUniformMatrixWrapper (ext->glUniformMatrix4x2fv));
+        break;
+      case GL_FLOAT_MAT4x3:
+        SetUniformValue<Mat<GLfloat, 3, 4> > (uniform, var,
+                                              glUniformMatrixWrapper (ext->glUniformMatrix4x3fv));
         break;
       case GL_FLOAT_MAT4:
         SetUniformValue<Mat<GLfloat, 4, 4> > (uniform, var,
@@ -402,7 +426,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(GLShaderGLSL)
       ext->glGetActiveUniformARB (program_id, GLuint (i),
                                   maxUniformNameLen, &nameLen, &uniform.size,
                                   &uniform.type, reinterpret_cast<GLcharARB*> (uniformName));
-      // NVIDIA driver reports array uniforms with a "[0]" suffix, remove that
+      // names with a "[0]" suffix are aliases for the name itself - remove that suffix
       if ((nameLen > 3) && (strcmp (uniformName + nameLen - 3, "[0]") == 0))
       {
         uniformName[nameLen - 3] = 0;
@@ -646,7 +670,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(GLShaderGLSL)
 
   int csShaderGLSLProgram::ResolveTU (const char* binding)
   {
-    return tuBindings.Get (binding, -1);
+    // names with a "[0]" suffix are aliases for the name itself - remove that suffix
+    csString name(binding);
+    if(name.EndsWith("[0]")) name.DeleteAt(name.Length() - 3, 3);
+    return tuBindings.Get (name, -1);
   }
 }
 CS_PLUGIN_NAMESPACE_END(GLShaderGLSL)

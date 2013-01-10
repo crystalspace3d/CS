@@ -310,10 +310,15 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       { zbufMode = mode; }
     virtual csZBufMode GetZBufMode () const
       { return zbufMode; }
+    virtual iShaderVariableContext* GetShaderVariableContext(size_t buffer) const
+    {
+      return svContexts[buffer];
+    }
 
     bool visible;
     CS::Graphics::RenderPriority renderPriority;
     csZBufMode zbufMode;
+    csRefArray<csShaderVariableContext> svContexts;
   };
 
 
@@ -395,7 +400,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       const csVector3& end, csVector3& isect, float* pr);
     virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& isect, float* pr, int* polygon_idx,
-      iMaterialWrapper** material);
+      iMaterialWrapper** material, bool bf);
 
     virtual void SetMeshWrapper (iMeshWrapper* logparent);
     virtual iMeshWrapper* GetMeshWrapper () const;
@@ -519,7 +524,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Animesh)
       csRefArray<csShaderVariableContext> svContexts;
       csRefArray<csRenderBufferHolder> bufferHolders;
       csRefArray<csShaderVariable> boneTransformArray;
-    };    
+    };
 
     class Socket : public scfImplementation1<Socket, 
                                              CS::Mesh::iAnimatedMeshSocket>

@@ -94,8 +94,8 @@ animeshes or whole scenes depending on the loader interface that was used.
 </p>
 <p>If the <code>iModelLoader</code> interface is used, then only one mesh will be created.
 If there is any skeleton or animation defined, then the mesh will be an
-<a href="MeshObject-Animesh.html#0">Animesh</a>, otherwize it will be a <a href="MeshObject-Genmesh.html#0">Genmesh</a>.
-If the <code>iBinaryLoaderPlugin</code>, then a mesh factory will be created for all the
+<a href="MeshObject-Animesh.html#0">Animesh</a>, otherwise it will be a <a href="MeshObject-Genmesh.html#0">Genmesh</a>.
+If the <code>iBinaryLoaderPlugin</code> is used, then a mesh factory will be created for all the
 meshes defined in the file.
 </p>
 <p>Additionally, if a mesh defined in the file contains points or line segments, then
@@ -120,6 +120,19 @@ support the import of vertex and morph animations. To overcome this, some tools 
 been added to Crystal Space in order to load and merge an Animesh with its morph
 targets defined in several different files. See the <a href="Animesh-Tools.html#0">dedicated section</a>
 for more info on this.
+</p>
+<a name="5"></a>
+<h4 class="subsubheading"> Verbosity management </h4>
+
+<p>By default, the Assimp plugin would report only error and warning messages. If you
+want to access to more detailed reporting messages, you can use the <code>iVerbosityManager</code>
+in order to enable the verbosity of the <samp>&lsquo;assimpldr&rsquo;</samp> plugin. This can be made e.g.
+at launch time, by adding the following command-line option to the call to your program:
+</p>
+<p><code>-verbose=assimpldr</code>
+</p>
+<p>Additional messages are also reported when the Assim plugin has been compiled in the
+<samp>&lsquo;Debug&rsquo;</samp> compilation mode.
 </p>
 <hr size="1">
 <table cellpadding="1" cellspacing="1" border="0">

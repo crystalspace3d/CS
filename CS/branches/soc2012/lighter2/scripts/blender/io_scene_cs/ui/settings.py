@@ -67,7 +67,9 @@ class B2CS_OT_export_run(bpy.types.Operator):
       options += "-verbose=-scf "
     if B2CS.properties.silent:
       options += "-silent "
-      
+    if B2CS.properties.bugplug:
+      options += "-plugin=bugplug "
+     
     #import commands  
     #output = commands.getstatusoutput(WalkTestPath() + options + path)
     #print(output)
@@ -92,6 +94,9 @@ class RENDER_PT_csSettingsPanel(csSettingsPanel, bpy.types.Panel):
     row = layout.row()
     row.prop(B2CS.properties, "library")
     row = layout.row()
+    if not B2CS.properties.library:
+      row.prop(B2CS.properties, "sharedMaterial")
+    row = layout.row()
     row.prop(B2CS.properties, "enableDoublesided")
     row = layout.row()
     row.prop(B2CS.properties, "exportPath")
@@ -107,6 +112,7 @@ class RENDER_PT_csSettingsPanel(csSettingsPanel, bpy.types.Panel):
         row.prop(B2CS.properties, "console")
         row.prop(B2CS.properties, "verbose")
         row.prop(B2CS.properties, "silent")
+        row.prop(B2CS.properties, "bugplug")
       else:
         row.label(text="'walktest' isn't available!")
       
@@ -140,6 +146,11 @@ B2CS.BoolProperty( attr="silent",
         description="Enable the '-silent' flag of 'walktest'", 
         default=True)
 
+B2CS.BoolProperty( attr="bugplug",
+        name="Bugplug",
+        description="Enable bugplug in 'walktest'",
+        default=False)
+
 B2CS.BoolProperty( attr="library",
         name="Export as a CS library",
         description="Export all mesh factories in an unique CS library file", 
@@ -149,3 +160,8 @@ B2CS.BoolProperty( attr="enableDoublesided",
         name="Enable double sided meshes",
         description="Global enabling of the 'Double Sided' option for all meshes",
         default=False)
+
+B2CS.BoolProperty( attr="sharedMaterial",
+        name="Shared materials and textures",
+        description="Define all textures and materials in the world file",
+        default=True)

@@ -21,19 +21,19 @@
 #define __PHYSTUT2_H__
 
 #include "cssysdef.h"
-#include "csutil/weakref.h"
+#include "cstool/collisionhelper.h"
 #include "cstool/demoapplication.h"
-#include "collisionhelper.h"
-
-#include "ivaria/collisions.h"
-#include "ivaria/physics.h"
-#include "ivaria/vehicle.h"
+#include "csutil/weakref.h"
 
 #include "imesh/animesh.h"
 #include "imesh/animnode/ragdoll2.h"
 #include "imesh/modifiableterrain.h"
 #include "imesh/skeletonmodel.h"
 #include "imesh/softanim.h"
+
+#include "ivaria/collisions.h"
+#include "ivaria/physics.h"
+#include "ivaria/vehicle.h"
 
 #include "agent.h"
 

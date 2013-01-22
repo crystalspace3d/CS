@@ -20,9 +20,8 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-#ifndef __IVARIA_PHYSIH__
-#define __IVARIA_PHYSIH__
+#ifndef __IVARIA_PHYSICS_H__
+#define __IVARIA_PHYSICS_H__
 
 /**\file
  * Physics interfaces
@@ -37,16 +36,6 @@
 #include "imesh/genmesh.h"
 #include "iutil/objreg.h"
 #include "ivaria/collisions.h"
-#include "ivaria/physicalfactories.h"
-
-namespace CS {
-namespace Collisions {
-struct iCollisionCallback;
-struct iCollisionObject;
-struct CollisionGroup;
-struct iCollisionObject;
-}
-}
 
 namespace CS { 
 namespace Physics {
@@ -815,30 +804,30 @@ struct iDynamicActorFactory : public virtual iRigidBodyFactory
 };
 
 /**
- * \todo This class should have a common base interface with iCollisionActor
- * 
- * This is the interface for a Dynamic Actor.
- * It allows the user to easily navigate a physical object on ground.
- * The actual RigidBody that represents the actor always floats <step height> above the ground to be able to
- * move smoothly over terrain and small obstacles.
- * The air control factor determines whether and how well the actor can be controlled while not touching the ground.
- * Air control is always 100% when gravity is off.
+ * A dynamic actor allows the user to easily navigate a physical object on
+ * ground, and to interact with the dynamic objects that are colliding with it.
+ *
+ * The actual collider that represents the actor always floats <step height>
+ * above the ground to be able to move smoothly over terrain and small obstacles.
+ *
+ * The air control factor determines whether and how well the actor can be
+ * controlled while not touching the ground. Air control is always 100% when gravity
+ * is off.
  *
  * Main creators of instances implementing this interface:
  * - iPhysicalSystem::CreateDynamicActor()
  * 
  * Main users of this interface:
  * - iPhysicalSector
- * \todo All actor classes should be merged around a common abstract interface
  */
 struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions::iActor
 {
   SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
 
   /// Get whether to use a kinematic method for smooth steps
-  virtual bool GetUseKinematicSteps () const = 0;
+  //virtual bool GetUseKinematicSteps () const = 0;
   /// Set whether to use a kinematic method for smooth steps
-  virtual void SetUseKinematicSteps (bool u) = 0;
+  //virtual void SetUseKinematicSteps (bool u) = 0;
 };
 
 /**

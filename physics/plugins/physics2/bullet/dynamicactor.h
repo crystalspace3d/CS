@@ -49,101 +49,77 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   private:
     float stepHeight;
     float walkSpeed, jumpSpeed;
+    float maximumSlope;
     float airControlFactor;
     bool onGround;
     bool kinematicSteps;
 
   protected:
-    void CreateDynamicActor(CS::Physics::iDynamicActorFactory* props);
-
-    virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
+    void CreateDynamicActor (CS::Physics::iDynamicActorFactory* props);
+    virtual csBulletMotionState* CreateMotionState (const btTransform& trans);
 
   public:
-    csBulletDynamicActor(csBulletSystem* sys);
-    virtual ~csBulletDynamicActor();
+    csBulletDynamicActor (csBulletSystem* sys);
+    virtual ~csBulletDynamicActor ();
     
     virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR;}
 
-    bool AddBulletObject();
-    bool RemoveBulletObject();
-    void RebuildObject();
+    bool AddBulletObject ();
+    bool RemoveBulletObject ();
+    void RebuildObject ();
 
-    // ##########################################################################
-    // iActor stuff
-    virtual CS::Collisions::iCollisionObject* QueryCollisionObject() { return dynamic_cast<CS::Collisions::iCollisionObject*>(this); }
+    //-- iCollisionActor
+    virtual CS::Collisions::iCollisionObject* QueryCollisionObject ()
+    { return dynamic_cast<CS::Collisions::iCollisionObject*>(this); }
     
-    virtual CS::Collisions::iActor* QueryActor () { return dynamic_cast<CS::Collisions::iActor*>(this); }
+    virtual CS::Collisions::iActor* QueryActor ()
+    { return dynamic_cast<CS::Collisions::iActor*>(this); }
 
-    /// Update actor
     virtual void UpdatePreStep (float delta);
     virtual void UpdatePostStep (float delta);
     
-    /// Start walking in the given direction. Sets linear velocity. Takes air control into consideration.
-    virtual void Walk(csVector3 dir);
-  
-    /// Start walking in the given horizontal direction with walk speed. Sets linear velocity. Takes air control into consideration.
-    virtual void WalkHorizontal(csVector2 newVel2);
+    virtual void Walk (csVector3 dir);
+    virtual void WalkHorizontal (csVector2 newVel2);
+    virtual void Jump ();
+    virtual void StopMoving ();
 
-    /// Applies an upward impulse to this actor, and an inverse impulse to objects beneath
-    virtual void Jump();
+    virtual bool IsFreeFalling () const;
 
-    virtual void StopMoving()
-    {
-      if (!IsFreeFalling())
-      {
-        csVector3 zero(0);
+    //virtual bool IsOnGround () const { return touchedGroundObjectCount > 0; }
+    virtual bool IsOnGround () const { return onGround; }
 
-        SetLinearVelocity(zero);
-      }
-    }
-
-    /// Whether the actor is not on ground and gravity applies
-    virtual bool IsFreeFalling() const;
-
-    /// Whether this actor touches the ground
-    //virtual bool IsOnGround() const { return touchedGroundObjectCount > 0; }
-    virtual bool IsOnGround() const { return onGround; }
-
-    /// Get the max vertical threshold that this actor can step over
     virtual float GetStepHeight () const { return stepHeight; }
-    /// Set the max vertical threshold that this actor can step over
     virtual void SetStepHeight (float h) { stepHeight = h; }
 
-    /// Get the walk speed
+    virtual float GetMaximumSlope () const { return maximumSlope; };
+    virtual void SetMaximumSlope (float slope) { maximumSlope = slope; };
+
     virtual float GetWalkSpeed () const { return walkSpeed; }
-    /// Set the walk speed
     virtual void SetWalkSpeed (float s) { walkSpeed = s; }
 
-    /// Get the jump speed
     virtual float GetJumpSpeed () const { return jumpSpeed; }
-    /// Set the jump speed
     virtual void SetJumpSpeed (float s) { jumpSpeed = s; }
 
-    /// Determines how much the actor can control movement when free falling
     virtual float GetAirControlFactor () const { return airControlFactor; }
-    /// Determines how much the actor can control movement when free falling
     virtual void SetAirControlFactor (float f) { airControlFactor = f; }
     
-    /// Get whether to use a kinematic method for smooth steps
-    virtual bool GetUseKinematicSteps() const { return kinematicSteps; }
-    /// Set whether to use a kinematic method for smooth steps
-    virtual void SetUseKinematicSteps(bool u) { kinematicSteps = u; }
-
+    virtual bool GetUseKinematicSteps () const { return kinematicSteps; }
+    virtual void SetUseKinematicSteps (bool u) { kinematicSteps = u; }
 
     /// Override SetTransform
-    virtual void SetTransform(const csOrthoTransform& trans);
+    virtual void SetTransform (const csOrthoTransform& trans);
     
-    /// Whether this object can be affected by gravity
-    virtual bool GetGravityEnabled() const { return csBulletRigidBody::GetGravityEnabled(); }
-    /// Whether this object can be affected by gravity
-    virtual void SetGravityEnabled(bool enabled) { csBulletRigidBody::SetGravityEnabled(enabled); }
+    virtual bool GetGravityEnabled () const
+    { return csBulletRigidBody::GetGravityEnabled (); }
+    virtual void SetGravityEnabled (bool enabled)
+    { csBulletRigidBody::SetGravityEnabled (enabled); }
 
     // Kinematic stuff
-    inline btConvexShape* GetConvexShape() const;
+    inline btConvexShape* GetConvexShape () const;
 
   protected:
-    void stepUp(float dt);
-    void stepDown(float dt);
+    void StepUp (float dt);
+    void StepDown (float dt);
   };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

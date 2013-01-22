@@ -33,27 +33,27 @@ using namespace CS::Collisions;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   static const float DefaultGroundAngleCosThresh = 0.7f;             // min cos of angle between ground and up-axis (45 degrees)
-  static const btVector3 BTUpVector(CSToBullet(csVector3 (0.0f, 1.0f, 0.0f), 1));
+  static const btVector3 BTUpVector (CSToBullet (csVector3 (0.0f, 1.0f, 0.0f), 1));
   static const float AddedMargin = 0.02f;
 
-  csBulletActorMotionState::csBulletActorMotionState(csBulletRigidBody* body,
+  csBulletActorMotionState::csBulletActorMotionState (csBulletRigidBody* body,
     const btTransform& initialTransform,
     const btTransform& principalAxis) :
-  csBulletMotionState(body, initialTransform, principalAxis)
+  csBulletMotionState (body, initialTransform, principalAxis)
   {
 
   }
 
   void csBulletActorMotionState::setWorldTransform (const btTransform& trans)
   {
-    csBulletMotionState::setWorldTransform(trans);
+    csBulletMotionState::setWorldTransform (trans);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // csBulletDynamicActor
 
-  csBulletDynamicActor::csBulletDynamicActor(csBulletSystem* sys) : scfImplementationType(this, sys),
-    onGround(false)
+  csBulletDynamicActor::csBulletDynamicActor (csBulletSystem* sys) : scfImplementationType (this, sys),
+    onGround (false)
   {
   }
 
@@ -62,87 +62,87 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   }
 
-  void csBulletDynamicActor::CreateDynamicActor(iDynamicActorFactory* props)
+  void csBulletDynamicActor::CreateDynamicActor (iDynamicActorFactory* props)
   {
     group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
-    CreateRigidBodyObject(props);
+    CreateRigidBodyObject (props);
 
-    SetStepHeight(props->GetStepHeight());
-    SetWalkSpeed(props->GetWalkSpeed());
-    SetJumpSpeed(props->GetJumpSpeed());
-    SetUseKinematicSteps(props->GetUseKinematicSteps());
-    SetAirControlFactor(props->GetAirControlFactor());
+    SetStepHeight (props->GetStepHeight ());
+    SetWalkSpeed (props->GetWalkSpeed ());
+    SetJumpSpeed (props->GetJumpSpeed ());
+    SetUseKinematicSteps (props->GetUseKinematicSteps ());
+    SetAirControlFactor (props->GetAirControlFactor ());
     
-    if (collider->GetColliderType() == COLLIDER_COMPOUND)
+    if (collider->GetColliderType () == COLLIDER_COMPOUND)
     {
       // non-convex actor shape currently not supported with kinematic step correction
       kinematicSteps = false;
     }
     
     // Do not allow any simulated rotation
-    btBody->setAngularFactor(btVector3(0, 0, 0));
-    btBody->setDamping(0, 1);
+    btBody->setAngularFactor (btVector3 (0, 0, 0));
+    btBody->setDamping (0, 1);
   }
 
-  csBulletMotionState* csBulletDynamicActor::CreateMotionState(const btTransform& trans)
+  csBulletMotionState* csBulletDynamicActor::CreateMotionState (const btTransform& trans)
   {
     return motionState = new csBulletActorMotionState
-      (this, trans, collider->GetPrincipalAxisTransform());
+      (this, trans, collider->GetPrincipalAxisTransform ());
   }
 
-  bool csBulletDynamicActor::AddBulletObject()
+  bool csBulletDynamicActor::AddBulletObject ()
   {
-    return csBulletRigidBody::AddBulletObject();
+    return csBulletRigidBody::AddBulletObject ();
   }
 
-  bool csBulletDynamicActor::RemoveBulletObject()
+  bool csBulletDynamicActor::RemoveBulletObject ()
   {
-    return csBulletRigidBody::RemoveBulletObject();
+    return csBulletRigidBody::RemoveBulletObject ();
   }
 
-  void csBulletDynamicActor::RebuildObject()
+  void csBulletDynamicActor::RebuildObject ()
   {
-    csBulletRigidBody::RebuildObject();
+    csBulletRigidBody::RebuildObject ();
     
-    if (collider->GetColliderType() == COLLIDER_COMPOUND)
+    if (collider->GetColliderType () == COLLIDER_COMPOUND)
     {
       // non-convex actor shape currently not supported with kinematic step correction
       kinematicSteps = false;
     }
   }
 
-  void csBulletDynamicActor::SetTransform(const csOrthoTransform& trans)
+  void csBulletDynamicActor::SetTransform (const csOrthoTransform& trans)
   {
-    csBulletRigidBody::SetTransform(trans);
+    csBulletRigidBody::SetTransform (trans);
   }
 
-  void csBulletDynamicActor::Walk(csVector3 newVel)
+  void csBulletDynamicActor::Walk (csVector3 newVel)
   {
-    newVel.Normalize();
+    newVel.Normalize ();
     newVel *= walkSpeed;
 
-    csVector3 vel = GetLinearVelocity();
-    if (IsFreeFalling())
+    csVector3 vel = GetLinearVelocity ();
+    if (IsFreeFalling ())
     {
       // cannot entirely control movement mid-air
-      float realAirFactor = airControlFactor * system->GetWorldTimeStep();
+      float realAirFactor = airControlFactor * system->GetWorldTimeStep ();
       newVel = realAirFactor * newVel;
       newVel += (1.f - realAirFactor) * vel;
     }
 
-    SetLinearVelocity(newVel);
+    SetLinearVelocity (newVel);
   }
 
-  void csBulletDynamicActor::WalkHorizontal(csVector2 newVel2)
+  void csBulletDynamicActor::WalkHorizontal (csVector2 newVel2)
   {
-    newVel2.Normalize();
+    newVel2.Normalize ();
     newVel2 *= walkSpeed;
 
-    csVector3 vel = GetLinearVelocity();
-    if (IsFreeFalling())
+    csVector3 vel = GetLinearVelocity ();
+    if (IsFreeFalling ())
     {
       // cannot entirely control movement mid-air
-      float realAirFactor = airControlFactor * system->GetWorldTimeStep();
+      float realAirFactor = airControlFactor * system->GetWorldTimeStep ();
       newVel2 = realAirFactor * newVel2;
       newVel2 += (1.f - realAirFactor) * csVector2 (vel.x, vel.z);
     }
@@ -152,103 +152,60 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     SetLinearVelocity (newVel);
   }
 
-  /// Applies an upward impulse to this actor, and an inverse impulse to objects beneath
-  void csBulletDynamicActor::Jump()
+  /// Applies an upward impulse to this actor
+  void csBulletDynamicActor::Jump ()
   {
     // apply upward impulse to actor
-    csVector3 vel = GetLinearVelocity();
-    vel[1] += GetJumpSpeed();
-    SetLinearVelocity(vel);
-
-    // Apply inverse of impulse to objects beneath.
-    // Of course this is not quite correct, since the jump force on the actor should depend on the restitution of both objects.
-    // (imagine jumping from a pillow vs. jumping from concrete)
-    // (imagine jumping in professional NIKE's vs jumping in cozy slippers)
-
-    // split inverse of impulse between all objects
-   /* float touchedGroundObjectCountInv = 1.f / touchedGroundObjectCount;
-    vel[1] = -GetJumpSpeed() * touchedGroundObjectCountInv;
-    vel[HorizontalAxis1] = -vel[HorizontalAxis1] * touchedGroundObjectCountInv;
-    vel[HorizontalAxis2] = -vel[HorizontalAxis2] * touchedGroundObjectCountInv;
-
-    btVector3 btVel = CSToBullet(vel, system->GetInternalScale());*/
-
-    // iterate over all objects touching the object
-    // TODO: Fix me
-    //for (int j = 0; j < manifoldArray.size(); ++j)
-    //{
-    //  btPersistentManifold* manifold = manifoldArray[j];
-    //  float directionSign;
-    //  btCollisionObject* obj;
-    //  if (manifold->getBody0() == ghost)
-    //  {
-    //    directionSign = -1.0;
-    //    obj = static_cast<btCollisionObject*> (manifold->getBody1());
-    //  }
-    //  else
-    //  {
-    //    directionSign = 1.0;
-    //    obj = static_cast<btCollisionObject*> (manifold->getBody0());
-    //  }
-
-    //  btRigidBody* body = btRigidBody::upcast(obj);
-    //  if (!body || body == btBody) continue;
-
-    //  // iterate over all contacts with the object
-    //  for (int p=0; p < manifold->getNumContacts(); ++p)
-    //  {
-    //    const btManifoldPoint&pt = manifold->getContactPoint(p);
-    //    float dist = pt.getDistance();
-    //    if (dist < 0.0)
-    //    {
-    //      if (pt.m_normalWorldOnB.dot(BTUpVector) > DefaultGroundAngleCosThresh)
-    //      {
-    //        // add velocity to current velocity
-    //        body->setLinearVelocity(pt.m_normalWorldOnB * directionSign * (btVel + body->getLinearVelocity()));
-    //        break;
-    //      }
-    //    } 
-    //  }
-    //}
+    csVector3 vel = GetLinearVelocity ();
+    vel[1] += GetJumpSpeed ();
+    SetLinearVelocity (vel);
   }
 
-  /// Whether actor cannot currently fully control movement
-  bool csBulletDynamicActor::IsFreeFalling() const
-  { 
-    return 
-      (!IsOnGround() ||                 // not in contact with ground or
-      IsMovingUpward()) &&              // moving upward (away from ground)
-      DoesGravityApply();               // and gravity applies
-  }
-
-  void csBulletDynamicActor::UpdatePreStep(float dt)
+  void csBulletDynamicActor::StopMoving ()
   {
-    onGround = TestOnGround();
-
-    if (kinematicSteps && !IsFreeFalling() && btBody->getLinearVelocity().length2() > 0)
+    if (!IsFreeFalling ())
     {
-      stepUp(dt);
-      //stepForwardAndStrafe(dt);
+      csVector3 zero (0);
+      SetLinearVelocity (zero);
     }
   }
 
-  void csBulletDynamicActor::UpdatePostStep(float dt)
+  bool csBulletDynamicActor::IsFreeFalling () const
+  { 
+    return 
+      (!IsOnGround () ||                 // not in contact with ground or
+      IsMovingUpward ()) &&              // moving upward (away from ground)
+      DoesGravityApply ();               // and gravity applies
+  }
+
+  void csBulletDynamicActor::UpdatePreStep (float dt)
   {
-    if (kinematicSteps && !IsFreeFalling() && btBody->getLinearVelocity().length2() > 0)
+    onGround = TestOnGround ();
+
+    if (kinematicSteps && !IsFreeFalling () && btBody->getLinearVelocity ().length2 () > 0)
     {
-      stepDown(dt);
-      SetLinearVelocity(0);              // stop moving
+      StepUp (dt);
+      //stepForwardAndStrafe (dt);
+    }
+  }
+
+  void csBulletDynamicActor::UpdatePostStep (float dt)
+  {
+    if (kinematicSteps && !IsFreeFalling () && btBody->getLinearVelocity ().length2 () > 0)
+    {
+      StepDown (dt);
+      SetLinearVelocity (0);              // stop moving
     }
   }
   
-  inline btConvexShape* csBulletDynamicActor::GetConvexShape() const { return (btConvexShape*)btBody->getCollisionShape(); }
+  inline btConvexShape* csBulletDynamicActor::GetConvexShape () const { return (btConvexShape*)btBody->getCollisionShape (); }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Code based on btKinematicCharacterController
 
-  void csBulletDynamicActor::stepUp (float dt)
+  void csBulletDynamicActor::StepUp (float dt)
   {
-    btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
+    btVector3& currentPosition = btObject->getWorldTransform ().getOrigin ();
     //m_targetPosition = currentPosition + BTUpVector * stepHeight;
 
     currentPosition = currentPosition + BTUpVector * stepHeight;
@@ -257,7 +214,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // phase 1: up
     //btTransform start;
     //start.setIdentity ();
-    //start.setOrigin (currentPosition + BTUpVector * (GetConvexShape()->getMargin() + AddedMargin));
+    //start.setOrigin (currentPosition + BTUpVector * (GetConvexShape ()->getMargin () + AddedMargin));
     //
     //btTransform end;
     //end.setIdentity ();
@@ -267,12 +224,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //callback.m_collisionFilterGroup = group->value;
     //callback.m_collisionFilterMask = group->mask;
     //
-    //sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback);
+    //sector->GetBulletWorld ()->convexSweepTest (GetConvexShape (), start, end, callback);
 
-    //if (callback.hasHit())
+    //if (callback.hasHit ())
     //{
     //  // Only modify the position if the hit was a slope and not a wall or ceiling.
-    //  if(callback.m_hitNormalWorld.dot(BTUpVector) > 0.0)
+    //  if (callback.m_hitNormalWorld.dot (BTUpVector) > 0.0)
     //  {
     //    // we moved up only a fraction of the step height, then hit something underneath us!?
     //    currentPosition.setInterpolate3 (currentPosition, m_targetPosition, callback.m_closestHitFraction);
@@ -286,17 +243,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     //}
   }
 
-  void csBulletDynamicActor::stepDown (float dt)
+  void csBulletDynamicActor::StepDown (float dt)
   {
-    btVector3& currentPosition = btObject->getWorldTransform().getOrigin();
+    btVector3& currentPosition = btObject->getWorldTransform ().getOrigin ();
 
     btTransform start, end;
 
     // phase 3: down
     
-    // we went up by stepHeight during the stepUp routine, and what goes up must come down!
+    // we went up by stepHeight during the StepUp routine, and what goes up must come down!
     btVector3 targetPosition = currentPosition;
-    BulletVectorComponent(targetPosition, 1) -= stepHeight;
+    BulletVectorComponent (targetPosition, 1) -= stepHeight;
 
     start.setIdentity ();
     end.setIdentity ();
@@ -308,9 +265,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     callback.m_collisionFilterGroup = group->value;
     callback.m_collisionFilterMask = group->mask;
 
-    sector->GetBulletWorld()->convexSweepTest (GetConvexShape(), start, end, callback, sector->GetBulletWorld()->getDispatchInfo().m_allowedCcdPenetration);
+    sector->GetBulletWorld ()->convexSweepTest (GetConvexShape (), start, end, callback, sector->GetBulletWorld ()->getDispatchInfo ().m_allowedCcdPenetration);
 
-    if (callback.hasHit())
+    if (callback.hasHit ())
     {
       // we dropped a fraction of the height -> hit floor
       currentPosition.setInterpolate3 (currentPosition, targetPosition, callback.m_closestHitFraction);

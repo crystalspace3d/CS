@@ -34,7 +34,6 @@
 #include "imesh/skeletonmodel.h"
 #include "iutil/comp.h"
 #include "ivaria/physics.h"
-#include "ivaria/physicalfactories.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (SkeletonModel)
 {

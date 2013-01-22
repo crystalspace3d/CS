@@ -1122,7 +1122,7 @@ void PhysDemo::LoadKrystalRagdoll ()
   chain->AddSubChain (animeshFactory->GetSkeletonFactory ()->FindBone ("LeftHand"));
 */
   chain->AddAllSubChains ();
-  printf ("%s\n", chain->Description().GetData());
+  printf ("%s\n", chain->Description ().GetData ());
 
   // Create the ragdoll animation node factory
   csRef<CS::Animation::iSkeletonRagdollNodeFactory2> ragdollFactory =

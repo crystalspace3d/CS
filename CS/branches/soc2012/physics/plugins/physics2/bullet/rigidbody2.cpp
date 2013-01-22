@@ -93,10 +93,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csBulletRigidBody::~csBulletRigidBody ()
   {
-    if (motionState)
-    {
-      delete motionState;
-    }
+    delete motionState;
   }
 
   csBulletMotionState* csBulletRigidBody::CreateMotionState (const btTransform& trans)

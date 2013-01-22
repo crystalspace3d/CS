@@ -56,8 +56,9 @@ struct iCollisionObjectFactory;
 struct iCollisionSystem;
 struct iConvexDecomposer;
 
-// TODO: move in the cstool lib
-// TODO: document me
+/**
+ * A class to help managing the colliders and physical models of the meshes and scenes.
+ */
 class CS_CRYSTALSPACE_EXPORT CollisionHelper
 {
   iObjectRegistry* objectRegistry;
@@ -130,6 +131,7 @@ public:
 			     CS::Collisions::iConvexDecomposer* decomposer) const;
 
   // TODO: CollisionParser?
+  // TODO: Document me
   csPtr<CS::Collisions::iCollider> ParseCollider
     (iDocumentNode* node, csTransform& transform, iLoaderContext* loaderContext,
      iBase* context) const;

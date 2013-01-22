@@ -31,7 +31,6 @@
 #include "csutil/scf.h"
 #include "iutil/strset.h"
 #include "ivaria/colliders.h"
-#include "ivaria/collisionfactories.h"
 
 struct iTerrainSystem;
 struct iSector;
@@ -212,7 +211,7 @@ struct iCollisionObjectFactory : public virtual iBase
 
   /// Get the system of this factory
   // TODO: remove?
-  virtual iCollisionSystem* GetSystem () const = 0;
+  //virtual iCollisionSystem* GetSystem () const = 0;
 
   /// Create an instance
   virtual csPtr<iCollisionObject> CreateCollisionObject () = 0;
@@ -394,8 +393,56 @@ struct iCollisionTerrain : public virtual iBase
 };
 
 /**
- * \todo Document me + all actor classes should be merged around a common abstract interface
- * \todo Put back the API closer to the one of csColliderActor?
+ * \todo Document me
+ */
+struct iCollisionActorFactory : public virtual iCollisionObjectFactory
+{
+  SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
+
+  /// Create an instance
+  virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
+
+  /// Get the max vertical threshold that this actor can step over
+  virtual float GetStepHeight () const = 0;
+  /// Set the max vertical threshold that this actor can step over
+  virtual void SetStepHeight (float h) = 0;
+
+  /**
+   * The maximum slope determines the maximum angle that the actor can walk up.
+   * The slope angle is measured in radians. The default value is 0.7854f (45 degree).
+   */
+  virtual void SetMaximumSlope (float slope) = 0;
+  
+  /// Get the maximum slope, in radians.
+  virtual float GetMaximumSlope () const = 0;
+
+  /// Get the walk speed
+  virtual float GetWalkSpeed () const = 0;
+  /// Set the walk speed
+  virtual void SetWalkSpeed (float s) = 0;
+
+  /// Get the jump speed
+  virtual float GetJumpSpeed () const = 0;
+  /// Set the jump speed
+  virtual void SetJumpSpeed (float s)  = 0;
+
+  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+  virtual float GetAirControlFactor () const = 0;
+  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
+  virtual void SetAirControlFactor (float f) = 0;
+};
+
+/**
+ * A iCollisionActor is a kinematic collision object. It has a faster collision detection
+ * and response. You can use it to create a player or character model with gravity handling.
+ *
+ * Main creators of instances implementing this interface:
+ * - iCollisionActorFactory::CreateCollisionObject
+ * 
+ * Main users of this interface:
+ * - iCollisionSystem
+ * \remark The collider of iCollisionActor must be a convex shape. For example a
+ * capsule or a sphere.
  */
 struct iActor : public virtual iBase
 {
@@ -439,11 +486,19 @@ struct iActor : public virtual iBase
   /// Whether this actor touches the ground
   virtual bool IsOnGround () const = 0;
 
-  /// Get the max vertical threshold that this actor can step over
+  /// Get the maximum vertical threshold that this actor can step over
   virtual float GetStepHeight () const = 0;
-  /// Set the max vertical threshold that this actor can step over
+  /// Set the maximum vertical threshold that this actor can step over
   virtual void SetStepHeight (float h) = 0;
 
+  /// Get the maximum slope, in radians.
+  virtual float GetMaximumSlope () const = 0;
+  /**
+   * The maximum slope determines the maximum angle that the actor can walk up.
+   * The slope angle is measured in radians. The default value is 0.7854f (45 degree).
+   */
+  virtual void SetMaximumSlope (float slope) = 0;
+  
   /// Get the walk speed
   virtual float GetWalkSpeed () const = 0;
   /// Set the walk speed
@@ -459,69 +514,17 @@ struct iActor : public virtual iBase
   /// Determines how much the actor can control movement when free falling
   virtual void SetAirControlFactor (float f) = 0;
 
-  /// Whether this object is subject to the constant gravitational forces of its sector
+  /// Whether or not this object is subject to the constant gravitational forces of its sector
   // TODO: working?
   virtual bool GetGravityEnabled () const = 0;
-  /// Whether this object is subject to the constant gravitational forces of its sector
+  /// Whether or not this object is subject to the constant gravitational forces of its sector
   virtual void SetGravityEnabled (bool g) = 0;
 };
 
-/**
- * \todo Document me
- */
-struct iCollisionActorFactory : public virtual iCollisionObjectFactory
-{
-  SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
-
-  /// Create an instance
-  virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
-
-  /// Get the max vertical threshold that this actor can step over
-  virtual float GetStepHeight () const = 0;
-  /// Set the max vertical threshold that this actor can step over
-  virtual void SetStepHeight (float h) = 0;
-
-  /// Get the walk speed
-  virtual float GetWalkSpeed () const = 0;
-  /// Set the walk speed
-  virtual void SetWalkSpeed (float s) = 0;
-
-  /// Get the jump speed
-  virtual float GetJumpSpeed () const = 0;
-  /// Set the jump speed
-  virtual void SetJumpSpeed (float s)  = 0;
-
-  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-  virtual float GetAirControlFactor () const = 0;
-  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-  virtual void SetAirControlFactor (float f) = 0;
-};
-
-/**
- * A iCollisionActor is a kinematic collision object. It has a faster collision detection
- * and response. You can use it to create a player or character model with gravity handling.
- *
- * Main creators of instances implementing this interface:
- * - iCollisionActorFactory::CreateCollisionObject
- * 
- * Main users of this interface:
- * - iCollisionSystem
- * \remark The collider of iCollisionActor must be a convex shape. For example, box, convex
- * mesh.
- * \todo All actor classes should be merged around a common abstract interface
- */
+// todo: remove
 struct iCollisionActor : public virtual iCollisionObject, public virtual iActor
 {
   SCF_INTERFACE (CS::Collisions::iCollisionActor, 1, 0, 0);
-
-  /**
-   * The max slope determines the maximum angle that the actor can walk up.
-   * The slope angle is measured in radians.
-   */
-  virtual void SetMaxSlope (float slopeRadians) = 0;
-  
-  /// Get the max slope.
-  virtual float GetMaxSlope () const = 0;
 };
 
 /**
@@ -685,7 +688,7 @@ struct iCollisionSystem : public virtual iBase
 
   /// Create a convex mesh collider.
   // TODO: what is simplify?
-  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* triMesh, bool simplify = false) = 0;
+  virtual csPtr<iColliderConvexMesh> CreateColliderConvexMesh (iTriangleMesh* mesh, bool simplify = false) = 0;
 
   /// Create a static concave mesh collider.
   virtual csPtr<iColliderConcaveMesh> CreateColliderConcaveMesh (iTriangleMesh* mesh) = 0;

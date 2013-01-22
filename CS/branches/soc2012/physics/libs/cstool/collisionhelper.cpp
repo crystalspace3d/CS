@@ -42,7 +42,7 @@
 #include "ivaria/physics.h"
 #include "ivaria/reporter.h"
 
-#include "collisionhelper.h"
+#include "cstool/collisionhelper.h"
 
 using namespace CS::Collisions;
 

@@ -41,12 +41,8 @@ using namespace CS::Media;
   #pragma comment (lib,"vorbis.lib")
 #endif*/
 
-/**
-  * This is the implementation for our API and
-  * also the implementation of the plugin.
-  */
 class csThOggLoader : public scfImplementation2
-    <csThOggLoader,iMediaLoader,iComponent>
+<csThOggLoader, iMediaLoader, iComponent>
 {
 private:
 
@@ -76,12 +72,10 @@ public:
   csThOggLoader (iBase* parent);
   virtual ~csThOggLoader ();
 
-  // From iComponent.
+  //-- iComponent
   virtual bool Initialize (iObjectRegistry*);
 
-  virtual void Create (csString path,csArray<MediaLanguage> languages) ;
-
-  virtual csRef<iMediaContainer> LoadMedia 
+  virtual csPtr<iMediaContainer> LoadMedia 
     (const char * pFileName, const char *pDescription=0);
 
 private:
@@ -90,9 +84,9 @@ private:
      and sync it for page extraction */
   int BufferData (ogg_sync_state *oy);
 
-  bool StartParsing (csRef<TheoraMediaContainer> container);
-  bool ParseHeaders (csRef<TheoraMediaContainer> container);
-  void ComputeStreamLength (csRef<TheoraMediaContainer> container);
+  bool StartParsing (TheoraMediaContainer* container);
+  bool ParseHeaders (TheoraMediaContainer* container);
+  void ComputeStreamLength (TheoraMediaContainer* container);
 };
 
 #endif // __THOGGLOADER_H__

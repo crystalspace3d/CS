@@ -44,7 +44,7 @@ bool csVplLoader::Initialize (iObjectRegistry* r)
   return true;
 }
 
-csRef<iMediaContainer> csVplLoader::LoadMedia (const char * pFileName, const char *pDescription)
+csPtr<iMediaContainer> csVplLoader::LoadMedia (const char * pFileName, const char *pDescription)
 {
   // Get the generic media xml parser
   csRef<iLoaderPlugin> parser = csQueryRegistry<iLoaderPlugin> (_object_reg);
@@ -61,7 +61,7 @@ csRef<iMediaContainer> csVplLoader::LoadMedia (const char * pFileName, const cha
   {
     csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
       "Can't parse media: File '%s' not found.\n", pFileName);
-    return NULL;
+    return csPtr<iMediaContainer> (nullptr);
   }
 
   // Start parsing
@@ -73,19 +73,17 @@ csRef<iMediaContainer> csVplLoader::LoadMedia (const char * pFileName, const cha
     // Tell the parser to parse the xml file
     csRef<iBase> result = parser->Parse (node,0,0,0);
 
-    // Get the media loader
-    csRef<iMediaLoader> loader = scfQueryInterface<iMediaLoader> (result);
-
-    // Load the media and return a container
-    return loader->LoadMedia (pFileName,pDescription);
+    // Get the media container
+    csRef<iMediaContainer> container = scfQueryInterface<iMediaContainer> (result);
+    return csPtr<iMediaContainer> (container);
   }
   else
   {
     csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
       "Failed to parse '%s'.\n", pFileName);
-    return NULL;
+    return csPtr<iMediaContainer> (nullptr);
   }
 
-  return NULL;
+  return csPtr<iMediaContainer> (nullptr);
 }
 

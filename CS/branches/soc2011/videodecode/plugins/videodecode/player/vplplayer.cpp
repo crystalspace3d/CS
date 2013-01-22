@@ -47,9 +47,9 @@ bool csVplPlayer::Initialize (iObjectRegistry* r)
   return true;
 }
 
-void csVplPlayer::InitializePlayer (csRef<iMediaContainer> media, size_t cacheSize)
+void csVplPlayer::InitializePlayer (iMediaContainer* media)
 {
-  if (!media.IsValid ())
+  if (!media)
   {
     csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
               "Media container is not valid!");
@@ -57,11 +57,6 @@ void csVplPlayer::InitializePlayer (csRef<iMediaContainer> media, size_t cacheSi
   }
 
   _mediaFile = media;
-
-  if (cacheSize<1)
-    _mediaFile->SetCacheSize (1);
-  else
-    _mediaFile->SetCacheSize (cacheSize);
 
   CS_INITIALIZE_FRAME_EVENT_SHORTCUTS (_object_reg);
   csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (_object_reg));
@@ -81,7 +76,7 @@ void csVplPlayer::InitializePlayer (csRef<iMediaContainer> media, size_t cacheSi
   _shouldPlay=false;
 }
 
-void csVplPlayer::StartPlayer ()
+void csVplPlayer::UpdatePlayer ()
 {
   if (!_threadInfo.IsValid ())
   {
@@ -90,16 +85,22 @@ void csVplPlayer::StartPlayer ()
   }
 }
 
-void csVplPlayer::StopPlayer ()
+void csVplPlayer::SetCacheSize (size_t size)
 {
-  _shouldUpdate = false;
+  if (_mediaFile.IsValid ())
+  {
+    if (size < 1)
+      _mediaFile->SetCacheSize (1);
+    else
+      _mediaFile->SetCacheSize (size);
+  }
 }
 
 void csVplPlayer::SetActiveStream (int index) 
 {
   if (_mediaFile.IsValid ())
   {
-    if (index==-1)
+    if (index == -1)
       _mediaFile->AutoActivateStreams ();
     else
       _mediaFile->SetActiveStream (index);
@@ -122,7 +123,7 @@ iSndSysStream* csVplPlayer::GetTargetAudio ()
   return _mediaFile->GetTargetAudio ();
 }
 
-void csVplPlayer::SetLanguage (const char* identifier)
+void csVplPlayer::SetCurrentLanguage (const char* identifier)
 {
   if (_mediaFile.IsValid ())
     _mediaFile->SetCurrentLanguage (identifier);
@@ -171,16 +172,6 @@ THREADED_CALLABLE_IMPL (csVplPlayer, Update)
   return true;
 }
 
-void csVplPlayer::SetCyclic (bool cyclic)
-{
-  _shouldLoop = cyclic;
-}
-
-bool csVplPlayer::GetCyclic () const
-{
-  return _shouldLoop;
-}
-
 void csVplPlayer::Play () 
 {
   if (!_threadInfo.IsValid ())
@@ -209,6 +200,7 @@ void csVplPlayer::Play ()
 void csVplPlayer::Pause () 
 {
   _playing=false;
+  _shouldUpdate = false;
   if (_mediaFile.IsValid ())
   {
     _mediaFile->OnPause ();
@@ -222,6 +214,11 @@ void csVplPlayer::Stop ()
   {
     _mediaFile->OnStop ();
   }
+}
+
+bool csVplPlayer::IsPlaying () 
+{
+  return _playing;
 }
 
 void csVplPlayer::SetPosition (float time)
@@ -238,14 +235,19 @@ float csVplPlayer::GetPosition () const
   return _mediaFile->GetPosition ();
 }
 
-bool csVplPlayer::IsPlaying () 
+void csVplPlayer::SetCyclic (bool cyclic)
 {
-  return _playing;
+  _shouldLoop = cyclic;
 }
 
-float csVplPlayer::GetLength () const
+bool csVplPlayer::GetCyclic () const
 {
-  return _mediaFile->GetLength ();
+  return _shouldLoop;
+}
+
+float csVplPlayer::GetDuration () const
+{
+  return _mediaFile->GetDuration ();
 }
 
 void csVplPlayer::SwapBuffers ()

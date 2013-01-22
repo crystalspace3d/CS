@@ -79,7 +79,6 @@ public:
   VideoTest ();
 
   //-- CS::Utility::DemoApplication
-  void OnExit ();
   void PrintHelp ();
   void Frame ();
 

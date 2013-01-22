@@ -19,10 +19,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef __CS_THOGGMEDIACONT_H__
 #define __CS_THOGGMEDIACONT_H__
 
-/**\file
-* Video Player: media stream 
-*/
-
 #include "csutil/array.h"
 #include "csutil/refarr.h"
 #include "csutil/scf_implementation.h"
@@ -33,8 +29,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "vorbis/codec.h"
 #include "csutil/custom_new_enable.h"
 
-#include "theoravideomedia.h"
+#include "media.h"
 #include "theoraaudiomedia.h"
+#include "theoravideomedia.h"
 
 #define QUALIFIED_PLUGIN_NAME "crystalspace.videodecode.element.thogg"
 
@@ -49,7 +46,7 @@ class TheoraMediaContainer : public scfImplementation2
 {
 private:
   iObjectRegistry*    _object_reg;
-  csRefArray<iMedia>  _media;
+  csRefArray<csMedia>  _media;
   csArray<size_t>     _activeStreams;
   const char*         _pDescription;
   bool                _endOfFile;
@@ -94,37 +91,38 @@ public:
   TheoraMediaContainer (iBase* parent);
   virtual ~TheoraMediaContainer ();
 
-  // From iComponent.
+  //-- iComponent
   virtual bool Initialize (iObjectRegistry*);
 
-  // From iMediaContainer
+  //-- iMediaContainer
   virtual size_t GetMediaCount () const;
-  virtual csRef<iMedia> GetMedia (size_t index);
+  virtual iMedia* GetMedia (size_t index);
   virtual const char* GetDescription () const;
   virtual void SetActiveStream (size_t index);
   virtual bool RemoveActiveStream (size_t index);
-  virtual void AutoActivateStreams () ;
-  virtual iTextureHandle* GetTargetTexture () ;
-  virtual iSndSysStream* GetTargetAudio () ;
+  virtual void AutoActivateStreams ();
+  virtual iTextureHandle* GetTargetTexture ();
+  virtual iSndSysStream* GetTargetAudio ();
   virtual void Update ();
   virtual bool Eof () const;
-  virtual void SetPosition (float time) ;
+  virtual void SetPosition (float time);
   virtual float GetPosition () const;
-  virtual float GetLength () const;
-  virtual void SwapBuffers () ;
-  virtual void WriteData () ;
-  virtual void SetCacheSize(size_t size) ;
-  virtual float GetAspectRatio () ;
+  virtual float GetDuration () const;
+  virtual void SwapBuffers ();
+  virtual void WriteData ();
+  virtual void SetCacheSize(size_t size);
+  virtual float GetAspectRatio ();
   virtual void DropFrame ();
   virtual size_t GetLanguageCount () const;
   virtual const MediaLanguage& GetLanguage (size_t index) const;
+  virtual void AddLanguage (const MediaLanguage& language);
   virtual void SetCurrentLanguage (const char* identifier);
   virtual void OnPause ();
   virtual void OnPlay ();
   virtual void OnStop ();
 
   // Add a media to the container
-  void AddMedia (csRef<iMedia> media);
+  void AddMedia (csMedia* media);
 
   // Execute a seek on the active media
   void DoSeek ();
@@ -134,11 +132,6 @@ public:
 
   inline void SetDescription (const char* pDescription)
     { this->_pDescription=pDescription; }
-
-  inline csArray<MediaLanguage> GetLanguages () const
-    { return _languages; }
-
-  void SetLanguages (csArray<MediaLanguage> languages);
 
   inline void ClearMedia ()  
     { _media.Empty (); }

@@ -57,27 +57,26 @@ public:
   virtual bool Initialize (iObjectRegistry*);
 
   // From iMediaPlayer
-  virtual void InitializePlayer (csRef<iMediaContainer> media, 
-                                 size_t cacheSize = 1);
+  virtual void InitializePlayer (iMediaContainer* media);
+  virtual void SetCacheSize (size_t size);
   virtual void SetActiveStream (int index);
   virtual void RemoveActiveStream (int index);
   virtual iTextureHandle* GetTargetTexture ();
   virtual iSndSysStream* GetTargetAudio ();
   THREADED_CALLABLE_DECL (csVplPlayer, Update, csThreadReturn, 
                           THREADED, false, false);
-  virtual void StartPlayer ();
-  virtual void StopPlayer ();
-  virtual void SetCyclic (bool shouldLoop);
-  virtual bool GetCyclic () const;
+  virtual void UpdatePlayer ();
   virtual void Play ();
   virtual void Pause ();
   virtual void Stop ();
   virtual void SetPosition (float time);
   virtual float GetPosition () const;
-  virtual float GetLength () const;
+  virtual float GetDuration () const;
+  virtual void SetCyclic (bool shouldLoop);
+  virtual bool GetCyclic () const;
   virtual bool IsPlaying ();
   virtual float GetAspectRatio ();
-  virtual void SetLanguage (const char* identifier);
+  virtual void SetCurrentLanguage (const char* identifier);
 
   void WriteData ();
 

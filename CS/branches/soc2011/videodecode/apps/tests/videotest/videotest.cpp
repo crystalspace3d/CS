@@ -50,9 +50,9 @@ void VideoTest::PrintHelp ()
 
 void VideoTest::Frame ()
 {
-  // Draw the room
-  //view->Draw ();
-  mediaPlayer->StartPlayer ();
+  // Update the media player
+  // TODO: do this automatically
+  mediaPlayer->UpdatePlayer ();
 
   if (updateSeeker)
   {
@@ -71,7 +71,7 @@ void VideoTest::Frame ()
   int screenW = g2d->GetWidth ();
 
   // Width of the image, as a fraction of the screen width
-  const float widthFraction = 0.5f;
+  const float widthFraction = 0.3f;
   const int width = (int)screenW * widthFraction;
   const int height = width * h / w;
 
@@ -87,12 +87,6 @@ void VideoTest::Frame ()
     w,
     h,
     0);
-}
-
-void VideoTest::OnExit ()
-{
-  if (mediaPlayer)
-    mediaPlayer->StopPlayer ();
 }
 
 bool VideoTest::Application ()
@@ -140,46 +134,44 @@ bool VideoTest::Application ()
 
   // Get the loader and load the video
   csString videoName = "vid422.xml";
-  csRef<iMediaLoader> vplLoader = csQueryRegistry<iMediaLoader> (object_reg);
-  csRef<iMediaContainer> video = vplLoader->LoadMedia (videoName);
+  csRef<iMediaLoader> mediaLoader = csQueryRegistry<iMediaLoader> (object_reg);
+  csRef<iMediaContainer> video = mediaLoader->LoadMedia (videoName);
+  if (!video) return ReportError ("Failed to load the video file %s!",
+				  CS::Quote::Single (videoName.GetData ()));
 
-  if (!video)
-    return ReportError ("Failed to load the video file %s!",
-			CS::Quote::Single (videoName.GetData ()));
-
-  // Display media content
+  // Display the content of the media container
   if (video.IsValid ())
   {
     printf ("%d stream(s) in media container:\n", (int) video->GetMediaCount ());
     for (size_t i = 0; i < video->GetMediaCount (); i++)
     {
       csRef<iMedia> media = video->GetMedia (i);
-      printf("--> %i. '%s' of type '%s'\n",(int) i+1, media->GetName (), media->GetType ());
+      printf("--> %i. '%s' of type '%s'\n", (int) i+1, media->GetName (), media->GetType ());
     }
     printf ("%d language(s) in media container:\n", (int) video->GetLanguageCount ());
     for (size_t i = 0; i < video->GetLanguageCount (); i++)
     {
-      MediaLanguage lang = video->GetLanguage (i);
-      printf("--> %i. language '%s' from file '%s'\n", (int) i+1, lang.name, lang.path);
+      const MediaLanguage& lang = video->GetLanguage (i);
+      printf("--> %i. language '%s' from file '%s'\n", (int) i+1,
+	     lang.name.GetData (), lang.path.GetData ());
     }
     printf("\n");
   }
 
   // Initialize the player
   mediaPlayer = csQueryRegistry<iMediaPlayer> (object_reg);
-  mediaPlayer->InitializePlayer (video,5);
+  mediaPlayer->InitializePlayer (video);
+  mediaPlayer->SetCacheSize (5);
+  mediaPlayer->SetActiveStream (0);  // Specifying -1 as index triggers auto stream activation
 
   // Get the video texture
-  mediaPlayer->SetActiveStream (0);  // Specifying -1 as index triggers auto stream activation
   logoTex = mediaPlayer->GetTargetTexture ();
 
   // Get the audio stream
-  mediaPlayer->SetLanguage ("enUS");
+  mediaPlayer->SetCurrentLanguage ("enUS");
   audioStream = mediaPlayer->GetTargetAudio ();
 
   // Start the player
-  mediaPlayer->SetCyclic (false);
-
   if (audioStream.IsValid () && sndrenderer)
   {
     sndsource = sndrenderer->CreateSource (audioStream);
@@ -204,70 +196,6 @@ bool VideoTest::Application ()
   Run ();
 
   return true;
-}
-
-void VideoTest::InitializeCEGUI ()
-{
-  // Initialize CEGUI wrapper
-  cegui->Initialize ();
-
-  /* Let CEGUI plugin install an event handler that takes care of rendering
-     every frame */
-  cegui->SetAutoRender (true);
-  
-  // Set the logging level 
-  cegui->GetLoggerPtr ()->setLoggingLevel (CEGUI::Informative);
-
-  vfs->ChDir ("/cegui/");
-
-  // Load the ice skin (which uses Falagard skinning system)
-  cegui->GetSchemeManagerPtr ()->create ("ice.scheme");
-
-  cegui->GetSystemPtr ()->setDefaultMouseCursor ("ice", "MouseArrow");
-
-  cegui->GetFontManagerPtr ()->createFreeTypeFont ("DejaVuSans", 10, true, "/fonts/ttf/DejaVuSans.ttf");
-
-  CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
-
-  // Load layout and set as root
-  vfs->ChDir ("/videodecode/");
-  cegui->GetSystemPtr ()->setGUISheet (winMgr->loadWindowLayout ("ice.layout"));
-
-  // Subscribe to the events that we need
-  CEGUI::Window* btn = winMgr->getWindow ("Video/Window1/Quit");
-
-  btn->subscribeEvent (CEGUI::PushButton::EventClicked,
-    CEGUI::Event::Subscriber (&VideoTest::OnExitButtonClicked, this));
-
-  CEGUI::Window* btn2 = winMgr->getWindow ("Video/Window1/Play");
-
-  btn2->subscribeEvent (CEGUI::PushButton::EventClicked,
-    CEGUI::Event::Subscriber (&VideoTest::OnPlayButtonClicked, this));
-
-  CEGUI::Window* btn3 = winMgr->getWindow ("Video/Window1/Pause");
-
-  btn3->subscribeEvent (CEGUI::PushButton::EventClicked,
-    CEGUI::Event::Subscriber (&VideoTest::OnPauseButtonClicked, this));
-
-  CEGUI::Window* btn4 = winMgr->getWindow ("Video/Window1/Stop");
-
-  btn4->subscribeEvent (CEGUI::PushButton::EventClicked,
-    CEGUI::Event::Subscriber (&VideoTest::OnStopButtonClicked, this));
-
-  CEGUI::Window* btn5 = winMgr->getWindow ("Video/Window1/Loop");
-
-  btn5->subscribeEvent (CEGUI::Checkbox::EventCheckStateChanged,
-    CEGUI::Event::Subscriber (&VideoTest::OnLoopToggle, this));
-
-  CEGUI::Scrollbar* slider = (CEGUI::Scrollbar*)winMgr->getWindow ("Video/Window1/Seek");
-
-  slider->subscribeEvent (CEGUI::Scrollbar::EventThumbTrackStarted ,
-    CEGUI::Event::Subscriber (&VideoTest::OnSeekingStart, this));
-  slider->subscribeEvent (CEGUI::Scrollbar::EventThumbTrackEnded ,
-    CEGUI::Event::Subscriber (&VideoTest::OnSeekingEnd, this));
-  slider->setDocumentSize (mediaPlayer->GetLength ());
-  slider->setStepSize (0.1f);
-  slider->setTooltipText ("Seek");
 }
 
 bool VideoTest::CreateScene ()
@@ -329,7 +257,76 @@ bool VideoTest::CreateScene ()
   return true;
 }
 
-//-------------- CEGUI listeners -----------------------------------------
+//--------------------------- CEGUI management ---------------------------
+
+void VideoTest::InitializeCEGUI ()
+{
+  // Initialize CEGUI wrapper
+  cegui->Initialize ();
+
+  /* Let CEGUI plugin install an event handler that takes care of rendering
+     every frame */
+  cegui->SetAutoRender (true);
+  
+  // Set the logging level 
+  cegui->GetLoggerPtr ()->setLoggingLevel (CEGUI::Informative);
+
+  vfs->ChDir ("/cegui/");
+
+  // Load the ice skin (which uses Falagard skinning system)
+  cegui->GetSchemeManagerPtr ()->create ("ice.scheme");
+
+  cegui->GetSystemPtr ()->setDefaultMouseCursor ("ice", "MouseArrow");
+
+  cegui->GetFontManagerPtr ()->createFreeTypeFont ("DejaVuSans", 10, true, "/fonts/ttf/DejaVuSans.ttf");
+
+  CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
+
+  // Load layout and set as root
+  vfs->ChDir ("/videodecode/");
+  cegui->GetSystemPtr ()->setGUISheet (winMgr->loadWindowLayout ("ice.layout"));
+
+  // Subscribe to the events that we need
+  CEGUI::Window* btn = winMgr->getWindow ("Video/Window1/Quit");
+
+  btn->subscribeEvent (CEGUI::PushButton::EventClicked,
+    CEGUI::Event::Subscriber (&VideoTest::OnExitButtonClicked, this));
+
+  CEGUI::Window* btn2 = winMgr->getWindow ("Video/Window1/Play");
+
+  btn2->subscribeEvent (CEGUI::PushButton::EventClicked,
+    CEGUI::Event::Subscriber (&VideoTest::OnPlayButtonClicked, this));
+
+  CEGUI::Window* btn3 = winMgr->getWindow ("Video/Window1/Pause");
+
+  btn3->subscribeEvent (CEGUI::PushButton::EventClicked,
+    CEGUI::Event::Subscriber (&VideoTest::OnPauseButtonClicked, this));
+
+  CEGUI::Window* btn4 = winMgr->getWindow ("Video/Window1/Stop");
+
+  btn4->subscribeEvent (CEGUI::PushButton::EventClicked,
+    CEGUI::Event::Subscriber (&VideoTest::OnStopButtonClicked, this));
+
+  CEGUI::Window* btn5 = winMgr->getWindow ("Video/Window1/Loop");
+
+  btn5->subscribeEvent (CEGUI::Checkbox::EventCheckStateChanged,
+    CEGUI::Event::Subscriber (&VideoTest::OnLoopToggle, this));
+
+  CEGUI::Scrollbar* slider = (CEGUI::Scrollbar*)winMgr->getWindow ("Video/Window1/Seek");
+
+  slider->subscribeEvent (CEGUI::Scrollbar::EventThumbTrackStarted ,
+    CEGUI::Event::Subscriber (&VideoTest::OnSeekingStart, this));
+  slider->subscribeEvent (CEGUI::Scrollbar::EventThumbTrackEnded ,
+    CEGUI::Event::Subscriber (&VideoTest::OnSeekingEnd, this));
+  slider->setDocumentSize (mediaPlayer->GetDuration ());
+  slider->setStepSize (0.1f);
+  slider->setTooltipText ("Seek");
+
+  CEGUI::RadioButton * radioButton1 = static_cast<CEGUI::RadioButton*> 
+    (CEGUI::WindowManager::getSingleton ().getWindow ("Video/Window1/Loop"));
+  radioButton1->setSelected (mediaPlayer->GetCyclic ());
+}
+
 bool VideoTest::OnExitButtonClicked (const CEGUI::EventArgs&)
 {
   csRef<iEventQueue> q =
@@ -377,4 +374,5 @@ bool VideoTest::OnSeekingEnd (const CEGUI::EventArgs&)
   updateSeeker=true;
   return true;
 }
+
 //---------------------------------------------------------------------------

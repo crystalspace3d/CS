@@ -43,21 +43,19 @@ csThOggLoader::~csThOggLoader ()
 bool csThOggLoader::Initialize (iObjectRegistry* r)
 {
   _object_reg = r;
-  _infile = NULL;
+  _infile = nullptr;
 
   return true;
 }
 
-void csThOggLoader::Create (csString path,csArray<MediaLanguage> languages)
-{
-  _path = path;
-  _languages = languages;
-}
-
-csRef<iMediaContainer> csThOggLoader::LoadMedia (const char* pFileName, 
+csPtr<iMediaContainer> csThOggLoader::LoadMedia (const char* pFileName, 
                                                  const char *pDescription)
 {
-  printf ("\nLoading media file '%s'\n",pFileName);
+  _path = pFileName;
+
+#ifdef CS_DEBUG
+  printf ("\nLoading media file '%s'\n", pFileName);
+#endif
 
   _g3d=csQueryRegistry<iGraphics3D> (_object_reg);
   _texManager = _g3d->GetTextureManager ();
@@ -66,29 +64,28 @@ csRef<iMediaContainer> csThOggLoader::LoadMedia (const char* pFileName,
   csRef<iVFS> vfs = csQueryRegistry<iVFS> (_object_reg);
 
   // Get the path for the video
-  csRef<iDataBuffer> vidPath = vfs->GetRealPath (_path.GetData ());
+  csRef<iDataBuffer> vidPath = vfs->GetRealPath (pFileName);
   _infile = fopen (vidPath->GetData (),"rb");
 
   // Check if the file exists
-  if (_infile == NULL)
+  if (!_infile)
   {
     csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
       "Unable to open '%s' for playback.\n", pFileName);
-    return NULL;  
+    return csPtr<iMediaContainer> (nullptr);
   }
   else	
   {
     // Create a new container
     csRef<TheoraMediaContainer> container;
-    container.AttachNew (new TheoraMediaContainer ( (iBase*)this));
+    container.AttachNew (new TheoraMediaContainer ((iBase*) this));
     container->Initialize (_object_reg);
-    container->SetLanguages (_languages);
 
     if (!StartParsing (container))
-      return NULL;
+      return csPtr<iMediaContainer> (nullptr);
 
     container->SetDescription (pDescription);
-    return container;
+    return csPtr<iMediaContainer> (container);
   }
 }
 
@@ -100,7 +97,7 @@ int csThOggLoader::BufferData (ogg_sync_state *oy)
   return (bytes);
 }
 
-bool csThOggLoader::StartParsing (csRef<TheoraMediaContainer> container)
+bool csThOggLoader::StartParsing (TheoraMediaContainer* container)
 {
   // Start up Ogg stream synchronization layer
   ogg_sync_init (&_oy);
@@ -119,7 +116,7 @@ bool csThOggLoader::StartParsing (csRef<TheoraMediaContainer> container)
   return ParseHeaders (container);
 }
 
-bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
+bool csThOggLoader::ParseHeaders (TheoraMediaContainer* container)
 {
   fseek (_infile,0,SEEK_END);
   unsigned long mSize = ftell (_infile);
@@ -274,42 +271,39 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
       // Read extra headers for audio
       if (strcmp (container->GetMedia (i)->GetType (), "TheoraAudio") == 0)
       {
-        csRef<iAudioMedia> media = scfQueryInterface<iAudioMedia> (container->GetMedia (i)); 
-        if (media.IsValid ()) 
-        { 
-          csRef<csTheoraAudioMedia> buff = static_cast<csTheoraAudioMedia*> ( (iAudioMedia*)media);
+	csMedia* media = dynamic_cast<csMedia*> (container->GetMedia (i));
+	csTheoraAudioMedia* buff = static_cast<csTheoraAudioMedia*> (media);
 
-          while (buff->Vorbis_p () && (buff->Vorbis_p ()<3) && (ret=ogg_stream_packetout (buff->StreamState (),&op)))
-          {
-            if (ret<0)
-            {
-              csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
-                "Error parsing Vorbis stream headers; corrupt stream?\n");
-              return false;
-            }
-            if (vorbis_synthesis_headerin (buff->StreamInfo (),buff->StreamComments (),&op))
-            {
-              csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
-                "Error parsing Vorbis stream headers; corrupt stream?\n");
-              return false;
-            }
-            buff->Vorbis_p ()++;
-            if (buff->Vorbis_p ()==3)
-            {
+	while (buff->Vorbis_p () && (buff->Vorbis_p ()<3) && (ret=ogg_stream_packetout (buff->StreamState (),&op)))
+	{
+	  if (ret<0)
+	  {
+	    csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
+		      "Error parsing Vorbis stream headers; corrupt stream?\n");
+	    return false;
+	  }
+	  if (vorbis_synthesis_headerin (buff->StreamInfo (),buff->StreamComments (),&op))
+	  {
+	    csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
+		      "Error parsing Vorbis stream headers; corrupt stream?\n");
+	    return false;
+	  }
+	  buff->Vorbis_p ()++;
+	  if (buff->Vorbis_p ()==3)
+	  {
 
-              vorbis_comment_clear (&_vc);
-              vorbis_info_clear (&_vi);
-              times++;
-              break;
-            }
-          }
-        }
+	    vorbis_comment_clear (&_vc);
+	    vorbis_info_clear (&_vi);
+	    times++;
+	    break;
+	  }
+	}
       }
     }
 
     if (ogg_sync_pageout (&_oy,&_og)>0)
     {
-      container->QueuePage (&_og); /* demux into the appropriate stream */
+      container->QueuePage (&_og); // demux into the appropriate stream
     }
     else
     {
@@ -394,7 +388,7 @@ bool csThOggLoader::ParseHeaders (csRef<TheoraMediaContainer> container)
   return true;
 }
 
-void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
+void csThOggLoader::ComputeStreamLength (TheoraMediaContainer* container)
 {
   for (size_t i=0;i<container->GetMediaCount ();i++)
   {
@@ -448,47 +442,43 @@ void csThOggLoader::ComputeStreamLength (csRef<TheoraMediaContainer> container)
 
     if (strcmp (container->GetMedia (i)->GetType (),"TheoraAudio")==0 )
     {
-      csRef<iAudioMedia> media2 = scfQueryInterface<iAudioMedia> (container->GetMedia (i)); 
-      if (media2.IsValid ()) 
-      { 
-        csRef<csTheoraAudioMedia> buff = static_cast<csTheoraAudioMedia*> ( (iAudioMedia*)media2);
-        buff->Initialize (this->_object_reg);
-        float mDuration=0;
+      csMedia* media = dynamic_cast<csMedia*> (container->GetMedia (i));
+      csTheoraAudioMedia* buff = static_cast<csTheoraAudioMedia*> (media);
+      buff->Initialize (this->_object_reg);
+      float mDuration=0;
 
-        for (int i=1;i<=10;i++)
-        {
-          ogg_sync_reset (&_oy);
-          fseek (_infile,container->GetFileSize () - 4096*i,SEEK_SET);
+      for (int i=1;i<=10;i++)
+      {
+	ogg_sync_reset (&_oy);
+	fseek (_infile,container->GetFileSize () - 4096*i,SEEK_SET);
 
-          char *buffer = ogg_sync_buffer (&_oy, 4096*i);
-          int bytesRead = fread (buffer,1,4096*i,_infile);
-          ogg_sync_wrote (&_oy, bytesRead );
-          ogg_sync_pageseek (&_oy,&_og);
+	char *buffer = ogg_sync_buffer (&_oy, 4096*i);
+	int bytesRead = fread (buffer,1,4096*i,_infile);
+	ogg_sync_wrote (&_oy, bytesRead );
+	ogg_sync_pageseek (&_oy,&_og);
 
-          while (true)
-          {
-            int ret=ogg_sync_pageout ( &_oy, &_og );
-            if (ret == 0) break;
+	while (true)
+	{
+	  int ret=ogg_sync_pageout ( &_oy, &_og );
+	  if (ret == 0) break;
 
-            // If page is not a Theora page, skip it
-            if (ogg_page_serialno (&_og) != buff->StreamState ()->serialno) continue;
+	  // If page is not a Theora page, skip it
+	  if (ogg_page_serialno (&_og) != buff->StreamState ()->serialno) continue;
 
-            unsigned long granule= (unsigned long) ogg_page_granulepos (&_og);
-            if (granule >= 0)
-            {
-              mDuration= (float) vorbis_granule_time (buff->DspState (),granule);
-            }
-          }
+	  unsigned long granule= (unsigned long) ogg_page_granulepos (&_og);
+	  if (granule >= 0)
+	  {
+	    mDuration= (float) vorbis_granule_time (buff->DspState (),granule);
+	  }
+	}
 
-          if (mDuration > 0) break;
-        }
-
-        buff->SetLength (mDuration);
-
-        ogg_sync_reset (&_oy);
-        fseek (_infile,0,SEEK_SET);
+	if (mDuration > 0) break;
       }
+
+      buff->SetLength (mDuration);
+
+      ogg_sync_reset (&_oy);
+      fseek (_infile,0,SEEK_SET);
     }
   }
-
 }

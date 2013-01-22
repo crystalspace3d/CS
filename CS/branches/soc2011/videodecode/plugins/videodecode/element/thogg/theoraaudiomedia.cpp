@@ -23,11 +23,12 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "theoraaudiomedia.h"
 
-SCF_IMPLEMENT_FACTORY (csTheoraAudioMedia)
+//SCF_IMPLEMENT_FACTORY (csTheoraAudioMedia)
 
-csTheoraAudioMedia::csTheoraAudioMedia (iBase* parent) 
-: scfImplementationType (this, parent),
-  _object_reg (0), _cacheSize (1)
+CS_LEAKGUARD_IMPLEMENT (csTheoraAudioMedia);
+
+csTheoraAudioMedia::csTheoraAudioMedia () 
+: scfImplementationType (this), _object_reg (0), _cacheSize (1)
 {
 }
 
@@ -110,14 +111,9 @@ unsigned long csTheoraAudioMedia::GetFrameCount () const
   return 0;
 }
 
-float csTheoraAudioMedia::GetLength () const
+float csTheoraAudioMedia::GetDuration () const
 {
   return _length;
-}
-
-void csTheoraAudioMedia::GetAudioTarget (csRef<iSndSysStream> &stream)
-{
-  stream = _outputStream;
 }
 
 double csTheoraAudioMedia::GetPosition () const
@@ -170,7 +166,7 @@ bool csTheoraAudioMedia::Update ()
 
         _cache.Push (dataOut);
 
-        samples=NULL;
+        samples = nullptr;
     }
     else
     {
@@ -275,14 +271,14 @@ void csTheoraAudioMedia::SetCacheSize (size_t size)
   _cacheSize = size;
 }
 
-bool csTheoraAudioMedia::HasDataReady ()
+bool csTheoraAudioMedia::HasDataReady () const
 {
   if (_cache.GetSize ()!=0)
     return true;
   return false;
 }
 
-bool csTheoraAudioMedia::IsCacheFull ()
+bool csTheoraAudioMedia::IsCacheFull () const
 {
   if (_cache.GetSize ()>=_cacheSize)
     return true;

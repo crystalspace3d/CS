@@ -46,9 +46,8 @@ public:
   virtual bool Initialize (iObjectRegistry*);
 
   // From iMediaLoader
-  virtual csRef<iMediaContainer> LoadMedia (const char * pFileName, 
+  virtual csPtr<iMediaContainer> LoadMedia (const char * pFileName, 
                                             const char *pDescription=0);
-  virtual void Create (csString path,csArray<MediaLanguage> languages) {}
 };
 
 #endif // __VPLLOADER_H__

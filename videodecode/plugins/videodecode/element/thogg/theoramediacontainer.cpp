@@ -55,7 +55,7 @@ bool TheoraMediaContainer::Initialize (iObjectRegistry* r)
   _endOfFile = false;
   _timeToSeekTo = -1;
   _waitToFillCache=true;
-  _target = NULL;
+  _target = nullptr;
   _canWrite=false;
 
   return 0;
@@ -66,16 +66,11 @@ size_t TheoraMediaContainer::GetMediaCount () const
   return _media.GetSize ();
 }
 
-void TheoraMediaContainer::SetLanguages (csArray<MediaLanguage> languages)
-{
-  this->_languages = languages;
-}
-
-csRef<iMedia> TheoraMediaContainer::GetMedia (size_t index)
+iMedia* TheoraMediaContainer::GetMedia (size_t index)
 {
   if (index < _media.GetSize ())
     return _media[index];
-  return NULL;
+  return nullptr;
 }
 
 const char* TheoraMediaContainer::GetDescription () const
@@ -83,7 +78,7 @@ const char* TheoraMediaContainer::GetDescription () const
   return _pDescription;
 }
 
-void TheoraMediaContainer::AddMedia (csRef<iMedia> media)
+void TheoraMediaContainer::AddMedia (csMedia* media)
 {
   this->_media.Push (media);
 }
@@ -113,20 +108,12 @@ void TheoraMediaContainer::SetActiveStream (size_t index)
   // Store the activated stream in our references, for fast, full access
   if ( strcmp (_media [index]->GetType (),"TheoraVideo") == 0)
   {
-    csRef<iVideoMedia> stream = scfQueryInterface<iVideoMedia> ( _media [index] ); 
-    if (stream.IsValid ()) 
-    { 
-      _activeTheoraStream = static_cast<csTheoraVideoMedia*> ( (iVideoMedia*)stream);
-    }
+    _activeTheoraStream = static_cast<csTheoraVideoMedia*> (_media [index]);
   }
 
-  if ( strcmp (_media [index]->GetType (),"TheoraAudio") == 0)
+  else if ( strcmp (_media [index]->GetType (),"TheoraAudio") == 0)
   {
-    csRef<iAudioMedia> stream = scfQueryInterface<iAudioMedia> ( _media [index] ); 
-    if (stream.IsValid ()) 
-    { 
-      _activeVorbisStream = static_cast<csTheoraAudioMedia*> ((iAudioMedia*)stream);
-    }
+    _activeVorbisStream = static_cast<csTheoraAudioMedia*> (_media [index]);
   }
 }
 
@@ -134,11 +121,11 @@ bool TheoraMediaContainer::RemoveActiveStream (size_t index)
 {
   if ( strcmp (_media [_activeStreams [index]]->GetType (),"TheoraVideo") == 0)
   {
-    _activeTheoraStream = NULL;
+    _activeTheoraStream = nullptr;
   }
   if ( strcmp (_media [_activeStreams [index]]->GetType (),"TheoraAudio") == 0)
   {
-    _activeVorbisStream = NULL;
+    _activeVorbisStream = nullptr;
   }
   return _activeStreams.Delete (index);
 }
@@ -265,25 +252,16 @@ void TheoraMediaContainer::QueuePage (ogg_page *page)
   {
     for (uint i=0;i<_media.GetSize ();i++)
     {
-      if (strcmp (_media[i]->GetType (),"TheoraVideo")==0)
+      if (strcmp (_media[i]->GetType (),"TheoraVideo") == 0)
       {
-        csRef<iVideoMedia> media = scfQueryInterface<iVideoMedia> (this->GetMedia (i) ); 
-        if (media.IsValid ()) 
-        { 
-          csRef<csTheoraVideoMedia> buff = static_cast<csTheoraVideoMedia*> ( (iVideoMedia*)media);
-
-          ogg_stream_pagein (buff->StreamState () ,page);
-        }
+	csTheoraVideoMedia* buff = static_cast<csTheoraVideoMedia*> (_media[i]);
+	ogg_stream_pagein (buff->StreamState (), page);
       }
-      else if (strcmp (_media[i]->GetType (),"TheoraAudio")==0)
-      {
-        csRef<iAudioMedia> media = scfQueryInterface<iAudioMedia> (this->GetMedia (i) ); 
-        if (media.IsValid ()) 
-        { 
-          csRef<csTheoraAudioMedia> buff = static_cast<csTheoraAudioMedia*> ( (iAudioMedia*)media);
 
-          ogg_stream_pagein ( buff->StreamState () ,page);
-        }
+      else if (strcmp (_media[i]->GetType (),"TheoraAudio") == 0)
+      {
+	csTheoraAudioMedia* buff = static_cast<csTheoraAudioMedia*> (_media[i]);
+	ogg_stream_pagein (buff->StreamState (), page);
       }
     }
 
@@ -341,7 +319,7 @@ void TheoraMediaContainer::DoSeek ()
     return;
   }
 
-  if (_activeTheoraStream->GetLength () == 0)
+  if (_activeTheoraStream->GetDuration () == 0)
   {
     csReport (_object_reg, CS_REPORTER_SEVERITY_WARNING, QUALIFIED_PLUGIN_NAME,
       "The active video stream has a zero length. Seeking not available.\n");
@@ -352,7 +330,7 @@ void TheoraMediaContainer::DoSeek ()
   long frame;
   unsigned long frameCount = _activeTheoraStream->GetFrameCount ();
   unsigned long targetFrame = (unsigned long) 
-    (frameCount * _timeToSeekTo / _activeTheoraStream->GetLength ());
+    (frameCount * _timeToSeekTo / _activeTheoraStream->GetDuration ());
 
   // Check if we're seeking outside the video
   if (targetFrame >= _activeTheoraStream->GetFrameCount ())
@@ -368,7 +346,7 @@ void TheoraMediaContainer::DoSeek ()
 
   // TODO: In case audio from video file is implemented later on, seek to this time
   //float time = ( (float) targetFrame/_activeTheoraStream->GetFrameCount () ) 
-  //                * _activeTheoraStream->GetLength ();
+  //                * _activeTheoraStream->GetDuration ();
 
 
   // Skip to the frame we need
@@ -434,14 +412,14 @@ iTextureHandle* TheoraMediaContainer::GetTargetTexture ()
   if (_activeTheoraStream.IsValid ())
     return _activeTheoraStream->GetVideoTarget ();
   else 
-    return NULL;
+    return nullptr;
 }
 iSndSysStream* TheoraMediaContainer::GetTargetAudio ()
 {
   if (_sndstream.IsValid ())
     return _sndstream;
   else 
-    return NULL;
+    return nullptr;
 }
 
 float TheoraMediaContainer::GetPosition () const
@@ -452,10 +430,10 @@ float TheoraMediaContainer::GetPosition () const
   return 0;
 }
 
-float TheoraMediaContainer::GetLength () const
+float TheoraMediaContainer::GetDuration () const
 {
   if (_activeTheoraStream.IsValid ())
-    return _activeTheoraStream->GetLength ();
+    return _activeTheoraStream->GetDuration ();
 
   return 0;
 }
@@ -551,14 +529,20 @@ const MediaLanguage& TheoraMediaContainer::GetLanguage (size_t index) const
   return _languages[index];
 }
 
+void TheoraMediaContainer::AddLanguage (const MediaLanguage& language)
+{
+  //_languages.Push (language);
+  _languages.Push (MediaLanguage (language.name, language.path));
+}
+
 void TheoraMediaContainer::SetCurrentLanguage (const char* identifier)
 {
   bool found = false;
 
   // Search for the selected language
-  for (size_t i =0;i<_languages.GetSize ();i++)
+  for (size_t i = 0; i < _languages.GetSize (); i++)
   {
-    if (strcmp (_languages[i].name,identifier) ==0)
+    if (strcmp (_languages[i].name,identifier) == 0)
     {
       csRef<iVFS> vfs = csQueryRegistry<iVFS> (_object_reg);
       csRef<iSndSysLoader> sndloader = csQueryRegistry<iSndSysLoader> (_object_reg);
@@ -568,7 +552,7 @@ void TheoraMediaContainer::SetCurrentLanguage (const char* identifier)
       if (!soundbuf)
       {
         csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
-          "Can't load file %s!\n", _languages[i].path);
+          "Can't load file %s!\n", _languages[i].path.GetData ());
         return;
       }
 
@@ -576,7 +560,7 @@ void TheoraMediaContainer::SetCurrentLanguage (const char* identifier)
       if (!snddata)
       {
         csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
-          "Can't load sound %s!\n", _languages[i].path);
+          "Can't load sound %s!\n", _languages[i].path.GetData ());
         return;
       }
 
@@ -584,7 +568,7 @@ void TheoraMediaContainer::SetCurrentLanguage (const char* identifier)
       if (!_sndstream)
       {
         csReport (_object_reg, CS_REPORTER_SEVERITY_ERROR, QUALIFIED_PLUGIN_NAME,
-          "Can't create stream for %s!\n", _languages[i].path);
+          "Can't create stream for %s!\n", _languages[i].path.GetData ());
         return;
       }
       _sndstream->SetLoopState (CS_SNDSYS_STREAM_DONTLOOP);

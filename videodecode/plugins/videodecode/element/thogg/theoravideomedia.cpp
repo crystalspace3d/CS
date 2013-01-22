@@ -28,7 +28,7 @@ SCF_IMPLEMENT_FACTORY (csTheoraVideoMedia)
 
 csTheoraVideoMedia::csTheoraVideoMedia (iBase* parent) 
 : scfImplementationType (this, parent),
-  _object_reg (0), _name (NULL)
+  _object_reg (0), _name (nullptr)
 {
 }
 
@@ -59,7 +59,7 @@ bool csTheoraVideoMedia::Initialize (iObjectRegistry* r)
   if (_theora_p)
   {
     // Clear the theora state in case it contains previous data
-    _decodeControl = NULL;
+    _decodeControl = nullptr;
 
     // Initialize the decoders and print the info on the stream
     _decodeControl = th_decode_alloc (&_streamInfo,_setupInfo);
@@ -107,7 +107,7 @@ unsigned long csTheoraVideoMedia::GetFrameCount() const
   return _frameCount;
 }
 
-float csTheoraVideoMedia::GetLength () const
+float csTheoraVideoMedia::GetDuration () const
 {
   return _length;
 }
@@ -177,7 +177,7 @@ long csTheoraVideoMedia::SeekPage (long targetFrame, long frameCount, bool retur
     _isWriting.Wait (_writeMutex);
 
   // Reset Theora decoder
-  _rgbBuff = NULL;
+  _rgbBuff = nullptr;
   _cache.DeleteAll ();
   ogg_stream_reset (&_streamState);
   th_decode_free (_decodeControl);
@@ -286,7 +286,7 @@ long csTheoraVideoMedia::SeekPage (long targetFrame, long frameCount, bool retur
 
 void csTheoraVideoMedia::InitializeStream (const char* name, ogg_stream_state &state, th_info &info, 
                                            th_comment &comments, th_setup_info *setupInfo, FILE *source, 
-                                           csRef<iTextureManager> texManager)
+                                           iTextureManager* texManager)
 {
   _name = new char[strlen (name)];
   strcpy(_name, name);
@@ -522,25 +522,25 @@ void csTheoraVideoMedia::SetCacheSize (size_t size)
   _cacheSize = size;
 }
 
-bool csTheoraVideoMedia::HasDataReady ()
+bool csTheoraVideoMedia::HasDataReady () const
 {
   if (_cache.GetSize ()!=0)
     return true;
   return false;
 }
-bool csTheoraVideoMedia::IsCacheFull ()
+bool csTheoraVideoMedia::IsCacheFull () const
 {
   if (_cache.GetSize ()>=_cacheSize)
     return true;
   return false;
 }
 
-double csTheoraVideoMedia::GetTargetFPS ()
+double csTheoraVideoMedia::GetTargetFPS () const
 {
   return _FPS;
 }
 
-float csTheoraVideoMedia::GetAspectRatio () 
+float csTheoraVideoMedia::GetAspectRatio () const
 {
   return _aspectRatio;
 }

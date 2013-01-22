@@ -87,9 +87,10 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
 
         if (strcmp (type,"theoraVideo")==0)
         {
-          csRef<iPluginManager> mgr=csQueryRegistry<iPluginManager> (_object_reg);
-          csRef<iMediaLoader> m_pThOggLoader=csLoadPlugin<iMediaLoader> 
+          csRef<iPluginManager> mgr = csQueryRegistry<iPluginManager> (_object_reg);
+          csRef<iMediaLoader> m_pThOggLoader = csLoadPlugin<iMediaLoader> 
             (mgr, "crystalspace.videodecode.element.thogg");
+
           // Get the type of the media
           _mediaType = csString (child->GetAttributeValue ("type"));
 
@@ -132,10 +133,6 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                   {
                   case XMLTOKEN_LANGUAGE:
                     {
-                      // Store the info about the language.
-                      // We want to store all the language streams.
-                      //MediaLanguage buff;
-
                       // Store the name
                       const char* name = child3->GetAttributeValue ("name");
                       if (name == 0)
@@ -144,10 +141,6 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                                              "No language name defined while loading audiostream");
                         return 0;
                       }
-
-                      //buff.name = new char[strlen (name)];
-                      //strcpy (buff.name,name);
-
                       // and the path
                       const char* langPath = child3->GetAttributeValue ("path");
                       if (langPath == 0)
@@ -157,22 +150,20 @@ csPtr<iBase> csVplParser::Parse (iDocumentNode* node, iStreamSource*,
                         return 0;
                       }
 
-                      //buff.path = new char[strlen (langPath)];
-                      //strcpy (buff.path,langPath);
-
 		      MediaLanguage buff (name, langPath);
                       _languages.Push (buff);
                     }
                   }
                 }
-
               }
             }
           }
 
-          m_pThOggLoader->Create (_mediaPath,_languages);
+	  csRef<iMediaContainer> container = m_pThOggLoader->LoadMedia (_mediaPath);
+	  for (size_t i = 0; i < _languages.GetSize (); i++)
+	    container->AddLanguage (_languages[i]);
 
-          return csPtr<iBase> (m_pThOggLoader);
+          return csPtr<iBase> (container);
         }
       }
     }

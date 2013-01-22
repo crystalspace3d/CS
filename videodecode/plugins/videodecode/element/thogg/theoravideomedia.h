@@ -15,13 +15,8 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free
 Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __CS_THOGGVIDEOMEDIA_H__
 #define __CS_THOGGVIDEOMEDIA_H__
-
-/**\file
-* Video Player: media stream 
-*/
 
 #include "csutil/scf_implementation.h"
 #include "csutil/fifo.h"
@@ -34,6 +29,8 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <theora/theoradec.h>
 #include "csutil/custom_new_enable.h"
 
+#include "media.h"
+
 using namespace CS::Media;
 using namespace CS::Threading;
 
@@ -42,11 +39,8 @@ using namespace CS::Threading;
 struct iTextureWrapper; 
 struct csVPLvideoFormat;
 
-/**
-  * Video stream
-  */
-class csTheoraVideoMedia : public scfImplementation2
-    < csTheoraVideoMedia, iVideoMedia, scfFakeInterface<iMedia> >
+class csTheoraVideoMedia
+: public scfImplementation1<csTheoraVideoMedia, iVideoMedia>, public csMedia
 {
 private:
   iObjectRegistry* _object_reg;
@@ -119,37 +113,36 @@ public:
   csTheoraVideoMedia (iBase* parent);
   virtual ~csTheoraVideoMedia ();
 
-  // From iComponent
+  //-- iComponent
   virtual bool Initialize (iObjectRegistry*);
 
-  // From iMedia
+  //-- iMedia
   virtual const char* GetName () const;  
   virtual const char* GetType () const;
   virtual unsigned long GetFrameCount () const;
-  virtual float GetLength () const;
+  virtual float GetDuration () const;
   virtual double GetPosition () const;
-  virtual void CleanMedia () ;
-  virtual bool Update () ;
-  virtual void WriteData () ;
-  virtual void SwapBuffers () ;
-  virtual void SetCacheSize (size_t size) ;
-  virtual bool HasDataReady () ;
-  virtual bool IsCacheFull () ;
-  virtual void DropFrame () ;
+  virtual void CleanMedia ();
+  virtual bool Update ();
+  virtual void WriteData ();
+  virtual void SwapBuffers ();
+  virtual void SetCacheSize (size_t size);
+  virtual bool HasDataReady () const;
+  virtual bool IsCacheFull () const;
+  virtual void DropFrame ();
 
-  // From iVideoMedia
-  virtual float GetAspectRatio () ;
+  //-- iVideoMedia
+  virtual float GetAspectRatio () const;
   virtual iTextureHandle* GetVideoTarget ();
-  virtual double GetTargetFPS () ;
+  virtual double GetTargetFPS () const;
 
   inline void SetFrameCount (unsigned long count)  { _frameCount=count; }
   inline void SetLength (float length)  { this->_length=length; }
   long SeekPage (long targetFrame, long frameCount, bool return_keyframe, 
                  ogg_sync_state *oy, unsigned  long fileSize);
-  // An easy way to initialize the stream
   void InitializeStream (const char* name, ogg_stream_state &state, th_info &info, 
                          th_comment &comments, th_setup_info *setupInfo,
-                         FILE *source, csRef<iTextureManager> texManager);
+                         FILE *source, iTextureManager* texManager);
 };
 
 

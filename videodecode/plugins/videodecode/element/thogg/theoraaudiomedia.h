@@ -18,10 +18,6 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef __CS_THOGGAUDIOMEDIA_H__
 #define __CS_THOGGAUDIOMEDIA_H__
 
-/**\file
-  * Video Player: media stream 
-  */
-
 #include "csutil/scf_implementation.h"
 #include "isndsys/ss_listener.h"
 #include "isndsys/ss_source.h"
@@ -31,20 +27,22 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "namespacedocs.h"
 
 #include "csutil/custom_new_disable.h"
-#include "vorbis/codec.h"
+#include <vorbis/codec.h>
 #include "csutil/custom_new_enable.h"
+
+#include "media.h"
 
 using namespace CS::Media;
 using namespace CS::SndSys;
 
 class SndSysTheoraStream;
-/**
-  * Audio stream
-  */
-class csTheoraAudioMedia : public scfImplementation2 
-   < csTheoraAudioMedia, iAudioMedia, scfFakeInterface<iMedia> >
+
+class csTheoraAudioMedia
+: public scfImplementation1<csTheoraAudioMedia, scfFakeInterface<iMedia> >,
+  public csMedia
 {
 public:
+  CS_LEAKGUARD_DECLARE (csTheoraAudioMedia);
 
   struct cachedData
   {
@@ -88,33 +86,29 @@ public:
   inline int&                Vorbis_p ()       { return _vorbis_p; }
 
 public:
-  csTheoraAudioMedia (iBase* parent);
+  csTheoraAudioMedia ();
   ~csTheoraAudioMedia ();
 
-  // From iComponent.
+  //-- iComponent
   virtual bool Initialize (iObjectRegistry*);
 
-  // From iMedia
+  //-- iMedia
   virtual const char* GetName () const;  
   virtual const char* GetType () const;
   virtual unsigned long GetFrameCount () const;
-  virtual float GetLength () const;
+  virtual float GetDuration () const;
   virtual double GetPosition () const;
-  virtual void CleanMedia () ;
-  virtual bool Update () ;
-  virtual void WriteData () ;
-  virtual void SwapBuffers () ;
-  virtual void SetCacheSize (size_t size) ;
-  virtual bool HasDataReady () ;
-  virtual bool IsCacheFull () ;
-  virtual void DropFrame () ;
-
-  // From iAudioMedia
-  virtual void GetAudioTarget (csRef<iSndSysStream> &stream);
+  virtual void CleanMedia ();
+  virtual bool Update ();
+  virtual void WriteData ();
+  virtual void SwapBuffers ();
+  virtual void SetCacheSize (size_t size);
+  virtual bool HasDataReady () const;
+  virtual bool IsCacheFull () const;
+  virtual void DropFrame ();
 
   inline void SetLength (float length)  { this->_length=length; }
   void SetPosition (float time, ogg_sync_state *oy,ogg_page *op,ogg_stream_state *thState);
-  // An easy way to initialize the stream
   void InitializeStream (const char* name, ogg_stream_state &state, 
                          vorbis_info &info, vorbis_comment &comments, 
                          FILE *source);

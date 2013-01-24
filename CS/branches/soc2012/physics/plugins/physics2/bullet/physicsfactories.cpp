@@ -88,6 +88,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return transform;
   }
 
+  csPtr<CS::Collisions::iCollisionObject> BulletRigidBodyFactory::CreateCollisionObject () 
+  { 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iRigidBody> (CreateRigidBody ()); 
+  }
+
   csPtr<CS::Physics::iRigidBody> BulletRigidBodyFactory::CreateRigidBody ()
   {
     csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (system));
@@ -95,16 +100,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return csPtr<CS::Physics::iRigidBody>(body);
   }
 
-  csPtr<CS::Collisions::iCollisionObject> BulletRigidBodyFactory::CreateCollisionObject () 
-  { 
-    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iRigidBody>(CreateRigidBody ()); 
+  csPtr<CS::Collisions::iActor> BulletDynamicActorFactory::CreateActor ()
+  {
+    csRef<CS::Physics::iDynamicActor> actor = CreateDynamicActor ();
+    return csPtr<iActor> (actor);
   }
 
   csPtr<CS::Physics::iDynamicActor> BulletDynamicActorFactory::CreateDynamicActor ()
   {
-    csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor>(new csBulletDynamicActor (system));
+    csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor> (new csBulletDynamicActor (system));
     body->CreateDynamicActor (this);
-    return csPtr<CS::Physics::iDynamicActor>(body);
+    return csPtr<CS::Physics::iDynamicActor> (body);
   }
 
   csPtr<CS::Physics::iRigidBody> BulletDynamicActorFactory::CreateRigidBody ()

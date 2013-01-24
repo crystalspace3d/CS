@@ -72,7 +72,6 @@ enum CollisionObjectType
 				     upcast to a iPhysicalObject. */
   COLLISION_OBJECT_GHOST,          /*!< The collision object is a ghost. */
   COLLISION_OBJECT_ACTOR           /*!< The collision object is an actor. */
-  // TODO: a dynamic actor is both ACTOR and PHYSICAL
 };
 
 /**
@@ -137,7 +136,6 @@ struct CollisionData
  * Main users of this interface:
  * - iCollisionSystem
  */
-// TODO: rename iCollisionListener
 struct iCollisionCallback : public virtual iBase
 {
   SCF_INTERFACE (CS::Collisions::iCollisionCallback, 1, 0, 0);
@@ -210,8 +208,7 @@ struct iCollisionObjectFactory : public virtual iBase
   virtual iObject *QueryObject () = 0;
 
   /// Get the system of this factory
-  // TODO: remove?
-  //virtual iCollisionSystem* GetSystem () const = 0;
+  virtual iCollisionSystem* GetSystem () const = 0;
 
   /// Create an instance
   virtual csPtr<iCollisionObject> CreateCollisionObject () = 0;
@@ -393,28 +390,23 @@ struct iCollisionTerrain : public virtual iBase
 };
 
 /**
- * \todo Document me
+ * Common abstract interface for factories of iActor objects.
+ *
+ * Main ways to create instances implementing this interface:
+ * - CS::Collisions::iCollisionSystem::CreateCollisionActorFactory()
+ * - CS::Physics::iPhysicalSystem::CreateDynamicActorFactory()
  */
-struct iCollisionActorFactory : public virtual iCollisionObjectFactory
+struct iActorFactory : public virtual iCollisionObjectFactory
 {
-  SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
+  SCF_INTERFACE (CS::Collisions::iActorFactory, 1, 0, 0);
 
   /// Create an instance
-  virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
+  virtual csPtr<iActor> CreateActor () = 0;
 
   /// Get the max vertical threshold that this actor can step over
   virtual float GetStepHeight () const = 0;
   /// Set the max vertical threshold that this actor can step over
   virtual void SetStepHeight (float h) = 0;
-
-  /**
-   * The maximum slope determines the maximum angle that the actor can walk up.
-   * The slope angle is measured in radians. The default value is 0.7854f (45 degree).
-   */
-  virtual void SetMaximumSlope (float slope) = 0;
-  
-  /// Get the maximum slope, in radians.
-  virtual float GetMaximumSlope () const = 0;
 
   /// Get the walk speed
   virtual float GetWalkSpeed () const = 0;
@@ -433,30 +425,25 @@ struct iCollisionActorFactory : public virtual iCollisionObjectFactory
 };
 
 /**
- * A iCollisionActor is a kinematic collision object. It has a faster collision detection
- * and response. You can use it to create a player or character model with gravity handling.
+ * A iActor is the common abstract interface for actor motion controlling, and can
+ * be used to create eg a player or a Non-Player Character model.
  *
- * Main creators of instances implementing this interface:
- * - iCollisionActorFactory::CreateCollisionObject
+ * Actors can be used to move objects around the environnement, while keeping reactions
+ * to the collisions that are generated and handling gravity.
+ *
+ * \remark The collider of iCollisionActor must be a convex shape, for example a
+ * capsule or a sphere.
+ *
+ * Main ways to create instances implementing this interface:
+ * - CS::Collisions::iCollisionActorFactory::CreateCollisionActor()
+ * - CS::Physics::iDynamicActorFactory::CreateDynamicActor()
  * 
  * Main users of this interface:
  * - iCollisionSystem
- * \remark The collider of iCollisionActor must be a convex shape. For example a
- * capsule or a sphere.
  */
-struct iActor : public virtual iBase
+struct iActor : public virtual iCollisionObject
 {
   SCF_INTERFACE (CS::Collisions::iActor, 1, 0, 0);
-
-  // TODO: remove?
-  virtual iCollisionObject* QueryCollisionObject () = 0;
-
-  /// Take care of actor-specific stuff, before the simulation step
-  // TODO: remove
-  virtual void UpdatePreStep (float delta) = 0;
-  
-  /// Take care of actor-specific stuff, after the simulation step
-  virtual void UpdatePostStep (float delta) = 0;
 
   /**
    * Start walking in the given direction with walk speed. 
@@ -491,14 +478,6 @@ struct iActor : public virtual iBase
   /// Set the maximum vertical threshold that this actor can step over
   virtual void SetStepHeight (float h) = 0;
 
-  /// Get the maximum slope, in radians.
-  virtual float GetMaximumSlope () const = 0;
-  /**
-   * The maximum slope determines the maximum angle that the actor can walk up.
-   * The slope angle is measured in radians. The default value is 0.7854f (45 degree).
-   */
-  virtual void SetMaximumSlope (float slope) = 0;
-  
   /// Get the walk speed
   virtual float GetWalkSpeed () const = 0;
   /// Set the walk speed
@@ -521,10 +500,56 @@ struct iActor : public virtual iBase
   virtual void SetGravityEnabled (bool g) = 0;
 };
 
-// todo: remove
+/**
+ * Factory to create instances of iCollisionActor.
+ */
+struct iCollisionActorFactory : public virtual iCollisionObjectFactory,
+  public virtual iActorFactory
+{
+  SCF_INTERFACE (CS::Collisions::iCollisionActorFactory, 1, 0, 0);
+
+  /// Create an instance
+  virtual csPtr<iCollisionActor> CreateCollisionActor () = 0;
+
+  /**
+   * Get the maximum slope, in radians. The maximum slope determines the maximum
+   * angle that the actor can walk up.
+   */
+  virtual float GetMaximumSlope () const = 0;
+  /**
+   * The maximum slope determines the maximum angle that the actor can walk up.
+   * The slope angle is measured in radians. The default value is 0.7854f (45 degree).
+   */
+  virtual void SetMaximumSlope (float slope) = 0;
+};
+
+/**
+ * A iCollisionActor is a basic collision agent, that will be blocked by the
+ * collision objects standing in its way, but won't interact with them by
+ * generating opposite collision forces on the objects hit.
+ *
+ * Main creators of instances implementing this interface:
+ * - iCollisionActorFactory::CreateCollisionObject
+ * 
+ * Main users of this interface:
+ * - iCollisionSystem
+ * \remark The collider of iCollisionActor must be a convex shape. For example a
+ * capsule or a sphere.
+ */
 struct iCollisionActor : public virtual iCollisionObject, public virtual iActor
 {
   SCF_INTERFACE (CS::Collisions::iCollisionActor, 1, 0, 0);
+
+  /**
+   * Get the maximum slope, in radians. The maximum slope determines the maximum
+   * angle that the actor can walk up.
+   */
+  virtual float GetMaximumSlope () const = 0;
+  /**
+   * The maximum slope determines the maximum angle that the actor can walk up.
+   * The slope angle is measured in radians. The default value is 0.7854f (45 degree).
+   */
+  virtual void SetMaximumSlope (float slope) = 0;
 };
 
 /**
@@ -561,6 +586,17 @@ struct iCollisionSector : public virtual iBase
    * CS::Collisions::COLLISION_OBJECT_PHYSICAL, or nullptr otherwise.
    */
   virtual CS::Physics::iPhysicalSector* QueryPhysicalSector () const = 0;
+
+  /**
+   * Set the engine iSector related to this collision sector. The iMovable that are 
+   * attached to a iCollisionObject present in this collision sector will be put
+   * automatically in the given engine sector. The portals in iSector will be added
+   * to this collision sector.
+   */
+  virtual void SetSector (iSector* sector) = 0;
+
+  /// Get the engine iSector related to this collision sector.
+  virtual iSector* GetSector () = 0;
 
   /// Set the global gravity.
   virtual void SetGravity (const csVector3& v) = 0;
@@ -609,18 +645,12 @@ struct iCollisionSector : public virtual iBase
   /// Remove the given portal from this sector.
   virtual void RemovePortal (iPortal* portal) = 0;
 
+  /// Delete all objects in this collision sector.
+  // TODO: mask for selecting the type/state/collgroup of the objects to be removed?
+  // TODO: flag indicating whether the attached iSceneNode should be removed from the engine?
+  virtual void DeleteAll () = 0;
+
   // Other stuff
-
-  /**
-   * Set the engine iSector related to this collision sector. The iMovable that are 
-   * attached to a iCollisionObject present in this collision sector will be put
-   * automatically in the given engine sector. The portals in iSector will be added
-   * to this collision sector.
-   */
-  virtual void SetSector (iSector* sector) = 0;
-
-  /// Get the engine iSector related to this collision sector.
-  virtual iSector* GetSector () = 0;
 
   /// Follow a beam from start to end and return the first body that is hit.
   virtual HitBeamResult HitBeam (
@@ -637,11 +667,6 @@ struct iCollisionSector : public virtual iBase
    * it reports one or more contact points for every overlapping object
    */
   virtual bool CollisionTest (iCollisionObject* object, csArray<CollisionData>& collisions) = 0;
-
-  /// Delete all objects in this collision sector.
-  // TODO: mask for selecting the type/state/collgroup of the objects to be removed?
-  // TODO: flag indicating whether the attached iSceneNode should be removed from the engine?
-  virtual void DeleteAll () = 0;
 };
 
 /**

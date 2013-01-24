@@ -19,6 +19,7 @@
 #define __CS_BULLET_COLLISIONACTOR_H__
 
 #include "cssysdef.h"
+#include "actor.h"
 #include "common2.h"
 #include "collisionghost.h"
 #include "kinematicactorcontroller.h"
@@ -45,6 +46,7 @@ public:
     airControlFactor (0.04f)
     {}
 
+  virtual csPtr<CS::Collisions::iActor> CreateActor ();
   virtual csPtr<CS::Collisions::iCollisionActor> CreateCollisionActor ();
   virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
 
@@ -68,7 +70,7 @@ public:
   * TODO: IsMovingUp
   */
 class csBulletCollisionActor : public scfVirtImplementationExt1<csBulletCollisionActor,
-    csBulletGhostCollisionObject, CS::Collisions::iCollisionActor>
+    csBulletGhostCollisionObject, CS::Collisions::iCollisionActor>, public csActor
 {
   csKinematicActorController* controller;
   float airControlFactor;
@@ -86,12 +88,15 @@ public:
   virtual iObject* QueryObject (void) { return (iObject*) this; }
 
   //-- iCollisionObject
-  virtual CS::Collisions::iCollisionObject* QueryCollisionObject () { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
-  virtual CS::Collisions::iActor* QueryActor () { return dynamic_cast<CS::Collisions::iActor*>(this); }
+  virtual CS::Collisions::iCollisionObject* QueryCollisionObject ()
+  { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
+  virtual CS::Collisions::iActor* QueryActor ()
+  { return dynamic_cast<CS::Collisions::iActor*> (this); }
 
   virtual bool IsPhysicalObject () const { return false; }
 
-  virtual CS::Collisions::CollisionObjectType GetObjectType () const {return CS::Collisions::COLLISION_OBJECT_ACTOR;}
+  virtual CS::Collisions::CollisionObjectType GetObjectType () const
+  { return CS::Collisions::COLLISION_OBJECT_ACTOR; }
 
   virtual bool AddBulletObject ();
 
@@ -144,7 +149,7 @@ public:
 
   btPairCachingGhostObject* GetBulletGhostObject ()
   {
-    return static_cast<btPairCachingGhostObject*>(btObject);
+    return static_cast<btPairCachingGhostObject*> (btObject);
   }
 };
 

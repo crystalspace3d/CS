@@ -53,11 +53,11 @@
 #include "rigidbody2.h"
 #include "softbody2.h"
 #include "collisionactor.h"
+#include "dynamicactor.h"
 #include "joint2.h"
 #include "portal.h"
 
 const float COLLISION_THRESHOLD = 0.01f;
-
 
 using namespace CS::Collisions;
 using namespace CS::Physics;
@@ -178,6 +178,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       RemoveUpdatable (updatables[updatables.GetSize () - 1]);
     }
 
+    // remove actors
+    for (size_t i = 0; i < actors.GetSize (); ++i)
+    {
+      //actors[i]->RemoveBulletObject ();
+    }
+
     // remove portals
     for (size_t i = 0; i < portals.GetSize (); ++i)
     {
@@ -201,9 +207,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       terrains[i]->RemoveRigidBodies ();
     }
-    terrains.DeleteAll ();
 
+    terrains.DeleteAll ();
     joints.DeleteAll ();
+    actors.DeleteAll ();
     softBodies.DeleteAll ();
     rigidBodies.DeleteAll ();
     collisionObjects.DeleteAll ();
@@ -235,6 +242,242 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return BulletToCS (gravity, system->GetInverseInternalScale ());
   }
 
+  void csBulletSector::SetSector (iSector* sector)
+  {
+    if (this->sector == sector) return;
+    
+    this->sector = sector;
+
+    if (sector)
+    {
+      // sector is set
+
+      // add portal meshes
+      /*const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
+        sector->GetPortalMeshes ();
+      csSet<csPtrKey<iMeshWrapper> >::GlobalIterator it = 
+        portal_meshes.GetIterator ();
+      while (it.HasNext ())
+      {
+        iMeshWrapper* portalMesh = it.Next ();
+        iPortalContainer* portalContainer = portalMesh->GetPortalContainer ();
+        int i; 
+        for (i = 0; i < portalContainer->GetPortalCount (); i++)
+        {
+          iPortal* portal = portalContainer->GetPortal (i);
+          AddPortal (portal, portalMesh->GetMovable ()->GetFullTransform ());
+        }
+      }*/
+
+      // add object meshes
+      for (size_t i = 0; i < collisionObjects.GetSize (); i++)
+      {
+        iCollisionObject* obj = collisionObjects[i];
+        AddSceneNodeToSector (obj->GetAttachedSceneNode ());
+      }
+    }
+    else
+    {
+      // sector is unset
+      // TODO: Remove meshes
+    }
+  }
+
+  void csBulletSector::SetLinearDamping (float d)
+  {
+    linearDampening = d;
+  }
+
+  void csBulletSector::SetAngularDamping (float d)
+  {
+    angularDampening = d;
+  }
+
+  void csBulletSector::SetAutoDisableParams (float linear, float angular,
+    float time)
+  {
+    linearDisableThreshold = linear;
+    angularDisableThreshold = angular;
+    timeDisableThreshold = time;
+  }
+
+  void csBulletSector::Step (float duration)
+  {
+    // Call updatable steps
+    for (size_t i = 0; i < updatables.GetSize (); i++)
+    {
+      updatables[i]->PreStep (duration);
+    }
+
+    // Execute the pre-step of the actors
+    for (size_t i = 0; i < actors.GetSize (); ++i)
+      actors[i]->UpdatePreStep (duration);
+
+    // Update traversing objects before simulation
+    UpdateCollisionPortalsPreStep ();
+
+    // Step the simulation
+    bulletWorld->stepSimulation (duration, system->worldMaxSteps, system->worldTimeStep);
+    
+    // Update traversing objects after simulation
+    UpdateCollisionPortalsPostStep ();
+
+    // Check for collisions
+    //CheckCollisions ();
+
+    // Execute the post-step of the actors
+    for (size_t i = 0; i < actors.GetSize (); ++i)
+      actors[i]->UpdatePostStep (duration);
+
+    for (size_t i = 0; i < updatables.GetSize (); i++)
+    {
+      updatables[i]->PostStep (duration);
+    }
+  }
+
+  void csBulletSector::UpdateCollisionPortalsPreStep ()
+  {
+    for (size_t i = 0; i < portals.GetSize (); i++)
+    {
+      portals[i]->UpdateCollisionsPreStep (this);
+    }
+  }
+
+  void csBulletSector::UpdateCollisionPortalsPostStep ()
+  {
+    for (size_t i = 0; i < portals.GetSize (); i++)
+    {
+      portals[i]->UpdateCollisionsPostStep (this);
+    }
+  }
+
+  void csBulletSector::UpdateSoftBodies (float timeStep)
+  {
+    for (csWeakRefArray<csBulletSoftBody>::Iterator it = anchoredSoftBodies.GetIterator (); it.HasNext (); )
+    {
+      csBulletSoftBody* body = static_cast<csBulletSoftBody*> (it.Next ());
+      body->UpdateAnchorInternalTick (timeStep);
+    }
+  }
+
+  void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
+  {
+    csRef<csBulletRigidBody> bulletBody (dynamic_cast<csBulletRigidBody*> (body));
+    rigidBodies.Push (bulletBody);
+
+    bulletBody->sector = this;
+
+    // TODO: Body might have set its own damping
+    bulletBody->SetLinearDamping (linearDampening);
+    bulletBody->SetAngularDamping (angularDampening);
+    bulletBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
+    bulletBody->btBody->setDeactivationTime (timeDisableThreshold);
+    bulletBody->AddBulletObject ();
+  }
+
+  CS::Physics::iRigidBody* csBulletSector::GetRigidBody (size_t index)
+  {
+    return rigidBodies[index]->QueryRigidBody ();
+  }
+
+  void csBulletSector::AddSoftBody (CS::Physics::iSoftBody* body)
+  {
+    CS_ASSERT (system->isSoftWorld);
+
+    csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*> (body));
+    softBodies.Push (btBody);
+    AddUpdatable (btBody);
+
+    btBody->sector = this;
+    btBody->AddBulletObject ();
+
+    iSceneNode* sceneNode = body->GetAttachedSceneNode ();
+    if (sceneNode)
+    {
+      iMeshWrapper* mesh = sceneNode->QueryMesh ();
+      if (!mesh)
+        return;
+
+      csRef<iGeneralMeshState> meshState =
+        scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
+
+      // TODO: manage that from the animation controller
+      csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
+        scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
+
+      if (!animationControl->GetSoftBody ())
+        animationControl->SetSoftBody (body);
+    }
+  }
+
+
+  CS::Physics::iSoftBody* csBulletSector::GetSoftBody (size_t index)
+  {
+    return softBodies[index]->QuerySoftBody ();
+  }
+
+  void csBulletSector::AddJoint (CS::Physics::iJoint* joint)
+  {
+    // TODO: all objects need to be removed from their previous sector
+    csBulletJoint* csJoint = dynamic_cast<csBulletJoint*> (joint);
+    CS_ASSERT (csJoint);
+    csJoint->sector = this;
+    csJoint->AddBulletJoint ();
+    joints.Push (csJoint);
+  }
+
+  void csBulletSector::RemoveJoint (CS::Physics::iJoint* joint)
+  {
+    csBulletJoint* csJoint = dynamic_cast<csBulletJoint*> (joint);
+    CS_ASSERT (csJoint);
+
+    // re-activate the now free bodies
+    if (csJoint->bodies[0])
+    {
+      dynamic_cast<csBulletCollisionObject*> (csJoint->bodies[0])->btObject->activate (true);
+    }
+    if (csJoint->bodies[1])
+    {
+      dynamic_cast<csBulletCollisionObject*> (csJoint->bodies[1])->btObject->activate (true);
+    }
+
+    csJoint->RemoveBulletJoint ();
+    joints.Delete (csJoint);
+  }
+
+  void csBulletSector::AddSceneNodeToSector (iSceneNode* sceneNode)
+  {
+    // TODO: use iMovable::SetSector () instead (same everywhere)
+    if (sceneNode && sector)
+    {
+      iMeshWrapper* mesh = sceneNode->QueryMesh ();
+      iLight* light = sceneNode->QueryLight ();
+
+      if (mesh && size_t (sector->GetMeshes ()->Find (mesh)) == csArrayItemNotFound)
+      {
+        sector->GetMeshes ()->Add (mesh);
+      }
+
+      if (light && size_t (sector->GetLights ()->Find (light)) == csArrayItemNotFound)
+      {
+        sector->GetLights ()->Add (light);
+      }
+    }
+  }
+
+  void csBulletSector::RemoveSceneNodeFromSector (iSceneNode* sceneNode)
+  {
+    if (sceneNode && sector)
+    {
+      iMeshWrapper* mesh = sceneNode->QueryMesh ();
+      iLight* light = sceneNode->QueryLight ();
+      if (mesh)
+        sector->GetMeshes ()->Remove (mesh);
+      if (light)
+        sector->GetLights ()->Remove (light);
+    }
+  }
+
   void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* object)
   {
     if (object->GetSector ())
@@ -244,23 +487,28 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     csBulletCollisionObject* obj (dynamic_cast<csBulletCollisionObject*> (object));
 
-#ifdef _DEBUG
+#ifdef CS_DEBUG
     // TODO: unused
-    printf ("Adding object \"%s\" (0x%lx) to sector: 0x%lx\n", object->QueryObject ()->GetName (), obj->btObject, this);
+    //printf ("Adding object \"%s\" (0x%lx) to sector: 0x%lx\n", object->QueryObject ()->GetName (), obj->btObject, this);
 #endif
 
     switch (obj->GetObjectType ())
     {
     case CS::Collisions::COLLISION_OBJECT_ACTOR:
       {
-        AddCollisionActor (static_cast<csBulletCollisionActor*> (obj));
-      }
+	csRef<csBulletCollisionActor> actor (dynamic_cast<csBulletCollisionActor*> (obj));
+	actors.Push (actor);
+	actor->sector = this;
+	actor->AddBulletObject ();
+       }
       break;
     case CS::Collisions::COLLISION_OBJECT_PHYSICAL:
       {
         iPhysicalBody* phyBody = obj->QueryPhysicalBody ();
-        //int cflags = obj->btObject->getCollisionFlags ();
-        //obj->btObject->setCollisionFlags (obj->btObject->getCollisionFlags () | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);
+
+	if (phyBody->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR)
+	  actors.Push (dynamic_cast<csBulletDynamicActor*> (phyBody->QueryRigidBody ()));
+
         if (phyBody->QueryRigidBody ())
         {
           AddRigidBody (phyBody->QueryRigidBody ());
@@ -301,11 +549,17 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       collisionObjects.Delete (collObject);
       RemoveSceneNodeFromSector (object->GetAttachedSceneNode ());
 
+      if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_ACTOR)
+	actors.Delete (static_cast<csBulletCollisionActor*> (collObject));
+
       iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
       if (phyBody)
       {
 	if (phyBody->QueryRigidBody ())
 	{
+	  if (phyBody->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR)
+	    actors.Delete (dynamic_cast<csBulletDynamicActor*> (phyBody->QueryRigidBody ()));
+
 	  rigidBodies.Delete (dynamic_cast<csBulletRigidBody*> (phyBody->QueryRigidBody ()));
 	}
 	else
@@ -384,45 +638,41 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  void csBulletSector::SetSector (iSector* sector)
+  void csBulletSector::AddUpdatable (iUpdatable* u)
   {
-    if (this->sector == sector) return;
+    updatables.Push (u);
+
+    if (u->GetCollisionObject ())
+    {
+      AddCollisionObject (u->GetCollisionObject ());
+    }
+
+    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper> (u);
+    if (wrapper && wrapper->GetBulletAction ())
+    {
+      // It was an internal action that also defines a bullet action
+      bulletWorld->addAction (wrapper->GetBulletAction ());
+    }
+
+    u->OnAdded (this);
+  }
+  
+  void csBulletSector::RemoveUpdatable (iUpdatable* u)
+  {
+    if (u->GetCollisionObject ())
+    {
+      RemoveCollisionObject (u->GetCollisionObject ());
+    }
+
+    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper> (u);
+    if (wrapper && wrapper->GetBulletAction ())
+    {
+      bulletWorld->removeAction (wrapper->GetBulletAction ());
+    }
     
-    this->sector = sector;
+    u->OnRemoved (this);
 
-    if (sector)
-    {
-      // sector is set
-
-      // add portal meshes
-      /*const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
-        sector->GetPortalMeshes ();
-      csSet<csPtrKey<iMeshWrapper> >::GlobalIterator it = 
-        portal_meshes.GetIterator ();
-      while (it.HasNext ())
-      {
-        iMeshWrapper* portalMesh = it.Next ();
-        iPortalContainer* portalContainer = portalMesh->GetPortalContainer ();
-        int i; 
-        for (i = 0; i < portalContainer->GetPortalCount (); i++)
-        {
-          iPortal* portal = portalContainer->GetPortal (i);
-          AddPortal (portal, portalMesh->GetMovable ()->GetFullTransform ());
-        }
-      }*/
-
-      // add object meshes
-      for (size_t i = 0; i < collisionObjects.GetSize (); i++)
-      {
-        iCollisionObject* obj = collisionObjects[i];
-        AddSceneNodeToSector (obj->GetAttachedSceneNode ());
-      }
-    }
-    else
-    {
-      // sector is unset
-      // TODO: Remove meshes
-    }
+    updatables.Delete (u);   // delete last because that might be the last hard reference
   }
 
   CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, const csVector3& end)
@@ -653,19 +903,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       return false;
   }
 
-  void csBulletSector::AddCollisionActor (CS::Collisions::iCollisionActor* actor)
-  {
-    csRef<csBulletCollisionActor> obj (dynamic_cast<csBulletCollisionActor*> (actor));
-    collisionObjects.Push (obj);
-    obj->sector = this;
-    obj->AddBulletObject ();
-  }
-
   bool csBulletSector::BulletCollide (btCollisionObject* objectA,
     btCollisionObject* objectB,
     csArray<CS::Collisions::CollisionData>& data)
   {
-    //contactPairTest
     PointContactResult result (system, data);
     bulletWorld->contactPairTest (objectA, objectB, result);
     if (data.IsEmpty ())
@@ -725,6 +966,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         return result;
       }
     }
+
     else
     {
       btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
@@ -756,204 +998,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       }
     }
     return result;
-  }
-
-  void csBulletSector::Step (float duration)
-  {
-    // Call updatable steps
-    for (size_t i = 0; i < updatables.GetSize (); i++)
-    {
-      updatables[i]->PreStep (duration);
-    }
-
-    // Update traversing objects before simulation
-    UpdateCollisionPortalsPreStep ();
-
-    // Step the simulation
-    bulletWorld->stepSimulation (duration, system->worldMaxSteps, system->worldTimeStep);
-    
-    // Update traversing objects after simulation
-    UpdateCollisionPortalsPostStep ();
-
-    // Check for collisions
-    //CheckCollisions ();
-
-    for (size_t i = 0; i < updatables.GetSize (); i++)
-    {
-      updatables[i]->PostStep (duration);
-    }
-  }
-
-  void csBulletSector::SetLinearDamping (float d)
-  {
-    linearDampening = d;
-  }
-
-  void csBulletSector::SetAngularDamping (float d)
-  {
-    angularDampening = d;
-  }
-
-  void csBulletSector::SetAutoDisableParams (float linear, float angular,
-    float time)
-  {
-    linearDisableThreshold = linear;
-    angularDisableThreshold = angular;
-    timeDisableThreshold = time;
-  }
-
-  void csBulletSector::AddRigidBody (CS::Physics::iRigidBody* body)
-  {
-    csRef<csBulletRigidBody> bulletBody (dynamic_cast<csBulletRigidBody*> (body));
-    rigidBodies.Push (bulletBody);
-
-    bulletBody->sector = this;
-
-    // TODO: Body might have set its own damping
-    bulletBody->SetLinearDamping (linearDampening);
-    bulletBody->SetAngularDamping (angularDampening);
-    bulletBody->btBody->setSleepingThresholds (linearDisableThreshold, angularDisableThreshold);
-    bulletBody->btBody->setDeactivationTime (timeDisableThreshold);
-    bulletBody->AddBulletObject ();
-  }
-
-  CS::Physics::iRigidBody* csBulletSector::GetRigidBody (size_t index)
-  {
-    return rigidBodies[index]->QueryRigidBody ();
-  }
-
-  void csBulletSector::AddSoftBody (CS::Physics::iSoftBody* body)
-  {
-    CS_ASSERT (system->isSoftWorld);
-
-    csRef<csBulletSoftBody> btBody (dynamic_cast<csBulletSoftBody*> (body));
-    softBodies.Push (btBody);
-    AddUpdatable (btBody);
-
-    btBody->sector = this;
-    btBody->AddBulletObject ();
-
-    iSceneNode* sceneNode = body->GetAttachedSceneNode ();
-    if (sceneNode)
-    {
-      iMeshWrapper* mesh = sceneNode->QueryMesh ();
-      if (!mesh)
-        return;
-
-      csRef<iGeneralMeshState> meshState =
-        scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
-
-      // TODO: manage that from the animation controller
-      csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
-        scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
-
-      if (!animationControl->GetSoftBody ())
-        animationControl->SetSoftBody (body);
-    }
-  }
-
-
-  CS::Physics::iSoftBody* csBulletSector::GetSoftBody (size_t index)
-  {
-    return softBodies[index]->QuerySoftBody ();
-  }
-
-  void csBulletSector::AddJoint (CS::Physics::iJoint* joint)
-  {
-    // TODO: all objects need to be removed from their previous sector
-    csBulletJoint* csJoint = dynamic_cast<csBulletJoint*> (joint);
-    CS_ASSERT (csJoint);
-    csJoint->sector = this;
-    csJoint->AddBulletJoint ();
-    joints.Push (csJoint);
-  }
-
-  void csBulletSector::RemoveJoint (CS::Physics::iJoint* joint)
-  {
-    csBulletJoint* csJoint = dynamic_cast<csBulletJoint*> (joint);
-    CS_ASSERT (csJoint);
-
-    // re-activate the now free bodies
-    if (csJoint->bodies[0])
-    {
-      dynamic_cast<csBulletCollisionObject*> (csJoint->bodies[0])->btObject->activate (true);
-    }
-    if (csJoint->bodies[1])
-    {
-      dynamic_cast<csBulletCollisionObject*> (csJoint->bodies[1])->btObject->activate (true);
-    }
-
-    csJoint->RemoveBulletJoint ();
-    joints.Delete (csJoint);
-  }
-
-  bool csBulletSector::Save (const char* filename)
-  {
-    // Check that the version of the Bullet library can handle serialization.
-#ifndef CS_HAVE_BULLET_SERIALIZER
-    return false;
-#else
-
-    // create a large enough buffer
-    int maxSerializeBufferSize = 1024 * 1024 * 5;
-
-    btDefaultSerializer* serializer = new btDefaultSerializer (maxSerializeBufferSize);
-    bulletWorld->serialize (serializer);
-
-    FILE* file = fopen (filename,"wb");
-    if (!file) return false;
-
-    if (fwrite (serializer->getBufferPointer (), serializer->getCurrentBufferSize (), 1, file)
-      != 1)
-      return false;
-
-    if (fclose (file) == EOF) return false;
-
-    return true;
-
-#endif
-  }
-
-  void csBulletSector::UpdateSoftBodies (float timeStep)
-  {
-    for (csWeakRefArray<csBulletSoftBody>::Iterator it = anchoredSoftBodies.GetIterator (); it.HasNext (); )
-    {
-      csBulletSoftBody* body = static_cast<csBulletSoftBody*> (it.Next ());
-      body->UpdateAnchorInternalTick (timeStep);
-    }
-  }
-
-  void csBulletSector::AddSceneNodeToSector (iSceneNode* sceneNode)
-  {
-    // TODO: use iMovable::SetSector () instead (same everywhere)
-    if (sceneNode && sector)
-    {
-      iMeshWrapper* mesh = sceneNode->QueryMesh ();
-      iLight* light = sceneNode->QueryLight ();
-
-      if (mesh && size_t (sector->GetMeshes ()->Find (mesh)) == csArrayItemNotFound)
-      {
-        sector->GetMeshes ()->Add (mesh);
-      }
-
-      if (light && size_t (sector->GetLights ()->Find (light)) == csArrayItemNotFound)
-      {
-        sector->GetLights ()->Add (light);
-      }
-    }
-  }
-
-  void csBulletSector::RemoveSceneNodeFromSector (iSceneNode* sceneNode)
-  {
-    if (sceneNode && sector)
-    {
-      iMeshWrapper* mesh = sceneNode->QueryMesh ();
-      iLight* light = sceneNode->QueryLight ();
-      if (mesh)
-        sector->GetMeshes ()->Remove (mesh);
-      if (light)
-        sector->GetLights ()->Remove (light);
-    }
   }
 
   void csBulletSector::CheckCollisions ()
@@ -991,63 +1035,31 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
-  void csBulletSector::UpdateCollisionPortalsPreStep ()
+  bool csBulletSector::Save (const char* filename)
   {
-    for (size_t i = 0; i < portals.GetSize (); i++)
-    {
-      portals[i]->UpdateCollisionsPreStep (this);
-    }
-  }
+    // Check that the version of the Bullet library can handle serialization.
+#ifndef CS_HAVE_BULLET_SERIALIZER
+    return false;
+#else
 
-  void csBulletSector::UpdateCollisionPortalsPostStep ()
-  {
-    for (size_t i = 0; i < portals.GetSize (); i++)
-    {
-      portals[i]->UpdateCollisionsPostStep (this);
-    }
-  }
+    // create a large enough buffer
+    int maxSerializeBufferSize = 1024 * 1024 * 5;
 
-  /**
-   * Will cause the step function to be called on this updatable every step
-   */
-  void csBulletSector::AddUpdatable (iUpdatable* u)
-  {
-    updatables.Push (u);
+    btDefaultSerializer* serializer = new btDefaultSerializer (maxSerializeBufferSize);
+    bulletWorld->serialize (serializer);
 
-    if (u->GetCollisionObject ())
-    {
-      AddCollisionObject (u->GetCollisionObject ());
-    }
+    FILE* file = fopen (filename,"wb");
+    if (!file) return false;
 
-    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper> (u);
-    if (wrapper && wrapper->GetBulletAction ())
-    {
-      // It was an internal action that also defines a bullet action
-      bulletWorld->addAction (wrapper->GetBulletAction ());
-    }
+    if (fwrite (serializer->getBufferPointer (), serializer->getCurrentBufferSize (), 1, file)
+      != 1)
+      return false;
 
-    u->OnAdded (this);
-  }
-  
-  /**
-   * Removes the given updatable
-   */
-  void csBulletSector::RemoveUpdatable (iUpdatable* u)
-  {
-    if (u->GetCollisionObject ())
-    {
-      RemoveCollisionObject (u->GetCollisionObject ());
-    }
+    if (fclose (file) == EOF) return false;
 
-    csRef<BulletActionWrapper> wrapper = scfQueryInterface<BulletActionWrapper> (u);
-    if (wrapper && wrapper->GetBulletAction ())
-    {
-      bulletWorld->removeAction (wrapper->GetBulletAction ());
-    }
-    
-    u->OnRemoved (this);
+    return true;
 
-    updatables.Delete (u);   // delete last because that might be the last hard reference
+#endif
   }
 
 }

@@ -768,44 +768,26 @@ struct SoftBodyHelper
 };
 
 /**
- * Used to create a dynamic actor
+ * Factory to create instances of iDynamicActor.
  */
-struct iDynamicActorFactory : public virtual iRigidBodyFactory
+struct iDynamicActorFactory : public virtual iRigidBodyFactory,
+  public virtual CS::Collisions::iActorFactory
 {
   SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
 
   /// Create a dynamic actor
   virtual csPtr<iDynamicActor> CreateDynamicActor () = 0;
 
-  /// Get the max vertical threshold that this actor can step over
-  virtual float GetStepHeight () const = 0;
-  /// Set the max vertical threshold that this actor can step over
-  virtual void SetStepHeight (float h) = 0;
-
-  /// Get the walk speed
-  virtual float GetWalkSpeed () const = 0;
-  /// Set the walk speed
-  virtual void SetWalkSpeed (float s) = 0;
-
-  /// Get the jump speed
-  virtual float GetJumpSpeed () const = 0;
-  /// Set the jump speed
-  virtual void SetJumpSpeed (float s) = 0;
-
-  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-  virtual float GetAirControlFactor () const = 0;
-  /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
-  virtual void SetAirControlFactor (float f) = 0;
-    
   /// Get whether to use a kinematic method for smooth steps
-  virtual bool GetUseKinematicSteps () const = 0;
+  virtual bool GetKinematicStepsEnabled () const = 0;
   /// Set whether to use a kinematic method for smooth steps
-  virtual void SetUseKinematicSteps (bool u) = 0;
+  virtual void SetKinematicStepsEnabled (bool u) = 0;
 };
 
 /**
  * A dynamic actor allows the user to easily navigate a physical object on
- * ground, and to interact with the dynamic objects that are colliding with it.
+ * ground, and to interact with the dynamic objects that are colliding with it
+ * by pushing away the objects that are hit.
  *
  * The actual collider that represents the actor always floats <step height>
  * above the ground to be able to move smoothly over terrain and small obstacles.
@@ -825,9 +807,9 @@ struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions:
   SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
 
   /// Get whether to use a kinematic method for smooth steps
-  //virtual bool GetUseKinematicSteps () const = 0;
+  virtual bool GetKinematicStepsEnabled () const = 0;
   /// Set whether to use a kinematic method for smooth steps
-  //virtual void SetUseKinematicSteps (bool u) = 0;
+  virtual void SetKinematicStepsEnabled (bool u) = 0;
 };
 
 /**

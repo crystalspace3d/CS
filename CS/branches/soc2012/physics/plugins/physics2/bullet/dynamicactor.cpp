@@ -20,7 +20,6 @@
 TODO: Implement general surface hugging. Kinematic step direction can currently only hug horizontal surfaces.
 */
 
-
 #include "cssysdef.h"
 #include "dynamicactor.h"
 
@@ -70,7 +69,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     SetStepHeight (props->GetStepHeight ());
     SetWalkSpeed (props->GetWalkSpeed ());
     SetJumpSpeed (props->GetJumpSpeed ());
-    SetUseKinematicSteps (props->GetUseKinematicSteps ());
+    SetKinematicStepsEnabled (props->GetKinematicStepsEnabled ());
     SetAirControlFactor (props->GetAirControlFactor ());
     
     if (collider->GetColliderType () == COLLIDER_COMPOUND)
@@ -184,6 +183,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     if (kinematicSteps && !IsFreeFalling () && btBody->getLinearVelocity ().length2 () > 0)
     {
+      dt *= 0.001f;
       StepUp (dt);
       //stepForwardAndStrafe (dt);
     }
@@ -193,6 +193,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (kinematicSteps && !IsFreeFalling () && btBody->getLinearVelocity ().length2 () > 0)
     {
+      dt *= 0.001f;
       StepDown (dt);
       SetLinearVelocity (0);              // stop moving
     }

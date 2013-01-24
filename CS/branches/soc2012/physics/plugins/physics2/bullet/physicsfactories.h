@@ -278,35 +278,25 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     }
 
-    /// Create a new object
-    virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor ();
-    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
+    virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
+    virtual csPtr<CS::Collisions::iActor> CreateActor ();
+    virtual csPtr<CS::Physics::iDynamicActor> CreateDynamicActor ();
 
-    /// Get the max vertical threshold that this actor can step over
     float GetStepHeight () const { return stepHeight; }
-    /// Set the max vertical threshold that this actor can step over
     void SetStepHeight (float h) { stepHeight = h; }
 
-    /// Get the walk speed
     float GetWalkSpeed () const { return walkSpeed; }
-    /// Set the walk speed
     void SetWalkSpeed (float s) { walkSpeed = s; }
 
-    /// Get the jump speed
     float GetJumpSpeed () const { return jumpSpeed; }
-    /// Set the jump speed
     void SetJumpSpeed (float s) { jumpSpeed = s; }
 
-    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
     float GetAirControlFactor () const { return airControlFactor; }
-    /// Determines how much the actor can control movement when free falling (1 = completely, 0 = not at all)
     void SetAirControlFactor (float f) { airControlFactor = f; }
     
-    /// Get whether to use a kinematic method for smooth steps
-    bool GetUseKinematicSteps () const { return kinematicSteps; }
-    /// Set whether to use a kinematic method for smooth steps
-    void SetUseKinematicSteps (bool u) { kinematicSteps = u; }
+    bool GetKinematicStepsEnabled () const { return kinematicSteps; }
+    void SetKinematicStepsEnabled (bool u) { kinematicSteps = u; }
   };
 
 }

@@ -51,6 +51,8 @@ class btActionInterface;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
+class csActor;
 class csBulletSystem;
 class csBulletSector;
 class csBulletDebugDraw;
@@ -111,11 +113,13 @@ class csBulletSector : public scfVirtImplementationExt2<
   csRef<iSector> sector;
 
   csRefArray<csBulletJoint> joints;
+  // TODO: csRefArray of portals?
   csArray<CollisionPortal*> portals;
   csRefArrayObject<csBulletCollisionObject> collisionObjects;
   csRefArrayObject<csBulletRigidBody> rigidBodies;
   csRefArrayObject<csBulletSoftBody> softBodies;
   csWeakRefArray<csBulletSoftBody> anchoredSoftBodies;
+  csRefArray<csActor> actors;
   csRefArray<csBulletCollisionTerrain> terrains;
   csRefArray<CS::Physics::iUpdatable> updatables;
 
@@ -123,7 +127,6 @@ class csBulletSector : public scfVirtImplementationExt2<
   void UpdateCollisionPortalsPreStep ();
   void UpdateCollisionPortalsPostStep ();
 
-  void AddCollisionActor (CS::Collisions::iCollisionActor* actor);
   void AddRigidBody (CS::Physics::iRigidBody* body);
   void AddSoftBody (CS::Physics::iSoftBody* body);
 
@@ -200,8 +203,6 @@ public:
   //virtual void SetGimpactEnabled (bool enabled);
   //virtual bool GetGimpactEnabled ();
 
-  virtual bool Save (const char* filename);
-
   bool BulletCollide (btCollisionObject* objectA,
     btCollisionObject* objectB,
     csArray<CS::Collisions::CollisionData>& data);
@@ -219,6 +220,8 @@ public:
 
   void AddSceneNodeToSector (iSceneNode* sceneNode);
   void RemoveSceneNodeFromSector (iSceneNode* sceneNode);
+
+  virtual bool Save (const char* filename);
 };
 
 }

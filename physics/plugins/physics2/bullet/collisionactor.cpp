@@ -31,17 +31,23 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   // TODO: use simulation speed
 
+  csPtr<CS::Collisions::iActor> BulletCollisionActorFactory::CreateActor ()
+  {
+    csRef<CS::Collisions::iCollisionActor> actor = CreateCollisionActor ();
+    return csPtr<iActor> (actor);
+  }
+
   csPtr<CS::Collisions::iCollisionActor> BulletCollisionActorFactory::CreateCollisionActor ()
   {
     csBulletCollisionActor* actor = new csBulletCollisionActor (system);
     actor->CreateCollisionActor (this);
-    csRef<CS::Collisions::iCollisionActor> iactor = csPtr<CS::Collisions::iCollisionActor>(actor);
-    return csPtr<iCollisionActor>(iactor);
+    csRef<CS::Collisions::iCollisionActor> iactor = csPtr<CS::Collisions::iCollisionActor> (actor);
+    return csPtr<iCollisionActor> (iactor);
   }
 
   csPtr<CS::Collisions::iCollisionObject> BulletCollisionActorFactory::CreateCollisionObject () 
   { 
-    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor>(CreateCollisionActor ()); 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor> (CreateCollisionActor ()); 
   }
 
   void csBulletCollisionActor::CreateCollisionActor (CS::Collisions::iCollisionActorFactory* props)
@@ -150,6 +156,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (!controller) return;
 
+    //delta *= 0.001f;
     controller->setGravity (-sector->GetBulletWorld ()->getGravity ()[1]);
 
     // Remove ghost objects from list of blocking objects:

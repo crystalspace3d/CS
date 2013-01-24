@@ -19,6 +19,7 @@
 #ifndef __CS_BULLET_DYNAMICACTOR_H__
 #define __CS_BULLET_DYNAMICACTOR_H__
 
+#include "actor.h"
 #include "common2.h"
 #include "rigidbody2.h"
 
@@ -40,7 +41,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   class csBulletDynamicActor : public scfVirtImplementationExt1<csBulletDynamicActor,
 	csBulletRigidBody, 
-        CS::Physics::iDynamicActor>
+    CS::Physics::iDynamicActor>, public csActor
   {
     friend class csBulletSystem;
     friend class csBulletSector;
@@ -49,7 +50,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   private:
     float stepHeight;
     float walkSpeed, jumpSpeed;
-    float maximumSlope;
     float airControlFactor;
     bool onGround;
     bool kinematicSteps;
@@ -62,7 +62,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csBulletDynamicActor (csBulletSystem* sys);
     virtual ~csBulletDynamicActor ();
     
-    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR;}
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const
+    { return CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR; }
 
     bool AddBulletObject ();
     bool RemoveBulletObject ();
@@ -70,10 +71,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     //-- iCollisionActor
     virtual CS::Collisions::iCollisionObject* QueryCollisionObject ()
-    { return dynamic_cast<CS::Collisions::iCollisionObject*>(this); }
+    { return dynamic_cast<CS::Collisions::iCollisionObject*> (this); }
     
     virtual CS::Collisions::iActor* QueryActor ()
-    { return dynamic_cast<CS::Collisions::iActor*>(this); }
+    { return dynamic_cast<CS::Collisions::iActor*> (this); }
 
     virtual void UpdatePreStep (float delta);
     virtual void UpdatePostStep (float delta);
@@ -91,9 +92,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual float GetStepHeight () const { return stepHeight; }
     virtual void SetStepHeight (float h) { stepHeight = h; }
 
-    virtual float GetMaximumSlope () const { return maximumSlope; };
-    virtual void SetMaximumSlope (float slope) { maximumSlope = slope; };
-
     virtual float GetWalkSpeed () const { return walkSpeed; }
     virtual void SetWalkSpeed (float s) { walkSpeed = s; }
 
@@ -103,8 +101,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual float GetAirControlFactor () const { return airControlFactor; }
     virtual void SetAirControlFactor (float f) { airControlFactor = f; }
     
-    virtual bool GetUseKinematicSteps () const { return kinematicSteps; }
-    virtual void SetUseKinematicSteps (bool u) { kinematicSteps = u; }
+    virtual bool GetKinematicStepsEnabled () const { return kinematicSteps; }
+    virtual void SetKinematicStepsEnabled (bool u) { kinematicSteps = u; }
 
     /// Override SetTransform
     virtual void SetTransform (const csOrthoTransform& trans);
@@ -122,6 +120,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     void StepDown (float dt);
   };
 }
+
 CS_PLUGIN_NAMESPACE_END (Bullet2)
 
 #endif

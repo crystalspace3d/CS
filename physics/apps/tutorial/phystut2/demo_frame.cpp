@@ -110,6 +110,8 @@ void PhysDemo::DoStep ()
 {
   // TODO: use iPhysicalSystem::SetSimulationSpeed ()
   csTicks elapsed_time = vc->GetElapsedTicks ();
+  physicalSystem->Step (elapsed_time);
+/*
   const float timeMs = elapsed_time / 1000.0;
 
   if (player.GetActor ())
@@ -121,6 +123,7 @@ void PhysDemo::DoStep ()
   {
     player.GetActor ()->UpdatePostStep (timeMs);
   }
+*/
 }
 
 void PhysDemo::MoveActor ()

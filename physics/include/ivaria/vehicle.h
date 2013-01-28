@@ -33,29 +33,12 @@
 #include "ivaria/physicscommon.h"
 
 namespace CS 
-{ 
-  namespace Collisions 
-  {
-    struct iCollider;
-    struct iCollisionCallback;
-    struct iCollisionObject;
-  }
-}
-
-namespace CS 
 {
   namespace Physics 
   {
-    struct iDynamicActor;
-    struct iJoint;
-    struct iKinematicCallback;
-    struct iPhysicalSector;
-    struct iPhysicalSystem;
     struct iRigidBody;
     struct iRigidBodyFactory;
-    struct iSoftBody;
     struct iVehicle;
-    struct iVehicleWheelFactory;
 
     /**
      * The wheel of a vehicle
@@ -64,101 +47,94 @@ namespace CS
     {
       SCF_INTERFACE (CS::Physics::iVehicleWheel, 1, 0, 0);
 
-      /// SceneNode that represents this wheel
-      virtual iSceneNode* GetSceneNode() const = 0;
-      /// SceneNode that represents this wheel
-      virtual void SetSceneNode(iSceneNode* node) = 0;
-
-      /// Collider of the wheel
-      virtual CS::Collisions::iCollider* GetCollider() const = 0;
-      /// Collider of the wheel
-      virtual void SetCollider(CS::Collisions::iCollider* s) = 0;
+      /// Get the scene node attached to this wheel.
+      virtual iSceneNode* GetAttachedSceneNode () const = 0;
+      /// Set the scene node attached to this wheel.
+      virtual void SetAttachedSceneNode (iSceneNode* node) = 0;
 
       /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-      virtual float GetSuspensionStiffness() const = 0;
+      virtual float GetSuspensionStiffness () const = 0;
       /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-      virtual void SetSuspensionStiffness(float s) = 0;
+      virtual void SetSuspensionStiffness (float s) = 0;
 
       /// Suspension with more damping needs more force to be compressed and to relax
-      virtual float GetSuspensionDamping() const = 0;
+      virtual float GetSuspensionDamping () const = 0;
       /// Suspension with more damping needs more force to be compressed and to relax
-      virtual void SetSuspensionDamping(float s) = 0;
+      virtual void SetSuspensionDamping (float s) = 0;
 
       /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-      virtual float GetMaxSuspensionDisplacementCM() const = 0;
+      virtual float GetMaxSuspensionDisplacementCM () const = 0;
       /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-      virtual void SetMaxSuspensionDisplacementCM(float s) = 0;
+      virtual void SetMaxSuspensionDisplacementCM (float s) = 0;
 
-      /** 
+      /**
       * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
       * It is very similar to muh in Coulomb's law.
       * A greater value reduces the chance of the vehicle slipping.
       * When on a wet or slippery road, the coefficient should be very small.
       */
-      virtual float GetFrictionCoefficient() const = 0;
-      /** 
+      virtual float GetFrictionCoefficient () const = 0;
+      /**
       * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
       * It is very similar to muh in Coulomb's law.
       * A greater value reduces the chance of the vehicle slipping.
       * When on a wet or slippery road, the coefficient should be very small.
       */
-      virtual void SetFrictionCoefficient(float s) = 0;
+      virtual void SetFrictionCoefficient (float s) = 0;
 
       /// The max force to be applied from the wheel to the chassis, caused by an impact
-      virtual float GetMaxSuspensionForce() const = 0;
+      virtual float GetMaxSuspensionForce () const = 0;
       /// The max force to be applied from the wheel to the chassis, caused by an impact
-      virtual void SetMaxSuspensionForce(float s) = 0;
+      virtual void SetMaxSuspensionForce (float s) = 0;
       
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      virtual float GetRollInfluence() const = 0;
+      virtual float GetRollInfluence () const = 0;
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      virtual void SetRollInfluence(float infl) = 0;
+      virtual void SetRollInfluence (float infl) = 0;
       
-
       // Geometry & Other
 
       /// Whether this wheel is driven by the engine
-      virtual bool GetIsWheelDriven() const = 0;
+      virtual bool GetIsWheelDriven () const = 0;
       /// Whether this wheel is driven by the engine
-      virtual void SetIsWheelDriven(bool d) = 0;
+      virtual void SetIsWheelDriven (bool d) = 0;
 
       /// Whether this wheel is driven by the engine
-      virtual bool GetIsWheelAffectedByBrake() const = 0;
+      virtual bool GetIsWheelAffectedByBrake () const = 0;
       /// Whether this wheel is driven by the engine
-      virtual void SetIsWheelAffectedByBrake(bool b) = 0;
+      virtual void SetIsWheelAffectedByBrake (bool b) = 0;
 
       /// Length of the suspension in equilibrium
-      virtual float GetSuspensionLength() const = 0;
+      virtual float GetSuspensionLength () const = 0;
       /// Length of the suspension in equilibrium
-      virtual void SetSuspensionLength(float s) = 0;
+      virtual void SetSuspensionLength (float s) = 0;
 
       /// Radius of the wheel
-      virtual float GetRadius() const = 0;
+      virtual float GetRadius () const = 0;
       /// Radius of the wheel
-      virtual void SetRadius(float s) = 0;
+      virtual void SetRadius (float s) = 0;
 
       /// The position of the wheel relative to the chassis
-      virtual csVector3 GetWheelPos() const = 0;
+      virtual csVector3 GetWheelPosition () const = 0;
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      virtual void SetWheelPos(const csVector3& p) = 0;
+      virtual void SetWheelPosition (const csVector3& p) = 0;
 
       /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      virtual csVector3 GetWheelOrientation() const = 0;
+      virtual csVector3 GetWheelOrientation () const = 0;
       /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      virtual void SetSuspensionOrientation(const csVector3& o) = 0;
+      virtual void SetSuspensionOrientation (const csVector3& o) = 0;
 
       /// Unit vector that describes the axle about which the wheel rotates
-      virtual csVector3 GetAxleOrientation() const = 0;
+      virtual csVector3 GetAxleOrientation () const = 0;
       /// Unit vector that describes the axle about which the wheel rotates
-      virtual void SetAxleOrientation(const csVector3& o) = 0;
+      virtual void SetAxleOrientation (const csVector3& o) = 0;
       
-
       // Run-time parameters
 
       /// Rotation in radians
-      virtual const float GetRotation() const = 0;
+      virtual const float GetRotation () const = 0;
       /// Rotation in radians
-      virtual void SetRotation(float r) = 0;
+      virtual void SetRotation (float r) = 0;
     };
 
     /**
@@ -168,217 +144,220 @@ namespace CS
     {
       SCF_INTERFACE (CS::Physics::iVehicleWheelFactory, 1, 0, 0);
 
-      /// Creates a new wheel
-      //virtual csPtr<iVehicleWheel> CreateWheel() = 0;
-
-      /// Collider of the wheel
-      virtual CS::Collisions::iCollider* GetCollider() const = 0;
-      /// Collider of the wheel
-      virtual void SetCollider(CS::Collisions::iCollider* s) = 0;
-
       /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-      virtual float GetSuspensionStiffness() const = 0;
+      virtual float GetSuspensionStiffness () const = 0;
       /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-      virtual void SetSuspensionStiffness(float s) = 0;
+      virtual void SetSuspensionStiffness (float s) = 0;
 
       /// Suspension with more damping needs more force to be compressed and to relax
-      virtual float GetSuspensionDamping() const = 0;
+      virtual float GetSuspensionDamping () const = 0;
       /// Suspension with more damping needs more force to be compressed and to relax
-      virtual void SetSuspensionDamping(float s) = 0;
+      virtual void SetSuspensionDamping (float s) = 0;
 
       /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-      virtual float GetMaxSuspensionDisplacementCM() const = 0;
+      virtual float GetMaxSuspensionDisplacementCM () const = 0;
       /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-      virtual void SetMaxSuspensionDisplacementCM(float s) = 0;
+      virtual void SetMaxSuspensionDisplacementCM (float s) = 0;
 
-      /** 
+      /**
       * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
       * It is very similar to muh in Coulomb's law.
       * A greater value reduces the chance of the vehicle slipping.
       * When on a wet or slippery road, the coefficient should be very small.
       */
-      virtual float GetFrictionCoefficient() const = 0;
-      /** 
+      virtual float GetFrictionCoefficient () const = 0;
+      /**
       * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
       * It is very similar to muh in Coulomb's law.
       * A greater value reduces the chance of the vehicle slipping.
       * When on a wet or slippery road, the coefficient should be very small.
       */
-      virtual void SetFrictionCoefficient(float s) = 0;
+      virtual void SetFrictionCoefficient (float s) = 0;
 
       /// The max force to be applied from the wheel to the chassis, caused by an impact
-      virtual float GetMaxSuspensionForce() const = 0;
+      virtual float GetMaxSuspensionForce () const = 0;
       /// The max force to be applied from the wheel to the chassis, caused by an impact
-      virtual void SetMaxSuspensionForce(float s) = 0;
+      virtual void SetMaxSuspensionForce (float s) = 0;
       
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      virtual float GetRollInfluence() const = 0;
+      virtual float GetRollInfluence () const = 0;
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      virtual void SetRollInfluence(float infl) = 0;
-    };
-
-    /**
-     * All info needed to produce a specific instance of a wheel, using a factory and geometric details.
-     */
-    struct iVehicleWheelInfo : public virtual iBase
-    {
-      /// The factory to produce new wheels
-      virtual iVehicleWheelFactory* GetFactory() const = 0;
-      /// The factory to produce new wheels
-      virtual void SetFactory(iVehicleWheelFactory* f) = 0;
+      virtual void SetRollInfluence (float infl) = 0;
 
       /// Whether this wheel is driven by the engine
-      virtual bool GetIsWheelDriven() const = 0;
+      // TODO: creating engines might be cleaner
+      virtual bool GetIsWheelDriven () const = 0;
       /// Whether this wheel is driven by the engine
-      virtual void SetIsWheelDriven(bool d) = 0;
+      virtual void SetIsWheelDriven (bool d) = 0;
 
       /// Length of the suspension in equilibrium
-      virtual float GetSuspensionLength() const = 0;
+      virtual float GetSuspensionLength () const = 0;
       /// Length of the suspension in equilibrium
-      virtual void SetSuspensionLength(float s) = 0;
+      virtual void SetSuspensionLength (float s) = 0;
 
       /// Radius of the wheel
-      virtual float GetRadius() const = 0;
+      virtual float GetRadius () const = 0;
       /// Radius of the wheel
-      virtual void SetRadius(float r) = 0;
+      virtual void SetRadius (float r) = 0;
 
       /// The position of the wheel relative to the chassis
-      virtual const csVector3& GetWheelPos() const = 0;
+      virtual const csVector3& GetWheelPosition () const = 0;
       /// Value between 0 and 1 that determines how easily the car can roll over its side
-      virtual void SetWheelPos(const csVector3& p) = 0;
+      virtual void SetWheelPosition (const csVector3& p) = 0;
 
       /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      virtual csVector3 GetWheelOrientation() const = 0;
+      virtual csVector3 GetWheelOrientation () const = 0;
       /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      virtual void SetSuspensionOrientation(const csVector3& o) = 0;
+      virtual void SetSuspensionOrientation (const csVector3& o) = 0;
 
       /// Unit vector that describes the axle about which the wheel rotates
-      virtual const csVector3& GetAxleOrientation() const = 0;
+      virtual const csVector3& GetAxleOrientation () const = 0;
       /// Unit vector that describes the axle about which the wheel rotates
-      virtual void SetAxleOrientation(const csVector3& o) = 0;
+      virtual void SetAxleOrientation (const csVector3& o) = 0;
     };
 
     /**
-     * TODO: Wrap other array methods, too.
-     * \todo The whole vehicle API should be reworked
-     * \todo: orient the vehicle around the use of an animesh
+     * A brake acts on a given set of wheels with a given amount of force.
      */
+    struct iVehicleBrake : public virtual iBase
+    {
+      SCF_INTERFACE (CS::Physics::iVehicleBrake, 1, 0, 0);
+
+      /**
+       * Get the maximum breaking force that can be applied by this brake. This
+       * total amount of force will be divided up among all affected wheels.
+       */
+      virtual float GetMaximumForce () const = 0;
+      /**
+       * Set the maximum breaking force that can be applied by this brake. This
+       * total amount of force will be divided up among all affected wheels. The
+       * default value is 1000.0f.
+       */
+      virtual void SetMaximumForce (float f) = 0;
+
+      /// Get the amount of wheels affected by this brake
+      virtual size_t GetAffectedWheelCount () const = 0;
+      /**
+       * Get the wheel affected by this brake of the given index. The value
+       * returned is the index of the wheel in the iVehicleFactory.
+       */
+      virtual size_t GetAffectedWheel (size_t index) const = 0;
+      /**
+       * Add a new wheel to be affected by this brake. \a index is the index of
+       * the wheel in the iVehicleFactory.
+       */
+      virtual void AddAffectedWheel (size_t index) = 0;
+    };
+    
+    /**
+     * A steering device steers a given set of tires with a given maximum amount 
+     */
+    struct iVehicleSteeringDevice : public virtual iBase
+    {
+      SCF_INTERFACE (CS::Physics::iVehicleSteeringDevice, 1, 0, 0);
+
+      /**
+       * Get the maximum steering angle that can be applied by this device, in
+       * radian. The default value is 0.4f.
+       */
+      virtual float GetMaximumSteering () const = 0;
+      /**
+       * Set the maximum steering angle that can be applied by this device, in
+       * radian. The default value is 0.4f.
+       */
+      virtual void SetMaximumSteering (float angle) = 0;
+
+      /// Get the amount of wheels affected by this steering device
+      virtual size_t GetAffectedWheelCount () const = 0;
+      /**
+       * Get the wheel affected by this steering device of the given index. The value
+       * returned is the index of the wheel in the iVehicleFactory.
+       */
+      virtual size_t GetAffectedWheel (size_t index) const = 0;
+      /**
+       * Add a new wheel to be affected by this steering device. \a index is the index of
+       * the wheel in the iVehicleFactory.
+       */
+      virtual void AddAffectedWheel (size_t index) = 0;
+    };
+
+    /**
+     * A factory to create instances of iVehicle.
+     */
+    // TODO: orient the vehicle around the use of an animesh? or use a dedicated animation controller?
     struct iVehicleFactory : public virtual iBase
     {
       SCF_INTERFACE (CS::Physics::iVehicleFactory, 1, 0, 0);
 
-      /// Creates a new vehicle
-      virtual csPtr<iVehicle> CreateVehicle(CS::Physics::iPhysicalSector* sector) = 0;
+      /// Create a new vehicle
+      // TODO: remove sector and allow vehicles to switch sectors
+      virtual csPtr<iVehicle> CreateVehicle (CS::Physics::iPhysicalSector* sector) = 0;
 
-      /// The info for all wheels of the vehicle to be created
-      virtual const csRefArray<iVehicleWheelInfo>& GetWheelInfos() const = 0;
+      /// Add a new wheel to this vehicle.
+      virtual void AddWheelFactory (iVehicleWheelFactory* factory) = 0;
 
-      /// Add a new wheel to this vehicle factory
-      virtual void AddWheelInfo(iVehicleWheelInfo* info) = 0;
+      /// Get the total number of wheel factories in this vehicle.
+      virtual size_t GetWheelFactoryCount () = 0;
 
-      /// The chassis of the vehicle
-      virtual iRigidBodyFactory* GetChassisFactory() const = 0;
-      /// The chassis of the vehicle
-      virtual void SetChassisFactory(iRigidBodyFactory* b) = 0;
+      /// Get the wheel factory of the given index.
+      virtual iVehicleWheelFactory* GetWheelFactory (size_t index) = 0;
+
+      /// Get the chassis of the vehicle
+      virtual iRigidBodyFactory* GetChassisFactory () const = 0;
+
+      /// Set the chassis of the vehicle
+      virtual void SetChassisFactory (iRigidBodyFactory* b) = 0;
+
+      /// Create a new brake, and add it to the list of brakes for this vehicle.
+      virtual iVehicleBrake* CreateBrake () = 0;
+
+      /// Create a new steering device, and add it to the list of devices for this vehicle.
+      virtual iVehicleSteeringDevice* CreateSteeringDevice () = 0;
     };
     
-    /** 
-     * A brake acts on a given set of tires with a given amount of force.
-     */
-    // TODO: iBase?
-    class VehicleBrakeInfo : public scfImplementationExt0<VehicleBrakeInfo, csObject>
-    {
-      float maxForce;
-      csArray<size_t> affectedWheelIndices;
-
-    public:
-      VehicleBrakeInfo(float maxForce = 1000) : scfImplementationType(this),
-        maxForce(maxForce)
-      {
-      }
-
-      virtual ~VehicleBrakeInfo() {}
-
-      /// Max breaking force
-      float GetMaxForce() const { return maxForce; }
-      /// Max breaking force
-      void SetMaxForce(float f) { maxForce = f; }
-
-      /// The amount of wheels affected by this brake
-      size_t GetAffectedWheelCount() const { return affectedWheelIndices.GetSize(); }
-      
-      /// The indices of the wheels to be affected by this brake
-      csArray<size_t>& GetAffectedWheelIndices() { return affectedWheelIndices; }
-      /// The indices of the wheels to be affected by this brake
-      const csArray<size_t>& GetAffectedWheelIndices() const { return affectedWheelIndices; }
-    };
-    
-    /** 
-     * A steering device steers a given set of tires with a given max amount 
-     */
-    // TODO: iBase?
-    class VehicleSteeringDevice : public scfImplementationExt0<VehicleSteeringDevice, csObject>
-    {
-      float maxSteering;
-      csArray<size_t> affectedWheelIndices;
-
-    public:
-      VehicleSteeringDevice(float maxSteering = .4) : scfImplementationType(this),
-        maxSteering(maxSteering)
-      {
-      }
-
-      virtual ~VehicleSteeringDevice() {}
-
-      /// Max breaking force
-      float GetMaxSteering() const { return maxSteering; }
-      /// Max breaking force
-      void SetMaxSteering(float s) { maxSteering = s; }
-
-      /// The amount of wheels affected by this brake
-      size_t GetAffectedWheelCount() const { return affectedWheelIndices.GetSize(); }
-
-      /// The indices of the wheels to be affected by this brake
-      csArray<size_t>& GetAffectedWheelIndices() { return affectedWheelIndices; }
-      /// The indices of the wheels to be affected by this brake
-      const csArray<size_t>& GetAffectedWheelIndices() const { return affectedWheelIndices; }
-    };
-
     /**
-     * A physical vehicle
+     * A physical, wheeled, grounded vehicle.
      */
     struct iVehicle : public virtual iUpdatable
     {
       SCF_INTERFACE (CS::Physics::iVehicle, 1, 0, 0);
       
-      /// The engine force for the next time-step
-      virtual float GetEngineForce() const = 0;
-      /// The engine force for the next time-step
-      virtual void SetEngineForce(float f) = 0;
+      /// Get the chassis of the vehicle
+      virtual iRigidBody* GetChassis () const = 0;
+      /// Set the chassis of the vehicle
+      virtual void SetChassis (iRigidBody* b) = 0;
 
       /// The amount of wheels affected by engine force
-      virtual size_t GetDrivenWheelCount() const = 0;
+      virtual size_t GetDrivenWheelCount () const = 0;
 
-      /// Apply the given brake for the next simulation step. Scale it's braking force with the given factor.
-      virtual void ApplyBrake(VehicleBrakeInfo* brake, float factor = 1) = 0;
+      /// Get the wheel at the given index
+      virtual iVehicleWheel* GetWheel (size_t index) const = 0;
+
+      /// The engine force for the next time-step
+      virtual float GetEngineForce () const = 0;
+      /// The engine force for the next time-step
+      virtual void SetEngineForce (float f) = 0;
 
       /**
-       * Use the given steering device to increase the steering angle of the device-controlled wheels 
-       * and clamp to the device's allowed max angle.
+       * Apply the given brake for the next simulation step.
+       * \param index The index of the brake in the iVehicleFactory.
+       * \param scale A scale to be applied on the braking force. The value is
+       * supposed to be between 0 and 1.
        */
-      virtual void IncrementSteering(VehicleSteeringDevice* steeringWheel, float increment) = 0;
+      virtual void Brake (size_t index, float scale = 1.0f) = 0;
 
-      /// The chassis of the vehicle
-      virtual iRigidBody* GetChassis() const = 0;
-      /// The chassis of the vehicle
-      virtual void SetChassis(iRigidBody* b) = 0;
+      /**
+       * Use the given steering device to increase the steering angle of the
+       * device-controlled wheels.
+       * \param index The index of the steering device in the iVehicleFactory.
+       * \param force The steering increment to be applied on the steering angle.
+       * The total amount of steering will be clamped by the maximum angle of the
+       * device.
+       */
+      virtual void Steer (size_t index, float force = 0.4f) = 0;
 
-      /// All wheels of this vehicle
-      virtual const csRefArray<iVehicleWheel>& GetWheels() const = 0;
-
-      /// Current speed in km/h
-      // TODO: units instead of meters
-      virtual float GetSpeedKMH() const = 0;
+      /// Get the current speed in km/h (actually in kilo units per hour)
+      virtual float GetSpeedKMH () const = 0;
     };
   }
 }

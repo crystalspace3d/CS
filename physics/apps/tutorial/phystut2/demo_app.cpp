@@ -255,7 +255,7 @@ bool PhysDemo::SetLevel (const char* mapPath, bool convexDecomp)
   if (!loaded)
   {
     // fall back to default
-    CreateBoxRoom (20.0f);
+    CreateBoxRoom (30.0f);
     currentMap = "";
   }
 

@@ -27,166 +27,181 @@ using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
+
   // ####################################################################################################################################
   // Wheel 
-  BulletVehicleWheel::BulletVehicleWheel(csBulletSystem* sys, btWheelInfo& btWheel) : scfImplementationType(this),
-    sys(sys),
-    btWheel(btWheel),
+  BulletVehicleWheel::BulletVehicleWheel (csBulletSystem* sys, btWheelInfo& btWheel) : scfImplementationType (this),
+    sys (sys),
+    btWheel (btWheel),
     isDriven (true), isAffectedByBrake (true)
   {
   }
 
-  BulletVehicleWheel::~BulletVehicleWheel()
+  BulletVehicleWheel::~BulletVehicleWheel ()
   {
   }
 
   // ####################################################################################################################################
   // Wheel Factory
 
-  BulletVehicleWheelFactory::BulletVehicleWheelFactory(csBulletSystem* sys) : scfImplementationType (this),
-    sys(sys),
-    rollInfluence(.1)
+  BulletVehicleWheelFactory::BulletVehicleWheelFactory (csBulletSystem* sys) : scfImplementationType (this),
+    sys (sys),
+    rollInfluence (.1),
+    pos (0.0f),
+    wheelOrientation (1.0f, 0.0f, 0.0f),
+    axleOrientation (0.0f, 1.0f, 0.0f),
+    suspensionLength (1),
+    radius (.5),
+    isDriven (true)
   {
   }
 
-  BulletVehicleWheelFactory::~BulletVehicleWheelFactory()
+  BulletVehicleWheelFactory::~BulletVehicleWheelFactory ()
   {
   }
 
-  csPtr<iVehicleWheel> BulletVehicleWheelFactory::CreateWheel(btWheelInfo& btWheel)
+  csPtr<iVehicleWheel> BulletVehicleWheelFactory::CreateWheel (btWheelInfo& btWheel)
   {
-    BulletVehicleWheel* wheel = new BulletVehicleWheel(sys, btWheel);
-    wheel->SetCollider(GetCollider());
-    wheel->SetRollInfluence(GetRollInfluence());
-
-    return csPtr<iVehicleWheel>(wheel);
+    BulletVehicleWheel* wheel = new BulletVehicleWheel (sys, btWheel);
+    wheel->SetRollInfluence (GetRollInfluence ());
+    wheel->SetAxleOrientation (GetAxleOrientation ());
+    wheel->SetIsWheelDriven (GetIsWheelDriven ());
+    wheel->SetSuspensionLength (GetSuspensionLength ());
+    wheel->SetSuspensionOrientation (GetWheelOrientation ());
+    wheel->SetWheelPosition (GetWheelPosition ());
+    return csPtr<iVehicleWheel> (wheel);
   }
 
   // ####################################################################################################################################
   // Vehicle Factory
 
-  csPtr<iVehicle> BulletVehicleFactory::CreateVehicle(CS::Physics::iPhysicalSector* isector)
+  BulletVehicleFactory::BulletVehicleFactory (csBulletSystem* sys) :
+    scfImplementationType (this),
+    sys (sys)
+    {
+    }
+
+  BulletVehicleFactory::~BulletVehicleFactory ()
   {
-    csRef<iRigidBody> ichassis = chassisFactory->CreateRigidBody();
-    csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*>(&*ichassis);
+  }
+
+  csPtr<iVehicle> BulletVehicleFactory::CreateVehicle (CS::Physics::iPhysicalSector* isector)
+  {
+    csRef<iRigidBody> ichassis = chassisFactory->CreateRigidBody ();
+    csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*> (&*ichassis);
     // TODO: really?
     chassis->SetMass (100.0f);
     chassis->SetState (STATE_DYNAMIC);
     chassis->SetDeactivable (false);
 
-    csRef<BulletVehicle> vehicle = csPtr<BulletVehicle>(new BulletVehicle(sys, chassis));
+    csRef<BulletVehicle> vehicle = csPtr<BulletVehicle> (new BulletVehicle (this, sys, chassis));
     
-    csBulletSector* sector = dynamic_cast<csBulletSector*>(isector);
-    btVehicleRaycaster* rayCaster = new btDefaultVehicleRaycaster(sector->GetBulletWorld());
+    csBulletSector* sector = dynamic_cast<csBulletSector*> (isector);
+    btVehicleRaycaster* rayCaster = new btDefaultVehicleRaycaster (sector->GetBulletWorld ());
 
     // create vehicle
     static const btRaycastVehicle::btVehicleTuning tuning;    // this is unused anyway
-    vehicle->btVehicle = new btRaycastVehicle(tuning, chassis->GetBulletRigidPointer(), rayCaster);
-    vehicle->btVehicle->setCoordinateSystem(0, 1, 2);
+    vehicle->btVehicle = new btRaycastVehicle (tuning, chassis->GetBulletRigidPointer (), rayCaster);
+    vehicle->btVehicle->setCoordinateSystem (0, 1, 2);
 
     // create & add bullet wheel objects
-    for (size_t i = 0; i < wheelInfos.GetSize(); ++i)
+    for (size_t i = 0; i < wheelInfos.GetSize (); ++i)
     {
-      iVehicleWheelInfo* info = wheelInfos[i];
+      iVehicleWheelFactory* info = wheelInfos[i];
 
-      iVehicleWheelFactory* iwheelFact = info->GetFactory();
-      BulletVehicleWheelFactory* wheelFact = dynamic_cast<BulletVehicleWheelFactory*>(iwheelFact);
-
-      vehicle->btVehicle->addWheel(
-        CSToBullet(info->GetWheelPos(), sys->GetInternalScale()),
-        CSToBullet(info->GetWheelOrientation(), sys->GetInternalScale()),
-        CSToBullet(info->GetAxleOrientation(), sys->GetInternalScale()), 
-        info->GetSuspensionLength(),
-        info->GetRadius(),
-        wheelFact->tuning,
+      vehicle->btVehicle->addWheel (
+        CSToBullet (info->GetWheelPosition (), sys->GetInternalScale ()),
+        CSToBullet (info->GetWheelOrientation (), sys->GetInternalScale ()),
+        CSToBullet (info->GetAxleOrientation (), sys->GetInternalScale ()), 
+        info->GetSuspensionLength (),
+        info->GetRadius (),
+        //info->tuning,
+	// TODO
+	tuning,
         true                // isFrontWheel is unnecessary and unused information
         );
     }
     
     // create & add CS wheel objects
     // must separate from bullet allocation because the wheel objects will be moved during creation time
-    for (size_t i = 0; i < wheelInfos.GetSize(); ++i)
+    for (size_t i = 0; i < wheelInfos.GetSize (); ++i)
     {
-      iVehicleWheelInfo* info = wheelInfos[i];
+      iVehicleWheelFactory* info = wheelInfos[i];
 
-      iVehicleWheelFactory* iwheelFact = info->GetFactory();
-      BulletVehicleWheelFactory* wheelFact = dynamic_cast<BulletVehicleWheelFactory*>(iwheelFact);
+      btWheelInfo& btWheel = vehicle->btVehicle->getWheelInfo (i);
 
-      btWheelInfo& btWheel = vehicle->btVehicle->getWheelInfo(i);
-
-      csRef<iVehicleWheel> wheel = wheelFact->CreateWheel(btWheel);
-      wheel->SetAxleOrientation(info->GetAxleOrientation());
-      wheel->SetIsWheelDriven(info->GetIsWheelDriven());
-      wheel->SetSuspensionLength(info->GetSuspensionLength());
-      wheel->SetSuspensionOrientation(info->GetWheelOrientation());
-      wheel->SetWheelPos(info->GetWheelPos());
-      
-      vehicle->wheels.Push(wheel);
+      BulletVehicleWheelFactory* factory = dynamic_cast<BulletVehicleWheelFactory*> (info);
+      csRef<iVehicleWheel> wheel = factory->CreateWheel (btWheel);
+      vehicle->wheels.Push (wheel);
     }
     
-    return csPtr<iVehicle>(vehicle);
+    return csPtr<iVehicle> (vehicle);
   }
 
-  BulletVehicleFactory::BulletVehicleFactory(csBulletSystem* sys) :
-  scfImplementationType (this),
-    sys(sys)
+  CS::Physics::iVehicleBrake* BulletVehicleFactory::CreateBrake ()
   {
+    csRef<VehicleBrake> brake;
+    brake.AttachNew (new VehicleBrake ());
+    brakes.Push (brake);
+    return brake;
   }
 
-  BulletVehicleFactory::~BulletVehicleFactory()
+  CS::Physics::iVehicleSteeringDevice* BulletVehicleFactory::CreateSteeringDevice ()
   {
+    csRef<VehicleSteeringDevice> steeringDevice;
+    steeringDevice.AttachNew (new VehicleSteeringDevice ());
+    steeringDevices.Push (steeringDevice);
+    return steeringDevice;
   }
-
-
 
   // ####################################################################################################################################
   // Vehicle
 
-  BulletVehicle::BulletVehicle(csBulletSystem* sys, csBulletRigidBody* chassis) : scfImplementationType (this),
-    sys(sys), chassis(chassis)
+  BulletVehicle::BulletVehicle (BulletVehicleFactory* factory, csBulletSystem* sys, csBulletRigidBody* chassis) : scfImplementationType (this),
+    sys (sys), factory (factory), chassis (chassis)
   {
   }
 
-  BulletVehicle::~BulletVehicle()
+  BulletVehicle::~BulletVehicle ()
   {
     delete btVehicle;
   }
 
-  float BulletVehicle::GetEngineForce() const
+  float BulletVehicle::GetEngineForce () const
   {
-    for (size_t i = 0; i < wheels.GetSize(); ++i)
+    for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
       iVehicleWheel* iwheel = wheels[i];
-      if (iwheel->GetIsWheelDriven())
+      if (iwheel->GetIsWheelDriven ())
       {
-        BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
-        return GetDrivenWheelCount() * wheel->btWheel.m_engineForce;
+        BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*> (iwheel);
+        return GetDrivenWheelCount () * wheel->btWheel.m_engineForce;
       }
     }
     return 0;
   }
 
-  void BulletVehicle::SetEngineForce(float f)
+  void BulletVehicle::SetEngineForce (float f)
   {
-    f /= GetDrivenWheelCount();   // divide equally among the driving wheels
-    for (size_t i = 0; i < wheels.GetSize(); ++i)
+    f /= GetDrivenWheelCount ();   // divide equally among the driving wheels
+    for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
       iVehicleWheel* iwheel = wheels[i];
-      if (iwheel->GetIsWheelDriven())
+      if (iwheel->GetIsWheelDriven ())
       {
-        BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
+        BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*> (iwheel);
         wheel->btWheel.m_engineForce = f;
       }
     }
   }
 
-  size_t BulletVehicle::GetDrivenWheelCount() const
+  size_t BulletVehicle::GetDrivenWheelCount () const
   {
     size_t count = 0;
-    for (size_t i = 0; i < wheels.GetSize(); ++i)
+    for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
       iVehicleWheel* iwheel = wheels[i];
-      if (iwheel->GetIsWheelDriven())
+      if (iwheel->GetIsWheelDriven ())
       {
         ++count;
       }
@@ -194,27 +209,29 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return count;
   }
 
-  void BulletVehicle::ApplyBrake(VehicleBrakeInfo* brake, float factor)
+  void BulletVehicle::Brake (size_t index, float scale)
   {
     // apply brake
-    float force = factor * brake->GetMaxForce()  / brake->GetAffectedWheelCount();
-    for (size_t i = 0; i < brake->GetAffectedWheelIndices().GetSize(); ++i)
+    VehicleBrake* brake = factory->brakes[index];
+    float force = scale * brake->GetMaximumForce () / brake->GetAffectedWheelCount ();
+    for (size_t i = 0; i < brake->GetAffectedWheelCount (); i++)
     {
-      iVehicleWheel* iwheel = wheels[brake->GetAffectedWheelIndices()[i]];
-      BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
+      iVehicleWheel* iwheel = wheels[brake->GetAffectedWheel (i)];
+      BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*> (iwheel);
 
-      // add brake force
+      // add a brake force
       wheel->btWheel.m_brake += force;
     }
   }
-  
-  void BulletVehicle::IncrementSteering(VehicleSteeringDevice* steeringWheel, float increment)
-  {
-    float cap = steeringWheel->GetMaxSteering();
-    iVehicleWheel* iwheel = wheels[steeringWheel->GetAffectedWheelIndices()[0]];
-    BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
 
-    // compute new steering value for the first wheel
+  void BulletVehicle::Steer (size_t index, float increment)
+  {
+    VehicleSteeringDevice* steeringDevice = factory->steeringDevices[index];
+    float cap = steeringDevice->GetMaximumSteering ();
+    iVehicleWheel* iwheel = wheels[steeringDevice->GetAffectedWheel (0)];
+    BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*> (iwheel);
+
+    // Compute a new steering value for the first wheel
     float& steering = wheel->btWheel.m_steering;
     steering += increment;
     if (steering > cap)
@@ -222,27 +239,27 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     else if (steering < -cap)
       steering = -cap;
 
-    // apply same steering to the other affected wheels
-    for (size_t i = 1; i < steeringWheel->GetAffectedWheelIndices().GetSize(); ++i)
+    // Apply the same steering to the other affected wheels
+    for (size_t i = 1; i < steeringDevice->GetAffectedWheelCount (); ++i)
     {
-      iVehicleWheel* iwheel = wheels[steeringWheel->GetAffectedWheelIndices()[i]];
-      BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
+      iVehicleWheel* iwheel = wheels[steeringDevice->GetAffectedWheel (i)];
+      BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*> (iwheel);
       wheel->btWheel.m_steering = steering;
     }
   }
 
-  void BulletVehicle::PostStep(float dt)
+  void BulletVehicle::PostStep (float dt)
   {
     // update chassis movable to prevent jittering
     iMovable* movable = chassis->GetAttachedSceneNode ()->GetMovable ();
-    movable->SetFullTransform(chassis->GetTransform());
-    movable->UpdateMove();
+    movable->SetFullTransform (chassis->GetTransform ());
+    movable->UpdateMove ();
 
     // post-process wheels:
-    for (size_t i = 0; i < wheels.GetSize(); ++i)
+    for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
       iVehicleWheel* iwheel = wheels[i];
-      BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*>(iwheel);
+      BulletVehicleWheel* wheel = dynamic_cast<BulletVehicleWheel*> (iwheel);
 
       // reset engine force
       wheel->btWheel.m_engineForce = 0;
@@ -251,42 +268,42 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       wheel->btWheel.m_brake = 0;
       
       // update transformation
-      if (wheels[i]->GetSceneNode())
+      if (wheels[i]->GetAttachedSceneNode ())
       {
-        wheels[i]->GetSceneNode()->GetMovable()->SetFullTransform
-	  (BulletToCS(wheel->btWheel.m_worldTransform, sys->GetInverseInternalScale()));
-        wheels[i]->GetSceneNode()->GetMovable()->UpdateMove ();
+        wheels[i]->GetAttachedSceneNode ()->GetMovable ()->SetFullTransform
+	  (BulletToCS (wheel->btWheel.m_worldTransform, sys->GetInverseInternalScale ()));
+        wheels[i]->GetAttachedSceneNode ()->GetMovable ()->UpdateMove ();
       }
     }
   }
   
-  void BulletVehicle::OnAdded(iPhysicalSector* isector)
+  void BulletVehicle::OnAdded (iPhysicalSector* isector)
   {
     // add to system
-    csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& vehicleMap = sys->GetVehicleMap();
-    vehicleMap.Put(chassis, this);
+    csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& vehicleMap = sys->GetVehicleMap ();
+    vehicleMap.Put (chassis, this);
 
     // add wheels to sector
-    for (size_t i = 0; i < wheels.GetSize(); ++i)
+    for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
       iVehicleWheel* iwheel = wheels[i];
-      csBulletSector* sector = dynamic_cast<csBulletSector*>(isector);
-      sector->AddSceneNodeToSector(iwheel->GetSceneNode());
+      csBulletSector* sector = dynamic_cast<csBulletSector*> (isector);
+      sector->AddSceneNodeToSector (iwheel->GetAttachedSceneNode ());
     }
   }
   
-  void BulletVehicle::OnRemoved(iPhysicalSector* isector)
+  void BulletVehicle::OnRemoved (iPhysicalSector* isector)
   {
     // remove from system
-    csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& vehicleMap = sys->GetVehicleMap();
-    vehicleMap.DeleteAll(chassis);
+    csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& vehicleMap = sys->GetVehicleMap ();
+    vehicleMap.DeleteAll (chassis);
     
     // remove wheels from sector
-    for (size_t i = 0; i < wheels.GetSize(); ++i)
+    for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
       iVehicleWheel* iwheel = wheels[i];
-      csBulletSector* sector = dynamic_cast<csBulletSector*>(isector);
-      sector->RemoveSceneNodeFromSector(iwheel->GetSceneNode());
+      csBulletSector* sector = dynamic_cast<csBulletSector*> (isector);
+      sector->RemoveSceneNodeFromSector (iwheel->GetAttachedSceneNode ());
     }
   }
 

@@ -57,14 +57,6 @@ void PhysDemo::PrintHelp ()
 
 void PhysDemo::Frame ()
 {
-/*if (GetCurrentSector ()->GetSoftBodyCount ())
-  {
-    csVector3 aabbMin, aabbMax;
-    GetCurrentSector ()->GetSoftBody (0)->GetAABB (aabbMin, aabbMax);
-    csVector3 o = aabbMin + (aabbMax - aabbMin) / 2;
-    csPrintf ("SB #0: %f, %f, %f\n", o.x, o.y, o.z);
-  }*/
-  
   // Update the demo's state information
   UpdateHUD ();
 
@@ -111,19 +103,6 @@ void PhysDemo::DoStep ()
   // TODO: use iPhysicalSystem::SetSimulationSpeed ()
   csTicks elapsed_time = vc->GetElapsedTicks ();
   physicalSystem->Step (elapsed_time);
-/*
-  const float timeMs = elapsed_time / 1000.0;
-
-  if (player.GetActor ())
-  {
-    player.GetActor ()->UpdatePreStep (timeMs);
-  }
-  physicalSystem->Step (elapsed_time);
-  if (player.GetActor ())
-  {
-    player.GetActor ()->UpdatePostStep (timeMs);
-  }
-*/
 }
 
 void PhysDemo::MoveActor ()
@@ -144,10 +123,6 @@ void PhysDemo::MoveActor ()
   // intended movement direction
   if (player.GetActor ())
   {
-    //iCollisionObject* actorObj = player.GetObject ();
-    /*csVector3 aabbMin, aabbMax;
-    actorObj->GetAABB (aabbMin, aabbMax);*/
-
     csVector3 newVel = GetInputDirection ();
     bool hasMoveDir = newVel.Norm () > EPSILON;
     bool wantsToMove = hasMoveDir | kbd->GetKeyState (KeyJump);

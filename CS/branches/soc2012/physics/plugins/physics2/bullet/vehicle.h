@@ -38,12 +38,11 @@ struct iSceneNode;
  * - Make sure that actor animations interact correctly with vehicles (correct entering/leaving of vehicles of different size & velocity etc)
  */
 
-CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
+CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   class BulletVehicle;
   class BulletVehicleFactory;
   class csBulletRigidBody;
-  
 
   class BulletVehicleWheel : public scfVirtImplementationExt1<
     BulletVehicleWheel, csObject, CS::Physics::iVehicleWheel>
@@ -59,104 +58,61 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     bool isDriven, isAffectedByBrake;
 
   public:
-    BulletVehicleWheel(csBulletSystem* sys, btWheelInfo& btWheel);
-    virtual ~BulletVehicleWheel();
+    BulletVehicleWheel (csBulletSystem* sys, btWheelInfo& btWheel);
+    virtual ~BulletVehicleWheel ();
 
-    /// SceneNode that represents this wheel
-    virtual iSceneNode* GetSceneNode() const { return sceneNode; }
-    /// SceneNode that represents this wheel
-    virtual void SetSceneNode(iSceneNode* m) { sceneNode = m; }
+    virtual iSceneNode* GetAttachedSceneNode () const { return sceneNode; }
+    virtual void SetAttachedSceneNode (iSceneNode* m) { sceneNode = m; }
 
-    /// Collider of the wheel
-    virtual CS::Collisions::iCollider* GetCollider() const { return nullptr; }
-    /// Collider of the wheel
-    virtual void SetCollider(CS::Collisions::iCollider* c) { }
+    virtual float GetSuspensionStiffness () const { return btWheel.m_suspensionStiffness; }
+    virtual void SetSuspensionStiffness (float s) { btWheel.m_suspensionStiffness = s; }
 
-    /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual float GetSuspensionStiffness() const { return btWheel.m_suspensionStiffness; }
-    /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual void SetSuspensionStiffness(float s) { btWheel.m_suspensionStiffness = s; }
+    virtual float GetSuspensionDamping () const
+    { return btWheel.m_wheelsDampingCompression; }
+    virtual void SetSuspensionDamping (float s)
+    { btWheel.m_wheelsDampingCompression = btWheel.m_wheelsDampingRelaxation = s; }
 
-    /// Suspension with more damping needs more force to be compressed and to relax
-    virtual float GetSuspensionDamping() const { return btWheel.m_wheelsDampingCompression; }
-    /// Suspension with more damping needs more force to be compressed and to relax
-    virtual void SetSuspensionDamping(float s) { btWheel.m_wheelsDampingCompression = btWheel.m_wheelsDampingRelaxation = s; }
+    virtual float GetMaxSuspensionDisplacementCM () const { return btWheel.m_maxSuspensionTravelCm; }
+    virtual void SetMaxSuspensionDisplacementCM (float s) { btWheel.m_maxSuspensionTravelCm = s; }
 
-    /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual float GetMaxSuspensionDisplacementCM() const { return btWheel.m_maxSuspensionTravelCm; }
-    /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual void SetMaxSuspensionDisplacementCM(float s) { btWheel.m_maxSuspensionTravelCm = s; }
+    virtual float GetFrictionCoefficient () const { return btWheel.m_frictionSlip; }
+    virtual void SetFrictionCoefficient (float s) { btWheel.m_frictionSlip = s; }
 
-    /** 
-    * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
-    * It is very similar to muh in Coulomb's law.
-    * A greater value reduces the chance of the vehicle slipping.
-    * When on a wet or slippery road, the coefficient should be very small.
-    */
-    virtual float GetFrictionCoefficient() const { return btWheel.m_frictionSlip; }
-    /** 
-    * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
-    * It is very similar to muh in Coulomb's law.
-    * A greater value reduces the chance of the vehicle slipping.
-    * When on a wet or slippery road, the coefficient should be very small.
-    */
-    virtual void SetFrictionCoefficient(float s) { btWheel.m_frictionSlip = s; }
+    virtual float GetMaxSuspensionForce () const { return btWheel.m_maxSuspensionForce; }
+    virtual void SetMaxSuspensionForce (float s) { btWheel.m_maxSuspensionForce = s; }
 
-    /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual float GetMaxSuspensionForce() const { return btWheel.m_maxSuspensionForce; }
-    /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual void SetMaxSuspensionForce(float s) { btWheel.m_maxSuspensionForce = s; }
+    virtual float GetRollInfluence () const { return btWheel.m_rollInfluence; }
+    virtual void SetRollInfluence (float infl) { btWheel.m_rollInfluence = infl; }
 
-    /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual float GetRollInfluence() const { return btWheel.m_rollInfluence; }
-    /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual void SetRollInfluence(float infl) { btWheel.m_rollInfluence = infl; }
+    virtual bool GetIsWheelDriven () const { return isDriven; }
+    virtual void SetIsWheelDriven (bool d) { isDriven = d; }
 
+    virtual bool GetIsWheelAffectedByBrake () const { return isAffectedByBrake; }
+    virtual void SetIsWheelAffectedByBrake (bool b) { isAffectedByBrake = b; }
 
-    // Geometry & other
+    virtual float GetSuspensionLength () const { return btWheel.m_suspensionRestLength1; }
+    virtual void SetSuspensionLength (float s) { btWheel.m_suspensionRestLength1 = s; }
 
-    /// Whether this wheel is driven by the engine
-    virtual bool GetIsWheelDriven() const { return isDriven; }
-    /// Whether this wheel is driven by the engine
-    virtual void SetIsWheelDriven(bool d) { isDriven = d; }
+    virtual float GetRadius () const { return btWheel.m_wheelsRadius; }
+    virtual void SetRadius (float s) { btWheel.m_wheelsRadius = s; }
 
-    /// Whether this wheel is driven by the engine
-    virtual bool GetIsWheelAffectedByBrake() const { return isAffectedByBrake; }
-    /// Whether this wheel is driven by the engine
-    virtual void SetIsWheelAffectedByBrake(bool b) { isAffectedByBrake = b; }
+    csVector3 GetWheelPosition () const
+    { return BulletToCS (btWheel.m_chassisConnectionPointCS, sys->GetInternalScale ()); }
+    void SetWheelPosition (const csVector3& p)
+    { btWheel.m_chassisConnectionPointCS = CSToBullet (p, sys->GetInverseInternalScale ()); }
 
-    /// Length of the suspension in equilibrium
-    virtual float GetSuspensionLength() const { return btWheel.m_suspensionRestLength1; }
-    /// Length of the suspension in equilibrium
-    virtual void SetSuspensionLength(float s) { btWheel.m_suspensionRestLength1 = s; }
+    csVector3 GetWheelOrientation () const
+    { return BulletToCS (btWheel.m_wheelDirectionCS, sys->GetInternalScale ()); }
+    void SetSuspensionOrientation (const csVector3& o)
+    { btWheel.m_wheelDirectionCS = CSToBullet (o, sys->GetInverseInternalScale ()); }
 
-    /// Radius of the wheel
-    virtual float GetRadius() const { return btWheel.m_wheelsRadius; }
-    /// Radius of the wheel
-    virtual void SetRadius(float s) { btWheel.m_wheelsRadius = s; }
+    csVector3 GetAxleOrientation () const
+    { return BulletToCS (btWheel.m_wheelAxleCS, sys->GetInternalScale ()); }
+    void SetAxleOrientation (const csVector3& o)
+    { btWheel.m_wheelAxleCS = CSToBullet (o, sys->GetInverseInternalScale ()); }
 
-    /// The position of the wheel relative to the chassis
-    csVector3 GetWheelPos() const { return BulletToCS(btWheel.m_chassisConnectionPointCS, sys->GetInternalScale()); }
-    /// Value between 0 and 1 that determines how easily the car can roll over its side
-    void SetWheelPos(const csVector3& p)  { btWheel.m_chassisConnectionPointCS = CSToBullet(p, sys->GetInverseInternalScale()); }
-
-    /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-    csVector3 GetWheelOrientation() const { return BulletToCS(btWheel.m_wheelDirectionCS, sys->GetInternalScale()); }
-    /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-    void SetSuspensionOrientation(const csVector3& o) { btWheel.m_wheelDirectionCS = CSToBullet(o, sys->GetInverseInternalScale()); }
-
-    /// Unit vector that describes the axle about which the wheel rotates
-    csVector3 GetAxleOrientation() const { return BulletToCS(btWheel.m_wheelAxleCS, sys->GetInternalScale()); }
-    /// Unit vector that describes the axle about which the wheel rotates
-    void SetAxleOrientation(const csVector3& o) { btWheel.m_wheelAxleCS = CSToBullet(o, sys->GetInverseInternalScale()); }
-
-
-    // Run-time parameters
-
-    /// Rotation in radians
-    const float GetRotation() const { return btWheel.m_rotation; }
-    /// Rotation in radians
-    void SetRotation(float r) { btWheel.m_rotation = r; }
+    const float GetRotation () const { return btWheel.m_rotation; }
+    void SetRotation (float r) { btWheel.m_rotation = r; }
   };
 
   class BulletVehicleWheelFactory : public scfVirtImplementationExt1<
@@ -168,150 +124,131 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
     csBulletSystem* sys;
     btRaycastVehicle::btVehicleTuning tuning;
     float rollInfluence;
+    csVector3 pos, wheelOrientation, axleOrientation;
+    float suspensionLength;
+    float radius;
+    bool isDriven;
 
   public:
-    BulletVehicleWheelFactory(csBulletSystem* sys);
-    virtual ~BulletVehicleWheelFactory();
+    BulletVehicleWheelFactory (csBulletSystem* sys);
+    virtual ~BulletVehicleWheelFactory ();
 
-    /// Creates a new wheel
-    csPtr<CS::Physics::iVehicleWheel> CreateWheel(btWheelInfo& btWheel);
+    csPtr<CS::Physics::iVehicleWheel> CreateWheel (btWheelInfo& btWheel);
 
-    /// Collider of the wheel
-    virtual CS::Collisions::iCollider* GetCollider() const { return nullptr; }
-    /// Collider of the wheel
-    virtual void SetCollider(CS::Collisions::iCollider* c) { }
+    virtual float GetSuspensionStiffness () const { return tuning.m_suspensionStiffness; }
+    virtual void SetSuspensionStiffness (float s) { tuning.m_suspensionStiffness = s; }
 
-    /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual float GetSuspensionStiffness() const { return tuning.m_suspensionStiffness; }
-    /// The spring constant. Stiffer suspension generates more force when spring is displaced.
-    virtual void SetSuspensionStiffness(float s) { tuning.m_suspensionStiffness = s; }
+    virtual float GetSuspensionDamping () const { return tuning.m_suspensionCompression; }
+    virtual void SetSuspensionDamping (float s) { tuning.m_suspensionCompression = tuning.m_suspensionDamping = s; }
 
-    /// Suspension with more damping needs more force to be compressed and to relax
-    virtual float GetSuspensionDamping() const { return tuning.m_suspensionCompression; }
-    /// Suspension with more damping needs more force to be compressed and to relax
-    virtual void SetSuspensionDamping(float s) { tuning.m_suspensionCompression = tuning.m_suspensionDamping = s; }
+    virtual float GetMaxSuspensionDisplacementCM () const { return tuning.m_maxSuspensionTravelCm; }
+    virtual void SetMaxSuspensionDisplacementCM (float s) { tuning.m_maxSuspensionTravelCm = s; }
 
-    /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual float GetMaxSuspensionDisplacementCM() const { return tuning.m_maxSuspensionTravelCm; }
-    /// The suspension spring's endpoint can only be displaced from the equlibrium by +/- this value (in cm)
-    virtual void SetMaxSuspensionDisplacementCM(float s) { tuning.m_maxSuspensionTravelCm = s; }
+    virtual float GetFrictionCoefficient () const { return tuning.m_frictionSlip; }
+    virtual void SetFrictionCoefficient (float s) { tuning.m_frictionSlip = s; }
 
-    /** 
-    * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
-    * It is very similar to muh in Coulomb's law.
-    * A greater value reduces the chance of the vehicle slipping.
-    * When on a wet or slippery road, the coefficient should be very small.
-    */
-    virtual float GetFrictionCoefficient() const { return tuning.m_frictionSlip; }
-    /** 
-    * When the tangential impulse on the wheel surpases suspension force times this value, it starts slipping.
-    * It is very similar to muh in Coulomb's law.
-    * A greater value reduces the chance of the vehicle slipping.
-    * When on a wet or slippery road, the coefficient should be very small.
-    */
-    virtual void SetFrictionCoefficient(float s) { tuning.m_frictionSlip = s; }
+    virtual float GetMaxSuspensionForce () const { return tuning.m_maxSuspensionForce; }
+    virtual void SetMaxSuspensionForce (float s) { tuning.m_maxSuspensionForce = s; }
 
-    /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual float GetMaxSuspensionForce() const { return tuning.m_maxSuspensionForce; }
-    /// The max force to be applied from the wheel to the chassis, caused by an impact
-    virtual void SetMaxSuspensionForce(float s) { tuning.m_maxSuspensionForce = s; }
+    virtual float GetRollInfluence () const { return rollInfluence; }
+    virtual void SetRollInfluence (float infl) { rollInfluence = infl; }
 
-    /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual float GetRollInfluence() const { return rollInfluence; }
-    /// Value between 0 and 1 that determines how easily the car can roll over its side
-    virtual void SetRollInfluence(float infl) { rollInfluence = infl; }
+    virtual bool GetIsWheelDriven () const { return isDriven; }
+    virtual void SetIsWheelDriven (bool d) { isDriven = d; }
+
+    virtual float GetSuspensionLength () const { return suspensionLength; }
+    virtual void SetSuspensionLength (float s) { suspensionLength = s; }
+
+    virtual float GetRadius () const { return radius; }
+    virtual void SetRadius (float r) { radius = r; }
+
+    const csVector3& GetWheelPosition () const { return pos; }
+    void SetWheelPosition (const csVector3& p) { pos = p; }
+
+    csVector3 GetWheelOrientation () const { return wheelOrientation; }
+    void SetSuspensionOrientation (const csVector3& o) { wheelOrientation = o; }
+
+    const csVector3& GetAxleOrientation () const { return axleOrientation; }
+    void SetAxleOrientation (const csVector3& o) { axleOrientation = o; }
   };
 
-    /**
-     * All info needed to produce a specific instance of a wheel, using a factory and geometric details.
-     */
-    class BulletVehicleWheelInfo : public scfVirtImplementationExt1<
-      BulletVehicleWheelInfo, csObject, CS::Physics::iVehicleWheelInfo>
-    {
-      csRef<CS::Physics::iVehicleWheelFactory> factory;
-      csVector3 pos, wheelOrientation, axleOrientation;
-      float suspensionLength;
-      float radius;
-      bool isDriven;
+  class VehicleBrake : public scfImplementation1<VehicleBrake, CS::Physics::iVehicleBrake>
+  {
+    float maxForce;
+    csArray<size_t> affectedWheels;
 
-    public:
-      BulletVehicleWheelInfo(CS::Physics::iVehicleWheelFactory* f)
-	: scfImplementationType(this),
-	factory(f),
-	pos (0.0f),
-	wheelOrientation (1.0f, 0.0f, 0.0f),
-	axleOrientation (0.0f, 1.0f, 0.0f),
-	suspensionLength(1),
-	radius(.5),
-	isDriven(true)
-	{
-      }
+  public:
+    VehicleBrake ()
+      : scfImplementationType (this),
+      maxForce (1000.0f)
+      {}
+    virtual ~VehicleBrake () {}
 
-      virtual ~BulletVehicleWheelInfo() {}
+    virtual inline float GetMaximumForce () const { return maxForce; }
+    virtual inline void SetMaximumForce (float f) { maxForce = f; }
 
-      virtual CS::Physics::iVehicleWheelFactory* GetFactory() const { return factory; }
-      virtual void SetFactory(CS::Physics::iVehicleWheelFactory* f) { factory = f; }
+    virtual inline size_t GetAffectedWheelCount () const
+    { return affectedWheels.GetSize (); }
+    virtual inline size_t GetAffectedWheel (size_t index) const
+    { return affectedWheels[index]; }
+    virtual inline void AddAffectedWheel (size_t index)
+    { affectedWheels.Push (index); }
+  };
 
-      /// Whether this wheel is driven by the engine
-      virtual bool GetIsWheelDriven() const { return isDriven; }
-      /// Whether this wheel is driven by the engine
-      virtual void SetIsWheelDriven(bool d) { isDriven = d; }
+  class VehicleSteeringDevice : public scfImplementation1
+    <VehicleSteeringDevice, CS::Physics::iVehicleSteeringDevice>
+  {
+    float maxForce;
+    csArray<size_t> affectedWheels;
 
-      /// Length of the suspension in equilibrium
-      virtual float GetSuspensionLength() const { return suspensionLength; }
-      /// Length of the suspension in equilibrium
-      virtual void SetSuspensionLength(float s) { suspensionLength = s; }
+  public:
+    VehicleSteeringDevice ()
+      : scfImplementationType (this),
+      maxForce (.4f)
+      {}
+    virtual ~VehicleSteeringDevice () {}
 
-      /// Radius of the wheel
-      virtual float GetRadius() const { return radius; }
-      /// Radius of the wheel
-      virtual void SetRadius(float r) { radius = r; }
+    virtual inline float GetMaximumSteering () const { return maxForce; }
+    virtual inline void SetMaximumSteering (float f) { maxForce = f; }
 
-      /// The position of the wheel relative to the chassis
-      const csVector3& GetWheelPos() const { return pos; }
-      /// Value between 0 and 1 that determines how easily the car can roll over its side
-      void SetWheelPos(const csVector3& p) { pos = p; }
+    virtual inline size_t GetAffectedWheelCount () const
+    { return affectedWheels.GetSize (); }
+    virtual inline size_t GetAffectedWheel (size_t index) const
+    { return affectedWheels[index]; }
+    virtual inline void AddAffectedWheel (size_t index)
+    { affectedWheels.Push (index); }
+  };
 
-      /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      csVector3 GetWheelOrientation() const { return wheelOrientation; }
-      /// Unit vector that describes the current rotation of the wheel (perpendicular to its axle)
-      void SetSuspensionOrientation(const csVector3& o) { wheelOrientation = o; }
-
-      /// Unit vector that describes the axle about which the wheel rotates
-      const csVector3& GetAxleOrientation() const { return axleOrientation; }
-      /// Unit vector that describes the axle about which the wheel rotates
-      void SetAxleOrientation(const csVector3& o) { axleOrientation = o; }
-    };
-
-
-  /**
-   * Spits out vehicles based on a given set of properties
-   */
   class BulletVehicleFactory : public scfVirtImplementationExt1<
     BulletVehicleFactory, csObject, CS::Physics::iVehicleFactory>
   {
+    friend class BulletVehicle;
+
   private:
     csBulletSystem* sys;
-    csRefArray<CS::Physics::iVehicleWheelInfo> wheelInfos;
+    csRefArray<CS::Physics::iVehicleWheelFactory> wheelInfos;
     csRef<CS::Physics::iRigidBodyFactory> chassisFactory;
+    csRefArray<VehicleBrake> brakes;
+    csRefArray<VehicleSteeringDevice> steeringDevices;
 
   public:
-    BulletVehicleFactory(csBulletSystem* sys);
-    virtual ~BulletVehicleFactory();
+    BulletVehicleFactory (csBulletSystem* sys);
+    virtual ~BulletVehicleFactory ();
 
-    /// Creates a new vehicle
-    virtual csPtr<CS::Physics::iVehicle> CreateVehicle(CS::Physics::iPhysicalSector* sector);
+    virtual csPtr<CS::Physics::iVehicle> CreateVehicle (CS::Physics::iPhysicalSector* sector);
 
-    /// The factories for all wheels of the vehicle to be created
-    virtual const csRefArray<CS::Physics::iVehicleWheelInfo>& GetWheelInfos() const { return wheelInfos; }
-    
-      /// Add a new wheel to this vehicle factory
-    virtual void AddWheelInfo(CS::Physics::iVehicleWheelInfo* info) { wheelInfos.Push(info); }
+    virtual void AddWheelFactory (CS::Physics::iVehicleWheelFactory* info)
+    { wheelInfos.Push (info); }
+    virtual size_t GetWheelFactoryCount ()
+    { return wheelInfos.GetSize (); }
+    virtual CS::Physics::iVehicleWheelFactory* GetWheelFactory (size_t index) 
+    { return wheelInfos[index]; }
 
-    /// The chassis of the vehicle
-    virtual CS::Physics::iRigidBodyFactory* GetChassisFactory() const { return chassisFactory; }
-    /// The chassis of the vehicle
-    virtual void SetChassisFactory(CS::Physics::iRigidBodyFactory* f) { chassisFactory = f; }
+    virtual CS::Physics::iRigidBodyFactory* GetChassisFactory () const { return chassisFactory; }
+    virtual void SetChassisFactory (CS::Physics::iRigidBodyFactory* f) { chassisFactory = f; }
+
+    virtual CS::Physics::iVehicleBrake* CreateBrake ();
+    virtual CS::Physics::iVehicleSteeringDevice* CreateSteeringDevice ();
   };
 
   class BulletVehicle : public scfVirtImplementationExt2<BulletVehicle, csObject, 
@@ -321,56 +258,40 @@ CS_PLUGIN_NAMESPACE_BEGIN(Bullet2)
 
   private:
     csBulletSystem* sys;
+    csRef<BulletVehicleFactory> factory;
     btRaycastVehicle* btVehicle;
     csRef<CS::Physics::iRigidBody> chassis;
     csRefArray<CS::Physics::iVehicleWheel> wheels;
 
   public:
-    BulletVehicle(csBulletSystem* sys, csBulletRigidBody* chassis);
-    virtual ~BulletVehicle();
+    BulletVehicle (BulletVehicleFactory* factory, csBulletSystem* sys, csBulletRigidBody* chassis);
+    virtual ~BulletVehicle ();
 
-    /// The current engine force
-    virtual float GetEngineForce() const;
-    /// The current engine force
-    virtual void SetEngineForce(float f);
+    virtual float GetEngineForce () const;
+    virtual void SetEngineForce (float f);
     
-      /// Apply the given brake for the next simulation step. Scale it's braking force with the given factor.
-    virtual void ApplyBrake(CS::Physics::VehicleBrakeInfo* brake, float factor = 1);
+    virtual void Brake (size_t index, float scale = 1.0f);
+    virtual void Steer (size_t index, float scale = 0.4f);
 
-    /**
-    * Use the given steering device to increase the steering angle of the device-controlled wheels 
-    * and clamp to the device's allowed max angle.
-    */
-    virtual void IncrementSteering(CS::Physics::VehicleSteeringDevice* steeringWheel, float increment);
+    virtual size_t GetDrivenWheelCount () const;
+    virtual CS::Physics::iVehicleWheel* GetWheel (size_t index) const
+    { return wheels[index]; }
 
-    /// The amount of wheels that are directly powered by the engine
-    virtual size_t GetDrivenWheelCount() const;
-
-    /// The chassis of the vehicle
-    virtual CS::Physics::iRigidBody* GetChassis() const { return chassis; }
-
-    /// The chassis of the vehicle (does nothing because btRaycastVehicle doesn't support it)
-    virtual void SetChassis(CS::Physics::iRigidBody* b) { /*chassis = b; b->SetMayBeDeactivated(false);*/ }
+    virtual CS::Physics::iRigidBody* GetChassis () const { return chassis; }
+    virtual void SetChassis (CS::Physics::iRigidBody* b)
+    { chassis = b; /*b->SetMayBeDeactivated (false);*/ }
     
-    /// The collision object associated with this updatable (if any)
-    virtual CS::Collisions::iCollisionObject* GetCollisionObject() { return chassis; }
+    virtual CS::Collisions::iCollisionObject* GetCollisionObject () { return chassis; }
 
-    /// All wheels of this vehicle
-    virtual const csRefArray<CS::Physics::iVehicleWheel>& GetWheels() const { return wheels; }
-    
-    /// Current speed in km/h
-    virtual float GetSpeedKMH() const { return btVehicle->getCurrentSpeedKmHour(); }
+    virtual float GetSpeedKMH () const { return btVehicle->getCurrentSpeedKmHour (); }
 
-    virtual void PreStep(float dt) {}
-    virtual void PostStep(float dt);
+    virtual void PreStep (float dt) {}
+    virtual void PostStep (float dt);
 
-    /// Called when updatable is added to the given sector
-    virtual void OnAdded(CS::Physics::iPhysicalSector* sector);
+    virtual void OnAdded (CS::Physics::iPhysicalSector* sector);
+    virtual void OnRemoved (CS::Physics::iPhysicalSector* sector);
 
-    /// Called when updatable is removed from the given sector
-    virtual void OnRemoved(CS::Physics::iPhysicalSector* sector);
-
-    virtual btActionInterface* GetBulletAction() { return btVehicle; }
+    virtual btActionInterface* GetBulletAction () { return btVehicle; }
   };
 
 }

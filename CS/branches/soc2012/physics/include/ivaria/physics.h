@@ -51,7 +51,6 @@ struct iUpdatable;
 struct iVehicle;
 struct iVehicleFactory;
 struct iVehicleWheelFactory;
-struct iVehicleWheelInfo;
 
 /**
  * The state of a rigid body.
@@ -1496,9 +1495,6 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   /// Create a new factory to produce vehicle wheels
   virtual csPtr<iVehicleWheelFactory> CreateVehicleWheelFactory () = 0;
   
-  /// Create a new factory to produce vehicle wheels
-  virtual csPtr<iVehicleWheelInfo> CreateVehicleWheelInfo (iVehicleWheelFactory* factory) = 0;
-
   /// Return the vehicle that the given object is a part of, or nullptr
   // TODO: remove?
   virtual iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj) = 0;

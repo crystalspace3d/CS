@@ -35,27 +35,17 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-/// The available brakes
-static VehicleBrakeInfo FrontBrake, RearBrake, HandBrake;
+// TODO: remove that
 
-/// The steering wheel
-static VehicleSteeringDevice SteeringWheel;
-
-
-// #######################################################################
 // Default vehicle parameters:
 
-static const float SteeringIncrement (.04);
-static const float SteeringMax (.3);
-
-static const float EngineForce (10000);
-
-static const float FrontBrakeForce (100);
-static const float RearBrakeForce (100);
-static const float HandBrakeForce (1000);
-
-static const float ChassisMass (800);
-
+static const float steeringIncrement (.04);
+static const float steeringMax (.3);
+static const float engineForce (10000);
+static const float frontBrakeForce (100);
+static const float rearBrakeForce (100);
+static const float handBrakeForce (1000);
+static const float chassisMass (800);
 
 // The Wheels:
 
@@ -74,7 +64,6 @@ const static float WheelRadius (.5);
 /// Wheel width
 const static float WheelWidth (.6);
 
-
 // The Chassis:
 
 /// Chassis has two parts: One top box
@@ -83,58 +72,32 @@ const static csVector3 ChassisSizeTop (3, 2, 3);
 /// and one bottom box
 const static csVector3 ChassisSizeBottom (3, .9, 5);
 
-
 // The grid of tires:
 
 /// Relative position to chassis of the first wheel on the left side
-const static csVector3 WheelTopLeft (
-  -.6, 
-  -.7, 
-  .45);
+const static csVector3 WheelTopLeft (-.6, -.7, .45);
 
 /// Relative position to chassis of the last wheel on the left side
-const static csVector3 WheelBottomLeft (
-  -.6, 
-  -.7, 
-  -.45);
+const static csVector3 WheelBottomLeft (-.6, -.7, -.45);
 
 /// Relative position to chassis of the first wheel on the right side
-const static csVector3 WheelTopRight (
-  .6, 
-  -.7, 
-  .45);
-
+const static csVector3 WheelTopRight (.6, -.7, .45);
 
 // Actor <-> Vehicle interaction
 
 /// The actor seat pos relative to a vehicle
-const static csVector3 VehicleActorPos (
-  0
-);
+const static csVector3 VehicleActorPos (0);
 
 /// The speed with which the actor moves sideward when jumping out of a vehicle
 const static float ActorBailSideSpeed (3);
 
-
-
-void AddWheel (iVehicleFactory* vehicleFact, int axleN, int inAxleN);
-
-
-// #######################################################################
-// Create & setup vehicles
-
 csPtr<iVehicle> PhysDemo::CreateVehicle ()
 {
-  // TODO: Set mesh factory & material for wheels and chassis
-
-  // more vehicle parameters:
-
-  
   // compute dependent parameters
   csVector3 topPos (0, .5f * ChassisSizeTop.y, - .5f * (ChassisSizeBottom.z - ChassisSizeTop.z));
   csVector3 botPos (0, -.5f * ChassisSizeBottom.y, 0);
 
-  // setup chassis
+  // Setup the chassis
 
   csRef<CS::Collisions::iCollider> chassisCollider = physicalSystem->CreateCollider ();
   csRef<iColliderBox> chassisTopCollider = physicalSystem->CreateColliderBox (ChassisSizeTop);
@@ -149,17 +112,25 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
   csRef<iRigidBodyFactory> chassisFact = physicalSystem->CreateRigidBodyFactory (chassisCollider);
   chassisFact->SetElasticity (DefaultElasticity);
   chassisFact->SetFriction (DefaultFriction);
-  chassisFact->SetMass (ChassisMass);
+  chassisFact->SetMass (chassisMass);
   
-  // create vehicle factory
+  // Create the vehicle factory
   csRef<iVehicleFactory> fact = physicalSystem->CreateVehicleFactory ();
   fact->SetChassisFactory (chassisFact);
 
-  // setup wheels
-  csRef<iVehicleWheelFactory> wheelFact = physicalSystem->CreateVehicleWheelFactory ();
-  wheelFact->SetRollInfluence (0);
-  wheelFact->SetFrictionCoefficient (DefaultFriction);
-  
+  // Create the brakes
+  iVehicleBrake* handBrake = fact->CreateBrake ();
+  handBrake->SetMaximumForce (handBrakeForce);
+  iVehicleBrake* frontBrake = fact->CreateBrake ();
+  frontBrake->SetMaximumForce (frontBrakeForce);
+  iVehicleBrake* rearBrake = fact->CreateBrake ();
+  rearBrake->SetMaximumForce (rearBrakeForce);
+
+  // Create the steering wheel
+  iVehicleSteeringDevice* steeringWheel = fact->CreateSteeringDevice ();
+  steeringWheel->SetMaximumSteering (steeringMax);
+
+  // Setup the wheels
   for (int axle = 0; axle < AxleCount; ++axle)
   {
     float axleFactor = axle / (AxleCount - 1);
@@ -167,48 +138,40 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
     {
       float inAxleFactor = inAxleN / (WheelsPerAxle - 1);
 
-      // place wheels uniformly along the grid of axles
+      // Place the wheel uniformly along the grid of axles
       csVector3 pos (WheelTopLeft);
       pos += inAxleFactor * (WheelTopRight - WheelTopLeft);
       pos += axleFactor * (WheelBottomLeft - WheelTopLeft);
       pos = ScaleVector3 (ChassisSizeBottom, pos);
 
-      csRef<iVehicleWheelInfo> wheel = physicalSystem->CreateVehicleWheelInfo (wheelFact);
-      wheel->SetAxleOrientation (csVector3 (-1, 0, 0));
-      wheel->SetIsWheelDriven (axle == 0);
-      wheel->SetRadius (WheelRadius);
-      wheel->SetSuspensionLength (SuspensionLengthFactor * ChassisSizeBottom.y);
-      wheel->SetSuspensionOrientation (csVector3 (0, -1, 0));
+      csRef<iVehicleWheelFactory> wheelFact = physicalSystem->CreateVehicleWheelFactory ();
+      wheelFact->SetRollInfluence (0);
+      wheelFact->SetFrictionCoefficient (DefaultFriction);
+      wheelFact->SetAxleOrientation (csVector3 (-1, 0, 0));
+      wheelFact->SetIsWheelDriven (axle == 0);
+      wheelFact->SetRadius (WheelRadius);
+      wheelFact->SetSuspensionLength (SuspensionLengthFactor * ChassisSizeBottom.y);
+      wheelFact->SetSuspensionOrientation (csVector3 (0, -1, 0));
+      wheelFact->SetWheelPosition (pos);
 
-      wheel->SetWheelPos (pos);
-
-      //size_t index = axle * WheelsPerAxle + inAxleN;
-      size_t index = fact->GetWheelInfos ().GetSize ();
-
+      // Setup the way the wheel is controlled by the vehicle
+      size_t index = fact->GetWheelFactoryCount ();
       if (axle == 0)
       {
         // front wheel
-        SteeringWheel.GetAffectedWheelIndices ().Push (index);
-        FrontBrake.GetAffectedWheelIndices ().Push (index);
+        steeringWheel->AddAffectedWheel (index);
+        frontBrake->AddAffectedWheel (index);
       }
       else if (axle > 0)
       {
         // rear wheel
-        RearBrake.GetAffectedWheelIndices ().Push (index);
-        HandBrake.GetAffectedWheelIndices ().Push (index);
+        rearBrake->AddAffectedWheel (index);
+        handBrake->AddAffectedWheel (index);
       }
 
-      fact->AddWheelInfo (wheel);
+      fact->AddWheelFactory (wheelFact);
     }
   }
-
-  // Setup Steering Parameters
-  SteeringWheel.SetMaxSteering (SteeringMax);
-
-  // Setup Brake Parameters
-  FrontBrake.SetMaxForce (FrontBrakeForce);
-  RearBrake.SetMaxForce (RearBrakeForce);
-  HandBrake.SetMaxForce (HandBrakeForce);
 
   // Create vehicle
   csRef<iVehicle> vehicle = fact->CreateVehicle (GetCurrentSector ());
@@ -217,12 +180,12 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
   csRef<iMeshWrapper> chassisMesh = CreateBoxMesh (ChassisSizeBottom, "misty", "chassis");
   CS_ASSERT (chassisMesh);
   vehicle->GetChassis ()->SetAttachedSceneNode (chassisMesh->QuerySceneNode ());
-  for (size_t i = 0; i < vehicle->GetWheels ().GetSize (); ++i)
+  for (size_t i = 0; i < fact->GetWheelFactoryCount (); ++i)
   {
     csRef<iMeshWrapper> wheelMesh = CreateCylinderYMesh (WheelWidth, WheelRadius);
     CS_ASSERT (wheelMesh);
-    iVehicleWheel* wheel = vehicle->GetWheels ()[i];
-    wheel->SetSceneNode (wheelMesh->QuerySceneNode ());
+    iVehicleWheel* wheel = vehicle->GetWheel (i);
+    wheel->SetAttachedSceneNode (wheelMesh->QuerySceneNode ());
   }   
 
   // Must add to world, because else meshes will be deleted upon return
@@ -231,21 +194,18 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
   return csPtr<iVehicle>(vehicle);
 }
 
-// #######################################################################
-// Steering, acceleration and braking
-
 void PhysDemo::MoveActorVehicle ()
 {
   // actorVehicle != nullptr
 
   // Steering
-  float steering = SteeringIncrement * GetLeftRight ();
-  actorVehicle->IncrementSteering (&SteeringWheel, steering);
+  float steering = steeringIncrement * GetLeftRight ();
+  actorVehicle->Steer (0, steering);
 
   // Acceleration
   if (GetForward ())
   {
-    actorVehicle->SetEngineForce (EngineForce);
+    actorVehicle->SetEngineForce (engineForce);
   }
   else 
   {
@@ -256,12 +216,12 @@ void PhysDemo::MoveActorVehicle ()
   if (GetBackward ())
   {
     // Backward
-    actorVehicle->SetEngineForce (-EngineForce / 10);
+    actorVehicle->SetEngineForce (-engineForce / 10);
   }
   if (kbd->GetKeyState (KeyHandbrake))
   {
-    // Apply handbrake
-    actorVehicle->ApplyBrake (&HandBrake);
+    // Apply the handbrake (which is the first brake that has been added to the vehicle).
+    actorVehicle->Brake (0);
   }
 }
 
@@ -274,10 +234,6 @@ void PhysDemo::UpdateVehiclePassengers ()
     player.GetObject ()->SetTransform (trans);
   }
 }
-
-
-// #######################################################################
-// Enter & Exit vehicle
 
 void PhysDemo::EnterTargetVehicle ()
 {
@@ -348,9 +304,6 @@ void PhysDemo::LeaveCurrentVehicle ()
 
 }
 
-// #######################################################################
-// Spawn & Delete Vehicle
-
 void PhysDemo::SpawnVehicle ()
 {
   // Create a new vehicle
@@ -381,22 +334,13 @@ void PhysDemo::DeleteTargetVehicle ()
   GetCurrentSector ()->RemoveUpdatable (vehicle);
 }
 
-// #######################################################################
-// Do stuff to vehicle
-
 void PhysDemo::AccelerateTargetVehicle ()
 {
   iVehicle* vehicle = GetTargetVehicle ();
   if (!vehicle) return;
 
-  vehicle->SetEngineForce (EngineForce);
+  vehicle->SetEngineForce (engineForce);
 }
-
-
-// #######################################################################
-
-// Vehicle Utilities
-
 
 iVehicle* PhysDemo::GetTargetVehicle ()
 {

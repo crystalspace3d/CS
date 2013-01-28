@@ -237,8 +237,6 @@ public:
   
   virtual csPtr<CS::Physics::iVehicleFactory> CreateVehicleFactory ();
   virtual csPtr<CS::Physics::iVehicleWheelFactory> CreateVehicleWheelFactory ();
-  virtual csPtr<CS::Physics::iVehicleWheelInfo> CreateVehicleWheelInfo
-    (CS::Physics::iVehicleWheelFactory* factory);
   virtual CS::Physics::iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj);
 
   csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap () { return vehicleMap; }

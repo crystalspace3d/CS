@@ -70,7 +70,7 @@ private:
   bool gravityEnabled;
 
 public:
-  void CreateSoftBodyObject(CS::Physics::iSoftBodyFactory* props);
+  void CreateSoftBodyObject (CS::Physics::iSoftBodyFactory* props);
 
 public:
   csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body);
@@ -110,7 +110,7 @@ public:
   virtual void AddForce (const csVector3& force);
 
   virtual void SetAngularVelocity (const csVector3& vel) { /* does nothing for now */ }
-  virtual csVector3 GetAngularVelocity () const { /* does nothing for now */ return csVector3(0, 0, 0); }
+  virtual csVector3 GetAngularVelocity () const { /* does nothing for now */ return csVector3 (0, 0, 0); }
 
   virtual void SetMass (float mass);
   virtual float GetMass () const;
@@ -204,16 +204,13 @@ public:
 
   virtual void GenerateCluster (int iter);
 
-  
   // Nodes
-  virtual size_t GetNodeCount() const;
+  virtual size_t GetNodeCount () const;
 
   /// Whether this object is affected by gravity
-  virtual bool GetGravityEnabled() const { return gravityEnabled; }
+  virtual bool GetGravityEnabled () const { return gravityEnabled; }
   /// Whether this object is affected by gravity
-  virtual void SetGravityEnabled(bool enabled) { gravityEnabled = enabled; }
-
-
+  virtual void SetGravityEnabled (bool enabled) { gravityEnabled = enabled; }
 
   // iUpdatable
   /// Update the softbody before a simulation step
@@ -224,13 +221,13 @@ public:
   virtual void PostStep (float dt) {}
 
   /// We don't want the AddUpdatable method to add this object again when adding it as an updatable
-  virtual CS::Collisions::iCollisionObject* GetCollisionObject() { return nullptr; }
+  virtual CS::Collisions::iCollisionObject* GetCollisionObject () { return nullptr; }
 
   /// Called when updatable is added to the given sector
-  virtual void OnAdded(CS::Physics::iPhysicalSector* sector) {}
+  virtual void OnAdded (CS::Physics::iPhysicalSector* sector) {}
 
   /// Called when updatable is removed from the given sector
-  virtual void OnRemoved(CS::Physics::iPhysicalSector* sector) {} 
+  virtual void OnRemoved (CS::Physics::iPhysicalSector* sector) {} 
 };
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

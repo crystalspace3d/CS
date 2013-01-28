@@ -99,7 +99,7 @@ bool PhysDemo::PickCursorObject (CS::Collisions::HitBeamResult& result)
   }
 
   // check for vehicle
-  iVehicle* vehicle = physicalSystem->GetVehicle (obj);
+  iVehicle* vehicle = dynamic_cast<iVehicle*> (obj);
   if (vehicle)
   {
     return vehicle;

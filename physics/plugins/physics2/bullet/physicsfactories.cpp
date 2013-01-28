@@ -95,9 +95,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csPtr<CS::Physics::iRigidBody> BulletRigidBodyFactory::CreateRigidBody ()
   {
-    csRef<csBulletRigidBody> body = csPtr<csBulletRigidBody>(new csBulletRigidBody (system));
-    body->CreateRigidBodyObject (this);
-    return csPtr<CS::Physics::iRigidBody>(body);
+    return new csBulletRigidBody (this);
   }
 
   csPtr<CS::Collisions::iActor> BulletDynamicActorFactory::CreateActor ()
@@ -108,24 +106,23 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csPtr<CS::Physics::iDynamicActor> BulletDynamicActorFactory::CreateDynamicActor ()
   {
-    csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor> (new csBulletDynamicActor (system));
-    body->CreateDynamicActor (this);
+    csRef<csBulletDynamicActor> body = csPtr<csBulletDynamicActor> (new csBulletDynamicActor (this));
     return csPtr<CS::Physics::iDynamicActor> (body);
   }
 
   csPtr<CS::Physics::iRigidBody> BulletDynamicActorFactory::CreateRigidBody ()
   { 
-    return DowncastPtr<CS::Physics::iRigidBody, CS::Physics::iDynamicActor>(CreateDynamicActor ()); 
+    return DowncastPtr<CS::Physics::iRigidBody, CS::Physics::iDynamicActor> (CreateDynamicActor ()); 
   }
 
   csPtr<CS::Collisions::iCollisionObject> BulletDynamicActorFactory::CreateCollisionObject () 
   { 
-    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iDynamicActor>(CreateDynamicActor ()); 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iDynamicActor> (CreateDynamicActor ()); 
   }
 
   csPtr<CS::Collisions::iCollisionObject> BulletSoftBodyFactory::CreateCollisionObject () 
   { 
-    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iSoftBody>(CreateSoftBody ()); 
+    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Physics::iSoftBody> (CreateSoftBody ()); 
   }
 
   csPtr<CS::Physics::iSoftBody> BulletSoftRopeFactory::CreateSoftBody ()
@@ -139,9 +136,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     body->m_cfg.piterations = 16; // no white zone
     body->m_cfg.timescale = 2;
 
-    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (system, body));
+    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody> (new csBulletSoftBody (system, body));
     csBody->CreateSoftBodyObject (this);
-    return csPtr<CS::Physics::iSoftBody>(csBody);
+    return csPtr<CS::Physics::iSoftBody> (csBody);
   }
 
   csPtr<CS::Physics::iSoftBody> BulletSoftClothFactory::CreateSoftBody ()
@@ -161,9 +158,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
 
 
-    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (system, body));
+    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody> (new csBulletSoftBody (system, body));
     csBody->CreateSoftBodyObject (this);
-    return csPtr<CS::Physics::iSoftBody>(csBody);
+    return csPtr<CS::Physics::iSoftBody> (csBody);
   }
 
   csPtr<CS::Physics::iSoftBody> BulletSoftMeshFactory::CreateSoftBody ()
@@ -198,9 +195,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     body->m_materials[0]->m_kLST = 1;
 
 
-    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody>(new csBulletSoftBody (system, body));
+    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody> (new csBulletSoftBody (system, body));
     csBody->CreateSoftBodyObject (this);
-    return csPtr<CS::Physics::iSoftBody>(csBody);
+    return csPtr<CS::Physics::iSoftBody> (csBody);
   }
 
 }

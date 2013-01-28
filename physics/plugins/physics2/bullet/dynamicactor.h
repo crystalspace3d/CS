@@ -55,11 +55,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool kinematicSteps;
 
   protected:
-    void CreateDynamicActor (CS::Physics::iDynamicActorFactory* props);
     virtual csBulletMotionState* CreateMotionState (const btTransform& trans);
 
   public:
-    csBulletDynamicActor (csBulletSystem* sys);
+    csBulletDynamicActor (BulletDynamicActorFactory* factory);
     virtual ~csBulletDynamicActor ();
     
     virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const

@@ -22,7 +22,7 @@
 /**\file
  * Physical vehicles
  */
-
+/*
 #include "csutil/csobject.h"
 #include "csutil/array.h"
 #include "csutil/scf.h"
@@ -30,7 +30,8 @@
 #include "cstool/primitives.h"
 #include "iengine/engine.h"
 #include "iutil/objreg.h"
-#include "ivaria/physicscommon.h"
+*/
+#include "ivaria/physics.h"
 
 namespace CS 
 {
@@ -285,12 +286,14 @@ namespace CS
      * A factory to create instances of iVehicle.
      */
     // TODO: orient the vehicle around the use of an animesh? or use a dedicated animation controller?
-    struct iVehicleFactory : public virtual iBase
+    struct iVehicleFactory : public virtual  CS::Physics::iRigidBodyFactory
     {
       SCF_INTERFACE (CS::Physics::iVehicleFactory, 1, 0, 0);
 
-      /// Create a new vehicle
-      // TODO: remove sector and allow vehicles to switch sectors
+      /**
+       * Create a new vehicle
+       * \todo Remove the sector parameter and allow vehicles to switch sectors
+       */
       virtual csPtr<iVehicle> CreateVehicle (CS::Physics::iPhysicalSector* sector) = 0;
 
       /// Add a new wheel to this vehicle.
@@ -302,12 +305,6 @@ namespace CS
       /// Get the wheel factory of the given index.
       virtual iVehicleWheelFactory* GetWheelFactory (size_t index) = 0;
 
-      /// Get the chassis of the vehicle
-      virtual iRigidBodyFactory* GetChassisFactory () const = 0;
-
-      /// Set the chassis of the vehicle
-      virtual void SetChassisFactory (iRigidBodyFactory* b) = 0;
-
       /// Create a new brake, and add it to the list of brakes for this vehicle.
       virtual iVehicleBrake* CreateBrake () = 0;
 
@@ -318,18 +315,10 @@ namespace CS
     /**
      * A physical, wheeled, grounded vehicle.
      */
-    struct iVehicle : public virtual iUpdatable
+    struct iVehicle : public virtual CS::Physics::iRigidBody
     {
       SCF_INTERFACE (CS::Physics::iVehicle, 1, 0, 0);
       
-      /// Get the chassis of the vehicle
-      virtual iRigidBody* GetChassis () const = 0;
-      /// Set the chassis of the vehicle
-      virtual void SetChassis (iRigidBody* b) = 0;
-
-      /// The amount of wheels affected by engine force
-      virtual size_t GetDrivenWheelCount () const = 0;
-
       /// Get the wheel at the given index
       virtual iVehicleWheel* GetWheel (size_t index) const = 0;
 

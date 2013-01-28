@@ -21,6 +21,7 @@
 
 #include "ivaria/vehicle.h"
 #include "rigidbody2.h"
+#include "updatable.h"
 
 #include "BulletDynamics/Vehicle/btRaycastVehicle.h"
 #include "BulletDynamics/Dynamics/btActionInterface.h"
@@ -220,19 +221,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   };
 
   class BulletVehicleFactory : public scfVirtImplementationExt1<
-    BulletVehicleFactory, csObject, CS::Physics::iVehicleFactory>
+    BulletVehicleFactory, BulletRigidBodyFactory, CS::Physics::iVehicleFactory>
   {
     friend class BulletVehicle;
 
   private:
     csBulletSystem* sys;
     csRefArray<CS::Physics::iVehicleWheelFactory> wheelInfos;
-    csRef<CS::Physics::iRigidBodyFactory> chassisFactory;
     csRefArray<VehicleBrake> brakes;
     csRefArray<VehicleSteeringDevice> steeringDevices;
 
   public:
-    BulletVehicleFactory (csBulletSystem* sys);
+    BulletVehicleFactory (csBulletSystem* sys, CS::Collisions::iCollider* collider);
     virtual ~BulletVehicleFactory ();
 
     virtual csPtr<CS::Physics::iVehicle> CreateVehicle (CS::Physics::iPhysicalSector* sector);
@@ -244,27 +244,22 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual CS::Physics::iVehicleWheelFactory* GetWheelFactory (size_t index) 
     { return wheelInfos[index]; }
 
-    virtual CS::Physics::iRigidBodyFactory* GetChassisFactory () const { return chassisFactory; }
-    virtual void SetChassisFactory (CS::Physics::iRigidBodyFactory* f) { chassisFactory = f; }
-
     virtual CS::Physics::iVehicleBrake* CreateBrake ();
     virtual CS::Physics::iVehicleSteeringDevice* CreateSteeringDevice ();
   };
 
-  class BulletVehicle : public scfVirtImplementationExt2<BulletVehicle, csObject, 
-    CS::Physics::iVehicle, BulletActionWrapper>
+  class BulletVehicle : public scfImplementationExt3<BulletVehicle, csBulletRigidBody, 
+    CS::Physics::iVehicle, BulletActionWrapper, scfFakeInterface<iUpdatable> >
   {
     friend class BulletVehicleFactory;
 
   private:
-    csBulletSystem* sys;
     csRef<BulletVehicleFactory> factory;
     btRaycastVehicle* btVehicle;
-    csRef<CS::Physics::iRigidBody> chassis;
     csRefArray<CS::Physics::iVehicleWheel> wheels;
 
   public:
-    BulletVehicle (BulletVehicleFactory* factory, csBulletSystem* sys, csBulletRigidBody* chassis);
+    BulletVehicle (BulletVehicleFactory* factory);
     virtual ~BulletVehicle ();
 
     virtual float GetEngineForce () const;
@@ -277,11 +272,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual CS::Physics::iVehicleWheel* GetWheel (size_t index) const
     { return wheels[index]; }
 
-    virtual CS::Physics::iRigidBody* GetChassis () const { return chassis; }
-    virtual void SetChassis (CS::Physics::iRigidBody* b)
-    { chassis = b; /*b->SetMayBeDeactivated (false);*/ }
-    
-    virtual CS::Collisions::iCollisionObject* GetCollisionObject () { return chassis; }
+    virtual CS::Collisions::iCollisionObject* GetCollisionObject () { return this; }
 
     virtual float GetSpeedKMH () const { return btVehicle->getCurrentSpeedKmHour (); }
 

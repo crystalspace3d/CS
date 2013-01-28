@@ -27,6 +27,7 @@
 #include "bulletsystem.h"
 #include "common2.h"
 #include "physicalbody.h"
+#include "updatable.h"
 
 class btSoftBody;
 
@@ -37,7 +38,7 @@ class csBulletSoftBody : public scfImplementationExt2<
   csBulletSoftBody, 
   csPhysicalBody,
   CS::Physics::iSoftBody,
-  CS::Physics::iUpdatable>
+  iUpdatable>
 {
   friend class csBulletRigidBody;
   friend class csBulletJoint;

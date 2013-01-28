@@ -20,12 +20,12 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __CS_BULLET_RIGIDBODY_H__
 #define __CS_BULLET_RIGIDBODY_H__
 
 #include "common2.h"
 #include "physicalbody.h"
+#include "physicsfactories.h"
 #include "ivaria/collisions.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
@@ -54,6 +54,7 @@ class csBulletRigidBody : public scfVirtImplementationExt1<csBulletRigidBody,
   using csPhysicalBody::GetEnabled;
 
 protected:
+  csRef<BulletRigidBodyFactory> factory;
   btRigidBody* btBody;
   csBulletMotionState* motionState;
   CS::Physics::RigidBodyState physicalState;
@@ -61,14 +62,10 @@ protected:
   csRef<CS::Physics::iKinematicCallback> kinematicCb;
 
 protected:
-  virtual csBulletMotionState* CreateMotionState(const btTransform& trans);
+  virtual csBulletMotionState* CreateMotionState (const btTransform& trans);
 
 public:
-  void CreateRigidBodyObject(CS::Physics::iRigidBodyFactory* props);
-
-
-public:
-  csBulletRigidBody (csBulletSystem* phySys);
+  csBulletRigidBody (BulletRigidBodyFactory* factory);
   virtual ~csBulletRigidBody ();
 
   virtual iObject* QueryObject () { return (iObject*) this; }
@@ -78,7 +75,8 @@ public:
 
   virtual void SetCollider (CS::Collisions::iCollider* collider);
 
-  virtual bool Collide (iCollisionObject* otherObject) {return csBulletCollisionObject::Collide (otherObject);}
+  virtual bool Collide (iCollisionObject* otherObject)
+  { return csBulletCollisionObject::Collide (otherObject); }
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end)
   { return csBulletCollisionObject::HitBeam (start, end);}
 
@@ -100,12 +98,10 @@ public:
   virtual void SetMass (btScalar mass);
   virtual btScalar GetMass () const;
 
-  void SetMassInternal(btScalar mass);
+  void SetMassInternal (btScalar mass);
 
   virtual btScalar GetDensity () const 
-  {
-    return density;
-  }
+  { return density; }
   virtual void SetDensity (btScalar density);
 
   virtual btScalar GetVolume () const;
@@ -146,30 +142,26 @@ public:
   virtual void SetKinematicCallback (CS::Physics::iKinematicCallback* cb) {kinematicCb = cb;}
   virtual CS::Physics::iKinematicCallback* GetKinematicCallback () {return kinematicCb;}
   
-  virtual btScalar GetLinearDamping();
-  virtual void SetLinearDamping(btScalar d);
+  virtual btScalar GetLinearDamping ();
+  virtual void SetLinearDamping (btScalar d);
   
-  virtual btScalar GetAngularDamping();
-  virtual void SetAngularDamping(btScalar d);
+  virtual btScalar GetAngularDamping ();
+  virtual void SetAngularDamping (btScalar d);
 
-  virtual csVector3 GetAngularFactor() const;
-  virtual void SetAngularFactor(const csVector3& f);
+  virtual csVector3 GetAngularFactor () const;
+  virtual void SetAngularFactor (const csVector3& f);
 
-  /// Clone this rigidbody
-  virtual btCollisionObject* CreateBulletObject();
-  virtual csPtr<CS::Collisions::iCollisionObject> CloneObject();
+  virtual btCollisionObject* CreateBulletObject ();
+  virtual csPtr<CS::Collisions::iCollisionObject> CloneObject ();
 
-  /// Whether this object can be affected by gravity
-  virtual bool GetGravityEnabled() const;
-  /// Whether this object can be affected by gravity
-  virtual void SetGravityEnabled(bool enabled);
+  virtual bool GetGravityEnabled () const;
+  virtual void SetGravityEnabled (bool enabled);
 
   // Some convinience methods:
 
   /// Whether gravity is currently affecting this object
-  bool DoesGravityApply() const;
-  
-  bool IsMovingUpward() const;
+  bool DoesGravityApply () const;
+  bool IsMovingUpward () const;
 };
 
 class csBulletDefaultKinematicCallback : public scfImplementation1<
@@ -177,7 +169,7 @@ class csBulletDefaultKinematicCallback : public scfImplementation1<
 {
 public:
   csBulletDefaultKinematicCallback ();
-  virtual ~csBulletDefaultKinematicCallback();
+  virtual ~csBulletDefaultKinematicCallback ();
   virtual void GetBodyTransform (CS::Physics::iRigidBody* body, csOrthoTransform& transform) const;
 };
 }

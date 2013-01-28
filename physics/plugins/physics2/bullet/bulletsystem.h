@@ -112,7 +112,6 @@ private:
   float inverseInternalScale;
 
   csRefArrayObject<csBulletSector> collSectors;
-  csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*> vehicleMap;
 
   CollisionGroup* defaultGroup;
   csHash< csRef<CollisionGroup>, const char*> collisionGroups;
@@ -235,11 +234,9 @@ public:
 
   // Vehicles
   
-  virtual csPtr<CS::Physics::iVehicleFactory> CreateVehicleFactory ();
+  virtual csPtr<CS::Physics::iVehicleFactory> CreateVehicleFactory
+    (CS::Collisions::iCollider* collider = nullptr);
   virtual csPtr<CS::Physics::iVehicleWheelFactory> CreateVehicleWheelFactory ();
-  virtual CS::Physics::iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj);
-
-  csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& GetVehicleMap () { return vehicleMap; }
 
   // Misc
   void DeleteAll ();

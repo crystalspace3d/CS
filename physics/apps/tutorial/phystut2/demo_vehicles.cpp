@@ -102,21 +102,14 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
   csRef<CS::Collisions::iCollider> chassisCollider = physicalSystem->CreateCollider ();
   csRef<iColliderBox> chassisTopCollider = physicalSystem->CreateColliderBox (ChassisSizeTop);
   csRef<iColliderBox> chassisBottomCollider = physicalSystem->CreateColliderBox (ChassisSizeBottom);
-  // TODO: Figure out meshes of arbitrary compound colliders
-  //chassisCollider->AddChild (chassisTopCollider, csOrthoTransform (csMatrix3 (), topPos));
   botPos.y = 0;
   chassisCollider->AddChild (chassisBottomCollider, csOrthoTransform (csMatrix3 (), botPos));
   
-  //csOrthoTransform centerOfMassTransform (csMatrix3 (), csVector3 (0, -.4) * ChassisSizeBottom.y, ChassisSizeBottom.z);
-  //chassisCollider->SetPrincipalAxisTransform (centerOfMassTransform);
-  csRef<iRigidBodyFactory> chassisFact = physicalSystem->CreateRigidBodyFactory (chassisCollider);
-  chassisFact->SetElasticity (DefaultElasticity);
-  chassisFact->SetFriction (DefaultFriction);
-  chassisFact->SetMass (chassisMass);
-  
   // Create the vehicle factory
-  csRef<iVehicleFactory> fact = physicalSystem->CreateVehicleFactory ();
-  fact->SetChassisFactory (chassisFact);
+  csRef<iVehicleFactory> fact = physicalSystem->CreateVehicleFactory (chassisCollider);
+  fact->SetElasticity (DefaultElasticity);
+  fact->SetFriction (DefaultFriction);
+  fact->SetMass (chassisMass);
 
   // Create the brakes
   iVehicleBrake* handBrake = fact->CreateBrake ();
@@ -178,8 +171,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
 
   // Set meshes (FIXME)
   csRef<iMeshWrapper> chassisMesh = CreateBoxMesh (ChassisSizeBottom, "misty", "chassis");
-  CS_ASSERT (chassisMesh);
-  vehicle->GetChassis ()->SetAttachedSceneNode (chassisMesh->QuerySceneNode ());
+  vehicle->SetAttachedSceneNode (chassisMesh->QuerySceneNode ());
   for (size_t i = 0; i < fact->GetWheelFactoryCount (); ++i)
   {
     csRef<iMeshWrapper> wheelMesh = CreateCylinderYMesh (WheelWidth, WheelRadius);
@@ -188,8 +180,7 @@ csPtr<iVehicle> PhysDemo::CreateVehicle ()
     wheel->SetAttachedSceneNode (wheelMesh->QuerySceneNode ());
   }   
 
-  // Must add to world, because else meshes will be deleted upon return
-  GetCurrentSector ()->AddUpdatable (vehicle);
+  GetCurrentSector ()->AddVehicle (vehicle);
 
   return csPtr<iVehicle>(vehicle);
 }
@@ -230,7 +221,7 @@ void PhysDemo::UpdateVehiclePassengers ()
   if (actorVehicle)
   {
     csOrthoTransform trans (player.GetObject ()->GetTransform ());
-    trans.SetOrigin (actorVehicle->GetChassis ()->GetTransform ().GetOrigin () + VehicleActorPos);
+    trans.SetOrigin (actorVehicle->GetTransform ().GetOrigin () + VehicleActorPos);
     player.GetObject ()->SetTransform (trans);
   }
 }
@@ -272,7 +263,7 @@ void PhysDemo::LeaveCurrentVehicle ()
   // Move and accelerate actor:
   iCollisionObject* actorObj = player.GetObject ();
 
-  const csOrthoTransform& vehicleTrans = vehicle->GetChassis ()->GetTransform ();
+  const csOrthoTransform& vehicleTrans = vehicle->GetTransform ();
   csVector3 sideward = vehicleTrans.GetT2O ().Col1 ();
 
   // Place actor beside vehicle to avoid collision
@@ -293,8 +284,7 @@ void PhysDemo::LeaveCurrentVehicle ()
     // Actor bails out with a small sideward velocity + velocity of the vehicle
     iPhysicalBody* actorBody = actorObj->QueryPhysicalBody ();
 
-    csVector3 forward = vehicle->GetChassis ()->GetLinearVelocity ();
-
+    csVector3 forward = vehicle->GetLinearVelocity ();
     actorBody->SetLinearVelocity (ActorBailSideSpeed * sideward + forward);
   }
   else
@@ -318,7 +308,7 @@ void PhysDemo::SpawnVehicle ()
 
   //csMatrix3 rotation (trans.GetT2O ());
   csMatrix3 rotation;
-  vehicle->GetChassis ()->SetTransform (csOrthoTransform (rotation, pos));
+  vehicle->SetTransform (csOrthoTransform (rotation, pos));
 }
 
 void PhysDemo::DeleteTargetVehicle ()
@@ -331,7 +321,7 @@ void PhysDemo::DeleteTargetVehicle ()
   {
     LeaveCurrentVehicle ();
   }
-  GetCurrentSector ()->RemoveUpdatable (vehicle);
+  GetCurrentSector ()->RemoveVehicle (vehicle);
 }
 
 void PhysDemo::AccelerateTargetVehicle ()
@@ -347,7 +337,7 @@ iVehicle* PhysDemo::GetTargetVehicle ()
   HitBeamResult hitResult;
   if (PickCursorObject (hitResult))
   {
-    return physicalSystem->GetVehicle (hitResult.object);
+    return dynamic_cast<iVehicle*> (hitResult.object);
   }
   return nullptr;
 }

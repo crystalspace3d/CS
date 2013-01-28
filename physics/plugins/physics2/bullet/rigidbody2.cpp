@@ -34,18 +34,15 @@
 using namespace CS::Physics;
 using namespace CS::Collisions;
 
-#define ADD_FORCE applyImpulse
-#define ADD_CENTRAL_FORCE applyCentralImpulse
-
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  // TODO: don't convert to the abstract interface since this method is internal to the plugin
-  // or: move this method to the constructor instead
-  void csBulletRigidBody::CreateRigidBodyObject (CS::Physics::iRigidBodyFactory* props)
+  csBulletRigidBody::csBulletRigidBody (BulletRigidBodyFactory* factory)
+    : scfImplementationType (this, factory->system), factory (factory),
+    btBody (nullptr), anchorCount (0)
   {
-    //CreatePhysicalBodyObject (props);
-    collider = dynamic_cast<csBulletCollider*>(props->GetCollider ());
+    collider = dynamic_cast<csBulletCollider*> (factory->GetCollider ());
 
+    // TODO: handle no colliders
     // TODO: use factory's state
     // TODO: use collider transform
 
@@ -55,14 +52,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
       mass = density = 0;
     }
-    else if (props->GetDensity ())
+    else if (factory->GetDensity ())
     {
-      density = props->GetDensity ();
+      density = factory->GetDensity ();
       mass = density * collider->GetVolume ();
     }
     else
     {
-      mass = props->GetMass ();
+      mass = factory->GetMass ();
       density = collider->GetVolume () > 0 ? mass / collider->GetVolume () : 0;
     }
     
@@ -71,10 +68,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btRigidBody::btRigidBodyConstructionInfo infos
       (mass, CreateMotionState (collider->GetPrincipalAxisTransform ()), shape, mass * collider->GetLocalInertia ());
 
-    infos.m_friction = props->GetFriction ();
-    infos.m_restitution = props->GetElasticity ();
-    infos.m_linearDamping = props->GetLinearDamping ();
-    infos.m_angularDamping = props->GetAngularDamping ();
+    infos.m_friction = factory->GetFriction ();
+    infos.m_restitution = factory->GetElasticity ();
+    infos.m_linearDamping = factory->GetLinearDamping ();
+    infos.m_angularDamping = factory->GetAngularDamping ();
 
     btObject = btBody = new btRigidBody (infos);
     btBody->setUserPointer (dynamic_cast<CS::Collisions::iCollisionObject*>(this));
@@ -83,12 +80,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     bool isStatic = density == 0;
     SetState (isStatic ? STATE_STATIC : STATE_DYNAMIC);
 
-    group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
-  }
-
-  csBulletRigidBody::csBulletRigidBody (csBulletSystem* phySys)
-    : scfImplementationType (this, phySys), btBody (nullptr), anchorCount (0)
-  {
+    group = dynamic_cast<CollisionGroup*> (factory->GetCollisionGroup ());
   }
 
   csBulletRigidBody::~csBulletRigidBody ()
@@ -438,7 +430,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (btBody)
     {
-      btBody->ADD_CENTRAL_FORCE (CSToBullet (force, system->GetInternalScale ()));
+      btBody->applyCentralImpulse (CSToBullet (force, system->GetInternalScale ()));
       btBody->activate (true);
     }
   }
@@ -459,7 +451,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
-    btBody->ADD_CENTRAL_FORCE (CSToBullet (absForce, system->GetInternalScale ()));
+    btBody->applyCentralImpulse (CSToBullet (absForce, system->GetInternalScale ()));
     btBody->activate (true);
   }
 
@@ -485,7 +477,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 relPos = trans.Other2This (pos);
     
-    btBody->ADD_FORCE (btForce, CSToBullet (relPos, system->GetInternalScale ()));
+    btBody->applyImpulse (btForce, CSToBullet (relPos, system->GetInternalScale ()));
   }
 
   void csBulletRigidBody::AddForceAtRelPos (const csVector3& force,
@@ -497,7 +489,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btBody->activate (true);
     csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 relPos = trans.Other2This (pos);
-    btBody->ADD_FORCE (CSToBullet (force, system->GetInternalScale ()), CSToBullet (relPos, system->GetInternalScale ()));
+    btBody->applyImpulse (CSToBullet (force, system->GetInternalScale ()), CSToBullet (relPos, system->GetInternalScale ()));
   }
 
   void csBulletRigidBody::AddRelForceAtPos (const csVector3& force, const csVector3& pos)
@@ -509,7 +501,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
     csVector3 relPos = trans.Other2This (pos);
-    btBody->ADD_FORCE (CSToBullet (absForce, system->GetInternalScale ()),
+    btBody->applyImpulse (CSToBullet (absForce, system->GetInternalScale ()),
       CSToBullet (relPos, system->GetInternalScale ()));
   }
 
@@ -522,7 +514,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btBody->activate (true);
     csOrthoTransform trans = csBulletCollisionObject::GetTransform ();
     csVector3 absForce = trans.This2Other (force);
-    btBody->ADD_FORCE (CSToBullet (absForce, system->GetInternalScale ()),
+    btBody->applyImpulse (CSToBullet (absForce, system->GetInternalScale ()),
       CSToBullet (pos, system->GetInternalScale ()));
   }
 
@@ -595,7 +587,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csPtr<iCollisionObject> csBulletRigidBody::CloneObject ()
   {
-    csBulletRigidBody* clone = new csBulletRigidBody (system);
+    csBulletRigidBody* clone = new csBulletRigidBody (factory);
     clone->collider = collider;
     clone->group = group;
 

@@ -51,26 +51,16 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // csBulletDynamicActor
 
-  csBulletDynamicActor::csBulletDynamicActor (csBulletSystem* sys) : scfImplementationType (this, sys),
-    onGround (false)
+  csBulletDynamicActor::csBulletDynamicActor (BulletDynamicActorFactory* factory)
+    : scfImplementationType (this, factory), onGround (false)
   {
-  }
+    group = dynamic_cast<CollisionGroup*> (factory->GetCollisionGroup ());
 
-  csBulletDynamicActor::~csBulletDynamicActor ()
-  {
-
-  }
-
-  void csBulletDynamicActor::CreateDynamicActor (iDynamicActorFactory* props)
-  {
-    group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
-    CreateRigidBodyObject (props);
-
-    SetStepHeight (props->GetStepHeight ());
-    SetWalkSpeed (props->GetWalkSpeed ());
-    SetJumpSpeed (props->GetJumpSpeed ());
-    SetKinematicStepsEnabled (props->GetKinematicStepsEnabled ());
-    SetAirControlFactor (props->GetAirControlFactor ());
+    SetStepHeight (factory->GetStepHeight ());
+    SetWalkSpeed (factory->GetWalkSpeed ());
+    SetJumpSpeed (factory->GetJumpSpeed ());
+    SetKinematicStepsEnabled (factory->GetKinematicStepsEnabled ());
+    SetAirControlFactor (factory->GetAirControlFactor ());
     
     if (collider->GetColliderType () == COLLIDER_COMPOUND)
     {
@@ -81,6 +71,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // Do not allow any simulated rotation
     btBody->setAngularFactor (btVector3 (0, 0, 0));
     btBody->setDamping (0, 1);
+  }
+
+  csBulletDynamicActor::~csBulletDynamicActor ()
+  {
+
   }
 
   csBulletMotionState* csBulletDynamicActor::CreateMotionState (const btTransform& trans)

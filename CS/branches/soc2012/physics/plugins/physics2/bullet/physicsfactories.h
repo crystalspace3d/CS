@@ -47,7 +47,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     friend class csBulletSystem;
 
-  protected:
+  public:
     // TODO: really used?
     csBulletSystem* system;
     csRef<CS::Collisions::iCollider> collider;
@@ -81,9 +81,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual CS::Collisions::iCollisionGroup* GetCollisionGroup () const;
   };
 
-  // ###################################################################################################
-  // Physics
-
   class BulletPhysicalObjectFactory : public scfVirtImplementationExt1<
     BulletPhysicalObjectFactory, BulletCollisionObjectFactory, CS::Physics::iPhysicalObjectFactory>
   {
@@ -112,12 +109,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual void SetGravityEnabled (bool enabled) { gravityEnabled = enabled; }
   };
 
-  /**
-   * Collection of all properties of a rigid body
-   */
   class BulletRigidBodyFactory : public scfVirtImplementationExt1<
     BulletRigidBodyFactory, BulletPhysicalObjectFactory, CS::Physics::iRigidBodyFactory>
   {
+    friend class csBulletRigidBody;
+
   protected:
     CS::Physics::RigidBodyState state;
     float elasticity;
@@ -133,7 +129,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual csPtr<CS::Physics::iRigidBody> CreateRigidBody ();
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
     
-    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
+    virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const
+    { return CS::Physics::PHYSICAL_OBJECT_RIGIDBODY; }
 
     virtual void SetState (CS::Physics::RigidBodyState state) { this->state = state; }
     virtual CS::Physics::RigidBodyState GetState () const { return state; }
@@ -148,9 +145,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual float GetAngularDamping () const { return angularDamping; }
   };
 
-  /**
-   * Collection of properties of a soft body
-   */
   class BulletSoftBodyFactory : public scfVirtImplementationExt1<
     BulletSoftBodyFactory, BulletPhysicalObjectFactory, CS::Physics::iSoftBodyFactory>
   {
@@ -170,9 +164,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     virtual csPtr<CS::Collisions::iCollisionObject> CreateCollisionObject ();
   };
 
-  /**
-   * Used to create a one-dimensional softbody
-   */
   class BulletSoftRopeFactory : public scfVirtImplementationExt1<
     BulletSoftRopeFactory, BulletSoftBodyFactory, CS::Physics::iSoftRopeFactory>
   {
@@ -262,6 +253,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   class BulletDynamicActorFactory : public scfVirtImplementationExt1<
     BulletDynamicActorFactory, BulletRigidBodyFactory, CS::Physics::iDynamicActorFactory>
   {
+    friend class BulletDynamicActor;
+
     float stepHeight;
     float walkSpeed, jumpSpeed;
     float airControlFactor;

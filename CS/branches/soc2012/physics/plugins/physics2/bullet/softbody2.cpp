@@ -695,5 +695,6 @@ void csBulletSoftBody::UpdateAnchorInternalTick (btScalar timeStep)
     btBody->m_nodes[int (anchor.vertexIndex)].m_v += delta / timeStep;
   }  
 }
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

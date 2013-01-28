@@ -16,25 +16,27 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-#include "iutil/comp.h"
-#include "csutil/scf.h"
-#include "csutil/nobjvec.h"
-#include "csutil/scf_implementation.h"
-#include "ivaria/reporter.h"
-#include "ivaria/collisions.h"
-#include "ivaria/physics.h"
-#include "ivaria/physicscommon.h"
-#include "ivaria/view.h"
-#include "iengine/sector.h"
-#include "iengine/movable.h"
-#include "iengine/portal.h"
-#include "csutil/csobject.h"
-
-#include "BulletCollision/CollisionDispatch/btGhostObject.h"
-
 #ifndef __CS_BULLET_SECTOR_H__
 #define __CS_BULLET_SECTOR_H__
+
+#include "csutil/csobject.h"
+#include "csutil/scf.h"
+#include "csutil/scf_implementation.h"
+#include "csutil/nobjvec.h"
+#include "iengine/movable.h"
+#include "iengine/portal.h"
+#include "iengine/sector.h"
+#include "iutil/comp.h"
+#include "ivaria/collisions.h"
+#include "ivaria/physics.h"
+#include "ivaria/reporter.h"
+#include "ivaria/view.h"
+
+#include "updatable.h"
+
+#include "csutil/custom_new_disable.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "csutil/custom_new_enable.h"
 
 struct iSector;
 struct iMovable;
@@ -66,7 +68,7 @@ class csBulletJoint;
 class CollisionPortal;
 
 // TODO: what's this?
-struct BulletActionWrapper : public virtual CS::Physics::iUpdatable
+struct BulletActionWrapper : public virtual iUpdatable
 {
   SCF_INTERFACE (CS::Plugin::Bullet2::BulletActionWrapper, 1, 0, 0);
 
@@ -121,7 +123,7 @@ class csBulletSector : public scfVirtImplementationExt2<
   csWeakRefArray<csBulletSoftBody> anchoredSoftBodies;
   csRefArray<csActor> actors;
   csRefArray<csBulletCollisionTerrain> terrains;
-  csRefArray<CS::Physics::iUpdatable> updatables;
+  csRefArray<iUpdatable> updatables;
 
   void CheckCollisions ();
   void UpdateCollisionPortalsPreStep ();
@@ -198,6 +200,9 @@ public:
   virtual void AddJoint (CS::Physics::iJoint* joint);
   virtual void RemoveJoint (CS::Physics::iJoint* joint);
 
+  virtual void AddVehicle (CS::Physics::iVehicle* vehicle);
+  virtual void RemoveVehicle (CS::Physics::iVehicle* vehicle);
+
   //Bullet::iPhysicalSector
   //Currently will not use gimpact shape...
   //virtual void SetGimpactEnabled (bool enabled);
@@ -211,8 +216,8 @@ public:
 			     const csVector3& start,
 			     const csVector3& end);
 
-  virtual void AddUpdatable (CS::Physics::iUpdatable* u);
-  virtual void RemoveUpdatable (CS::Physics::iUpdatable* u);
+  virtual void AddUpdatable (iUpdatable* u);
+  virtual void RemoveUpdatable (iUpdatable* u);
 
   // Internal methods
   void Step (float duration);

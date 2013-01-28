@@ -47,7 +47,6 @@ struct iPhysicalSystem;
 struct iPhysicalSector;
 struct iRigidBody;
 struct iSoftBody;
-struct iUpdatable;
 struct iVehicle;
 struct iVehicleFactory;
 struct iVehicleWheelFactory;
@@ -1266,8 +1265,14 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
   /// Add a joint to the sector. The joint must have attached two physical bodies.
   virtual void AddJoint (iJoint* joint) = 0;
 
-  /// Remove a joint by pointer.
+  /// Remove a joint from this sector.
   virtual void RemoveJoint (iJoint* joint) = 0;
+
+  /// Add a vehicle to the sector.
+  virtual void AddVehicle (iVehicle* vehicle) = 0;
+
+  /// Remove a vehicle from this sector.
+  virtual void RemoveVehicle (iVehicle* vehicle) = 0;
 
   /**
    * Save the current state of this sector in a file. The format of the file is
@@ -1275,17 +1280,6 @@ struct iPhysicalSector : public virtual CS::Collisions::iCollisionSector
    * \return True if the operation succeeded, false otherwise.
    */
   virtual bool Save (const char* filename) = 0;
-
-  /**
-   * Will cause the step function to be called on this updatable every step
-   */
-  // TODO: remove or move in iPhysicalSystem?
-  virtual void AddUpdatable (iUpdatable* u) = 0;
-  
-  /**
-   * Removes the given updatable
-   */
-  virtual void RemoveUpdatable (iUpdatable* u) = 0;
 };
 
 /**
@@ -1490,15 +1484,12 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   // Vehicles
 
   /// Create a new factory to produce vehicles
-  virtual csPtr<iVehicleFactory> CreateVehicleFactory () = 0;
+  virtual csPtr<iVehicleFactory> CreateVehicleFactory
+    (CS::Collisions::iCollider* collider = nullptr) = 0;
   
   /// Create a new factory to produce vehicle wheels
   virtual csPtr<iVehicleWheelFactory> CreateVehicleWheelFactory () = 0;
   
-  /// Return the vehicle that the given object is a part of, or nullptr
-  // TODO: remove?
-  virtual iVehicle* GetVehicle (CS::Collisions::iCollisionObject* obj) = 0;
-
   /**
    * Draw the debug informations of the dynamic system. This has to be called
    * at each frame, and will add 2D lines on top of the rendered scene. The

@@ -47,15 +47,16 @@
 #include "csutil/custom_new_enable.h"
 
 #include "bulletsystem.h"
-#include "common2.h"
 #include "colliderprimitives.h"
-#include "collisionterrain.h"
-#include "rigidbody2.h"
-#include "softbody2.h"
 #include "collisionactor.h"
+#include "collisionterrain.h"
+#include "common2.h"
 #include "dynamicactor.h"
 #include "joint2.h"
 #include "portal.h"
+#include "rigidbody2.h"
+#include "softbody2.h"
+#include "vehicle.h"
 
 const float COLLISION_THRESHOLD = 0.01f;
 
@@ -638,6 +639,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
   }
 
+  void csBulletSector::AddVehicle (CS::Physics::iVehicle* vehicle)
+  {
+    csRef<iUpdatable> u = scfQueryInterface<iUpdatable> (vehicle);
+    AddUpdatable (u);
+  }
+  
+  void csBulletSector::RemoveVehicle (CS::Physics::iVehicle* vehicle)
+  {
+    csRef<iUpdatable> u = scfQueryInterface<iUpdatable> (vehicle);
+    RemoveUpdatable (u);
+  }
+
   void csBulletSector::AddUpdatable (iUpdatable* u)
   {
     updatables.Push (u);
@@ -656,7 +669,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     u->OnAdded (this);
   }
-  
+
   void csBulletSector::RemoveUpdatable (iUpdatable* u)
   {
     if (u->GetCollisionObject ())

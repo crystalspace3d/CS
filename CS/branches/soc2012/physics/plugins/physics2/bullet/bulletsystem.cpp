@@ -121,7 +121,6 @@ csBulletSystem::~csBulletSystem ()
 {
   collSectors.DeleteAll ();
   collisionGroups.DeleteAll ();
-  // TODO: delete vehicle map
   delete debugDraw;
   // TODO: unregister
 }
@@ -309,6 +308,46 @@ CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSe
   return nullptr;
 }
 
+// Groups
+
+CS::Collisions::iCollisionGroup* csBulletSystem::CreateCollisionGroup (const char* name)
+{
+  csRef<CollisionGroup>* group = collisionGroups.GetElementPointer (name);
+  if (group) return *group;
+
+  size_t groupCount = collisionGroups.GetSize ();
+  // It is safer to use 16 as the global lower bound limit
+  //if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
+  if (groupCount >= 16)
+    return nullptr;
+
+  csRef<CollisionGroup> newGroup;
+  newGroup.AttachNew (new CollisionGroup (name, groupCount));
+  collisionGroups.Put (name, newGroup);
+  return newGroup;
+}
+
+CS::Collisions::iCollisionGroup* csBulletSystem::FindCollisionGroup (const char* name) const
+{
+  const csRef<CollisionGroup>* group = collisionGroups.GetElementPointer (name);
+  if (group) return *group;
+  else return nullptr;
+}
+
+size_t csBulletSystem::GetCollisionGroupCount () const
+{
+  return collisionGroups.GetSize ();
+}
+
+iCollisionGroup* csBulletSystem::GetCollisionGroup (size_t index) const
+{
+  CS_ASSERT (index < collisionGroups.GetSize ());
+  csHash< csRef<CollisionGroup>, const char*>::ConstGlobalIterator it =
+    collisionGroups.GetIterator ();
+  for (int i = 0; i < ((int) index) - 1; i++) it.Next ();
+  return it.Next ();
+}
+
 // ###############################################################################################################
 // Physical Objects
 
@@ -428,60 +467,15 @@ csPtr<CS::Physics::iJointFactory> csBulletSystem::CreatePivotJointFactory ()
 // Vehicles
 
 /// Creates a new factory to produce vehicles
-csPtr<iVehicleFactory> csBulletSystem::CreateVehicleFactory ()
+csPtr<iVehicleFactory> csBulletSystem::CreateVehicleFactory (CS::Collisions::iCollider* collider)
 {
-  return csPtr<iVehicleFactory> (new BulletVehicleFactory (this));
+  return csPtr<iVehicleFactory> (new BulletVehicleFactory (this, collider));
 }
 
 /// Creates a new factory to produce vehicle wheels
 csPtr<iVehicleWheelFactory> csBulletSystem::CreateVehicleWheelFactory ()
 {
   return csPtr<iVehicleWheelFactory> (new BulletVehicleWheelFactory (this));
-}
-
-iVehicle* csBulletSystem::GetVehicle (iCollisionObject* obj)
-{
-  return vehicleMap.Get (obj, nullptr);
-}
-
-// Groups
-
-CS::Collisions::iCollisionGroup* csBulletSystem::CreateCollisionGroup (const char* name)
-{
-  csRef<CollisionGroup>* group = collisionGroups.GetElementPointer (name);
-  if (group) return *group;
-
-  size_t groupCount = collisionGroups.GetSize ();
-  // It is safer to use 16 as the global lower bound limit
-  //if (groupCount >= sizeof (CS::Collisions::CollisionGroupMask) * 8)
-  if (groupCount >= 16)
-    return nullptr;
-
-  csRef<CollisionGroup> newGroup;
-  newGroup.AttachNew (new CollisionGroup (name, groupCount));
-  collisionGroups.Put (name, newGroup);
-  return newGroup;
-}
-
-CS::Collisions::iCollisionGroup* csBulletSystem::FindCollisionGroup (const char* name) const
-{
-  const csRef<CollisionGroup>* group = collisionGroups.GetElementPointer (name);
-  if (group) return *group;
-  else return nullptr;
-}
-
-size_t csBulletSystem::GetCollisionGroupCount () const
-{
-  return collisionGroups.GetSize ();
-}
-
-iCollisionGroup* csBulletSystem::GetCollisionGroup (size_t index) const
-{
-  CS_ASSERT (index < collisionGroups.GetSize ());
-  csHash< csRef<CollisionGroup>, const char*>::ConstGlobalIterator it =
-    collisionGroups.GetIterator ();
-  for (int i = 0; i < ((int) index) - 1; i++) it.Next ();
-  return it.Next ();
 }
 
 // Factory

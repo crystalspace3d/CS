@@ -75,8 +75,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   // ####################################################################################################################################
   // Vehicle Factory
 
-  BulletVehicleFactory::BulletVehicleFactory (csBulletSystem* sys) :
-    scfImplementationType (this),
+  BulletVehicleFactory::BulletVehicleFactory (csBulletSystem* sys, CS::Collisions::iCollider* collider) :
+    scfImplementationType (this, sys, collider),
     sys (sys)
     {
     }
@@ -87,14 +87,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csPtr<iVehicle> BulletVehicleFactory::CreateVehicle (CS::Physics::iPhysicalSector* isector)
   {
-    csRef<iRigidBody> ichassis = chassisFactory->CreateRigidBody ();
-    csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*> (&*ichassis);
+    csRef<BulletVehicle> vehicle = csPtr<BulletVehicle> (new BulletVehicle (this));
+    csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*> (&*vehicle);
     // TODO: really?
     chassis->SetMass (100.0f);
     chassis->SetState (STATE_DYNAMIC);
     chassis->SetDeactivable (false);
-
-    csRef<BulletVehicle> vehicle = csPtr<BulletVehicle> (new BulletVehicle (this, sys, chassis));
     
     csBulletSector* sector = dynamic_cast<csBulletSector*> (isector);
     btVehicleRaycaster* rayCaster = new btDefaultVehicleRaycaster (sector->GetBulletWorld ());
@@ -157,8 +155,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   // ####################################################################################################################################
   // Vehicle
 
-  BulletVehicle::BulletVehicle (BulletVehicleFactory* factory, csBulletSystem* sys, csBulletRigidBody* chassis) : scfImplementationType (this),
-    sys (sys), factory (factory), chassis (chassis)
+  BulletVehicle::BulletVehicle (BulletVehicleFactory* factory)
+    : scfImplementationType (this, factory), factory (factory)
   {
   }
 
@@ -251,8 +249,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   void BulletVehicle::PostStep (float dt)
   {
     // update chassis movable to prevent jittering
-    iMovable* movable = chassis->GetAttachedSceneNode ()->GetMovable ();
-    movable->SetFullTransform (chassis->GetTransform ());
+    iMovable* movable = GetAttachedSceneNode ()->GetMovable ();
+    movable->SetFullTransform (GetTransform ());
     movable->UpdateMove ();
 
     // post-process wheels:
@@ -271,7 +269,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       if (wheels[i]->GetAttachedSceneNode ())
       {
         wheels[i]->GetAttachedSceneNode ()->GetMovable ()->SetFullTransform
-	  (BulletToCS (wheel->btWheel.m_worldTransform, sys->GetInverseInternalScale ()));
+	  (BulletToCS (wheel->btWheel.m_worldTransform, factory->sys->GetInverseInternalScale ()));
         wheels[i]->GetAttachedSceneNode ()->GetMovable ()->UpdateMove ();
       }
     }
@@ -279,10 +277,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   
   void BulletVehicle::OnAdded (iPhysicalSector* isector)
   {
-    // add to system
-    csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& vehicleMap = sys->GetVehicleMap ();
-    vehicleMap.Put (chassis, this);
-
     // add wheels to sector
     for (size_t i = 0; i < wheels.GetSize (); ++i)
     {
@@ -294,10 +288,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   
   void BulletVehicle::OnRemoved (iPhysicalSector* isector)
   {
-    // remove from system
-    csHash<CS::Physics::iVehicle*, CS::Collisions::iCollisionObject*>& vehicleMap = sys->GetVehicleMap ();
-    vehicleMap.DeleteAll (chassis);
-    
     // remove wheels from sector
     for (size_t i = 0; i < wheels.GetSize (); ++i)
     {

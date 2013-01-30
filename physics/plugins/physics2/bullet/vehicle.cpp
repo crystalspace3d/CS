@@ -87,6 +87,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   csPtr<iVehicle> BulletVehicleFactory::CreateVehicle (CS::Physics::iPhysicalSector* isector)
   {
+    return new BulletVehicle (this);
+/*
     csRef<BulletVehicle> vehicle = csPtr<BulletVehicle> (new BulletVehicle (this));
     csBulletRigidBody* chassis = dynamic_cast<csBulletRigidBody*> (&*vehicle);
     // TODO: really?
@@ -134,6 +136,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     }
     
     return csPtr<iVehicle> (vehicle);
+*/
   }
 
   CS::Physics::iVehicleBrake* BulletVehicleFactory::CreateBrake ()
@@ -277,6 +280,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   
   void BulletVehicle::OnAdded (iPhysicalSector* isector)
   {
+    // TODO: Re-create the vehicle body here instead of at creation time in order
+    // to get rid of the 'sector' creation parameter
+
     // add wheels to sector
     for (size_t i = 0; i < wheels.GetSize (); ++i)
     {

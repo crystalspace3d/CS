@@ -71,7 +71,7 @@ private:
   bool gravityEnabled;
 
 public:
-  void CreateSoftBodyObject (CS::Physics::iSoftBodyFactory* props);
+  void CreateSoftBodyObject (BulletSoftBodyFactory* factory);
 
 public:
   csBulletSoftBody (csBulletSystem* phySys, btSoftBody* body);
@@ -80,22 +80,26 @@ public:
   //iCollisionObject
   virtual iObject* QueryObject (void) { return (iObject*) this; }
 
-  virtual void SetAttachedCamera (iCamera* camera) {csBulletCollisionObject::SetAttachedCamera (camera);}
-  virtual iCamera* GetAttachedCamera () {return csBulletCollisionObject::GetAttachedCamera ();}
+  virtual void SetAttachedCamera (iCamera* camera)
+  { csBulletCollisionObject::SetAttachedCamera (camera); }
+  virtual iCamera* GetAttachedCamera ()
+  { return csBulletCollisionObject::GetAttachedCamera (); }
 
   virtual void RebuildObject ();
 
   virtual void SetTransform (const csOrthoTransform& trans);
 
   // btSoftBody don't use collision shape.
-  virtual void AddCollider (CS::Collisions::iCollider* collider, const csOrthoTransform& relaTrans
-    = csOrthoTransform (csMatrix3 (), csVector3 (0))) {}
+  virtual void AddCollider
+    (CS::Collisions::iCollider* collider,
+     const csOrthoTransform& relaTrans = csOrthoTransform (csMatrix3 (), csVector3 (0))) {}
   virtual void RemoveCollider (CS::Collisions::iCollider* collider) {}
   virtual void RemoveCollider (size_t index) {}
 
   virtual CS::Collisions::iCollider* GetCollider (size_t index) {return nullptr;}
 
-  virtual bool Collide (iCollisionObject* otherObject) {return csBulletCollisionObject::Collide (otherObject);}
+  virtual bool Collide (iCollisionObject* otherObject)
+  { return csBulletCollisionObject::Collide (otherObject); }
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end);
 
   btSoftBody* GetBulletSoftPointer () {return btBody;}
@@ -104,14 +108,19 @@ public:
 
   //iPhysicalBody
 
-  virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const {return CS::Physics::PHYSICAL_OBJECT_SOFTYBODY;}
-  virtual CS::Physics::iRigidBody* QueryRigidBody () {return dynamic_cast<CS::Physics::iRigidBody*>(this);}
-  virtual CS::Physics::iSoftBody* QuerySoftBody () {return dynamic_cast<CS::Physics::iSoftBody*>(this);}
+  virtual CS::Physics::PhysicalObjectType GetPhysicalObjectType () const
+  { return CS::Physics::PHYSICAL_OBJECT_SOFTBODY; }
+  virtual CS::Physics::iRigidBody* QueryRigidBody ()
+  { return dynamic_cast<CS::Physics::iRigidBody*>(this); }
+  virtual CS::Physics::iSoftBody* QuerySoftBody ()
+  { return dynamic_cast<CS::Physics::iSoftBody*>(this); }
 
   virtual void AddForce (const csVector3& force);
 
-  virtual void SetAngularVelocity (const csVector3& vel) { /* does nothing for now */ }
-  virtual csVector3 GetAngularVelocity () const { /* does nothing for now */ return csVector3 (0, 0, 0); }
+  virtual void SetAngularVelocity (const csVector3& vel)
+  { /* does nothing for now */ }
+  virtual csVector3 GetAngularVelocity () const
+  { /* does nothing for now */ return csVector3 (0, 0, 0); }
 
   virtual void SetMass (float mass);
   virtual float GetMass () const;
@@ -137,9 +146,6 @@ public:
       csVector3& position);
   virtual void RemoveAnchor (size_t vertexIndex);
 
-  virtual float GetRigidity ();
-  virtual void SetRigidity (float rigidity);
-  
   virtual csVector3 GetLinearVelocity () const;
   virtual void SetLinearVelocity (const csVector3& vel);
   
@@ -161,9 +167,9 @@ public:
 
   virtual void DebugDraw (iView* rView);
 
-  virtual void SetLinearStiff (float stiff);
-  virtual void SetAngularStiff (float stiff);
-  virtual void SetVolumeStiff (float stiff);
+  virtual void SetLinearStiffness (float stiffness);
+  virtual void SetAngularStiffness (float stiffness);
+  virtual void SetVolumeStiffness (float stiffness);
 
   virtual void ResetCollisionFlag ();
 
@@ -201,7 +207,7 @@ public:
   virtual void SetClusterIterations (int iter);
 
   virtual void SetShapeMatching (bool match);
-  virtual void SetBendingConstraint (bool bending);
+  virtual void GenerateBendingConstraints (size_t distance);
 
   virtual void GenerateCluster (int iter);
 
@@ -222,7 +228,8 @@ public:
   virtual void PostStep (float dt) {}
 
   /// We don't want the AddUpdatable method to add this object again when adding it as an updatable
-  virtual CS::Collisions::iCollisionObject* GetCollisionObject () { return nullptr; }
+  virtual CS::Collisions::iCollisionObject* GetCollisionObject ()
+  { return nullptr; }
 
   /// Called when updatable is added to the given sector
   virtual void OnAdded (CS::Physics::iPhysicalSector* sector) {}

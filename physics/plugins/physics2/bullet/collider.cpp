@@ -230,7 +230,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (type == CS::Collisions::COLLIDER_CONCAVE_MESH
 	|| type == CS::Collisions::COLLIDER_CONCAVE_MESH_SCALED
 	|| type == CS::Collisions::COLLIDER_PLANE
-	|| type == CS::Collisions::COLLIDER_TERRAIN)
+	|| type == CS::Collisions::COLLIDER_TERRAIN_CELL)
     {
       return false;
     }
@@ -288,33 +288,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       if (!children || index >= children->colliders.GetSize ()) return nullptr;
 
       return children->colliders[index];
-    }
-  }
-  
-
-  void csBulletCollider::GetChild (size_t index, iCollider*& collider, csOrthoTransform& trans)
-  {
-    if (shape)
-    {
-      if (index == 0) 
-      {
-        collider = this;
-        trans = csOrthoTransform ();   // set to identity
-      }
-      else
-      {
-        if (!children || index > children->colliders.GetSize ()) return;
-
-        collider = children->colliders[index-1];
-        trans = children->transforms[index-1];
-      }
-    }
-    else
-    {
-      if (!children || index >= children->colliders.GetSize ()) return;
-
-      collider = children->colliders[index];
-      trans = children->transforms[index];
     }
   }
 

@@ -73,7 +73,7 @@ enum ColliderType
   COLLIDER_CONVEX_MESH,            /*!< The collider is a convex mesh. */
   COLLIDER_CONCAVE_MESH,           /*!< The collider is a concave mesh. */
   COLLIDER_CONCAVE_MESH_SCALED,    /*!< The collider is a scaled concave mesh. */
-  COLLIDER_TERRAIN,                /*!< The collider is a terrain. */
+  COLLIDER_TERRAIN_CELL,           /*!< The collider is a terrain cell. */
   COLLIDER_COMPOUND                /*!< The collider is an empty (hence supposedly compound) collider. */
 };
 
@@ -120,6 +120,9 @@ struct iCollider : public virtual iBase
   /// Remove the child collider with the given index from this collider.
   virtual void RemoveChild (size_t index) = 0;
 
+  /// Get the count of child colliders in this collider
+  virtual size_t GetChildrenCount () const = 0;
+
   /// Get the collider with the given index.
   virtual iCollider* GetChild (size_t index) = 0; 
 
@@ -128,13 +131,6 @@ struct iCollider : public virtual iBase
 
   /// Get the relative transform of the collider with the given index.
   virtual const csOrthoTransform& GetChildTransform (size_t index) const = 0;
-
-  /// Get the collider and it's relative transform at the given index.
-  // TODO: remove
-  virtual void GetChild (size_t index, iCollider*& collider, csOrthoTransform& transform) = 0;
-
-  /// Get the count of child colliders in this collider
-  virtual size_t GetChildrenCount () const = 0;
 };
 
 /**

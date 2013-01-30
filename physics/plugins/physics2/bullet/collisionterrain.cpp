@@ -20,8 +20,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-
 #include "cssysdef.h"
 
 #include "csutil/stringquote.h"
@@ -38,13 +36,11 @@
 #include "collisionobject2.h"
 #include "bulletsystem.h"
 
-
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  
 
 csBulletColliderTerrain::csBulletColliderTerrain ( float* gridData, 
                                    iTerrainCell *cell, 
@@ -183,7 +179,9 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
   {
     for (int i=0;i<gridWidth;i++)
     {
-      float height = btHeightData[CSToBulletIndex2D (i, j, gridWidth, gridHeight)] = cellData.data[j * gridWidth + i];
+      float height =
+	btHeightData[CSToBulletIndex2D (i, j, gridWidth, gridHeight)]
+	= cellData.data[j * gridWidth + i];
 
       if (needExtremum)
       {
@@ -223,7 +221,8 @@ void csBulletCollisionTerrain::LoadCellToCollider (iTerrainCell *cell)
   body->SetTransform (cellTransform);
   
   //btRigidBody* btBody = body->btBody;
-  //btBody->setCollisionFlags (body->getCollisionFlags () | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);    // do not debug draw the terrain
+  //btBody->setCollisionFlags
+  //(body->getCollisionFlags () | btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT);    // do not debug draw the terrain
 
   // Add to body collection and to world
   bodies.Push (body);

@@ -392,25 +392,26 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     btBody->sector = this;
     btBody->AddBulletObject ();
 
+    // Update the reference to the soft body hold by the animation controller of the attached mesh
+    // TODO: manage that from the animation controller?
     iSceneNode* sceneNode = body->GetAttachedSceneNode ();
     if (sceneNode)
     {
       iMeshWrapper* mesh = sceneNode->QueryMesh ();
-      if (!mesh)
-        return;
+      if (!mesh) return;
 
       csRef<iGeneralMeshState> meshState =
         scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
+      if (!meshState) return;
 
-      // TODO: manage that from the animation controller
       csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
         scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
+      if (!animationControl) return;
 
       if (!animationControl->GetSoftBody ())
         animationControl->SetSoftBody (body);
     }
   }
-
 
   CS::Physics::iSoftBody* csBulletSector::GetSoftBody (size_t index)
   {

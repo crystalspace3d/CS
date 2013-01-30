@@ -32,15 +32,15 @@
 #include "iutil/strset.h"
 #include "ivaria/colliders.h"
 
-struct iTerrainSystem;
-struct iSector;
+struct iCamera;
 struct iMeshWrapper;
 struct iMovable;
-struct iSceneNode;
 struct iPortal;
-struct iCamera;
-struct iView;
+struct iSceneNode;
+struct iSector;
+struct iTerrainSystem;
 struct iTriangleMesh;
+struct iView;
 
 namespace CS {
 namespace Physics {
@@ -198,7 +198,7 @@ struct iCollisionGroup : public virtual iBase
 };
 
 /**
- * \todo Document me
+ * Factory to create instances of iCollisionObject.
  */
 struct iCollisionObjectFactory : public virtual iBase
 {
@@ -353,10 +353,6 @@ struct iCollisionObject : public virtual iBase
   /// Whether this object may be excluded from deactivation.
   virtual bool GetDeactivable () const = 0;
 
-  /// Creates a new object that has all the properties of this one, except for transformation and movable and camera
-  // TODO: remove? factories should be used instead
-  //virtual csPtr<iCollisionObject> CloneObject () = 0;
-  
   /**
    * Passive objects, such as portal clones, are not supposed to be tempered with 
    * and should not be acted upon by game logic.
@@ -376,8 +372,7 @@ struct iCollisionObject : public virtual iBase
  * - iCollisionObject::GetCollider()
  * 
  * Main users of this interface:
- * - 
- * \todo This is redundant with the terrain collider, hence to be removed
+ * - iCollisionSector
  */
 struct iCollisionTerrain : public virtual iBase
 {
@@ -386,7 +381,7 @@ struct iCollisionTerrain : public virtual iBase
   /// Get the terrain system.
   virtual iTerrainSystem* GetTerrain () const = 0;
 
-  // TODO: Methods to iterate over the terrain objects etc
+  // TODO: Methods to iterate over the terrain cells
 };
 
 /**
@@ -606,9 +601,9 @@ struct iCollisionSector : public virtual iBase
 
   /**
    * Add a collision object into the sector.
-   * TODO: remove: The collision object has to be initialized.
-   * TODO: rename all AddXXX() methods in Add()
    */
+  // TODO: remove: The collision object has to be initialized.
+  // TODO: rename all AddXXX() methods in Add()
   virtual void AddCollisionObject (iCollisionObject* object) = 0;
 
   /// Remove the given collision object from this sector

@@ -541,7 +541,7 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
           iGeneralFactoryState> (m->GetMeshObjectFactory ());
         
         csRef<CS::Physics::iSoftMeshFactory> factory = physicalSystem->CreateSoftMeshFactory ();
-        factory->SetGenmeshFactory (gmstate);
+        //factory->SetGenmeshFactory (gmstate);
         body = factory->CreateSoftBody ();
       }
       break;
@@ -553,8 +553,6 @@ bool csPhysicsLoader2::ParseSoftBody (iDocumentNode *node,
 
   if (node->GetAttributeValue ("friction"))
     body->SetFriction (node->GetAttributeValueAsFloat ("friction"));
-  if (node->GetAttributeValue ("rigidity"))
-    body->SetRigidity (node->GetAttributeValueAsFloat ("rigidity"));
   
   csRef<CS::Collisions::iCollisionSector> colSector = scfQueryInterface<CS::Collisions::iCollisionSector> (physSector);
 

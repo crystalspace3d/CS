@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2010-2012 Christian Van Brussel, Institute of Information
+  Copyright (C) 2010-2013 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -50,7 +50,6 @@ namespace Animation {
  * Main users of this interface:
  * - Genmesh plugin (crystalspace.mesh.object.genmesh) 
  */
-// TODO: move in another file
 struct iSoftBodyAnimationControlType : public iGenMeshAnimationControlType
 {
   SCF_INTERFACE (CS::Animation::iSoftBodyAnimationControlType, 1, 0, 0);
@@ -93,19 +92,21 @@ struct iSoftBodyAnimationControlFactory : public iGenMeshAnimationControlFactory
  */
 struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
 {
-  SCF_INTERFACE (CS::Animation::iSoftBodyAnimationControl, 1, 0, 0);
+  SCF_INTERFACE (CS::Animation::iSoftBodyAnimationControl, 2, 0, 0);
 
   /**
    * Set the soft body to be used to animate the genmesh. You can switch this soft body
    * at any time, the animation of the genmesh will just be adapted to the new soft body.
    * \param body The soft body that will be used to animate this genmesh.
-   * \param doubleSided True if the genmesh is double-sided (ie this is a cloth
-   * soft body), false otherwise. If the genmesh is double-sided, then the duplicated
-   * vertices must be added at the end of the vertex array, so that a vertex of index
-   * 'i' is duplicated at index 'i + body->GetVertexCount ()'.
+   * \param duplicationMode The duplication mode of the faces of the mesh. If the soft body has
+   * been created using a CS::Physics::iSoftMeshFactory,
+   * then you should use the same parameter for both methods. A soft body created with a
+   * CS::Physics::iSoftClothFactory should use a value of
+   * CS::Physics::MESH_DUPLICATION_CONTIGUOUS.
    */
-  // TODO: use the duplication mode from the original controller
-  virtual void SetSoftBody (CS::Physics::iSoftBody* body, bool doubleSided = false) = 0;
+  virtual void SetSoftBody (CS::Physics::iSoftBody* body,
+			    CS::Physics::MeshDuplicationMode duplicationMode
+			    = CS::Physics::MESH_DUPLICATION_NONE) = 0;
 
   /**
    * Get the soft body used to animate the genmesh.
@@ -119,7 +120,7 @@ struct iSoftBodyAnimationControl : public iGenMeshAnimationControl
    *
    * This anchor is only effective if the vertex of the animesh is influenced by more
    * than one bone or by some morph targets. If it is not the case then it is more
-   * efficient to simply use CS::Physics::iSoftBody::AnchorVertex (size_t,iRigidBody*).
+   * efficient to simply use CS::Physics::iSoftBody::AnchorVertex(size_t,iRigidBody*).
    *
    * You have to provide a rigid body attached to the animesh as a main physical anchor
    * point. The main way to do that is to use a CS::Animation::iSkeletonRagdollNode

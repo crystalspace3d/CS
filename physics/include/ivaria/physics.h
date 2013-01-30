@@ -67,7 +67,7 @@ enum RigidBodyState
 enum PhysicalObjectType
 {
   PHYSICAL_OBJECT_RIGIDBODY = 0,
-  PHYSICAL_OBJECT_SOFTYBODY,
+  PHYSICAL_OBJECT_SOFTBODY,
   PHYSICAL_OBJECT_DYNAMICACTOR
 };
 
@@ -80,6 +80,20 @@ enum DebugMode
   DEBUG_COLLIDERS = 1,   /*!< Display the colliders of the bodies. */
   DEBUG_AABB = 2,        /*!< Display the axis aligned bounding boxes of the bodies. */
   DEBUG_JOINTS = 4       /*!< Display the joint positions and limits. */
+};
+
+/**
+ * The mode of duplication used for the faces of the mesh. That is, if the mesh is double sided,
+ * and whether the vertices and triangles that are duplicated are interleaved or contiguous.
+ */
+enum MeshDuplicationMode
+{
+  MESH_DUPLICATION_NONE = 0,     /*!< The faces of the mesh are not double sided, i.e. the vertices and
+				   triangles are not duplicated. */
+  MESH_DUPLICATION_INTERLEAVED,  /*!< The faces of the mesh are double sided, and the duplicated vertices
+				   and triangles are interleaved with the original ones. */
+  MESH_DUPLICATION_CONTIGUOUS    /*!< The faces of the mesh are double sided, and the duplicated vertices
+				   and triangles are packed contiguously at the end of their buffer. */
 };
 
 /**
@@ -410,7 +424,7 @@ struct iAnchorAnimationControl : public virtual iBase
 };
 
 /**
- * Collection of all properties of a soft body
+ * Factory for the creation of instances of iSoftBody
  */
 struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
 {
@@ -418,11 +432,79 @@ struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
 
   /// Create a soft body
   virtual csPtr<iSoftBody> CreateSoftBody () = 0;
+
+  /// Set linear stiffness coefficient [0,1]. The default value is 1.0f.
+  virtual void SetLinearStiffness (float stiffness) = 0;
+
+  /// Set area/angular stiffness coefficient [0,1]. The default value is 1.0f.
+  virtual void SetAngularStiffness (float stiffness) = 0;
+
+  /// Set volume stiffness coefficient [0,1]. The default value is 1.0f.
+  virtual void SetVolumeStiffness (float stiffness) = 0;
+
+  /// Set soft vs rigid hardness [0,1] (cluster only). The default value is 0.1f.
+  virtual void SetSRHardness (float hardness) = 0;
+
+  /// Set soft vs kinetic hardness [0,1] (cluster only). The default value is 1.0f.
+  virtual void SetSKHardness (float hardness) = 0;
+
+  /// Set soft vs soft hardness [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSSHardness (float hardness) = 0;
+
+  /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSRImpulse (float impulse) = 0;
+
+  /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSKImpulse (float impulse) = 0;
+
+  /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSSImpulse (float impulse) = 0;
+
+  /// Set damping coefficient [0,1]. The default value is 0.0f.
+  virtual void SetDamping (float damping) = 0;
+
+  /// Set drag coefficient [0,+inf]. The default value is 0.0f.
+  virtual void SetDrag (float drag) = 0;
+
+  /// Set lift coefficient [0,+inf]. The default value is 0.0f.
+  virtual void SetLift (float lift) = 0;
+
+  /// Set pressure coefficient [-inf,+inf]. The default value is 0.0f.
+  virtual void SetPressure (float pressure) = 0;
+
+  /// Set volume conversation coefficient [0,+inf]. The default value is 0.0f.
+  virtual void SetVolumeConversationCoefficient (float conversation) = 0;
+
+  /// Set pose matching coefficient [0,1]. The default value is 0.0f.
+  virtual void SetShapeMatchThreshold (float matching) = 0;
+
+  /// Set rigid contacts hardness [0,1]. The default value is 1.0f.
+  virtual void SetRContactsHardness (float hardness) = 0;
+
+  /// Set kinetic contacts hardness [0,1]. The default value is 0.1f.
+  virtual void SetKContactsHardness (float hardness) = 0;
+
+  /// Set soft contacts hardness [0,1]. The default value is 1.0f.
+  virtual void SetSContactsHardness (float hardness) = 0;
+
+  /// Set anchors hardness [0,1]. The default value is 0.7f.
+  virtual void SetAnchorsHardness (float hardness) = 0;
+
+  /// Set true in order to use pose matching. The default value is \false
+  virtual void SetShapeMatching (bool match) = 0;
+
+  /**
+   * Generate bending constraints between the vertices of this soft body.
+   * This can be used to make the body more rigid.
+   * \param distance Maximum number of triangle edges that can exist
+   * between two vertices in order to have a constraint generated for
+   * this pair of vertices. Typical values are 2 or 3.
+   */
+  virtual void GenerateBendingConstraints (size_t distance) = 0;
 };
 
 /**
  * Used to create a one-dimensional softbody
- * \todo Remove that class
  */
 struct iSoftRopeFactory : public virtual iSoftBodyFactory
 {
@@ -445,8 +527,8 @@ struct iSoftRopeFactory : public virtual iSoftBodyFactory
 };
 
 /**
- * Used to create a two-dimensional softbody
- * \todo Remove that class
+ * Used to create a two-dimensional softbody, typically a cloth.
+ * \sa CS::Physics::SoftBodyHelper
  */
 struct iSoftClothFactory : public virtual iSoftBodyFactory
 {
@@ -454,44 +536,69 @@ struct iSoftClothFactory : public virtual iSoftBodyFactory
 
   /// Get the four corners of the cloth
   virtual const csVector3* GetCorners () const = 0;
-  /// Set the four corners of the cloth
-  virtual void SetCorners (csVector3 corners[4]) = 0;
 
-  /// Get the two segment counts along the two primary axes
-  virtual void GetSegmentCounts (size_t& count1, size_t& count2) const = 0;
-  /// Set the two segment counts along the two primary axes
-  virtual void SetSegmentCounts (size_t count1, size_t count2) = 0;
+  /**
+   * Set the four corners of the cloth
+   * \param topLeft The position of the top left corner.
+   * \param topRight The position of the top right corner.
+   * \param bottomLeft The position of the bottom left corner.
+   * \param bottomRight The position of the bottom right corner.
+   * \param withDiagonals Whether there must be diagonal segments in the cloth
+   * or not. Diagonal segments will make the cloth more rigid.
+   * \remark You must call SetSoftBodyWorld() prior to this.
+   */
+  virtual void SetCorners (csVector3 topLeft, csVector3 topRight,
+			   csVector3 bottomLeft, csVector3 bottomRight) = 0;
+
+  /**
+   * Get the two segment counts along the two primary axes
+   * \param countH Number of horizontal segments in the cloth.
+   * \param countV Number of vertical segments in the cloth.
+   */
+  virtual void GetSegmentCounts (size_t& countH, size_t& countV) const = 0;
+
+  /**
+   * Set the two segment counts along the two primary axes
+   * \param countH Number of horizontal segments in the cloth.
+   * \param countV Number of vertical segments in the cloth.
+   */
+  virtual void SetSegmentCounts (size_t countH, size_t countV) = 0;
     
-  /// Get whether there must be diagonal segments in the cloth
-  virtual bool GetWithDiagonals () const = 0;
-  /// Set whether there must be diagonal segments in the cloth
-  virtual void SetWithDiagonals (bool d) = 0;
+  /**
+   * Get whether or not there must be diagonal segments in the cloth.
+   * Diagonal segments will make the cloth more rigid.
+   */
+  virtual bool GetDiagonals () const = 0;
+
+  /**
+   * Set whether or not there must be diagonal segments in the cloth.
+   * Diagonal segments will make the cloth more rigid.
+   */
+  virtual void SetDiagonals (bool d) = 0;
 };
   
 /**
- * Used to create an arbitrary softbody defined by a given mesh
- * \todo Remove that class
+ * Used to create an arbitrary softbody defined by a given triangle mesh
  */
 struct iSoftMeshFactory : public virtual iSoftBodyFactory
 {
   SCF_INTERFACE (CS::Physics::iSoftMeshFactory, 1, 0, 0);
 
-  /// Get the factory that contains the mesh to define the softbody
-  virtual iGeneralFactoryState* GetGenmeshFactory () const = 0;
-  /// Set the factory that contains the mesh to define the softbody
-  virtual void SetGenmeshFactory (iGeneralFactoryState* s) = 0;
+  /// Get the triangle mesh defining the shape of the soft body
+  virtual iTriangleMesh* GetMesh () const = 0;
+  /// Set the triangle mesh defining the shape of the soft body
+  virtual void SetMesh (iTriangleMesh* mesh) = 0;
 
+  /// Get the duplication mode being used on the vertices of the triangle mesh
+  virtual MeshDuplicationMode GetDuplicationMode () const = 0;
+  /// Set the duplication mode being used on the vertices of the triangle mesh
+  virtual void SetDuplicationMode (MeshDuplicationMode mode) = 0;
 };
 
 /**
  * A soft body is a physical body that can be deformed by the physical
  * simulation. It can be used to simulate eg ropes, clothes or any soft
  * volumetric object.
- *
- * A soft body does not have a positional transform by itself, but the
- * position of every vertex of the body can be queried through GetVertexPosition().
- *
- * A soft body can neither be static or kinematic, it is always dynamic.
  *
  * Main creators of instances implementing this interface:
  * - iCollisionSystem::CreateCollisionObject()
@@ -503,7 +610,7 @@ struct iSoftMeshFactory : public virtual iSoftBodyFactory
  * Main users of this interface:
  * - iPhysicalSector
  *
- * \sa CS::Physics::iRigidBody CS::Physics::iSoftBody
+ * \sa CS::Physics::iRigidBody CS::Physics::iSoftBody CS::Animation::iSoftBodyAnimationControl
  */
 struct iSoftBody : public virtual iPhysicalBody
 {
@@ -520,6 +627,15 @@ struct iSoftBody : public virtual iPhysicalBody
 
   /// Return the position in world coordinates of the given vertex.
   virtual csVector3 GetVertexPosition (size_t index) const = 0;
+
+  /// Return the count of triangles of this soft body.
+  virtual size_t GetTriangleCount () = 0;
+
+  /// Return the triangle with the given index.
+  virtual csTriangle GetTriangle (size_t index) const = 0;
+
+  /// Return the normal vector in world coordinates for the given vertex.
+  virtual csVector3 GetVertexNormal (size_t index) const = 0;
 
   /// Anchor the given vertex to its current position. This vertex will no more move.
   virtual void AnchorVertex (size_t vertexIndex) = 0;
@@ -559,14 +675,116 @@ struct iSoftBody : public virtual iPhysicalBody
    */
   virtual void RemoveAnchor (size_t vertexIndex) = 0;
 
-  /**
-   * Set the rigidity of this body. The value should be in the 0 to 1 range, with
-   * 0 meaning soft and 1 meaning rigid.
-   */
-  virtual void SetRigidity (float rigidity) = 0;
+  /// Set the linear stiffness coefficient [0,1]. The default value is 1.0f.
+  virtual void SetLinearStiffness (float stiffness) = 0;
 
-  /// Get the rigidity of this body.
-  virtual float GetRigidity () = 0;
+  /// Set the area/angular stiffness coefficient [0,1]. The default value is 1.0f.
+  virtual void SetAngularStiffness (float stiffness) = 0;
+
+  /// Set the volume stiffness coefficient [0,1]. The default value is 1.0f.
+  virtual void SetVolumeStiffness (float stiffness) = 0;
+
+  /// Reset the collision flag to 0.
+  //virtual void ResetCollisionFlag () = 0;
+
+  /// Set true if use cluster vs convex handling for rigid vs soft collision detection.
+  //virtual void SetClusterCollisionRS (bool cluster) = 0;
+
+  /// Get true if use cluster vs convex handling for rigid vs soft collision detection.
+  //virtual bool GetClusterCollisionRS () = 0;
+
+  /// Set true if use cluster vs cluster handling for soft vs soft collision detection.
+  //virtual void SetClusterCollisionSS (bool cluster) = 0;
+
+  /// Get true if use cluster vs cluster handling for soft vs soft collision detection.
+  //virtual bool GetClusterCollisionSS () = 0;
+
+  /// Set soft vs rigid hardness [0,1] (cluster only). The default value is 0.1f.
+  virtual void SetSRHardness (float hardness) = 0;
+
+  /// Set soft vs kinetic hardness [0,1] (cluster only). The default value is 1.0f.
+  virtual void SetSKHardness (float hardness) = 0;
+
+  /// Set soft vs soft hardness [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSSHardness (float hardness) = 0;
+
+  /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSRImpulse (float impulse) = 0;
+
+  /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSKImpulse (float impulse) = 0;
+
+  /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
+  virtual void SetSSImpulse (float impulse) = 0;
+
+  /// Set velocities correction factor (Baumgarte).
+  //virtual void SetVeloCorrectionFactor (float factor) = 0;
+
+  /// Set damping coefficient [0,1]. The default value is 0.0f.
+  virtual void SetDamping (float damping) = 0;
+
+  /// Set drag coefficient [0,+inf]. The default value is 0.0f.
+  virtual void SetDrag (float drag) = 0;
+
+  /// Set lift coefficient [0,+inf]. The default value is 0.0f.
+  virtual void SetLift (float lift) = 0;
+
+  /// Set pressure coefficient [-inf,+inf]. The default value is 0.0f.
+  virtual void SetPressure (float pressure) = 0;
+
+  /// Set volume conversation coefficient [0,+inf]. The default value is 0.0f.
+  virtual void SetVolumeConversationCoefficient (float conversation) = 0;
+
+  /// Set pose matching coefficient [0,1]. The default value is 0.0f.
+  virtual void SetShapeMatchThreshold (float matching) = 0;
+
+  /// Set rigid contacts hardness [0,1]. The default value is 1.0f.
+  virtual void SetRContactsHardness (float hardness) = 0;
+
+  /// Set kinetic contacts hardness [0,1]. The default value is 0.1f.
+  virtual void SetKContactsHardness (float hardness) = 0;
+
+  /// Set soft contacts hardness [0,1]. The default value is 1.0f.
+  virtual void SetSContactsHardness (float hardness) = 0;
+
+  /// Set anchors hardness [0,1]. The default value is 0.7f.
+  virtual void SetAnchorsHardness (float hardness) = 0;
+
+  /// Set velocities solver iterations.
+  //virtual void SetVeloSolverIterations (int iter) = 0;
+
+  /// Set positions solver iterations.
+  //virtual void SetPositionIterations (int iter) = 0;
+
+  /// Set drift solver iterations.
+  //virtual void SetDriftIterations (int iter) = 0;
+
+  /// Set cluster solver iterations.
+  //virtual void SetClusterIterations (int iter) = 0;
+
+  /// Set true if use pose matching. The default value is \a false.
+  virtual void SetShapeMatching (bool match) = 0;
+
+  /**
+   * Generate bending constraints between the vertices of this soft body.
+   * This can be used to make the body more rigid.
+   * \param distance Maximum number of triangle edges that can exist
+   * between two vertices in order to have a constraint generated for
+   * this pair of vertices. Typical values are 2 or 3.
+   */
+  // TODO: remove
+  virtual void GenerateBendingConstraints (size_t distance) = 0;
+
+  /// Generate cluster for the soft body.
+  //virtual void GenerateCluster (int iter) = 0;
+
+  /// Count of all nodes
+  //virtual size_t GetNodeCount () const = 0;
+
+  /// The linear velocity of the given node
+  virtual csVector3 GetLinearVelocity (size_t nodeIndex) const = 0;
+  /// The linear velocity of the given node
+  virtual void SetLinearVelocity (size_t nodeIndex, const csVector3& vel) = 0;
 
   /**
    * Set the wind velocity of the whole body.
@@ -579,125 +797,11 @@ struct iSoftBody : public virtual iPhysicalBody
   /// Add a force at the given vertex of the body.
   virtual void AddForce (const csVector3& force, size_t vertexIndex) = 0;
 
-  /// Return the count of triangles of this soft body.
-  virtual size_t GetTriangleCount () = 0;
-
-  /// Return the triangle with the given index.
-  virtual csTriangle GetTriangle (size_t index) const = 0;
-
-  /// Return the normal vector in world coordinates for the given vertex.
-  virtual csVector3 GetVertexNormal (size_t index) const = 0;
-  
-
   /**
    * Draw the debug informations of this soft body. This has to be called
    * at each frame, and will add 2D lines on top of the rendered scene.
    */
   virtual void DebugDraw (iView* rView) = 0;
-
-  /// Set linear stiffness coefficient [0,1].
-  virtual void SetLinearStiff (float stiff) = 0;
-
-  /// Set area/angular stiffness coefficient [0,1].
-  virtual void SetAngularStiff (float stiff) = 0;
-
-  /// Set volume stiffness coefficient [0,1].
-  virtual void SetVolumeStiff (float stiff) = 0;
-
-  /// Reset the collision flag to 0.
-  virtual void ResetCollisionFlag () = 0;
-
-  /// Set true if use cluster vs convex handling for rigid vs soft collision detection.
-  virtual void SetClusterCollisionRS (bool cluster) = 0;
-
-  /// Get true if use cluster vs convex handling for rigid vs soft collision detection.
-  virtual bool GetClusterCollisionRS () = 0;
-
-  /// Set true if use cluster vs cluster handling for soft vs soft collision detection.
-  virtual void SetClusterCollisionSS (bool cluster) = 0;
-
-  /// Get true if use cluster vs cluster handling for soft vs soft collision detection.
-  virtual bool GetClusterCollisionSS () = 0;
-
-  /// Set soft vs rigid hardness [0,1] (cluster only).
-  virtual void SetSRHardness (float hardness) = 0;
-
-  /// Set soft vs kinetic hardness [0,1] (cluster only).
-  virtual void SetSKHardness (float hardness) = 0;
-
-  /// Set soft vs soft hardness [0,1] (cluster only).
-  virtual void SetSSHardness (float hardness) = 0;
-
-  /// Set soft vs rigid impulse split [0,1] (cluster only).
-  virtual void SetSRImpulse (float impulse) = 0;
-
-  /// Set soft vs rigid impulse split [0,1] (cluster only).
-  virtual void SetSKImpulse (float impulse) = 0;
-
-  /// Set soft vs rigid impulse split [0,1] (cluster only).
-  virtual void SetSSImpulse (float impulse) = 0;
-
-  /// Set velocities correction factor (Baumgarte).
-  virtual void SetVeloCorrectionFactor (float factor) = 0;
-
-  /// Set damping coefficient [0,1].
-  virtual void SetDamping (float damping) = 0;
-
-  /// Set drag coefficient [0,+inf].
-  virtual void SetDrag (float drag) = 0;
-
-  /// Set lift coefficient [0,+inf].
-  virtual void SetLift (float lift) = 0;
-
-  /// Set pressure coefficient [-inf,+inf].
-  virtual void SetPressure (float pressure) = 0;
-
-  /// Set volume conversation coefficient [0,+inf].
-  virtual void SetVolumeConversationCoefficient (float conversation) = 0;
-
-  /// Set pose matching coefficient [0,1].	
-  virtual void SetShapeMatchThreshold (float matching) = 0;
-
-  /// Set rigid contacts hardness [0,1].
-  virtual void SetRContactsHardness (float hardness) = 0;
-
-  /// Set kinetic contacts hardness [0,1].
-  virtual void SetKContactsHardness (float hardness) = 0;
-
-  /// Set soft contacts hardness [0,1].
-  virtual void SetSContactsHardness (float hardness) = 0;
-
-  /// Set anchors hardness [0,1].
-  virtual void SetAnchorsHardness (float hardness) = 0;
-
-  /// Set velocities solver iterations.
-  virtual void SetVeloSolverIterations (int iter) = 0;
-
-  /// Set positions solver iterations.
-  virtual void SetPositionIterations (int iter) = 0;
-
-  /// Set drift solver iterations.
-  virtual void SetDriftIterations (int iter) = 0;
-
-  /// Set cluster solver iterations.
-  virtual void SetClusterIterations (int iter) = 0;
-
-  /// Set true if use pose matching.
-  virtual void SetShapeMatching (bool match) = 0;
-
-  /// Set true if use bending constraint.
-  virtual void SetBendingConstraint (bool bending) = 0;
-
-  /// Generate cluster for the soft body.
-  virtual void GenerateCluster (int iter) = 0;
-
-  /// Count of all nodes
-  virtual size_t GetNodeCount () const = 0;
-
-  /// The linear velocity of the given node
-  virtual csVector3 GetLinearVelocity (size_t nodeIndex) const = 0;
-  /// The linear velocity of the given node
-  virtual void SetLinearVelocity (size_t nodeIndex, const csVector3& vel) = 0;
 };
 
 /**
@@ -935,13 +1039,13 @@ struct iJointFactory : public virtual iBase
   virtual void SetSpring (bool isSpring) = 0;
 
   /// Set the linear stiffness of the spring.
-  virtual void SetLinearStiffness (const csVector3& stiff) = 0;
+  virtual void SetLinearStiffness (const csVector3& stiffness) = 0;
 
   /// Get the linear stiffness of the spring.
   virtual const csVector3& GetLinearStiffness () const = 0;
 
   /// Set the angular stiffness of the spring.
-  virtual void SetAngularStiffness (const csVector3& stiff) = 0;
+  virtual void SetAngularStiffness (const csVector3& stiffness) = 0;
 
   /// Get the angular stiffness of the spring.
   virtual const csVector3& GetAngularStiffness () const = 0;
@@ -1140,13 +1244,13 @@ struct iJoint : public virtual iBase
   virtual void SetSpring (bool isSpring, bool forceUpdate = false) = 0;
 
   /// Set the linear stiffness of the spring.
-  virtual void SetLinearStiffness (const csVector3& stiff, bool forceUpdate = false) = 0;
+  virtual void SetLinearStiffness (const csVector3& stiffness, bool forceUpdate = false) = 0;
 
   /// Get the linear stiffness of the spring.
   virtual const csVector3& GetLinearStiffness () const = 0;
 
   /// Set the angular stiffness of the spring.
-  virtual void SetAngularStiffness (const csVector3& stiff, bool forceUpdate = false) = 0;
+  virtual void SetAngularStiffness (const csVector3& stiffness, bool forceUpdate = false) = 0;
 
   /// Get the angular stiffness of the spring.
   virtual const csVector3& GetAngularStiffness () const = 0;

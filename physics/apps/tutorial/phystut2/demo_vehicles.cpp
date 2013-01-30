@@ -337,7 +337,8 @@ iVehicle* PhysDemo::GetTargetVehicle ()
   HitBeamResult hitResult;
   if (PickCursorObject (hitResult))
   {
-    return dynamic_cast<iVehicle*> (hitResult.object);
+    csRef<iVehicle> vehicle = scfQueryInterface<iVehicle> (hitResult.object);
+    return vehicle;
   }
   return nullptr;
 }

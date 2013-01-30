@@ -128,7 +128,6 @@ public:
   virtual void RemoveChild (size_t index);
 
   virtual CS::Collisions::iCollider* GetChild (size_t index) ;
-  virtual void GetChild (size_t index, iCollider*& collider, csOrthoTransform& trans);
   virtual size_t GetChildrenCount () const
   { return children->colliders.GetSize (); }
   

@@ -576,7 +576,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   //    if (obj->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
   //    {
   //      iPhysicalBody* pb = obj->QueryPhysicalBody ();
-  //      if (pb->GetPhysicalObjectType () == PHYSICAL_OBJECT_SOFTYBODY)
+  //      if (pb->GetPhysicalObjectType () == PHYSICAL_OBJECT_SOFTBODY)
   //      {
   //        // SoftBody
 
@@ -649,7 +649,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   //              doTrans = false;
   //              break;
   //            }
-  //            else if (rbs[head]->GetPhysicalObjectType () == PHYSICAL_OBJECT_SOFTYBODY)
+  //            else if (rbs[head]->GetPhysicalObjectType () == PHYSICAL_OBJECT_SOFTBODY)
   //            {
   //              // Soft joint should not be transmitted.
   //              doTrans = false;

@@ -20,6 +20,8 @@
  * Create dynamic (interactive) objects
  */
 
+// TODO: use actually the factories in order to create them only once
+
 #include "cssysdef.h"
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
@@ -923,21 +925,6 @@ void PhysDemo::SpawnParticles ()
   sphemit->SetInitialVelocity (csVector3 (0, verticalFactor * velocity, 0), csVector3 (0));
   partstate->AddEmitter (sphemit);
 
-/*
-  csRef<iParticleBuiltinEffectorLinColor> lincol = effectorFactory->CreateLinColor ();
-  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 2.0000f);
-  lincol->AddColor (csColor4 (1.00f, 0.35f, 0.00f, 0.00f), 1.5000f);
-  lincol->AddColor (csColor4 (1.00f, 0.22f, 0.00f, 0.10f), 1.3125f);
-  lincol->AddColor (csColor4 (1.00f, 0.12f, 0.00f, 0.30f), 1.1250f);
-  lincol->AddColor (csColor4 (0.80f, 0.02f, 0.00f, 0.80f), 0.9375f);
-  lincol->AddColor (csColor4 (0.60f, 0.00f, 0.00f, 0.90f), 0.7500f);
-  lincol->AddColor (csColor4 (0.40f, 0.00f, 0.00f, 0.97f), 0.5625f);
-  lincol->AddColor (csColor4 (0.20f, 0.00f, 0.00f, 1.00f), 0.3750f);
-  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.1875f);
-  lincol->AddColor (csColor4 (0.00f, 0.00f, 0.00f, 1.00f), 0.0000f);
-  partstate->AddEffector (lincol);
-*/
-
   csRef<iParticleBuiltinEffectorPhysical> physicalEffector = effectorFactory->CreatePhysical ();
   physicalEffector->SetRandomAcceleration (csVector3 (1.5f, verticalFactor * 1.5f, 1.5f));
   partstate->AddEffector (physicalEffector);
@@ -1185,79 +1172,37 @@ void PhysDemo::SpawnRope ()
   // Spawn a box
   csRef<CS::Physics::iRigidBody> box = SpawnBox ();
 
-  // First example using ropes defined by their extremities
-#if 1
   // Spawn a first rope and attach it to the box
   csRef<CS::Physics::iSoftRopeFactory> factory = physicalSystem->CreateSoftRopeFactory ();
-  factory->SetStart (tc.GetOrigin () + tc.GetT2O () * csVector3 (-2, 2, 0));
-  factory->SetEnd (tc.GetOrigin () + tc.GetT2O () * csVector3 (-0.2f, 0, 1));
+  factory->SetStart (csVector3 (-2.f, 2.f, 0.f));
+  factory->SetEnd (csVector3 (-0.15f, 0.f, 0.f));
   factory->SetNodeCount (20);
   factory->SetMass (2.0f);
+  factory->SetLinearStiffness (0.95f);
 
   csRef<CS::Physics::iSoftBody> body = factory->CreateSoftBody ();
-  body->SetRigidity (0.95f);
-  body->AnchorVertex (0);
-  body->AnchorVertex (body->GetVertexCount () - 1, box);
-  body->RebuildObject ();
+
+  csOrthoTransform trans;
+  trans.SetO2T (tc.GetO2T ());
+  trans.SetOrigin (tc.GetOrigin () + tc.GetT2O () * csVector3 (0.f, 0.f, 1.6f));
+  body->SetTransform (trans);
   GetCurrentSector ()->AddCollisionObject (body);
 
+  // Anchoring must be done once inside a collision sector
+  body->AnchorVertex (0);
+  body->AnchorVertex (body->GetVertexCount () - 1, box);
+
   // Spawn a second rope and attach it to the box
-  factory->SetStart (tc.GetOrigin () + tc.GetT2O () * csVector3 (2, 2, 0));
-  factory->SetEnd (tc.GetOrigin () + tc.GetT2O () * csVector3 (0.2f, 0, 1));
-  
   body = factory->CreateSoftBody ();
-  body->SetRigidity (0.95f);
-  body->AnchorVertex (0);
-  body->AnchorVertex (body->GetVertexCount () - 1, box);
-  body->RebuildObject ();
+  body->SetLinearStiffness (0.95f);
+
+  trans.SetO2T (csYRotMatrix3 (PI) * tc.GetO2T ());
+  body->SetTransform (trans);
   GetCurrentSector ()->AddCollisionObject (body);
 
-  // Second example using ropes defined by the position of each of their vertices
-#else
-  // Spawn a first rope and attach it to the box
-  {
-    // Define the positions of the vertices
-    size_t vertexCount = 10;
-    CS_ALLOC_STACK_ARRAY (csVector3, nodes, vertexCount);
-    nodes[0] = tc.GetOrigin () + tc.GetT2O () * csVector3 (-2, 2, 0);
-    csVector3 step = (tc.GetT2O () * csVector3 (-0.2f, 0, 1) -
-      tc.GetT2O () * csVector3 (-2, 2, 0)) / (((float) vertexCount) - 1);
-    for (size_t i = 1; i < vertexCount; i++)
-      nodes[i] = nodes[0] + ((int) (i % 2)) * csVector3 (-0.2f, 0, 0) + ((int) i) * step;
-
-    // Create the soft body
-    CS::Physics::iSoftBody* body = physicalSystem->CreateRope
-      (nodes, vertexCount);
-    body->SetMass (2.0f);
-    body->SetRigidity (0.95f);
-    body->AnchorVertex (0);
-    body->AnchorVertex (body->GetVertexCount () - 1, box);
-    body->RebuildObject ();
-    GetCurrentSector ()->AddSoftBody (body);
-  }
-
-  // Spawn a second rope and attach it to the box
-  {
-    // Define the positions of the vertices
-    size_t vertexCount = 10;
-    CS_ALLOC_STACK_ARRAY (csVector3, nodes, vertexCount);
-    nodes[0] = tc.GetOrigin () + tc.GetT2O () * csVector3 (2, 2, 0);
-    csVector3 step = (tc.GetT2O () * csVector3 (0.2f, 0, 1) -
-      tc.GetT2O () * csVector3 (2, 2, 0)) / (((float) vertexCount) - 1);
-    for (size_t i = 1; i < vertexCount; i++)
-      nodes[i] = nodes[0] + ((int) (i % 2)) * csVector3 (0.2f, 0, 0) + ((int) i) * step;
-
-    // Create the soft body
-    CS::Physics::iSoftBody* body = bulletDynamicSystem->CreateRope
-      (nodes, vertexCount);
-    body->SetMass (2.0f);
-    body->SetRigidity (0.95f);
-    body->AnchorVertex (0);
-    body->AnchorVertex (body->GetVertexCount () - 1, box);
-    body->RebuildObject ();
-    GetCurrentSector ()->AddSoftBody (body);
-  }
-#endif
+  // Anchoring must be done once inside a collision sector
+  body->AnchorVertex (0);
+  body->AnchorVertex (body->GetVertexCount () - 1, box);
 }
 
 CS::Physics::iSoftBody* PhysDemo::SpawnCloth ()
@@ -1265,26 +1210,23 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth ()
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
 
-  csVector3 corners[] = {
-    tc.GetOrigin () + tc.GetT2O () * csVector3 (-2, 2, 1),
-    tc.GetOrigin () + tc.GetT2O () * csVector3 (2, 2, 1),
-    tc.GetOrigin () + tc.GetT2O () * csVector3 (-2, 0, 1),
-    tc.GetOrigin () + tc.GetT2O () * csVector3 (2, 0, 1)
-  };
-
   // Create the cloth
+  size_t segmentsH = 10;
+  size_t segmentsV = 10;
   csRef<CS::Physics::iSoftClothFactory> factory = physicalSystem->CreateSoftClothFactory ();
-  factory->SetCorners (corners);
-  factory->SetSegmentCounts (10, 10);
-  factory->SetWithDiagonals (true);
+  factory->SetCorners (csVector3 (-2, 2, 1),
+		       csVector3 (2, 2, 1),
+		       csVector3 (-2, 0, 1),
+		       csVector3 (2, 0, 1));
+  factory->SetSegmentCounts (segmentsH, segmentsV);
+  factory->SetDiagonals (true);
   factory->SetMass (5.0f);
 
   csRef<iSoftBody> body = factory->CreateSoftBody ();
 
   // Attach the two top corners
-  // TODO: Add anchor information to properties?
   body->AnchorVertex (0);
-  body->AnchorVertex (9);
+  body->AnchorVertex (segmentsH - 1);
 
   // Create the cloth mesh factory
   csRef<iMeshFactoryWrapper> clothFact =
@@ -1304,23 +1246,28 @@ CS::Physics::iSoftBody* PhysDemo::SpawnCloth ()
   body->SetAttachedSceneNode (mesh->QuerySceneNode ());
   body->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
-  body->RebuildObject ();
+  csOrthoTransform trans;
+  trans.SetO2T (tc.GetO2T ());
+  trans.SetOrigin (tc.GetOrigin () + tc.GetT2O () * csVector3 (0, 0, 1));
+  body->SetTransform (trans);
   GetCurrentSector ()->AddCollisionObject (body);
 
   // Init the animation control for the animation of the genmesh
-  // If it's a double-sided mesh like this cloth, you have to call SetSoftBody (body, true);
+  // Since this mesh has been created through a iSoftClothFactory, then this is
+  // a double-sided mesh, with the vertices duplicated contiguously. We hence need
+  // to setup the animation controller with the correct vertex duplication mode.
   csRef<iGeneralMeshState> meshState =
     scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
   csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
     scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
-  animationControl->SetSoftBody (body, true);
+  animationControl->SetSoftBody (body, CS::Physics::MESH_DUPLICATION_CONTIGUOUS);
 
   return body;
 }
 
 CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
 {
-  // Create the ball mesh factory.
+  // Create a ball mesh factory.
   csRef<iMeshFactoryWrapper> ballFact = engine->CreateMeshFactory (
     "crystalspace.mesh.object.genmesh", "ballFact");
   if (!ballFact)
@@ -1339,31 +1286,28 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
   // Use the camera transform.
   const csOrthoTransform& tc = view->GetCamera ()->GetTransform ();
 
-  // Create the soft body
-  //csRef<CS::Physics::iSoftBody> body = physicalSystem->CreateSoftBody (gmstate,
-  //  csOrthoTransform (csMatrix3 (), csVector3 (0.0f, 0.0f, 1.0f)) * tc);
-  // This would have worked too
+  // Create the soft body from the shape of the ball mesh
   csRef<iSoftMeshFactory> factory = physicalSystem->CreateSoftMeshFactory ();
-  factory->SetGenmeshFactory (gmstate);
+  factory->SetMesh (collisionHelper.FindCollisionMesh (ballFact));
   factory->SetMass (20.0f);
+  factory->SetLinearStiffness (0.8f);
+  factory->GenerateBendingConstraints (2.0f);
 
   csRef<CS::Physics::iSoftBody> body = factory->CreateSoftBody ();
-  body->SetRigidity (0.8f);
-
-  csRef<CS::Physics::iSoftBody> bulletbody = 
-    scfQueryInterface<CS::Physics::iSoftBody> (body);
-  bulletbody->SetBendingConstraint (true);
   
   if (setVelocity)
   {
     // Fling the body.
     body->QueryPhysicalBody ()->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5));
+
+    // This would have worked too
+    //for (size_t i = 0; i < body->GetVertexCount (); i++)
+    //  body->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5), i);
   }
 
-  // Create the mesh
+  // Create the mesh and its 'soft body' animation controller
   gmstate->SetAnimationControlFactory (softBodyAnimationFactory);
-  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
-    ballFact, "soft_body"));
+  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (ballFact, "soft_body"));
   iMaterialWrapper* mat = engine->GetMaterialList ()->FindByName ("objtexture");
   mesh->GetMeshObject ()->SetMaterialWrapper (mat);
 
@@ -1377,16 +1321,6 @@ CS::Physics::iSoftBody* PhysDemo::SpawnSoftBody (bool setVelocity /* = true */)
 
   GetCurrentSector ()->AddCollisionObject (body);
 
-  // Init the animation control for the animation of the genmesh
-  csRef<iGeneralMeshState> meshState =
-    scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
-  csRef<CS::Animation::iSoftBodyAnimationControl> animationControl =
-    scfQueryInterface<CS::Animation::iSoftBodyAnimationControl> (meshState->GetAnimationControl ());
-  animationControl->SetSoftBody (body);
-
-  // This would have worked too
-  //for (size_t i = 0; i < body->GetVertexCount (); i++)
-  //  body->SetLinearVelocity (tc.GetT2O () * csVector3 (0, 0, 5), i);
   return body;
 }
 
@@ -1447,6 +1381,5 @@ void PhysDemo::SpawnBoxStacks (int stackNum, int stackHeight, float boxLen, floa
       boxPos2 += hdistDir;
     }
     boxPos2 += hdistOrth - numDir * hdistDir;
-  }
-  
+  }  
 }

@@ -114,18 +114,12 @@ void csBulletJoint::Attach (CS::Physics::iPhysicalBody* body1, CS::Physics::iPhy
 {
   CS_ASSERT (body1);
 
-  //csBulletCollisionObject *collBody1 = dynamic_cast<csBulletCollisionObject*> (body1);
-/*
-  csBulletCollisionObject* collBody2 = nullptr;
-
-  if (body2)
-    collBody2 = dynamic_cast<csBulletCollisionObject*> (body2);
-*/
   jointFlag |= JOINT_SOFT;
+
   // If the joint is attached to two bodies.
   if (body2)
   {
-    if (body1->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_SOFTYBODY)
+    if (body1->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_SOFTBODY)
     {
       bodies[0] = body1;
       bodies[1] = body2;
@@ -193,8 +187,7 @@ void csBulletJoint::SetPosition (const csVector3& position, bool forceUpdate)
     this->transform = bodies[0]->GetTransform ();
     transform.SetOrigin (position);
    
-    csBulletRigidBody* body1;
-    body1 = dynamic_cast<csBulletRigidBody*> (bodies[0]);
+    csBulletRigidBody* body1 = dynamic_cast<csBulletRigidBody*> (bodies[0]);
 
     btTransform jointTransform = CSToBullet (transform , sys->GetInternalScale ());
 

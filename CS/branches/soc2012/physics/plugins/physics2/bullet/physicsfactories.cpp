@@ -136,66 +136,96 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     body->m_cfg.piterations = 16; // no white zone
     body->m_cfg.timescale = 2;
 
-    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody> (new csBulletSoftBody (system, body));
+    csRef<csBulletSoftBody> csBody;
+    csBody.AttachNew (new csBulletSoftBody (system, body));
     csBody->CreateSoftBodyObject (this);
     return csPtr<CS::Physics::iSoftBody> (csBody);
   }
 
   csPtr<CS::Physics::iSoftBody> BulletSoftClothFactory::CreateSoftBody ()
   {
-    const csVector3* corners = GetCorners ();
-    size_t segmentCount1, segmentCount2;
-    GetSegmentCounts (segmentCount1, segmentCount2);
-
     btSoftBody* body = btSoftBodyHelpers::CreatePatch
       (*system->GetSoftBodyWorldInfo (), CSToBullet (corners[0], system->GetInternalScale ()),
       CSToBullet (corners[1], system->GetInternalScale ()),
       CSToBullet (corners[2], system->GetInternalScale ()),
       CSToBullet (corners[3], system->GetInternalScale ()), 
-      int (segmentCount1), 
-      int (segmentCount2), 0,
-      GetWithDiagonals ());
+      int (counts[0]), 
+      int (counts[1]), 0,
+      withDiagonals);
     body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
 
-
-    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody> (new csBulletSoftBody (system, body));
+    csRef<csBulletSoftBody> csBody;
+    csBody.AttachNew (new csBulletSoftBody (system, body));
     csBody->CreateSoftBodyObject (this);
     return csPtr<CS::Physics::iSoftBody> (csBody);
   }
 
   csPtr<CS::Physics::iSoftBody> BulletSoftMeshFactory::CreateSoftBody ()
   {
-    iGeneralFactoryState*  genmeshFactory = GetGenmeshFactory ();
-    btScalar* vertices = new btScalar[genmeshFactory->GetVertexCount () * 3];
-    for (int i = 0; i < genmeshFactory->GetVertexCount (); i++)
+    if (!mesh) return csPtr<CS::Physics::iSoftBody> (nullptr);
+    // TODO: warning message for empty meshes
+
+    // Check that the count of vertices and triangles is OK
+    CS_ASSERT (mode == MESH_DUPLICATION_NONE
+	       || (mesh->GetVertexCount () % 2 == 0 || mesh->GetTriangleCount () % 2 == 0));
+
+    // Create the array of vertices
+    int vertexCount = mode == MESH_DUPLICATION_NONE ?
+      mesh->GetVertexCount () : mesh->GetVertexCount () / 2;
+    btScalar* vertices = new btScalar[vertexCount * 3];
+    csVector3* originalVertices = mesh->GetVertices ();
+    int j = 0;
+    for (int i = 0; i < vertexCount; i++)
     {
-      csVector3 vertex = genmeshFactory->GetVertices ()[i] * system->GetInternalScale ();
+      // TODO: use bodyTransform
+      csVector3 vertex = originalVertices[j]/* * bodyTransform.GetInverse ()*/ * system->GetInternalScale ();
       vertices[i * 3] = vertex[0];
       vertices[i * 3 + 1] = vertex[1];
       vertices[i * 3 + 2] = vertex[2];
+
+      if (mode == MESH_DUPLICATION_INTERLEAVED) j += 2;
+      else j++;
     }
 
-    int* triangles = new int[genmeshFactory->GetTriangleCount () * 3];
-    for (int i = 0; i < genmeshFactory->GetTriangleCount (); i++)
+    // Create the array of triangles
+    int triangleCount = mode == MESH_DUPLICATION_NONE ?
+      mesh->GetTriangleCount () : mesh->GetTriangleCount () / 2;
+    int* triangles = new int[triangleCount * 3];
+    csTriangle* originalTriangles = mesh->GetTriangles ();
+    j = 0;
+    for (int i = 0; i < triangleCount; i++)
     {
-      csTriangle& triangle = genmeshFactory->GetTriangles ()[i];
-      triangles[i * 3] = triangle.a;
-      triangles[i * 3 + 1] = triangle.b;
-      triangles[i * 3 + 2] = triangle.c;
+      csTriangle& triangle = originalTriangles[j];
+
+      if (mode == MESH_DUPLICATION_INTERLEAVED)
+      {
+	triangles[i * 3] = triangle.a / 2;
+	triangles[i * 3 + 1] = triangle.b / 2;
+	triangles[i * 3 + 2] = triangle.c / 2;
+
+	j += 2;
+      }
+      else
+      {
+	triangles[i * 3] = triangle.a;
+	triangles[i * 3 + 1] = triangle.b;
+	triangles[i * 3 + 2] = triangle.c;
+
+	j++;
+      }
     }
 
+    // Create the soft body
     btSoftBody* body = btSoftBodyHelpers::CreateFromTriMesh
-      (*system->GetSoftBodyWorldInfo (), vertices, triangles, genmeshFactory->GetTriangleCount (),
-      false);
+      (*system->GetSoftBodyWorldInfo (), vertices, triangles, triangleCount, false);
 
-    // TODO: Make this stuff customizable, too
     body->m_cfg.piterations = 10;
-    body->m_cfg.collisions |=	btSoftBody::fCollision::SDF_RS;
+    body->m_cfg.collisions |= btSoftBody::fCollision::SDF_RS; //?
     body->m_cfg.collisions |= btSoftBody::fCollision::VF_SS;
     body->m_materials[0]->m_kLST = 1;
 
-
-    csRef<csBulletSoftBody> csBody = csPtr<csBulletSoftBody> (new csBulletSoftBody (system, body));
+    csRef<csBulletSoftBody> csBody;
+    csBody.AttachNew (new csBulletSoftBody (system, body));
     csBody->CreateSoftBodyObject (this);
     return csPtr<CS::Physics::iSoftBody> (csBody);
   }

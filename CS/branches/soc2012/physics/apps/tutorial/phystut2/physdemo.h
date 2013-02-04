@@ -362,9 +362,6 @@ public:
   /// Teleport given object to given location
   void TeleportObject (CS::Collisions::iCollisionObject* obj, iCameraPosition* pos);
 
-  /// Test whether there are any objects beneath obj (that obj can collide with)
-  bool TestOnGround (CS::Collisions::iCollisionObject* obj);
-
   bool IsActor (CS::Collisions::iCollisionObject* obj) const;
   
   /// Adds a force to the given object that pulls it toward the actor. If not given, picks currently targeted object.

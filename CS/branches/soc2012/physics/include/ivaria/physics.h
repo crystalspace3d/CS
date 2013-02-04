@@ -772,7 +772,7 @@ struct iSoftBody : public virtual iPhysicalBody
    * between two vertices in order to have a constraint generated for
    * this pair of vertices. Typical values are 2 or 3.
    */
-  // TODO: remove
+  // TODO: remove?
   virtual void GenerateBendingConstraints (size_t distance) = 0;
 
   /// Generate cluster for the soft body.
@@ -814,9 +814,9 @@ struct SoftBodyHelper
    * Create a genmesh from the given cloth soft body.
    * The genmesh will be double-sided, in order to have correct normals on both
    * sides of the cloth (ie the vertices of the soft body will be duplicated for the
-   * genmesh).
-   * \warning Don't forget to use doubleSided = true in
-   * CS::Animation::iSoftBodyAnimationControl::SetSoftBody()
+   * genmesh). The duplication mode of the faces of the mesh generated is
+   * CS::Physics::MESH_DUPLICATION_CONTIGUOUS, that parameter can therefore be used
+   * e.g. in CS::Animation::iSoftBodyAnimationControl::SetSoftBody(). 
    */
   static csPtr<iMeshFactoryWrapper> CreateClothGenMeshFactory
   (iObjectRegistry* object_reg, const char* factoryName, iSoftBody* cloth)

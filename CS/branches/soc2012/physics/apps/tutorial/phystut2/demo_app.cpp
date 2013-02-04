@@ -280,8 +280,6 @@ void PhysDemo::SetupHUD ()
   iStringArray& desc = *hudManager->GetKeyDescriptions ();
   desc.Empty ();
 
-  desc.Push ("N: Next page");
-  
   if (selectedItem && selectedItem->GetTemplate ().GetPrimaryFunctions ().GetSize ())
   {
     ItemFunction* func;

@@ -84,7 +84,7 @@ void PhysDemo::CreateItemTemplates ()
     AddItemFunction (Secondary, SpawnConcaveMesh, "Spawn concave mesh", physDemo.SpawnConcaveMesh ());
     AddItemFunction (Secondary, SpawnJointed, "Spawn jointed", physDemo.SpawnJointed ());
     AddItemFunction (Secondary, SpawnChain, "Spawn chain", physDemo.SpawnChain ());
-    AddItemFunction (Secondary, SpawnChain, "Spawn particles", physDemo.SpawnParticles ());
+    AddItemFunction (Secondary, SpawnParticles, "Spawn particles", physDemo.SpawnParticles ());
     AddItemFunction (Secondary, SpawnKrystalRagdoll, "Spawn Krystal", physDemo.SpawnKrystalRagdoll ());
     AddItemFunction (Secondary, SpawnFrankieRagdoll, "Spawn Frankie", physDemo.SpawnFrankieRagdoll ());
   }
@@ -115,8 +115,8 @@ void PhysDemo::CreateItemTemplates ()
     AddItemFunction (Primary, EnterTargetVehicle, "Enter target vehicle", physDemo.EnterTargetVehicle ());
     AddItemFunction (Primary, DeleteTargetVehicle, "Delete target vehicle", physDemo.DeleteTargetVehicle ());
     
-    AddItemFunction (Secondary, AccelerateVehicle, "Leave current vehicle", physDemo.LeaveCurrentVehicle ());
     AddItemFunction (Secondary, SpawnVehicle, "Spawn new vehicle", physDemo.SpawnVehicle ());
+    AddItemFunction (Secondary, AccelerateVehicle, "Leave current vehicle", physDemo.LeaveCurrentVehicle ());
     AddItemFunction (Secondary, AccelerateVehicle, "Accelerate target vehicle", physDemo.AccelerateTargetVehicle ());
   }
 

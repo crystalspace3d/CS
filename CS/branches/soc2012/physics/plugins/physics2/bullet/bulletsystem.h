@@ -20,7 +20,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __CS_BULLET_PHYSICS_H__
 #define __CS_BULLET_PHYSICS_H__
 
@@ -54,8 +53,6 @@ class btTriangleMesh;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   
-#define WORLD_AABB_DIMENSIONS 10000.0f
-
 class csBulletSector;
 class csBulletSystem;
 class csBulletDebugDraw;

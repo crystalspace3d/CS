@@ -103,28 +103,62 @@ struct HitBeamResult
 };
 
 /**
- * A structure used to return the collision data between two objects.
+ * A structure used to describe a collision contact between two objects.
  */
-struct CollisionData
+struct iCollisionContact : public virtual iBase
 {
-  /// Collision object A.
-  // TODO: objectA/B redundant with the parameters of iCollisionCallback::OnCollision()?
-  iCollisionObject* objectA;
+  SCF_INTERFACE (CS::Collisions::iCollisionContact, 1, 0, 0);
 
-  /// Collision object B.
-  iCollisionObject* objectB;
+  /// Get the collision position of A in world space.
+  virtual csVector3 GetPositionOnA () const = 0;
 
-  /// The collision position of A in world space.
-  csVector3 positionWorldOnA;
+  /// Get the collision position of B in world space.
+  virtual csVector3 GetPositionOnB () const = 0;
 
-  /// The collision position of B in world space.
-  csVector3 positionWorldOnB;
+  /// Get the normal of the hit position on A in world space.
+  //virtual csVector3 GetNormalOnA () const = 0;
 
-  /// The normal of hit position on B.
-  csVector3 normalWorldOnB;
+  /// Get the normal of the hit position on B in world space.
+  virtual csVector3 GetNormalOnB () const = 0;
 
-  /// The depth of penetration.
-  float penetration; 
+  /// Get the depth of penetration.
+  virtual float GetPenetration () const = 0;
+};
+
+/**
+ * A structure used to return the collision data between two objects.
+ * When two objects are in contact, they have one or more
+ * CS::Collisions::iCollisionContact.
+ */
+struct iCollisionData : public virtual iBase
+{
+  SCF_INTERFACE (CS::Collisions::iCollisionData, 1, 0, 0);
+
+  /// Get the first collision object (A).
+  virtual iCollisionObject* GetObjectA () const = 0;
+
+  /// Get the second collision object (B).
+  virtual iCollisionObject* GetObjectB () const = 0;
+
+  /// Get the count of contacts between those two objects
+  virtual size_t GetContactCount () const = 0;
+
+  /// Get the contact at the given index
+  virtual iCollisionContact* GetContact (size_t index) = 0;
+};
+
+/**
+ * A list of CS::Collisions::iCollisionData.
+ */
+struct iCollisionDataList : public virtual iBase
+{
+  SCF_INTERFACE (CS::Collisions::iCollisionDataList, 1, 0, 0);
+
+  /// Get the count of collisions in this list
+  virtual size_t GetCollisionCount () const = 0;
+
+  /// Get the collision at the given index
+  virtual iCollisionData* GetCollision (size_t index) const = 0;
 };
 
 /**
@@ -142,12 +176,8 @@ struct iCollisionCallback : public virtual iBase
 
   /**
    * A collision occurred.
-   * \param thisbody The body that received a collision.
-   * \param otherbody The body that collided with \a thisBody.
-   * \param collisions The list of collisions between the two bodies.  
    */
-  virtual void OnCollision (iCollisionObject *thisbody, iCollisionObject *otherbody, 
-      const csArray<CollisionData>& collisions) = 0; 
+  virtual void OnCollision (iCollisionData* collision) = 0; 
 };
 
 /**
@@ -245,7 +275,7 @@ struct iCollisionObjectFactory : public virtual iBase
  */
 struct iCollisionObject : public virtual iBase
 {
-  SCF_INTERFACE (CS::Collisions::iCollisionObject, 1, 0, 1);
+  SCF_INTERFACE (CS::Collisions::iCollisionObject, 1, 0, 0);
 
   /// Return the underlying object
   virtual iObject *QueryObject (void) = 0;
@@ -272,6 +302,11 @@ struct iCollisionObject : public virtual iBase
 
   /// Return the type of the collision object.
   virtual CollisionObjectType GetObjectType () const = 0;
+  
+  /// Set whether or not this object may be excluded from deactivation.
+  virtual void SetDeactivable (bool d) = 0;
+  /// Get whether or not this object may be excluded from deactivation.
+  virtual bool GetDeactivable () const = 0;
 
   /// Set the iSceneNode attached to this collision object. Its transform will always coincide with the object's transform
   virtual void SetAttachedSceneNode (iSceneNode* sceneNode) = 0;
@@ -323,43 +358,27 @@ struct iCollisionObject : public virtual iBase
 
   /**
    * Set a callback to be executed when this body collides with another.
-   * If 0, no callback is executed.
-   * \todo This method is not implemented and no callback will be triggered
-   * unless the test method Collide() is used.
+   * If nullptr, then no callback is executed.
+   * \todo Currently no callback will be triggered unless the test method Collide() is used.
    */
   virtual void SetCollisionCallback (iCollisionCallback* cb) = 0;
 
   /// Get the collision response callback.
   virtual iCollisionCallback* GetCollisionCallback () = 0;
 
-  /// Test collision with another collision objects.
-  // TODO: return explicitely the collision data
-  // TODO: add a collision filter parameter
-  virtual bool Collide (iCollisionObject* otherObject) = 0;
+  /// Test for the collisions with another collision object
+  // TODO: really useful?
+  virtual csPtr<iCollisionData> Collide (iCollisionObject* otherObject) const = 0;
 
-  /// Follow a beam from start to end and return whether this body was hit.
+  /// Follow a beam from start to end and return whether or not this body was hit.
   // TODO: add a collision filter parameter
-  virtual HitBeamResult HitBeam (
-      const csVector3& start, const csVector3& end) = 0;
+  virtual HitBeamResult HitBeam (const csVector3& start, const csVector3& end) const = 0;
 
-  /// Get the count of collision objects contacted with this object.
+  /// Get the count of collision objects in contact with this object.
   virtual size_t GetContactObjectsCount () = 0;
 
-  /// Get the collision object contacted with this object by index.
+  /// Get the collision object in contact with this object at the given index.
   virtual iCollisionObject* GetContactObject (size_t index) = 0;
-  
-  /// Whether this object may be excluded from deactivation.
-  virtual void SetDeactivable (bool d) = 0;
-  /// Whether this object may be excluded from deactivation.
-  virtual bool GetDeactivable () const = 0;
-
-  /**
-   * Passive objects, such as portal clones, are not supposed to be tempered with 
-   * and should not be acted upon by game logic.
-   * \todo This should be removed, passive objects should simply not be visible from
-   * outside the physics plugin.
-   */
-  virtual bool IsPassive () const = 0;
 };
 
 /**
@@ -647,21 +666,29 @@ struct iCollisionSector : public virtual iBase
 
   // Other stuff
 
-  /// Follow a beam from start to end and return the first body that is hit.
-  virtual HitBeamResult HitBeam (
-      const csVector3& start, const csVector3& end) = 0;
+  /**
+   * Follow a beam from start to end and return the first body that is hit. This version
+   * ignores the portals and won't therefore cross them to another sector.
+   * \param start The start of the beam
+   * \param end The end of the beam
+   */
+  // TODO: allow resuming the beam test when an object has been hit in order to find the next
+  // object on the beam
+  virtual HitBeamResult HitBeam (const csVector3& start, const csVector3& end) const = 0;
 
   /**
-   * Follow a beam from start to end and return the first body that is hit.
+   * Follow a beam from start to end and return the first body that is hit. This version
+   * will cross any portal hit and continue the the hit test on the other side of it.
+   * \param start The start of the beam
+   * \param end The end of the beam
    */
-  virtual HitBeamResult HitBeamPortal (
-      const csVector3& start, const csVector3& end) = 0;
+  virtual HitBeamResult HitBeamPortal (const csVector3& start, const csVector3& end) const = 0;
 
   /**
-   * Performs a discrete collision test against all objects in this iCollisionSector.
-   * it reports one or more contact points for every overlapping object
+   * Perform a discrete collision test against all objects in this iCollisionSector,
+   * and return the list of all collisions with the given object.
    */
-  virtual bool CollisionTest (iCollisionObject* object, csArray<CollisionData>& collisions) = 0;
+  virtual csPtr<iCollisionDataList> CollisionTest (iCollisionObject* object) = 0;
 };
 
 /**
@@ -678,6 +705,7 @@ struct iCollisionSector : public virtual iBase
  * 
  * \sa CS::Physics::iPhysicalSystem
  */
+// TODO: global collision callback
 struct iCollisionSystem : public virtual iBase
 {
   SCF_INTERFACE (CS::Collisions::iCollisionSystem, 2, 0, 0);

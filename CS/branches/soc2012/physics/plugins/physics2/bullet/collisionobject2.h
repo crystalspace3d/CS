@@ -32,7 +32,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 class CollisionGroup;
 class PortalTraversalData;
 
-class csBulletCollisionObject: public scfVirtImplementationExt1<
+class csBulletCollisionObject : public scfVirtImplementationExt1<
   csBulletCollisionObject, csObject,
   CS::Collisions::iCollisionObject>
 {
@@ -49,7 +49,7 @@ class csBulletCollisionObject: public scfVirtImplementationExt1<
 protected:
   csRef<csBulletCollider> collider;
   csOrthoTransform colliderTransform;
-  // TODO: kept only if there are some listeners?
+  // TODO: kept only if there are some listeners? or not at all?
   csRefArray<csBulletCollisionObject> contactObjects;
   // TODO: notion of jointed islands instead?
   csArray<CS::Physics::iJoint*> joints;
@@ -62,7 +62,6 @@ protected:
   btQuaternion portalWarp;
 
   csBulletSector* sector;
-  // TODO: why a reference to the system?
   csBulletSystem* system;
 
   PortalTraversalData* portalData;
@@ -117,8 +116,11 @@ public:
   virtual void SetCollisionCallback (CS::Collisions::iCollisionCallback* cb) {collCb = cb;}
   virtual CS::Collisions::iCollisionCallback* GetCollisionCallback () {return collCb;}
 
-  virtual bool Collide (CS::Collisions::iCollisionObject* otherObject);
-  virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end);
+  virtual csPtr<CS::Collisions::iCollisionData> Collide
+    (CS::Collisions::iCollisionObject* otherObject) const;
+
+  virtual CS::Collisions::HitBeamResult HitBeam
+    (const csVector3& start, const csVector3& end) const;
 
   virtual size_t GetContactObjectsCount ();
   virtual CS::Collisions::iCollisionObject* GetContactObject (size_t index);
@@ -130,9 +132,11 @@ public:
   bool TestOnGround ();
 
   /// Whether this object may be excluded from deactivation.
-  virtual bool GetDeactivable () const { return btObject->getActivationState () == DISABLE_DEACTIVATION; }
+  virtual bool GetDeactivable () const
+  { return btObject->getActivationState () == DISABLE_DEACTIVATION; }
   /// Whether this object may be excluded from deactivation.
-  virtual void SetDeactivable (bool d) { btObject->setActivationState (d ? 0 : DISABLE_DEACTIVATION); }
+  virtual void SetDeactivable (bool d)
+  { btObject->setActivationState (d ? 0 : DISABLE_DEACTIVATION); }
 
   /// Clone this object
   virtual btCollisionObject* CreateBulletObject ()

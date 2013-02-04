@@ -251,11 +251,31 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   const float radius (0.4f);
   const float length (0.8f);
 
-  // TODO: implement genmesh generation of a cone
+  // Create the cone mesh factory.
+  csRef<iMeshFactoryWrapper> coneFact =
+    engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh", "coneFact");
+  if (!coneFact)
+  {
+    ReportError ("Error creating mesh object factory!");
+    return 0;
+  }
 
-  // Create a body and attach the mesh and attach a cone collider.
+  csRef<iGeneralFactoryState> gmstate = scfQueryInterface<
+    iGeneralFactoryState> (coneFact->GetMeshObjectFactory ());
+  gmstate->GenerateCone (length, radius, 10);
+  coneFact->HardTransform
+    (csReversibleTransform (csXRotMatrix3 (PI * -0.5f), csVector3 (0.0f, 0.0f, length * -0.5f)));
+
+  // Create the mesh.
+  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (
+    coneFact, "cone"));
+
+  iMaterialWrapper* mat = engine->GetMaterialList ()->FindByName ("objtexture");
+  mesh->GetMeshObject ()->SetMaterialWrapper (mat);
+
+  // Create a body and attach the mesh.
   csRef<CS::Collisions::iColliderCone> cone = physicalSystem->CreateColliderCone (length, radius);
-  cone->SetLocalScale (csVector3 (rand ()%5/10. + .2, rand ()%5/10. + .2, rand ()%5/10. + .2));
+  //cone->SetLocalScale (csVector3 (rand ()%5/10. + .2, rand ()%5/10. + .2, rand ()%5/10. + .2));
 
   // Create object
   csRef<iRigidBodyFactory> factory = physicalSystem->CreateRigidBodyFactory (cone);
@@ -269,6 +289,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCone (bool setVelocity /* = true */)
   trans.SetOrigin (tc.GetOrigin () + tc.GetT2O () * csVector3 (0, 0, 1));
   trans.RotateThis (csXRotMatrix3 (PI / 5.0));
   rb->SetTransform (trans);
+  rb->SetAttachedSceneNode (mesh->QuerySceneNode ());
+  rb->QueryObject ()->SetObjectParent (mesh->QueryObject ());
 
   if (setVelocity)
   {
@@ -371,8 +393,8 @@ CS::Physics::iRigidBody* PhysDemo::SpawnCapsule (float length, float radius, boo
   csRef<iGeneralFactoryState> gmstate =
     scfQueryInterface<iGeneralFactoryState> (capsuleFact->GetMeshObjectFactory ());
   gmstate->GenerateCapsule (length, radius, 10);
-  capsuleFact->HardTransform (
-    csReversibleTransform (csYRotMatrix3 (PI/2), csVector3 (0)));
+  capsuleFact->HardTransform
+    (csReversibleTransform (csYRotMatrix3 (PI * 0.5f), csVector3 (0)));
 
   // Create the mesh.
   csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (

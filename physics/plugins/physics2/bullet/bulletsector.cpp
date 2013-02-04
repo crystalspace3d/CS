@@ -49,6 +49,7 @@
 #include "bulletsystem.h"
 #include "colliderprimitives.h"
 #include "collisionactor.h"
+#include "collisiondata.h"
 #include "collisionterrain.h"
 #include "common2.h"
 #include "dynamicactor.h"
@@ -60,35 +61,83 @@
 
 const float COLLISION_THRESHOLD = 0.01f;
 
+#define WORLD_AABB_DIMENSIONS 10000.0f
+
 using namespace CS::Collisions;
 using namespace CS::Physics;
 
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
-  //----------------------------------- PointContactResult -----------------------------------
+  //----------------------------------- PointContactResult's -----------------------------------
 
-  struct PointContactResult : public btCollisionWorld::ContactResultCallback
+  struct PointContactResultSingle : public btCollisionWorld::ContactResultCallback
   {
-    csArray<CS::Collisions::CollisionData>& collisions;
+    csRef<CollisionData> data;
     csBulletSystem* system;
 
-    PointContactResult (csBulletSystem* system, csArray<CS::Collisions::CollisionData>& collisions)
-      : collisions (collisions), system (system) 
+    PointContactResultSingle (csBulletSystem* system)
+      : system (system) 
     {
+    }
+
+    // TODO: new signature in Bullet 2.81:
+    //btScalar addSingleResult (btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap,
+    //                          int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap,
+    //                          int partId1, int index1)
+
+    virtual btScalar addSingleResult (btManifoldPoint& cp, const btCollisionObject* colObj0,
+				      int partId0, int index0, const btCollisionObject* colObj1,
+				      int partId1, int index1)
+    {
+      if (!data)
+      {
+	data.AttachNew (new CollisionData ());
+	data->objectA = static_cast<CS::Collisions::iCollisionObject*> (colObj0->getUserPointer ());
+	data->objectB = static_cast<CS::Collisions::iCollisionObject*> (colObj1->getUserPointer ());
+      }
+
+      csRef<CollisionContact> contact;
+      contact.AttachNew (new CollisionContact ());
+      contact->positionOnA = BulletToCS (cp.m_positionWorldOnA, system->GetInverseInternalScale ());
+      contact->positionOnB = BulletToCS (cp.m_positionWorldOnB, system->GetInverseInternalScale ());
+      contact->normalOnB = BulletToCS (cp.m_normalWorldOnB, system->GetInverseInternalScale ());
+      contact->penetration = cp.m_distance1 * system->GetInverseInternalScale ();
+      data->contacts.Push (contact);
+
+      return 0;
+    }
+  };
+
+  struct PointContactResultMulti : public btCollisionWorld::ContactResultCallback
+  {
+    csRef<CollisionDataList> collisions;
+    csBulletSystem* system;
+
+    PointContactResultMulti (csBulletSystem* system)
+      : system (system) 
+    {
+      collisions.AttachNew (new CollisionDataList ());
     }
 
     virtual btScalar addSingleResult (btManifoldPoint& cp, const btCollisionObject* colObj0,
 				      int partId0, int index0, const btCollisionObject* colObj1,
 				      int partId1, int index1)
     {
-      CS::Collisions::CollisionData data;
-      data.objectA = static_cast<CS::Collisions::iCollisionObject*> (colObj0->getUserPointer ());
-      data.objectB = static_cast<CS::Collisions::iCollisionObject*> (colObj1->getUserPointer ());
-      data.penetration = cp.m_distance1 * system->GetInverseInternalScale ();
-      data.positionWorldOnA = BulletToCS (cp.m_positionWorldOnA, system->GetInverseInternalScale ());
-      data.positionWorldOnB = BulletToCS (cp.m_positionWorldOnB, system->GetInverseInternalScale ());
-      data.normalWorldOnB = BulletToCS (cp.m_normalWorldOnB, system->GetInverseInternalScale ());
-      collisions.Push (data);
+      csRef<CollisionData> data;
+      data.AttachNew (new CollisionData ());
+      data->objectA = static_cast<CS::Collisions::iCollisionObject*> (colObj0->getUserPointer ());
+      data->objectB = static_cast<CS::Collisions::iCollisionObject*> (colObj1->getUserPointer ());
+
+      csRef<CollisionContact> contact;
+      contact.AttachNew (new CollisionContact ());
+      contact->positionOnA = BulletToCS (cp.m_positionWorldOnA, system->GetInverseInternalScale ());
+      contact->positionOnB = BulletToCS (cp.m_positionWorldOnB, system->GetInverseInternalScale ());
+      contact->normalOnB = BulletToCS (cp.m_normalWorldOnB, system->GetInverseInternalScale ());
+      contact->penetration = cp.m_distance1 * system->GetInverseInternalScale ();
+
+      data->contacts.Push (contact);
+      collisions->collisions.Push (data);
+
       return 0;
     }
   };
@@ -102,7 +151,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   }
 
   csBulletSector::csBulletSector (csBulletSystem* system)
-    : scfImplementationType (this), system (system), hitPortal (nullptr), softWorldInfo (nullptr),
+    : scfImplementationType (this), system (system), softWorldInfo (nullptr),
     linearDampening (system->linearDampening), angularDampening (system->angularDampening),
     linearDisableThreshold (system->linearDisableThreshold),
     angularDisableThreshold (system->angularDisableThreshold),
@@ -689,104 +738,21 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     updatables.Delete (u);   // delete last because that might be the last hard reference
   }
 
-  CS::Collisions::HitBeamResult csBulletSector::HitBeam (const csVector3& start, const csVector3& end)
+  CS::Collisions::HitBeamResult csBulletSector::HitBeam
+    (const csVector3& start, const csVector3& end) const
   {
-    btVector3 rayFrom = CSToBullet (start, system->GetInternalScale ());
-    btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
-
-    btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
-    bulletWorld->rayTest (rayFrom, rayTo, rayCallback);
-
     CS::Collisions::HitBeamResult result;
-
-    if (rayCallback.hasHit ())
-    {
-      CS::Collisions::iCollisionObject* collObject = static_cast<CS::Collisions::iCollisionObject*> (
-        rayCallback.m_collisionObject->getUserPointer ());
-
-      result.hasHit = true;
-
-      if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_GHOST_OBJECT
-        && rayCallback.m_collisionObject->getUserPointer () == nullptr)
-      {
-        // hit a ghost object (potentially a portal...)
-        collObject = nullptr;
-        result.hasHit = false;
-        hitPortal = btGhostObject::upcast (rayCallback.m_collisionObject);
-        if (hitPortal)
-        {
-          // this might be of interest to the caller
-          result.object = collObject;
-          result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-            system->GetInverseInternalScale ());
-          result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-            system->GetInverseInternalScale ());
-        }
-      }
-      else if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
-      {
-        // hit a soft body
-        btSoftBody* body = btSoftBody::upcast (rayCallback.m_collisionObject);
-        btSoftBody::sRayCast ray;
-
-        if (body->rayTest (rayFrom, rayTo, ray))
-        {
-          result.object = collObject;
-          result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-            system->GetInverseInternalScale ());
-          result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-            system->GetInverseInternalScale ());	
-
-          // Find the closest vertex that was hit
-          // TODO: there must be something more efficient than a second ray test
-          btVector3 impact = rayFrom + (rayTo - rayFrom) * ray.fraction;
-          switch (ray.feature)
-          {
-          case btSoftBody::eFeature::Face:
-            {
-              btSoftBody::Face& face = body->m_faces[ray.index];
-              btSoftBody::Node* node = face.m_n[0];
-              float distance = (node->m_x - impact).length2 ();
-
-              for (int i = 1; i < 3; i++)
-              {
-                float nodeDistance = (face.m_n[i]->m_x - impact).length2 ();
-                if (nodeDistance < distance)
-                {
-                  node = face.m_n[i];
-                  distance = nodeDistance;
-                }
-              }
-
-              result.vertexIndex = size_t (node - &body->m_nodes[0]);
-              break;
-            }
-          default:
-            break;
-          }
-          return result;
-        } //has hit softbody
-      } //softBody
-      else
-      { 
-        // "normal" object
-        result.object = collObject;
-        result.isect = BulletToCS (rayCallback.m_hitPointWorld,
-          system->GetInverseInternalScale ());
-        result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
-          system->GetInverseInternalScale ());
-        return result;
-      } // not softBody
-    } //has hit
+    HitBeam (start, end, result);
     return result;
   }
 
-  CS::Collisions::HitBeamResult csBulletSector::HitBeamPortal (const csVector3& start, const csVector3& end)
+  CS::Collisions::HitBeamResult csBulletSector::HitBeamPortal
+    (const csVector3& start, const csVector3& end) const
   {
+    // TODO: warp transform the end vector when crossing a portal
 
-    hitPortal = nullptr;
-
-    CS::Collisions::HitBeamResult result = HitBeam (start, end);
+    CS::Collisions::HitBeamResult result;
+    const btGhostObject* hitPortal = HitBeam (start, end, result);
 
     if (result.object == nullptr && hitPortal)
     {
@@ -822,116 +788,100 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return result;
   }
 
-  bool csBulletSector::CollisionTest (CS::Collisions::iCollisionObject* object, 
-    csArray<CS::Collisions::CollisionData>& collisions)
+  const btGhostObject* csBulletSector::HitBeam (const csVector3& start, const csVector3& end,
+						CS::Collisions::HitBeamResult& result) const
   {
+    btVector3 rayFrom = CSToBullet (start, system->GetInternalScale ());
+    btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
 
-    if (!object || object->IsPassive ())
-      return false;
+    btCollisionWorld::ClosestRayResultCallback rayCallback (rayFrom, rayTo);
+    bulletWorld->rayTest (rayFrom, rayTo, rayCallback);
 
-    size_t length = collisions.GetSize ();
-    PointContactResult result (system, collisions);
-
-    csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
-    if (collObject->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
+    if (rayCallback.hasHit ())
     {
-      bulletWorld->contactTest (collObject->btObject, result);
-    }
-    else
-    {
-      btPairCachingGhostObject* ghost = static_cast<btPairCachingGhostObject*> (btGhostObject::upcast (collObject->btObject));
+      CS::Collisions::iCollisionObject* collObject = static_cast<CS::Collisions::iCollisionObject*> (
+        rayCallback.m_collisionObject->getUserPointer ());
 
-      bulletWorld->getDispatcher ()->dispatchAllCollisionPairs (ghost->getOverlappingPairCache (), bulletWorld->getDispatchInfo (), bulletWorld->getDispatcher ());
+      result.hasHit = true;
 
-      for (int i = 0; i < ghost->getOverlappingPairCache ()->getNumOverlappingPairs (); i++)
+      if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_GHOST_OBJECT
+        && rayCallback.m_collisionObject->getUserPointer () == nullptr)
       {
-        btManifoldArray manifoldArray;
-        btBroadphasePair* collisionPair = &ghost->getOverlappingPairCache ()->getOverlappingPairArray ()[i];
-
-        if (collisionPair->m_algorithm)
-          collisionPair->m_algorithm->getAllContactManifolds (manifoldArray);
-
-        for (int j=0;j<manifoldArray.size ();j++)
+        // hit a ghost object (potentially a portal...)
+        collObject = nullptr;
+        result.hasHit = false;
+        const btGhostObject* hitPortal = btGhostObject::upcast (rayCallback.m_collisionObject);
+        if (hitPortal)
         {
-          btPersistentManifold* manifold = manifoldArray[j];
-          btCollisionObject* objA = static_cast<btCollisionObject*> (manifold->getBody0 ());
-          btCollisionObject* objB = static_cast<btCollisionObject*> (manifold->getBody1 ());
-          CS::Collisions::iCollisionObject* csCOA = static_cast<CS::Collisions::iCollisionObject*> (objA->getUserPointer ());
-          CS::Collisions::iCollisionObject* csCOB = static_cast<CS::Collisions::iCollisionObject*> (objB->getUserPointer ());
-          for (int p=0;p<manifold->getNumContacts ();p++)
+          // this might be of interest to the caller
+          result.object = collObject;
+          result.isect = BulletToCS (rayCallback.m_hitPointWorld,
+            system->GetInverseInternalScale ());
+          result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
+            system->GetInverseInternalScale ());
+	  return hitPortal;
+        }
+      }
+      else if (rayCallback.m_collisionObject->getInternalType () == btCollisionObject::CO_SOFT_BODY)
+      {
+        // hit a soft body
+        btSoftBody* body = btSoftBody::upcast (rayCallback.m_collisionObject);
+        btSoftBody::sRayCast ray;
+
+        if (body->rayTest (rayFrom, rayTo, ray))
+        {
+          result.object = collObject;
+          result.isect = BulletToCS (rayCallback.m_hitPointWorld,
+            system->GetInverseInternalScale ());
+          result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
+            system->GetInverseInternalScale ());	
+
+          // Find the closest vertex that was hit
+          // TODO: there must be something more efficient than a second ray test
+          btVector3 impact = rayFrom + (rayTo - rayFrom) * ray.fraction;
+          switch (ray.feature)
           {
-            CS::Collisions::CollisionData data;
-            data.objectA = csCOA;
-            data.objectB = csCOB;
+          case btSoftBody::eFeature::Face:
+            {
+              const btSoftBody::Face& face = body->m_faces[ray.index];
+              const btSoftBody::Node* node = face.m_n[0];
+              float distance = (node->m_x - impact).length2 ();
 
-            const btManifoldPoint& pt = manifold->getContactPoint (p);
-            data.penetration = pt.m_distance1 * system->GetInverseInternalScale ();
-            data.positionWorldOnA = BulletToCS (pt.m_positionWorldOnA, system->GetInverseInternalScale ());
-            data.positionWorldOnB = BulletToCS (pt.m_positionWorldOnB, system->GetInverseInternalScale ());
-            data.normalWorldOnB = BulletToCS (pt.m_normalWorldOnB, system->GetInverseInternalScale ());
-            collisions.Push (data);
+              for (int i = 1; i < 3; i++)
+              {
+                float nodeDistance = (face.m_n[i]->m_x - impact).length2 ();
+                if (nodeDistance < distance)
+                {
+                  node = face.m_n[i];
+                  distance = nodeDistance;
+                }
+              }
+
+              result.vertexIndex = size_t (node - &body->m_nodes[0]);
+              break;
+            }
+          default:
+            break;
           }
-        }
-      }
-    }
-
-    if (collObject->GetPortalData () && collObject->GetPortalData ()->OtherObject)
-    {
-      // Object is traversing a portal and thus has a clone that is in symbiosis with itself
-      csBulletCollisionObject* portalClone = collObject->GetPortalData ()->OtherObject;
-      csArray<CS::Collisions::CollisionData> copyData;
-      portalClone->sector->CollisionTest (portalClone, copyData);
-      for (size_t i = 0; i < copyData.GetSize (); i++)
-      {
-        CS::Collisions::CollisionData data;
-        if (copyData[i].objectA == portalClone)
-        {
-          data.objectA = object;
-          data.objectB = copyData[i].objectB;
-          csVector3 vec = portalClone->GetTransform ().Other2This (copyData[i].positionWorldOnA);
-          data.positionWorldOnA = collObject->GetTransform ().This2Other (vec);
-          // What's the position of the other object? Still in the other side of the portal?
-          data.positionWorldOnB = copyData[i].positionWorldOnB;
-          vec = portalClone->GetTransform ().Other2ThisRelative (copyData[i].normalWorldOnB);
-          data.normalWorldOnB = collObject->GetTransform ().This2OtherRelative (vec);
-        }
-        else
-        {
-          data.objectB = object;
-          data.objectA = copyData[i].objectA;
-          csVector3 vec = portalClone->GetTransform ().Other2This (copyData[i].positionWorldOnB);
-          data.positionWorldOnB = collObject->GetTransform ().This2Other (vec);
-          // What's the position of the other object? Still in the other side of the portal?
-          data.positionWorldOnA = copyData[i].positionWorldOnA;
-          vec = portalClone->GetTransform ().Other2ThisRelative (copyData[i].normalWorldOnB);
-          data.normalWorldOnB = collObject->GetTransform ().This2OtherRelative (vec);
-        }
-        data.penetration = copyData[i].penetration;
-        collisions.Push (data);
-      }
-    }
-
-    if (length != collisions.GetSize ())
-      return true;
-    else
-      return false;
+          return nullptr;
+        } //has hit softbody
+      } //softBody
+      else
+      { 
+        // "normal" object
+        result.object = collObject;
+        result.isect = BulletToCS (rayCallback.m_hitPointWorld,
+          system->GetInverseInternalScale ());
+        result.normal = BulletToCS (rayCallback.m_hitNormalWorld,
+          system->GetInverseInternalScale ());
+        return nullptr;
+      } // not softBody
+    } //has hit
+    return nullptr;
   }
 
-  bool csBulletSector::BulletCollide (btCollisionObject* objectA,
-    btCollisionObject* objectB,
-    csArray<CS::Collisions::CollisionData>& data)
-  {
-    PointContactResult result (system, data);
-    bulletWorld->contactPairTest (objectA, objectB, result);
-    if (data.IsEmpty ())
-      return false;
-    else
-      return true;
-  }
-
-  CS::Collisions::HitBeamResult csBulletSector::RigidHitBeam (btCollisionObject* object, 
-    const csVector3& start,
-    const csVector3& end)
+  CS::Collisions::HitBeamResult csBulletSector::RigidHitBeam
+    (btCollisionObject* object, const csVector3& start, const csVector3& end) const
   {
     btVector3 rayFrom = CSToBullet (start, system->GetInternalScale ());
     btVector3 rayTo = CSToBullet (end, system->GetInternalScale ());
@@ -1014,6 +964,148 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return result;
   }
 
+  csPtr<CS::Collisions::iCollisionDataList> csBulletSector::CollisionTest
+    (CS::Collisions::iCollisionObject* object)
+  {
+    if (!object) return csPtr<CS::Collisions::iCollisionDataList> (nullptr);
+
+    csBulletCollisionObject* collObject = dynamic_cast<csBulletCollisionObject*> (object);
+    if (collObject->IsPassive ()) return csPtr<CS::Collisions::iCollisionDataList> (nullptr);
+
+    csRef<CollisionDataList> collisions;
+
+    if (collObject->GetObjectType () == COLLISION_OBJECT_PHYSICAL)
+    {
+      PointContactResultMulti result (system);
+      bulletWorld->contactTest (collObject->btObject, result);
+      collisions = result.collisions;
+      CS_ASSERT (collisions);
+    }
+
+    else
+    {
+      btPairCachingGhostObject* ghost = static_cast<btPairCachingGhostObject*>
+	(btGhostObject::upcast (collObject->btObject));
+
+      bulletWorld->getDispatcher ()->dispatchAllCollisionPairs
+	(ghost->getOverlappingPairCache (), bulletWorld->getDispatchInfo (),
+	 bulletWorld->getDispatcher ());
+
+      for (int i = 0; i < ghost->getOverlappingPairCache ()->getNumOverlappingPairs (); i++)
+      {
+        btManifoldArray manifoldArray;
+        btBroadphasePair* collisionPair =
+	  &ghost->getOverlappingPairCache ()->getOverlappingPairArray ()[i];
+
+        if (collisionPair->m_algorithm)
+          collisionPair->m_algorithm->getAllContactManifolds (manifoldArray);
+
+        for (int j = 0; j < manifoldArray.size (); j++)
+        {
+          btPersistentManifold* manifold = manifoldArray[j];
+          const btCollisionObject* objA =
+	    static_cast<const btCollisionObject*> (manifold->getBody0 ());
+          const btCollisionObject* objB =
+	    static_cast<const btCollisionObject*> (manifold->getBody1 ());
+          CS::Collisions::iCollisionObject* csCOA =
+	    static_cast<CS::Collisions::iCollisionObject*> (objA->getUserPointer ());
+          CS::Collisions::iCollisionObject* csCOB =
+	    static_cast<CS::Collisions::iCollisionObject*> (objB->getUserPointer ());
+          for (int p=0;p<manifold->getNumContacts ();p++)
+          {
+	    csRef<CollisionData> data;
+	    data.AttachNew (new CollisionData ());
+            data->objectA = csCOA;
+            data->objectB = csCOB;
+
+            const btManifoldPoint& pt = manifold->getContactPoint (p);
+	    csRef<CollisionContact> contact;
+	    contact.AttachNew (new CollisionContact ());
+            contact->positionOnA = BulletToCS (pt.m_positionWorldOnA,
+					      system->GetInverseInternalScale ());
+            contact->positionOnB = BulletToCS (pt.m_positionWorldOnB,
+					      system->GetInverseInternalScale ());
+            contact->normalOnB = BulletToCS (pt.m_normalWorldOnB,
+					    system->GetInverseInternalScale ());
+            contact->penetration = pt.m_distance1 * system->GetInverseInternalScale ();
+
+	    data->contacts.Push (contact);
+	    collisions->collisions.Push (data);
+          }
+        }
+      }
+    }
+
+    if (collObject->GetPortalData () && collObject->GetPortalData ()->OtherObject)
+    {
+      // Object is traversing a portal and thus has a clone that is in symbiosis with itself
+      // TODO: objects colliding through both side of the portal will be added twice
+      csBulletCollisionObject* portalClone = collObject->GetPortalData ()->OtherObject;
+      csRef<CS::Collisions::iCollisionDataList> portalCollisions =
+	portalClone->sector->CollisionTest (portalClone);
+      for (size_t i = 0; i < portalCollisions->GetCollisionCount (); i++)
+      {
+	CS::Collisions::iCollisionData* collision = portalCollisions->GetCollision (i);
+	csRef<CollisionData> data;
+	data.AttachNew (new CollisionData ());
+
+	data->objectA = object;
+	data->objectB = collision->GetObjectB ();
+
+        if (collision->GetObjectA () == portalClone)
+        {
+	  for (size_t j = 0; j < collisions->GetCollisionCount (); j++)
+	  {
+	    iCollisionContact* portalContact = collision->GetContact (j);
+
+	    csRef<CollisionContact> contact;
+	    contact.AttachNew (new CollisionContact ());
+
+	    csVector3 vec = portalClone->GetTransform ().Other2This (portalContact->GetPositionOnA ());
+	    contact->positionOnA = collObject->GetTransform ().This2Other (vec);
+	    // What's the position of the other object? Still in the other side of the portal?
+	    contact->positionOnB = portalContact->GetPositionOnB ();
+	    vec = portalClone->GetTransform ().Other2ThisRelative (portalContact->GetNormalOnB ());
+	    contact->normalOnB = collObject->GetTransform ().This2OtherRelative (vec);
+	    contact->penetration = portalContact->GetPenetration ();
+	    data->contacts.Push (contact);
+	  }
+        }
+        else
+        {
+	  for (size_t j = 0; j < collisions->GetCollisionCount (); j++)
+	  {
+	    iCollisionContact* portalContact = collision->GetContact (j);
+
+	    csRef<CollisionContact> contact;
+	    contact.AttachNew (new CollisionContact ());
+
+	    csVector3 vec = portalClone->GetTransform ().Other2This (portalContact->GetPositionOnB ());
+	    contact->positionOnB = collObject->GetTransform ().This2Other (vec);
+	    // What's the position of the other object? Still in the other side of the portal?
+	    contact->positionOnA = portalContact->GetPositionOnA ();
+	    vec = portalClone->GetTransform ().Other2ThisRelative (portalContact->GetNormalOnB ());
+	    contact->normalOnB = collObject->GetTransform ().This2OtherRelative (vec);
+	    contact->penetration = portalContact->GetPenetration ();
+	    data->contacts.Push (contact);
+	  }
+	}
+
+	collisions->collisions.Push (data);
+      }
+    }
+
+    return collisions;
+  }
+
+  csPtr<CS::Collisions::iCollisionData> csBulletSector::BulletCollide
+    (btCollisionObject* objectA, btCollisionObject* objectB)
+  {
+    PointContactResultSingle result (system);
+    bulletWorld->contactPairTest (objectA, objectB, result);
+    return result.data;
+  }
+
   void csBulletSector::CheckCollisions ()
   {
     int numManifolds = bulletWorld->getDispatcher ()->getNumManifolds ();
@@ -1028,10 +1120,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         bulletWorld->getDispatcher ()->getManifoldByIndexInternal (i);
       if (contactManifold->getNumContacts ())
       {
-        btCollisionObject* obA =
-          static_cast<btCollisionObject*> (contactManifold->getBody0 ());
-        btCollisionObject* obB =
-          static_cast<btCollisionObject*> (contactManifold->getBody1 ());
+        const btCollisionObject* obA =
+          static_cast<const btCollisionObject*> (contactManifold->getBody0 ());
+        const btCollisionObject* obB =
+          static_cast<const btCollisionObject*> (contactManifold->getBody1 ());
 
         csBulletCollisionObject* csCOA = dynamic_cast <csBulletCollisionObject*>
 	  (static_cast<CS::Collisions::iCollisionObject*> (obA->getUserPointer ()));

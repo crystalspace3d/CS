@@ -109,30 +109,6 @@ bool PhysDemo::PickCursorObject (CS::Collisions::HitBeamResult& result)
   return nullptr;
 }
 
-
-bool PhysDemo::TestOnGround (CS::Collisions::iCollisionObject* obj)
-{
-  static const float groundAngleCosThresh = .7f;
-
-  // Find any objects that can at least remotely support the object
-  csArray<CollisionData> collisions;
-  GetCurrentSector ()->CollisionTest (obj, collisions);
-
-  for (size_t i = 0; i < collisions.GetSize (); ++i)
-  {
-    CollisionData& coll = collisions[i];
-
-    int dir = coll.objectA == obj ? 1 : -1;
-
-    float groundAngleCos = coll.normalWorldOnB * UpVector;
-    if (dir * groundAngleCos > groundAngleCosThresh)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
 void PhysDemo::PullObject (CS::Collisions::iCollisionObject* obj)
 {
   csVector3 from;

@@ -95,9 +95,6 @@ class csBulletSector : public scfVirtImplementationExt2<
 
   csBulletSystem* system;
 
-  // TODO: Get rid of this hitPortal field
-  btGhostObject* hitPortal;
-
   btDynamicsWorld* bulletWorld;
   btCollisionDispatcher* dispatcher;
   btDefaultCollisionConfiguration* configuration;
@@ -171,13 +168,21 @@ public:
   virtual void SetSector (iSector* sector);
   virtual iSector* GetSector () { return sector; }
 
-  virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, 
-    const csVector3& end);
-  virtual CS::Collisions::HitBeamResult HitBeamPortal (const csVector3& start, 
-    const csVector3& end);
+  virtual CS::Collisions::HitBeamResult HitBeam
+    (const csVector3& start, const csVector3& end) const;
+  virtual CS::Collisions::HitBeamResult HitBeamPortal
+    (const csVector3& start, const csVector3& end) const;
 
-  virtual bool CollisionTest (CS::Collisions::iCollisionObject* object, 
-    csArray<CS::Collisions::CollisionData>& collisions);
+  const btGhostObject* HitBeam (const csVector3& start, const csVector3& end,
+				CS::Collisions::HitBeamResult& result) const;
+  CS::Collisions::HitBeamResult RigidHitBeam
+    (btCollisionObject* object, const csVector3& start, const csVector3& end) const;
+
+  virtual csPtr<CS::Collisions::iCollisionDataList> CollisionTest
+    (CS::Collisions::iCollisionObject* object);
+
+  csPtr<CS::Collisions::iCollisionData> BulletCollide
+    (btCollisionObject* objectA, btCollisionObject* objectB);
 
   virtual void DeleteAll ();
 
@@ -207,14 +212,6 @@ public:
   //Currently will not use gimpact shape...
   //virtual void SetGimpactEnabled (bool enabled);
   //virtual bool GetGimpactEnabled ();
-
-  bool BulletCollide (btCollisionObject* objectA,
-    btCollisionObject* objectB,
-    csArray<CS::Collisions::CollisionData>& data);
-
-  CS::Collisions::HitBeamResult RigidHitBeam (btCollisionObject* object, 
-			     const csVector3& start,
-			     const csVector3& end);
 
   virtual void AddUpdatable (iUpdatable* u);
   virtual void RemoveUpdatable (iUpdatable* u);

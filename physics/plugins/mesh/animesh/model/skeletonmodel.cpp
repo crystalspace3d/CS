@@ -105,7 +105,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (SkeletonModel)
       return nullptr;
     }
 
-    // check boneid exists in skeleton
+    // Check that the bone id exists in the skeleton
     if (!skeletonFactory)
     {
       manager->Report (CS_REPORTER_SEVERITY_ERROR,
@@ -121,7 +121,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (SkeletonModel)
       return nullptr;
     }    
 
-    // check ID uniqueness
     csRef<BoneModel> newFact;
     newFact.AttachNew (new BoneModel (boneID));
 

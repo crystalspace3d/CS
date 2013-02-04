@@ -149,47 +149,30 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     return group;
   }
 
-/*
-  void csBulletCollisionObject::SetCollisionGroup (const char* name)
-  {
-    SetCollisionGroup (system->FindCollisionGroup (name));
-  }
-
-  void csBulletCollisionObject::SetCollisionGroup (const CollisionGroup& group)
-  {
-    this->collGroup = group;
-
-    if (btObject && insideWorld)
-    {
-      btObject->getBroadphaseHandle ()->m_collisionFilterGroup = group.value;
-      btObject->getBroadphaseHandle ()->m_collisionFilterMask = group.mask;
-
-      // re-add object
-      RemoveBulletObject ();
-      AddBulletObject ();
-    }
-  }
-*/
-  bool csBulletCollisionObject::Collide (CS::Collisions::iCollisionObject* otherObject)
-  {
-    csArray<CS::Collisions::CollisionData> data;
-    csBulletCollisionObject* otherObj = dynamic_cast<csBulletCollisionObject*> (otherObject);
-
-    //Object/Body VS object.
-    btCollisionObject* otherBtObject = dynamic_cast<csBulletCollisionObject*> (otherObject)->GetBulletCollisionPointer ();
-    bool result = sector->BulletCollide (btObject, otherBtObject, data);
-    if (result && collCb)
-    {
-      collCb->OnCollision (this, otherObj, data);
-    }
-
-    return result;
-  }
-
-  CS::Collisions::HitBeamResult csBulletCollisionObject::HitBeam (const csVector3& start,
-    const csVector3& end)
+  CS::Collisions::HitBeamResult csBulletCollisionObject::HitBeam
+    (const csVector3& start, const csVector3& end) const
   {
     return sector->RigidHitBeam (btObject, start, end);
+  }
+
+  csPtr<CS::Collisions::iCollisionData> csBulletCollisionObject::Collide (iCollisionObject* otherObject) const
+  {
+    btCollisionObject* otherBtObject = dynamic_cast<csBulletCollisionObject*>
+      (otherObject)->GetBulletCollisionPointer ();
+    csRef<CS::Collisions::iCollisionData> data =
+      sector->BulletCollide (btObject, otherBtObject);
+
+    // Call the listener if any (probably not desired)
+/*
+    if (data && collCb)
+    {
+      csBulletCollisionObject* otherObj =
+	dynamic_cast<csBulletCollisionObject*> (otherObject);
+      collCb->OnCollision (data);
+    }
+*/
+
+    return csPtr<CS::Collisions::iCollisionData> (data);
   }
 
   size_t csBulletCollisionObject::GetContactObjectsCount ()
@@ -291,20 +274,22 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     static const float groundAngleCosThresh = .7f;
 
     // Find any objects that can at least remotely support the object
-    csArray<CollisionData> collisions;
-    sector->CollisionTest (this, collisions);
+    // TODO: this is really not efficient
+    csRef<iCollisionDataList> collisions = sector->CollisionTest (this);
 
-    //int objBeneathCount = 0;
-    for (size_t i = 0; i < collisions.GetSize (); ++i)
+    for (size_t i = 0; i < collisions->GetCollisionCount (); i++)
     {
-      CollisionData& coll = collisions[i];
+      iCollisionData* coll = collisions->GetCollision (i);
       
-      int dir = coll.objectA == this ? 1 : -1;
+      int dir = coll->GetObjectA () == this ? 1 : -1;
 
-      float groundAngleCos = coll.normalWorldOnB * csVector3 (0.0f, 1.0f, 0.0f);
-      if (dir * groundAngleCos > groundAngleCosThresh)
+      for (size_t j = 0; j < coll->GetContactCount (); j++)
       {
-        return true;
+	iCollisionContact* contact = coll->GetContact (j);
+	
+	float groundAngleCos = contact->GetNormalOnB () * csVector3 (0.0f, 1.0f, 0.0f);
+	if (dir * groundAngleCos > groundAngleCosThresh)
+	  return true;
       }
     }
     return false;

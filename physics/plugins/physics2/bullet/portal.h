@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2012 by Dominik Seifert
-    Copyright (C) 2011-2012 by Christian Van Brussel
+    Copyright (C) 2011 by Liu Lu
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

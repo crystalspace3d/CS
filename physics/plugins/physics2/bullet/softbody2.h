@@ -98,8 +98,6 @@ public:
 
   virtual CS::Collisions::iCollider* GetCollider (size_t index) {return nullptr;}
 
-  virtual bool Collide (iCollisionObject* otherObject)
-  { return csBulletCollisionObject::Collide (otherObject); }
   virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end);
 
   btSoftBody* GetBulletSoftPointer () {return btBody;}

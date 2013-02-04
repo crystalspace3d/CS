@@ -75,11 +75,6 @@ public:
 
   virtual void SetCollider (CS::Collisions::iCollider* collider);
 
-  virtual bool Collide (iCollisionObject* otherObject)
-  { return csBulletCollisionObject::Collide (otherObject); }
-  virtual CS::Collisions::HitBeamResult HitBeam (const csVector3& start, const csVector3& end)
-  { return csBulletCollisionObject::HitBeam (start, end);}
-
   btRigidBody* GetBulletRigidPointer () {return btBody;}
   virtual bool RemoveBulletObject ();
   virtual bool AddBulletObject ();

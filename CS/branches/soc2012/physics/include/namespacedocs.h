@@ -72,6 +72,12 @@ namespace CS
   {}
 
   /**
+   * Loading and saving helper classes.
+   */
+  namespace Persistence
+  {}
+
+  /**
    * General tools for the edition of Crystal Space objects.
    */
   namespace Editor
@@ -131,6 +137,12 @@ namespace CS
       {}
     }
   }
+
+  /**
+   * Multimedia content manipulation
+   */
+  namespace Media
+  {}
 
   /**
    * Memory allocation
@@ -248,6 +260,12 @@ namespace CS
    * else
    */
   namespace Utility
+  {}
+
+  /**
+   * Classes/helpers for wxWidgets integration
+   */
+  namespace WX
   {}
 }
 

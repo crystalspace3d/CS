@@ -73,6 +73,9 @@ def StringProperty(types, **kwargs):
 
 def EnumProperty(types, **kwargs):
   Property('EnumProperty', types, **kwargs)  
+
+def FloatProperty(types, **kwargs):
+  Property('FloatProperty', types, **kwargs)  
         
 class B2CS:
   def B2CSGetProperties(self):
@@ -94,7 +97,10 @@ B2CS = B2CS()
 
 SHADERS =(("DEFAULT", "Default", "Default"),
           ("*null", "*null", "Shader with no effect."),
-          ("/shader/lighting/lighting_default_binalpha.xml", "lighting_default_binalpha", "Use when using a texture with binary alpha."),) 
+          ("/shader/lighting/lighting_default_binalpha.xml", "lighting_default_binalpha", "Use when using a texture with binary alpha."),
+          ("/shader/lighting/fullbright.xml", "lighting_fullbright", "Use when you want a material to be full bright."),
+          ("/shader/reflect/water_plane.xml", "reflect_water_plane", "A reflecting water-like material.."),
+          ("/shader/reflect/glass.xml", "glass", "A glass-like material.."),)
 
 def GetShaderName(f):
   i = [l[0] for l in SHADERS].index(f)

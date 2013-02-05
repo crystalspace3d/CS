@@ -126,6 +126,7 @@ void csMeshWrapper::SetFactory (iMeshFactoryWrapper* factory)
   }
 
   csMeshWrapper::factory = factory;
+  imposterFactory = scfQueryInterface<iImposterFactory> (factory);
   SetParentContext (factory ? factory->GetSVContext() : 0);
 }
 
@@ -345,8 +346,7 @@ csMeshWrapper::~csMeshWrapper ()
 {
   if (using_imposter)
   {
-    iImposterFactory* factwrap = dynamic_cast<iImposterFactory*> (factory);
-    factwrap->RemoveImposter (this);
+    imposterFactory->RemoveImposter (this);
   }
 
   // Copy the array because we are going to unlink the children.
@@ -361,22 +361,6 @@ csMeshWrapper::~csMeshWrapper ()
 
 void csMeshWrapper::UpdateMove ()
 {
-}
-
-bool csMeshWrapper::SomeParentHasStaticLOD () const
-{
-  if (!movable.GetParent ()) return false;
-  iSceneNode* parent_node = movable.GetParent ()->GetSceneNode ();
-  iMeshWrapper* parent_mesh = parent_node->QueryMesh ();
-  while (!parent_mesh)
-  {
-    parent_node = parent_node->GetParent ();
-    if (!parent_node) return false;
-    parent_mesh = parent_node->QueryMesh ();
-  }
-
-  if (((csMeshWrapper*)parent_mesh)->static_lod) return true;
-  return ((csMeshWrapper*)parent_mesh)->SomeParentHasStaticLOD ();
 }
 
 void csMeshWrapper::MoveToSector (iSector *s)
@@ -516,7 +500,8 @@ void csMeshWrapper::SetRenderPriority (CS::Graphics::RenderPriority rp)
 }
 
 csRenderMesh** csMeshWrapper::GetRenderMeshes (int& n, iRenderView* rview, 
-					       uint32 frustum_mask)
+					       uint32 frustum_mask,
+					       iMeshObject* loddedobject)
 {
   if (DoInstancing())
   {
@@ -532,30 +517,26 @@ csRenderMesh** csMeshWrapper::GetRenderMeshes (int& n, iRenderView* rview,
     }
   }
 
-  if (factory && drawing_imposter != rview->GetCamera())
+  if (imposterFactory && drawing_imposter != rview->GetCamera())
   {
-    csRef<iImposterFactory> factwrap = scfQueryInterface<iImposterFactory> (factory);
-    if (factwrap)
+    if (UseImposter (rview))
     {
-      if (UseImposter (rview))
+      if (!using_imposter)
       {
-        if (!using_imposter)
-        {
-          factwrap->AddImposter (this, rview);
-          using_imposter = true;
-        }
+        imposterFactory->AddImposter (this, rview);
+        using_imposter = true;
+      }
 
-        if(factwrap->RenderingImposter (this))
-        {
-          n = 0;
-          return 0;
-        }
-      }
-      else if (using_imposter)
+      if(imposterFactory->RenderingImposter (this))
       {
-        factwrap->RemoveImposter (this);
-        using_imposter = false;
+        n = 0;
+        return 0;
       }
+    }
+    else if (using_imposter)
+    {
+      imposterFactory->RemoveImposter (this);
+      using_imposter = false;
     }
   }
 
@@ -601,8 +582,11 @@ csRenderMesh** csMeshWrapper::GetRenderMeshes (int& n, iRenderView* rview,
   }
 
   csTicks lt = engine->GetLastAnimationTime ();
-  meshobj->NextFrame (lt, movable.GetPosition (), 
-    rview->GetCurrentFrameNumber ());
+
+  iMeshObject* obj = meshobj;
+  if (loddedobject) obj = loddedobject;
+
+  obj->NextFrame (lt, movable.GetPosition (), rview->GetCurrentFrameNumber ());
 
   csMeshWrapper *meshwrap = this;
   last_anim_time = lt;
@@ -620,7 +604,7 @@ csRenderMesh** csMeshWrapper::GetRenderMeshes (int& n, iRenderView* rview,
     parent = parent->GetParent ();
   }
 
-  CS::Graphics::RenderMesh** rmeshes = meshobj->GetRenderMeshes (n, rview, &movable,
+  CS::Graphics::RenderMesh** rmeshes = obj->GetRenderMeshes (n, rview, &movable,
   	old_ctxt != 0 ? 0 : frustum_mask);
   if (DoInstancing())
   {
@@ -876,24 +860,6 @@ iLODControl* csMeshWrapper::GetStaticLOD ()
   return (iLODControl*)static_lod;
 }
 
-void csMeshWrapper::RemoveMeshFromStaticLOD (iMeshWrapper* mesh)
-{
-  if (!static_lod) return;	// No static lod, nothing to do here.
-  int lod;
-  for (lod = 0 ; lod < static_lod->GetLODCount () ; lod++)
-  {
-    csArray<iMeshWrapper*>& meshes_for_lod = static_lod->GetMeshesForLOD (lod);
-    meshes_for_lod.Delete (mesh);
-  }
-}
-
-void csMeshWrapper::AddMeshToStaticLOD (int lod, iMeshWrapper* mesh)
-{
-  if (!static_lod) return;	// No static lod, nothing to do here.
-  csArray<iMeshWrapper*>& meshes_for_lod = static_lod->GetMeshesForLOD (lod);
-  meshes_for_lod.Push (mesh);
-}
-
 //---------------------------------------------------------------------------
 
 bool csMeshWrapper::UseImposter (iRenderView *rview)
@@ -950,12 +916,12 @@ csHitBeamResult csMeshWrapper::HitBeamOutline (
 csHitBeamResult csMeshWrapper::HitBeamObject (
   const csVector3 &start,
   const csVector3 &end,
-  bool do_material)
+  bool do_material, bool bf)
 {
   csHitBeamResult rc;
   rc.material = 0;
   rc.hit = meshobj->HitBeamObject (start, end, rc.isect, &rc.r,
-  	&rc.polygon_idx, do_material ? &rc.material : 0);
+  	&rc.polygon_idx, do_material ? &rc.material : 0, bf);
   return rc;
 }
 
@@ -963,7 +929,7 @@ csHitBeamResult csMeshWrapper::HitBeamObject (
 csHitBeamResult csMeshWrapper::HitBeam (
   const csVector3 &start,
   const csVector3 &end,
-  bool do_material)
+  bool do_material, bool bf)
 {
   csHitBeamResult rc;
 
@@ -986,7 +952,7 @@ csHitBeamResult csMeshWrapper::HitBeam (
   {
     if (do_material)
     {
-      rc.hit = meshobj->HitBeamObject (startObj, endObj, rc.isect, &rc.r, 0, &rc.material);
+      rc.hit = meshobj->HitBeamObject (startObj, endObj, rc.isect, &rc.r, 0, &rc.material, bf);
     }
     else
     {

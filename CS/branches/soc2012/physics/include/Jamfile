@@ -39,6 +39,7 @@ CS_MASTER_HEADER_REJECTS =
   [ Wildcard [ ConcatDirs cstool noise model           ] : *.h ]
   [ Wildcard [ ConcatDirs cstool noise module          ] : *.h ]
   [ ConcatDirs cstool   tokenlist.h  ]
+  [ ConcatDirs cstool   wxappargconvert.h  ]
   [ ConcatDirs csutil   archive.h    ]
   [ ConcatDirs csutil   csosdefs.h   ]
   [ ConcatDirs csutil   custom_new_disable.h ]
@@ -210,7 +211,8 @@ CS_MASTER_HEADERS =
       itexture
       iutil
       ivaria
-      ivideo :
+      ivideo
+      ivideodecode :
       $(CS_MASTER_HEADER_BOILERPLATE) 
       $(CS_MASTER_HEADER_DOC_DIRECTORY) 
       $(CS_MASTER_HEADER_INCLUDE_CSSYSDEF_H) : 

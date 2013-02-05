@@ -32,18 +32,29 @@ options are specified by a number of @samp{@emph{option}=@emph{value}} pairs.
 
 @table @code
 @item vertexlight
-Values: @samp{yes}, @samp{no}
+Apply to: mesh objects, factories
+Possible values: @samp{yes}, @samp{no}
 
 Enable per-vertex lighting.
 
 @item lmscale
-Values: floating point values
+Apply to: mesh factories
+Possible values: floating point number
 
 Control lightmap density.
 
 @item noselfshadow
-Values: @samp{yes}, @samp{no}
+Apply to: mesh objects, factories
+Possible values: @samp{yes}, @samp{no}
 
 Disables casting of shadows from an object onto itself.
+
+@item numPhotons
+Apply to : sector
+
+Values : integer values
+
+Set the number of photons to by emitted for this sector. Only when using photon
+mapping. The sector will not be affected by the global ``numPhotons'' option.
 
 @end table

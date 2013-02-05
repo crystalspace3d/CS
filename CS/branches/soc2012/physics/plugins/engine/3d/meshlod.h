@@ -59,8 +59,8 @@ class csStaticLODMesh : public scfImplementation1<csStaticLODMesh,
                                                   iLODControl>
 {
 private:
-  /// All static lod levels.
-  csArray<csArray<iMeshWrapper*> > meshes_for_lod;
+  /// Static lod's. New-style version.
+  csRefArray<iMeshObject> objects_for_lod;
 
   /// Function for lod.
   float lod_m, lod_a, lod_f;
@@ -101,65 +101,48 @@ public:
     return lod_m * distance + lod_a;
   }
 
-  /// Get the mesh array for the numerical lod.
-  csArray<iMeshWrapper*>& GetMeshesForLOD (int lod)
+  /**
+   * Add a new-style static lod mesh object.
+   */
+  void AddMeshObjectForLOD (iMeshObject* object)
   {
-    if (lod >= (int)meshes_for_lod.GetSize ())
-    {
-      meshes_for_lod.SetSize (lod+1);
-    }
-    return meshes_for_lod[lod];
+    objects_for_lod.Push (object);
   }
 
-  /// Get the mesh array for a lod between 0 and 1.
-  csArray<iMeshWrapper*>& GetMeshesForLOD (float lod)
+  /**
+   * Get the mesh object for the numerical lod (new-style). Returns 0 for
+   * highest detail level (0) as that is not kept in this structure.
+   */
+  iMeshObject* GetMeshObjectForLOD (int lod)
   {
-    int l = (int)meshes_for_lod.GetSize ();
+    if (lod == 0) return 0;
+    lod--;
+    if (lod >= (int)objects_for_lod.GetSize ())
+    {
+      objects_for_lod.SetSize (lod+1);
+    }
+    return objects_for_lod[lod];
+  }
+
+  /**
+   * Get the mesh array for a lod between 0 and 1 (new-style).
+   * Returns 0 for highest detail level (0) as that is not kept in this structure.
+   */
+  iMeshObject* GetMeshObjectForLOD (float lod)
+  {
+    int l = (int)objects_for_lod.GetSize ()+1; // One more because highest detail is in wrapper.
     int idx = int (lod * l);
     if (idx < 0) idx = 0;
     else if (idx >= l) idx = l-1;
-    return meshes_for_lod[idx];
-  }
-
-  bool GetMeshesForLODFaded (float lod, csArray<iMeshWrapper*>*& meshes1,
-    csArray<iMeshWrapper*>*& meshes2, float& fade)
-  {
-    int l = (int)meshes_for_lod.GetSize ();
-    if (lod_f > EPSILON)
-    {
-      float idxF = lod * l;
-      idxF = csClamp (idxF, l-1+lod_f, -lod_f);
-      int idx = csClamp (int (idxF), l-1, 0);
-      if ((idx > 0) && ((idxF - idx) < lod_f))
-      {
-	// Fade in from prev LOD level
-	meshes1 = &(meshes_for_lod[idx]);
-	meshes2 = &(meshes_for_lod[idx-1]);
-	fade = (idxF - idx) / (lod_f * 2.0f) + 0.5f;
-	return true;
-      }
-      else if ((idx < l-1) && (((idx + 1) - idxF) < lod_f))
-      {
-	// Fade out to next LOD level
-	meshes1 = &(meshes_for_lod[idx+1]);
-	meshes2 = &(meshes_for_lod[idx]);
-	fade = 0.5f - (((idx + 1) - idxF) / (lod_f * 2.0f));
-	return true;
-      }
-    }
-    int idx = int (lod * l);
-    if (idx < 0) idx = 0;
-    else if (idx >= l) idx = l-1;
-    meshes1 = &(meshes_for_lod[idx]);
-    meshes2 = 0;
-    fade = 1;
-    return false;
+    if (idx == 0) return 0;
+    idx--;
+    return objects_for_lod[idx];
   }
 
   /// Get number of lod levels we have.
   int GetLODCount ()
   {
-    return (int)meshes_for_lod.GetSize ();
+    return (int)objects_for_lod.GetSize ()+1;
   }
 };
 
@@ -172,9 +155,6 @@ class csStaticLODFactoryMesh : public scfImplementation1<csStaticLODFactoryMesh,
                                                          iLODControl>
 {
 private:
-  /// All static lod levels.
-  csArray<csArray<iMeshFactoryWrapper*> > meshes_for_lod;
-
   /// Function for lod.
   float lod_m, lod_a, lod_f;
   /// Or using variables.
@@ -205,22 +185,6 @@ public:
   void SetLODFade (iSharedVariable* varf);
   void GetLODFade (iSharedVariable*& varf) const
   { varf = lod_varf; }
-
-  /// Get the mesh array for the numerical lod.
-  csArray<iMeshFactoryWrapper*>& GetMeshesForLOD (int lod)
-  {
-    if (lod >= (int)meshes_for_lod.GetSize ())
-    {
-      meshes_for_lod.SetSize (lod+1);
-    }
-    return meshes_for_lod[lod];
-  }
-
-  /// Get number of lod levels we have.
-  int GetLODCount ()
-  {
-    return (int)meshes_for_lod.GetSize ();
-  }
 };
 
 #endif // __CS_MESHLOD_H__

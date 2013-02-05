@@ -92,7 +92,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  {
 	    hasTarget = true;
 	    break;
-      }
+	  }
 	}
       }
       
@@ -151,11 +151,11 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
     // renders for visibility culling
     void RenderVisibilityCulling()
-      {
+    {
       // visculling only needs to be rendered once per sector.
       csSet<iSector*> sectors;
       for(size_t c = 0; c < contextStack.GetSize(); ++c)
-	{
+      {
 	ContextNodeType* ctx = contextStack[c];
 
 	// check whether this sector was already handled
@@ -169,7 +169,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	  // render for visibility culling if required by culler
 	  ctx->sector->GetVisibilityCuller()->RenderViscull(rview, ctx->shadervars);
-      }
+	}
       }
     }
 
@@ -223,7 +223,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// render out all layers
 	for(size_t i = 0; i < layerCount; ++i)
-	  {
+	{
 	  RenderLayer<false>(i, ctxCount);
 	}
 
@@ -233,7 +233,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	contextStack.Empty();
 
 	return;
-	    }
+      }
 
       // create the light render here as we'll use it a lot
       LightRenderType lightRender(graphics3D, shaderMgr, rview,
@@ -247,7 +247,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       // gbuffer fill step
       gbuffer.Attach();
-        {
+      {
 	// setup clipper
 	if(context->useClipper)
 	  graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
@@ -265,9 +265,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
         // z only pass - maybe we shouldn't allow disabling it.
 	if(zonlyLayer != (size_t)-1)
-          {
+        {
 	  RenderLayer<false>(zonlyLayer, ctxCount);
-          }
+        }
 
 	// deferred pass
         // @@@TODO: we could check for CS_ENTITY_NOLIGHTING and
@@ -282,10 +282,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
       // light accumulation step
       gbuffer.AttachAccumulation();
-	{
+      {
 	// setup clipper
 	if(context->useClipper)
-	graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
+	  graphics3D->SetClipper(rview->GetClipper(), CS_CLIPPER_TOPLEVEL);
 	else
 	  graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
 
@@ -309,7 +309,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// accumulate lighting data
 	RenderLights(deferredLayer, ctxCount, lightRender);
-          
+
 	// clear clipper
 	graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
       }
@@ -338,22 +338,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	// set tex scale for lookups.
 	lightRenderPersistent.scale->SetValue(context->texScale);
 
-	// early z pass - could be disabled if occluvis is used - but how would we know?
-	if(!useDeferredShading && zonlyLayer != (size_t)-1)
-	{
-	  RenderLayer<false>(zonlyLayer, ctxCount);
-	}
-
 	// deferred shading - output step
 	if(useDeferredShading)
 	{
 	  lightRender.OutputResults();
-          }
+	}
 	// deferred lighting - output step
 	else
 	{
 	  RenderLayer<true>(lightingLayer, ctxCount);
-        }
+	}
 
         // forward rendering
 	RenderForwardMeshes(layerCount, ctxCount);
@@ -365,7 +359,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	  // output light volumes
 	  RenderLights(deferredLayer, ctxCount, lightVolumeRender);
-      }
+	}
 
 	// clear clipper
 	graphics3D->SetClipper(nullptr, CS_CLIPPER_TOPLEVEL);
@@ -405,7 +399,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// render all forward meshes
 	RenderObjects<RenderType, ForEachForwardMeshNode>(layer, ctxCount, meshRender);
-    }
+      }
     }
 
     template<typename T, void fn(ContextNodeType&,T&)>
@@ -425,7 +419,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 
 	// render all objects given a render
 	fn(*ctx, render);
-    }
+      }
     }
 
   private:

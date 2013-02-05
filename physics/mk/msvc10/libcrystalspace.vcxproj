@@ -1211,6 +1211,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csgfx\shadervarframeholder.cpp" />
     <ClCompile Include="..\..\libs\csgfx\shadervarnameparser.cpp" />
     <ClCompile Include="..\..\libs\csgfx\textureformatstrings.cpp" />
+    <ClCompile Include="..\..\libs\csgfx\universalimageconv.cpp" />
     <ClCompile Include="..\..\libs\csgfx\xorpat.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\canvas\canvascommon.cpp" />
     <ClCompile Include="..\..\libs\csplugincommon\canvas\cursorconvert.cpp" />
@@ -1404,6 +1405,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\libs\csutil\simplejobqueue.cpp" />
     <ClCompile Include="..\..\libs\csutil\snprintf.cpp" />
     <ClCompile Include="..\..\libs\csutil\sparse3d.cpp" />
+    <ClCompile Include="..\..\libs\csutil\stat_common.cpp" />
     <ClCompile Include="..\..\libs\csutil\staticvarcleanup.cpp" />
     <ClCompile Include="..\..\libs\csutil\strcasestr.cpp" />
     <ClCompile Include="..\..\libs\csutil\strhashr.cpp" />
@@ -1523,6 +1525,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\csgfx\shadervarnameparser.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\textureformatstrings.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\trianglestream.h" />
+    <ClInclude Include="..\..\libs\..\include\csgfx\universalimageconv.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\vertexlight.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\vertexlistwalker.h" />
     <ClInclude Include="..\..\libs\..\include\csgfx\xorpat.h" />
@@ -1643,6 +1646,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\cstool\noise\vectortable.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\normalcalc.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\numberedfilenamehelper.h" />
+    <ClInclude Include="..\..\libs\..\include\cstool\objectcomment.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\objmodel.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\pen.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\primitives.h" />
@@ -1663,6 +1667,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\libs\..\include\cstool\userrndbuf.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\vertexcompress.h" />
     <ClInclude Include="..\..\libs\..\include\cstool\vfsdirchange.h" />
+    <ClInclude Include="..\..\libs\..\include\cstool\wxappargconvert.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\algorithms.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\alignedalloc.h" />
     <ClInclude Include="..\..\libs\..\include\csutil\allocator.h" />

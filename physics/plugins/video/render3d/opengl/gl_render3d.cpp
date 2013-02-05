@@ -1828,7 +1828,6 @@ bool csGLGraphics3D::ActivateTexture (iTextureHandle *txthandle, int unit)
   if (ext->CS_GL_ARB_multitexture)
   {
     statecache->SetCurrentImageUnit (unit);
-    statecache->ActivateImageUnit ();
   }
   else if (unit != 0) return false;
 
@@ -1946,7 +1945,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -1963,7 +1961,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -3234,8 +3231,8 @@ void csGLGraphics3D::SetClipper (iClipper2D* clipper, int cliptype)
       r2tbackend->SetClipRect (scissorRect);
     else
     {
-      GLint vp[4];
-      glGetIntegerv (GL_VIEWPORT, vp);
+      int vp[4];
+      G2D->GetViewport (vp[0], vp[1], vp[2], vp[3]);
       glScissor (vp[0] + scissorRect.xmin, vp[1] + scissorRect.ymin, scissorRect.Width(),
 	scissorRect.Height());
     }
@@ -3459,7 +3456,6 @@ void csGLGraphics3D::DrawSimpleMeshes (const csSimpleRenderMesh* meshes,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (0);
-	statecache->ActivateImageUnit ();
 	statecache->SetCurrentTCUnit (0);
 	statecache->ActivateTCUnit (csGLStateCache::activateTexCoord);
       }

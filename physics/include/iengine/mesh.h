@@ -262,7 +262,7 @@ struct csScreenBoxResult
  */
 struct iMeshWrapper : public virtual iBase
 {
-  SCF_INTERFACE(iMeshWrapper, 5, 0, 0);
+  SCF_INTERFACE(iMeshWrapper, 7, 0, 0);
 
   /**
    * Get the iObject for this mesh object. This can be used to get the
@@ -354,10 +354,11 @@ struct iMeshWrapper : public virtual iBase
    * This version can also return the material that was hit (this will
    * only happen if 'do_material' is true). This is not
    * supported by all meshes so this can return 0 even if there was a hit.
+   * If 'bf' is set then this function will do backface culling.
    * \sa csHitBeamResult
    */
   virtual csHitBeamResult HitBeamObject (const csVector3& start,
-  	const csVector3& end, bool do_material = false) = 0;
+  	const csVector3& end, bool do_material = false, bool bf = false) = 0;
 
   /**
    * Check if this object is hit by this world space vector.
@@ -365,11 +366,13 @@ struct iMeshWrapper : public virtual iBase
    * This version can also return the material that was hit (this will
    * only happen if 'do_material' is true). This is not
    * supported by all meshes so this can return 0 even if there was a hit.
+   * If 'bf' is set then this function will do backface culling. Note! This
+   * will only happen if do_material is set to true.
    * \sa csHitBeamResult iSector::HitBeam() iSector::HitBeamPortals()
    * CS::Physics::Bullet::iDynamicSystem::HitBeam()
    */
   virtual csHitBeamResult HitBeam (const csVector3& start,
-  	const csVector3& end, bool do_material = false) = 0;
+  	const csVector3& end, bool do_material = false, bool bf = false) = 0;
 
   /**
    * Set a callback which is called just before the object is drawn.
@@ -593,27 +596,9 @@ struct iMeshWrapper : public virtual iBase
   virtual iLODControl* GetStaticLOD () = 0;
 
   /**
-   * Set a given child mesh at a specific lod level. Note that a mesh
-   * can be at several lod levels at once.
-   */
-  virtual void AddMeshToStaticLOD (int lod, iMeshWrapper* mesh) = 0;
-
-  /**
-   * Remove a child mesh from all lod levels. The mesh is not removed
-   * from the list of child meshes however.
-   */
-  virtual void RemoveMeshFromStaticLOD (iMeshWrapper* mesh) = 0;
-
-  /**
    * Get the shader variable context of the mesh object.
    */
   virtual iShaderVariableContext* GetSVContext() = 0;
-
-  /**
-   * Get the render mesh list for this mesh wrapper and given view
-   */
-  virtual csRenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
-    uint32 frustum_mask) = 0;
 
   /**
    * Adds a render mesh to the list of extra render meshes.
@@ -696,7 +681,8 @@ struct iMeshWrapper : public virtual iBase
  */
 struct iMeshFactoryWrapper : public virtual iBase
 {
-  SCF_INTERFACE(iMeshFactoryWrapper, 3, 0, 1);
+  SCF_INTERFACE(iMeshFactoryWrapper, 4, 0, 1);
+
   /// Get the iObject for this mesh factory.
   virtual iObject *QueryObject () = 0;
   /// Get the iMeshObjectFactory.
@@ -799,18 +785,6 @@ struct iMeshFactoryWrapper : public virtual iBase
    * Get the LOD function parameters for this factory.
    */
   virtual void GetStaticLOD (float& m, float& a) const = 0;
-
-  /**
-   * Set a given child factory at a specific lod level. Note that a factory
-   * can be at several lod levels at once.
-   */
-  virtual void AddFactoryToStaticLOD (int lod, iMeshFactoryWrapper* fact) = 0;
-
-  /**
-   * Remove a child factory from all lod levels. The factory is not removed
-   * from the list of factories however.
-   */
-  virtual void RemoveFactoryFromStaticLOD (iMeshFactoryWrapper* fact) = 0;
 
   /**
    * Set the Z-buf drawing mode to use for this factory. All objects created

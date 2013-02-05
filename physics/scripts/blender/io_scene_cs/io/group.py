@@ -69,9 +69,10 @@ def GroupAsCSLib(self, path=''):
   # Export group
   fa = open(Join(path, 'factories/', self.uname), 'w')
   self.WriteCSLibHeader(Write(fa))
-  groupDeps = self.GetDependencies()
   use_imposter = self.HasImposter()
-  ExportMaterials(Write(fa), 2, path, groupDeps, use_imposter)
+  if not B2CS.properties.sharedMaterial:
+    groupDeps = self.GetDependencies()
+    ExportMaterials(Write(fa), 2, groupDeps, use_imposter)
   self.WriteCSGroup(Write(fa), 2, use_imposter, dontClose=False)
   fa.close()
 
@@ -152,6 +153,12 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
       func(' '*depth + '      <noshadowcast />')
     if ob.data and ob.data.limited_shadow_cast:
       func(' '*depth + '      <limitedshadowcast />')
+    if ob.data.lighter2_vertexlight:
+      func(' '*depth + '      <key name="lighter2" editoronly="yes" vertexlight="yes" />')
+    if ob.data.lighter2_selfshadow:
+      func(' '*depth + '      <key name="lighter2" editoronly="yes" noselfshadow="yes" />')
+    if ob.data.lighter2_lmscale > 0.0:
+      func(' '*depth + '      <key name="lighter2" editoronly="yes" lmscale="%f" />'%(ob.data.lighter2_lmscale))
     func(' '*depth + '      <params>')
 
     # Export render buffers
@@ -214,12 +221,18 @@ def WriteCSGroup(self, func, depth=0, use_imposter=False, dontClose=False):
         func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
       if mat != None and mat.zbuf_mode != 'zuse':
         func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
-      if ob.data and ob.data.no_shadowreceive:
+      if ob.data and ob.data.no_shadow_receive:
         func(' '*depth + '  <noshadowreceive />')
       if ob.data and ob.data.no_shadow_cast:
         func(' '*depth + '  <noshadowcast />')
       if ob.data and ob.data.limited_shadow_cast:
         func(' '*depth + '  <limitedshadowcast />')
+      if ob.data.lighter2_vertexlight:
+        func(' '*depth + '  <key name="lighter2" editoronly="yes" vertexlight="yes" />')
+      if ob.data.lighter2_selfshadow:
+        func(' '*depth + '  <key name="lighter2" editoronly="yes" noselfshadow="yes" />')
+      if ob.data.lighter2_lmscale > 0.0:
+        func(' '*depth + '  <key name="lighter2" editoronly="yes" lmscale="%f" />'%(ob.data.lighter2_lmscale))
     func(' '*depth + '  <params>')
     
     def SubmeshesLackMaterial(subMeshess):

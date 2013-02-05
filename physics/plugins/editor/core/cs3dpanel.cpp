@@ -31,6 +31,7 @@
 #include "iutil/plugin.h"
 #include "iutil/virtclk.h"
 #include "iengine/campos.h"
+#include "iengine/rendermanager.h"
 #include "iengine/sector.h"
 #include "iengine/scenenode.h"
 #include "iengine/mesh.h"
@@ -56,6 +57,7 @@ SCF_IMPLEMENT_FACTORY (CS3DPanel);
 
 BEGIN_EVENT_TABLE(CS3DPanel::Panel, wxPanel)
   EVT_SIZE(CS3DPanel::Panel::OnSize)
+  EVT_IDLE(CS3DPanel::Panel::OnIdle)
 END_EVENT_TABLE()
 
 
@@ -155,7 +157,7 @@ bool CS3DPanel::Initialize (iObjectRegistry* obj_reg)
   the timer triggers the next frame.
   */
   
-  pump = new Pump(this);
+  pump.Reset (new Pump());
   pump->Start (20);
   
   return true;
@@ -164,7 +166,6 @@ bool CS3DPanel::Initialize (iObjectRegistry* obj_reg)
 CS3DPanel::~CS3DPanel()
 {
   q->RemoveListener (this);
-  delete pump;
 }
 
 wxWindow* CS3DPanel::GetWindow ()
@@ -416,15 +417,11 @@ void CS3DPanel::MoveCamera ()
 void CS3DPanel::ProcessFrame ()
 {
   MoveCamera ();
-  
-  // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_CLEARSCREEN | CSDRAW_3DGRAPHICS))
-    return;
   csRef<iGraphics2D> g2d = g3d->GetDriver2D ();
 
-  // Tell the camera to render into the frame buffer.
-  view->Draw ();
-  
+  // Render the 3D view
+  engine->GetRenderManager ()->RenderView (view);
+
   // draw helpers here
   csArray<csSimpleRenderMesh>* helperm = editor->GetHelperMeshes ();
   if (helperm && editor->GetTransformStatus () != iEditor::NOTHING)
@@ -513,13 +510,6 @@ void CS3DPanel::FinishFrame ()
   g3d->Print (0);
 }
 
-void CS3DPanel::PushFrame ()
-{
-  vc->Advance();
-  q->Process();
-  wxYield();
-}
-
 void CS3DPanel::OnSize (wxSizeEvent& event)
 {
   if (!g3d.IsValid () || !g3d->GetDriver2D () || !view.IsValid ())
@@ -543,6 +533,12 @@ void CS3DPanel::OnSize (wxSizeEvent& event)
   view->SetRectangle (0, 0, size.x, size.y);
 
   event.Skip();
+}
+
+void CS3DPanel::OnIdle (wxIdleEvent& event)
+{
+  vc->Advance();
+  q->Process();
 }
 
 void CS3DPanel::OnDrop (wxCoord x, wxCoord y, iEditorObject* obj)

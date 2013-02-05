@@ -45,261 +45,262 @@ namespace CS
   {
     Graphics2DCommon::Graphics2DCommon () : fontCache (0), viewportIsFullScreen (true)
     {
-  is_open = false;
-  object_reg = 0;
-  weakEventHandler = 0;
+      is_open = false;
+      object_reg = 0;
+      weakEventHandler = 0;
 
-  fontCache = 0;
+      fontCache = 0;
     }
 
     Graphics2DCommon::~Graphics2DCommon ()
     {
-  if (weakEventHandler != 0)
-  {
-    csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
-    if (q != 0)
-      CS::RemoveWeakListener (q, weakEventHandler);
-  }
-  Close ();
+      if (weakEventHandler != 0)
+      {
+        csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+        if (q != 0)
+          CS::RemoveWeakListener (q, weakEventHandler);
+      }
+      Close ();
     }
 
-    void Graphics2DCommon::HandleResize ()
-  {
+    void Graphics2DCommon::HandleResize (iEvent& Event)
+    {
       if (viewportIsFullScreen)
-  {
+      {
           int fbWidth, fbHeight;
           GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
           SetViewport (0, 0, fbWidth, fbHeight);
-  }
-  }
+          SetClipRect (0, 0, fbWidth, fbHeight);
+      }
+    }
 
     bool Graphics2DCommon::Initialize (iObjectRegistry* r)
-  {
+    {
       CS_ASSERT (r != 0);
       object_reg = r;
       plugin_mgr = csQueryRegistry<iPluginManager> (object_reg);
       // Get the system parameters
       GetCanvas()->GetFramebufferDimensions (vpWidth, vpHeight);
 
-  // Get the font server: A missing font server is NOT an error
-  if (!FontServer)
-  {
-    FontServer = csQueryRegistry<iFontServer> (object_reg);
-  }
+      // Get the font server: A missing font server is NOT an error
+      if (!FontServer)
+      {
+        FontServer = csQueryRegistry<iFontServer> (object_reg);
+      }
     #ifdef CS_DEBUG
-  if (!FontServer)
-  {
-    csReport (r, CS_REPORTER_SEVERITY_WARNING,
-      "crystalspace.graphics2d.common",
-      "Canvas driver couldn't find a font server plugin!  "
-      "This is normal if you don't want one (warning displays only in "
-      "debug mode)");
-  }
+      if (!FontServer)
+      {
+        csReport (r, CS_REPORTER_SEVERITY_WARNING,
+          "crystalspace.graphics2d.common",
+          "Canvas driver couldn't find a font server plugin!  "
+          "This is normal if you don't want one (warning displays only in "
+          "debug mode)");
+      }
     #endif
 
       evCanvasResize = csevCanvasResize (object_reg, GetCanvas());
-  csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
-  if (q != 0)
-  {
+      csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
+      if (q != 0)
+      {
         csEventID events[4] = { csevSystemOpen (object_reg),
                                 csevSystemClose (object_reg),
                                 evCanvasResize,
-			    CS_EVENTLIST_END };
-    CS::RegisterWeakListener (q, this, events, weakEventHandler);
-  }
-  return true;
+                                CS_EVENTLIST_END };
+        CS::RegisterWeakListener (q, this, events, weakEventHandler);
+      }
+      return true;
     }
 
     bool Graphics2DCommon::HandleEvent (iEvent& Event)
     {
-  if (Event.Name == csevSystemOpen (object_reg))
-  {
-    Open ();
-    return true;
-  }
-  else if (Event.Name == csevSystemClose (object_reg))
-  {
-    Close ();
-    return true;
-  }
-      else if (Event.Name == evCanvasResize)
+      if (Event.Name == csevSystemOpen (object_reg))
       {
-        HandleResize ();
+        Open ();
         return true;
       }
-  else
-  {
-    return false;
-  }
+      else if (Event.Name == csevSystemClose (object_reg))
+      {
+        Close ();
+        return true;
+      }
+      else if (Event.Name == evCanvasResize)
+      {
+        HandleResize (Event);
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
 
     bool Graphics2DCommon::Open ()
     {
-  if (is_open) return true;
-  is_open = true;
+      if (is_open) return true;
+      is_open = true;
 
       if (!GetCanvas()->CanvasOpen()) return false;
 
       int fbWidth, fbHeight;
       GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
 
-  vpLeft = 0;
-  vpTop = 0;
+      vpLeft = 0;
+      vpTop = 0;
       vpWidth = fbWidth;
       vpHeight = fbHeight;
 
-  FrameBufferLocked = 0;
+      FrameBufferLocked = 0;
 
-  SetClipRect (0, 0, fbWidth, fbHeight);
+      SetClipRect (0, 0, fbWidth, fbHeight);
 
-  return true;
+      return true;
     }
 
     void Graphics2DCommon::Close ()
     {
-  if (!is_open) return;
-  is_open = false;
+      if (!is_open) return;
+      is_open = false;
       GetCanvas()->CanvasClose();
-  delete fontCache;
-  fontCache = 0;
+      delete fontCache;
+      fontCache = 0;
     }
 
     bool Graphics2DCommon::BeginDraw ()
     {
-  FrameBufferLocked++;
-  return true;
+      FrameBufferLocked++;
+      return true;
     }
 
     void Graphics2DCommon::FinishDraw ()
     {
-  if (FrameBufferLocked)
-    FrameBufferLocked--;
+      if (FrameBufferLocked)
+        FrameBufferLocked--;
     }
 
     void Graphics2DCommon::Clear(int color)
     {
-  DrawBox (0, 0, vpWidth, vpHeight, color);
+      DrawBox (0, 0, vpWidth, vpHeight, color);
     }
 
     void Graphics2DCommon::ClearAll (int color)
     {
-  if (!BeginDraw ())
-    return;
-  Clear (color);
-  FinishDraw ();
+      if (!BeginDraw ())
+        return;
+      Clear (color);
+      FinishDraw ();
       GetCanvas()->Print (nullptr);
     }
 
     void Graphics2DCommon::SetClipRect (int xmin, int ymin, int xmax, int ymax)
     {
-  if (xmin < 0) xmin = 0;
-  else if (xmin > vpWidth) xmin = vpWidth;
-  if (xmax < 0) xmax = 0;
-  else if (xmax > vpWidth) xmax = vpWidth;
-  if (ymin < 0) ymin = 0;
-  else if (ymin > vpHeight) ymin = vpHeight;
-  if (ymax < 0) ymax = 0;
-  else if (ymax > vpHeight) ymax = vpHeight;
-  ClipX1 = xmin; ClipX2 = xmax;
-  ClipY1 = ymin; ClipY2 = ymax;
+      if (xmin < 0) xmin = 0;
+      else if (xmin > vpWidth) xmin = vpWidth;
+      if (xmax < 0) xmax = 0;
+      else if (xmax > vpWidth) xmax = vpWidth;
+      if (ymin < 0) ymin = 0;
+      else if (ymin > vpHeight) ymin = vpHeight;
+      if (ymax < 0) ymax = 0;
+      else if (ymax > vpHeight) ymax = vpHeight;
+      ClipX1 = xmin; ClipX2 = xmax;
+      ClipY1 = ymin; ClipY2 = ymax;
 
-  if (fontCache)
-    fontCache->SetClipRect (ClipX1, ClipY1, ClipX2, ClipY2);
+      if (fontCache)
+        fontCache->SetClipRect (ClipX1, ClipY1, ClipX2, ClipY2);
     }
 
     void Graphics2DCommon::GetClipRect (int &xmin, int &ymin, int &xmax, int &ymax)
     {
-  xmin = ClipX1; xmax = ClipX2;
-  ymin = ClipY1; ymax = ClipY2;
+      xmin = ClipX1; xmax = ClipX2;
+      ymin = ClipY1; ymax = ClipY2;
     }
 
     /* helper function for ClipLine below */
     bool Graphics2DCommon::CLIPt(float denom, float num, float& tE, float& tL)
     {
-    float t;
+        float t;
 
-    if(denom > 0)
-    {
-        t = num / denom;
-        if(t > tL) return false;
-        else if(t > tE) tE = t;
-    }
-    else if(denom < 0)
-    {
-        t = num / denom;
-        if(t < tE) return false;
-        else if(t < tL) tL = t; // note: there is a mistake on this line in the C edition of the book!
-    }
+        if(denom > 0)
+        {
+            t = num / denom;
+            if(t > tL) return false;
+            else if(t > tE) tE = t;
+        }
+        else if(denom < 0)
+        {
+            t = num / denom;
+            if(t < tE) return false;
+            else if(t < tL) tL = t; // note: there is a mistake on this line in the C edition of the book!
+        }
         else
-      if(num > 0) return false;
-    return true;
+          if(num > 0) return false;
+        return true;
     }
 
     /* This function and the next one were taken
-   from _Computer Graphics: Principals and Practice_ (2nd ed)
-   by Foley et al
-   This implements the Liang-Barsky efficient parametric
-   line-clipping algorithm
+      from _Computer Graphics: Principals and Practice_ (2nd ed)
+      by Foley et al
+      This implements the Liang-Barsky efficient parametric
+      line-clipping algorithm
     */
     bool Graphics2DCommon::ClipLine (float &x0, float &y0, float &x1, float &y1,
-                             int xmin, int ymin, int xmax, int ymax)
+                                int xmin, int ymin, int xmax, int ymax)
     {
-    // exclude the left/bottom edges (the Liang-Barsky algorithm will
-    // clip to those edges exactly, whereas the documentation for
-    // ClipLine specifies that the lower/bottom edges are excluded)
-    xmax--;
-    ymax--;
+        // exclude the left/bottom edges (the Liang-Barsky algorithm will
+        // clip to those edges exactly, whereas the documentation for
+        // ClipLine specifies that the lower/bottom edges are excluded)
+        xmax--;
+        ymax--;
 
-    float dx = x1 - x0;
-    float dy = y1 - y0;
-    bool visible = false;
+        float dx = x1 - x0;
+        float dy = y1 - y0;
+        bool visible = false;
 
         if(dx == 0 && dy == 0 && x0 >= xmin && y0 >= ymin && x0 < xmax && y0 < ymax)
-    {
-        visible = true;
-    }
-    else
-    {
-        float tE = 0.0;
-        float tL = 1.0;
-        if(CLIPt(dx, xmin - x0, tE, tL))
-            if(CLIPt(-dx, x0 - xmax, tE, tL))
-                if(CLIPt(dy, ymin - y0, tE, tL))
-                    if(CLIPt(-dy, y0 - ymax, tE, tL))
-                    {
-                        visible = true;
-                        if(tL < 1.0)
-			{
-                            x1 = x0 + tL * dx;
-                            y1 = y0 + tL * dy;
+        {
+            visible = true;
+        }
+        else
+        {
+            float tE = 0.0;
+            float tL = 1.0;
+            if(CLIPt(dx, xmin - x0, tE, tL))
+                if(CLIPt(-dx, x0 - xmax, tE, tL))
+                    if(CLIPt(dy, ymin - y0, tE, tL))
+                        if(CLIPt(-dy, y0 - ymax, tE, tL))
+                        {
+                            visible = true;
+                            if(tL < 1.0)
+                {
+                                x1 = x0 + tL * dx;
+                                y1 = y0 + tL * dy;
+                            }
+                            if(tE > 0)
+                {
+                                x0 += tE * dx;
+                                y0 += tE * dy;
+                            }
                         }
-                        if(tE > 0)
-			{
-                            x0 += tE * dx;
-                            y0 += tE * dy;
-                        }
-                    }
-    }
-    return !visible;
+        }
+        return !visible;
     }
 
     void Graphics2DCommon::Write (iFont *font, int x, int y, int fg, int bg,
                   const char *text, uint flags)
     {
-  if (!text || !*text) return;
-  fontCache->WriteString (font, x, y, fg, bg, text, false, flags);
+      if (!text || !*text) return;
+      fontCache->WriteString (font, x, y, fg, bg, text, false, flags);
     }
 
     void Graphics2DCommon::Write (iFont *font, int x, int y, int fg, int bg,
                   const wchar_t*text, uint flags)
     {
-  if (!text || !*text) return;
-  fontCache->WriteString (font, x, y, fg, bg, text, true, flags);
+      if (!text || !*text) return;
+      fontCache->WriteString (font, x, y, fg, bg, text, true, flags);
     }
 
     bool Graphics2DCommon::PerformExtensionV (char const* command, va_list args)
     {
-  return false;
+      return false;
     }
 
     bool Graphics2DCommon::Resize (int w, int h)
@@ -309,35 +310,35 @@ namespace CS
       if (!GetCanvas()->CanvasResize (w, h))
         return false;
 
-  if (!is_open)
-  {
-    // Still in Initialization phase, configuring size of canvas
+      if (!is_open)
+      {
+        // Still in Initialization phase, configuring size of canvas
         GetCanvas()->GetFramebufferDimensions (vpWidth, vpHeight);
-    return true;
-  }
+        return true;
+      }
 
       if (old_width != w || old_height != h)
-  {
-    if ((vpLeft == 0) && (vpTop == 0)
+      {
+        if ((vpLeft == 0) && (vpTop == 0)
             && (vpWidth == old_width) && (vpHeight == old_height))
-    {
-      vpWidth = w;
-      vpHeight = h;
-    }
-  }
-  return true;
+        {
+          vpWidth = w;
+          vpHeight = h;
+        }
+      }
+      return true;
     }
 
     void Graphics2DCommon::SetViewport (int left, int top, int width, int height)
     {
-  vpLeft = left; vpTop = top; vpWidth = width; vpHeight = height;
-  fontCache->SetViewportOfs (left, top);
+      vpLeft = left; vpTop = top; vpWidth = width; vpHeight = height;
+      fontCache->SetViewportOfs (left, top);
 
       int fbWidth, fbHeight;
       GetCanvas()->GetFramebufferDimensions (fbWidth, fbHeight);
       viewportIsFullScreen = (vpLeft == 0) && (vpTop == 0)
         && (vpWidth == fbWidth) && (vpHeight == fbHeight);
-  }
+    }
   } // namespace PluginCommon
 } // namespace CS
 
@@ -351,7 +352,7 @@ csGraphics2D::~csGraphics2D () {}
 
 bool csGraphics2D::DebugCommand (const char* /*cmd*/)
 {
-    return false;
+  return false;
 }
 
 bool csGraphics2D::Initialize (iObjectRegistry* r)

@@ -1640,6 +1640,9 @@
 				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\universalimageconv.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
 			</File>
 			<File
@@ -2219,6 +2222,9 @@
 				RelativePath="..\..\libs\csutil\sparse3d.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\stat_common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\staticvarcleanup.cpp">
 			</File>
 			<File
@@ -2572,6 +2578,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csgfx\universalimageconv.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csgfx\vertexlight.h">
@@ -2934,6 +2943,9 @@
 				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\objectcomment.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -2992,6 +3004,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\vfsdirchange.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\wxappargconvert.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\algorithms.h">

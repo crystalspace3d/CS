@@ -13615,6 +13615,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *PlanePolygon = *cspacec::csIntersect3_PlanePolygon;
 *SegmentFrustum = *cspacec::csIntersect3_SegmentFrustum;
 *SegmentTriangle = *cspacec::csIntersect3_SegmentTriangle;
+*SegmentTriangleBF = *cspacec::csIntersect3_SegmentTriangleBF;
 *SegmentPolygon = *cspacec::csIntersect3_SegmentPolygon;
 *SegmentPlanes = *cspacec::csIntersect3_SegmentPlanes;
 *SegmentPlane = *cspacec::csIntersect3_SegmentPlane;
@@ -17351,6 +17352,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *RegisterAnimCallback = *cspacec::iSpriteCal3DFactoryState_RegisterAnimCallback;
 *RemoveAnimCallback = *cspacec::iSpriteCal3DFactoryState_RemoveAnimCallback;
 *AbsoluteRescaleFactory = *cspacec::iSpriteCal3DFactoryState_AbsoluteRescaleFactory;
+*GetScaleFactor = *cspacec::iSpriteCal3DFactoryState_GetScaleFactor;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});

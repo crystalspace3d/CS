@@ -209,6 +209,7 @@ private:
 
   /// Optional reference to the parent csMeshFactoryWrapper.
   iMeshFactoryWrapper* factory;
+  csRef<iImposterFactory> imposterFactory;
 
   /// Z-buf mode to use for drawing this object.
   csZBufMode zbufMode;
@@ -431,14 +432,10 @@ public:
   virtual iLODControl* CreateStaticLOD ();
   virtual void DestroyStaticLOD ();
   virtual iLODControl* GetStaticLOD ();
-  virtual void RemoveMeshFromStaticLOD (iMeshWrapper* mesh);
-  virtual void AddMeshToStaticLOD (int lod, iMeshWrapper* mesh);
   csStaticLODMesh* GetStaticLODMesh () const { return static_lod; }
-  /// Return true if there is a parent mesh that has static lod.
-  bool SomeParentHasStaticLOD () const;
 
-  virtual CS::Graphics::RenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
-  	uint32 frustum_mask);
+  CS::Graphics::RenderMesh** GetRenderMeshes (int& num, iRenderView* rview,
+  	uint32 frustum_mask, iMeshObject* loddedobject);
   /**
    * Adds a render mesh to the list of extra render meshes.
    * This list is used for special cases (like decals) where additional
@@ -506,9 +503,9 @@ public:
   virtual csHitBeamResult HitBeamOutline (const csVector3& start,
   	const csVector3& end);
   virtual csHitBeamResult HitBeamObject (const csVector3& start,
-  	const csVector3& end, bool do_material = false);
+  	const csVector3& end, bool do_material = false, bool bf = false);
   virtual csHitBeamResult HitBeam (const csVector3& start,
-  	const csVector3& end, bool do_material = false);
+  	const csVector3& end, bool do_material = false, bool bf = false);
 
   /**
    * Calculate the squared distance between the camera and the object.

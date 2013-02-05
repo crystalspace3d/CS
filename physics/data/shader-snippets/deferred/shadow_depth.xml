@@ -209,6 +209,10 @@
         attenuation *= 0.0625; // 1/16
 -->
       }
+
+      // discard unlit fragments
+      clip(attenuation);
+
       attenuation_attr_perfragment = true;
     </block>
 
@@ -217,7 +221,7 @@
     <![CDATA[
       // go over all shadow maps and find the one applicapble to us
       int slice;
-      for(slice = 0; slice < min(shadowSpread,MAX_CSM); ++slice)
+      for(slice = 0; slice < shadowSpread && slice < MAX_CSM; ++slice)
       {
         // check whether we are in this slice
         if(positionV.z >= shadowMapClip[slice].x && positionV.z <= shadowMapClip[slice].y)
@@ -227,7 +231,7 @@
       }
 
       // check whether we fit somewhere
-      if(slice == min(shadowSpread,MAX_CSM))
+      if(slice == shadowSpread || slice == MAX_CSM)
       {
         // this should NOT happen
         discard;
@@ -300,6 +304,13 @@
         // how did we end up here?
         attenuation = 1.0;
       }
+
+      // discard unlit fragments
+      if(attenuation == 0.0)
+      {
+        discard;
+      }
+
       attenuation_attr_perfragment = true;
     </block>
 

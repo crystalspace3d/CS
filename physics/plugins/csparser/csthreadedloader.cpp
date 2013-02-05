@@ -84,7 +84,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
   SCF_IMPLEMENT_FACTORY(csThreadedLoader)
 
   csThreadedLoader::csThreadedLoader(iBase *p)
-  : scfImplementationType (this, p), loaderFlags (CS_LOADER_NONE), listSync(false)
+  : scfImplementationType (this, p), loaderFlags (CS_LOADER_NONE), listSync(false), shaderSets (this)
   {
   }
 
@@ -153,6 +153,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       ReportError("crystalspace.level.threadedloader", "Failed to find iGraphics3D!");
       return false;
     }
+
+    // Read shader sets
+    // TODO: Don't hardcode path
+    shaderSets.ParseShaderSets ("/config/shadersets-default.xml");
 
     // Optional
     eseqmgr = csQueryRegistryOrLoad<iEngineSequenceManager> (object_reg,
@@ -2081,17 +2085,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
         }
         break;
       case XMLTOKEN_LODLEVEL:
-        {
-          if (!parent)
-          {
-            SyntaxService->ReportError (
-              "crystalspace.maploader.load.meshfactory", child,
-              "Factory must be part of a hierarchy for <lodlevel>!");
-            return false;
-          }
-          parent->AddFactoryToStaticLOD (child->GetContentsValueAsInt (),
-            stemp);
-        }
+	SyntaxService->ReportError ("crystalspace.maploader.load.meshfactory", child,
+	    "The old-style LOD using <lodlevel> and a nullmesh as a parent is no longer supported. Use a factory hierarchy with the highest detail as the parent instead.");
         break;
       case XMLTOKEN_STATICLOD:
         {
@@ -3661,17 +3656,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
     return true;
   }
 
-  // Return true if the matrix does not scale.
-  static bool TestOrthoMatrix (csMatrix3& m)
-  {
-    // Test if the matrix does not scale. Scaling meshes is illegal
-    // in CS (must be done through hardmove).
-    csVector3 v = m * csVector3 (1, 1, 1);
-    float norm = v.Norm ();
-    float desired_norm = 1.7320508f;
-    return ABS (norm-desired_norm) < 0.01f;
-  }
-
   template<typename T>
   static void ClearList (CS::Threading::ReadWriteMutex& mutex, T& list)
   {
@@ -3845,24 +3829,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
       }
       break;
     case XMLTOKEN_LODLEVEL:
-      {
-        TEST_MISSING_MESH
-          if (!parent)
-          {
-            SyntaxService->ReportError (
-              "crystalspace.maploader.load.meshobject", child,
-              "Mesh must be part of a hierarchical mesh for <lodlevel>!");
-            return false;
-          }
-          if (!parent->GetStaticLOD ())
-          {
-            SyntaxService->ReportError (
-              "crystalspace.maploader.load.meshobject", child,
-              "Parent mesh must use <staticlod>!");
-            return false;
-          }
-          parent->AddMeshToStaticLOD (child->GetContentsValueAsInt (), mesh);
-      }
+      SyntaxService->ReportError ("crystalspace.maploader.load.meshobject", child,
+	    "The old-style LOD using <lodlevel> and a nullmesh as a parent is no longer supported. Use a factory hierarchy with the highest detail as the parent instead.");
       break;
     case XMLTOKEN_LOD:
       {
@@ -4217,12 +4185,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
           csMatrix3 m;
           if (!SyntaxService->ParseMatrix (matrix_node, m))
             return false;
-          if (!TestOrthoMatrix (m))
-          {
-            ReportWarning (
-              "crystalspace.maploader.load.mesh",
-              child, "Scaling of mesh objects is not allowed in CS!");
-          }
           mesh->GetMovable ()->SetTransform (m);
         }
         csRef<iDocumentNode> vector_node = child->GetNode ("v");
@@ -4662,12 +4624,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(csparser)
             csMatrix3 m;
             if (!SyntaxService->ParseMatrix (matrix_node, m))
               return false;
-            if (!TestOrthoMatrix (m))
-            {
-              ReportWarning (
-                "crystalspace.maploader.load.mesh",
-                child, "Scaling of mesh objects is not allowed in CS!");
-            }
             mesh->GetMovable ()->SetTransform (m);
           }
           csRef<iDocumentNode> vector_node = child->GetNode ("v");

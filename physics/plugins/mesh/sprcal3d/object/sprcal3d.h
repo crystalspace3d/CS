@@ -286,6 +286,11 @@ public:
   void SetBasePath(const char *path);
   void RescaleFactory(float factor);
   void AbsoluteRescaleFactory(float factor);
+
+  /** Gets the current scaling factor of this mesh.
+   * \return The factor this mesh is currently resized.
+   */
+  float GetScaleFactor() { return currentScalingFactor; }
   void CalculateAllBoneBoundingBoxes();
 
   bool LoadCoreSkeleton(iVFS *vfs,const char *filename,
@@ -607,7 +612,7 @@ public:
       csVector3& intersect, float* pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
       csVector3& intersect, float* pr, int* = 0,
-      iMaterialWrapper** = 0);
+      iMaterialWrapper** = 0, bool bf = false);
 
   virtual bool SetColor (const csColor& /*col*/)
   {

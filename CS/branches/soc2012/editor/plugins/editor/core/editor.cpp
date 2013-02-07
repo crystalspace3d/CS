@@ -31,6 +31,7 @@
 #include "statusbar.h"
 #include "window.h"
 
+#include <wx/app.h>
 #include <wx/log.h>
 
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
@@ -114,8 +115,12 @@ bool EditorManager::StartApplication ()
     editors[i]->Init ();
 
   // Initialize the pump (the refresh rate is in millisecond)
+  // This pump will update the editors and the manager regularly
   pump = new Pump (this);
   pump->Start (20);
+
+  // Connect to the Idle event
+  wxTheApp->Connect (wxEVT_IDLE, wxIdleEventHandler (EditorManager::OnIdle), 0, this);
 
   return true;
 }
@@ -159,14 +164,23 @@ size_t EditorManager::GetEditorCount () const
 
 void EditorManager::Update ()
 {
-  // Update the virtual clock and the global event queue
-  vc->Advance ();
-  eventQueue->Process ();
-  //wxYield();
-
   // Update each editor instance
   for (size_t i = 0; i < editors.GetSize (); i++)
     editors[i]->Update ();
+
+  // Ensure idle events are regularly generated
+  wxWakeUpIdle ();
+}
+
+void EditorManager::OnIdle (wxIdleEvent& event)
+{
+  // Update the virtual clock and the global event queue
+  vc->Advance ();
+  eventQueue->Process ();
+
+  // Ask for more idle events
+  // TODO: add an option defining whether or not this is suitable
+  event.RequestMore();
 }
 
 //------------------------------------  Editor  ------------------------------------

@@ -43,7 +43,8 @@ class SpaceManager;
 class StatusBar;
 
 class EditorManager
-  : public scfImplementation2<EditorManager, iEditorManager, iComponent>
+  : public wxEvtHandler,
+  public scfImplementation2<EditorManager, iEditorManager, iComponent>
 {
 public:
   EditorManager (iBase* parent);
@@ -68,6 +69,7 @@ public:
 
 private:
   void Update ();
+  void OnIdle (wxIdleEvent& event);
 
 public:
   iObjectRegistry* object_reg;

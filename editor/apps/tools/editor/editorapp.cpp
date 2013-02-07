@@ -24,6 +24,7 @@
 #include "cssysdef.h"
 
 #include "cstool/initapp.h"
+#include "cstool/wxappargconvert.h"
 #include "ieditor/editor.h"
 #include "ieditor/perspective.h"
 #include "ieditor/space.h"
@@ -105,18 +106,8 @@ bool EditorApplication::OnInit (void)
   wxInitAllImageHandlers ();
 
   // Create the Crystal Space environment
-#if defined (wxUSE_UNICODE) && wxUSE_UNICODE
-  char** csargv;
-  csargv = (char**) cs_malloc (sizeof (char*) * argc);
-  for (int i = 0; i < argc; i++) 
-  {
-    csargv[i] = strdup (wxString(argv[i]).mb_str().data());
-  }
-  object_reg = csInitializer::CreateEnvironment (argc, csargv);
-  //cs_free(csargv);
-#else
-  object_reg = csInitializer::CreateEnvironment (argc, argv);
-#endif
+  CS::WX::AppArgConvert args (argc, argv);
+  object_reg = csInitializer::CreateEnvironment (args.csArgc(), args.csArgv());
 
   // Load the iEditorManager plugin
   csRef<iPluginManager> pluginManager = 

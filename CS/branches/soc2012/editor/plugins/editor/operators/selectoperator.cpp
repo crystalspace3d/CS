@@ -130,7 +130,7 @@ bool SelectObjectAction::Do (iContext* context)
     else
     {
       if (objectSelectionContext->ContainsSelectedObject (object))
-	objectSelectionContext->RemoveSelectedObject (object);
+	objectSelectionContext->DeleteSelectedObject (object);
       else
 	objectSelectionContext->AddSelectedObject (object);
     }
@@ -153,7 +153,7 @@ bool SelectObjectAction::Undo (iContext* context)
     else
     {
       if (objectSelectionContext->ContainsSelectedObject (object))
-	objectSelectionContext->RemoveSelectedObject (object);
+	objectSelectionContext->DeleteSelectedObject (object);
       else
 	objectSelectionContext->AddSelectedObject (object);
     }

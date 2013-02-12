@@ -49,6 +49,9 @@ public:
   virtual void SetData (csStringID id, iBase* data);
   virtual iBase* GetData (csStringID id);
 
+  virtual void UpdatePerspective (size_t index);
+  virtual void DeletePerspective (size_t index);
+
   //-- iContextObjectSelection
   virtual void SetActiveObject (iObject* object);
   virtual iObject* GetActiveObject () const;
@@ -56,7 +59,7 @@ public:
     (const csWeakRefArray<iObject>& objects);
   virtual const csWeakRefArray<iObject>& GetSelectedObjects () const;
   virtual void AddSelectedObject (iObject*);
-  virtual void RemoveSelectedObject (iObject*);
+  virtual void DeleteSelectedObject (iObject*);
   virtual void ClearSelectedObjects ();
   virtual bool ContainsSelectedObject (iObject* object) const;
 
@@ -92,6 +95,9 @@ private:
 
   csHash<ContextData, csStringID> contextData;
 
+  csEventID eventUpdatePerspective;
+  csEventID eventDeletePerspective;
+
   //-- iContextObjectSelection
   csWeakRef<iObject> active;
   csWeakRefArray<iObject> selection;
@@ -99,7 +105,7 @@ private:
   csEventID eventSetActiveObject;
   csEventID eventSetSelectedObjects;
   csEventID eventAddSelectedObject;
-  csEventID eventRemoveSelectedObject;
+  csEventID eventDeleteSelectedObject;
   csEventID eventClearSelectedObjects;
 
   //-- iContextCamera

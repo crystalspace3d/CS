@@ -175,6 +175,8 @@ Logger::LogTextCtrl::~LogTextCtrl ()
 void Logger::LogTextCtrl::OnEnterWindow (wxMouseEvent& event)
 {
   // Put back the focus on this window
+  //wxTopLevelWindow* window = dynamic_cast<wxTopLevelWindow*> (GetGrandParent ());
+  //if (window && window->IsActive ()) SetFocus ();
   SetFocus ();
 }
 

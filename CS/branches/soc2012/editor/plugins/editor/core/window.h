@@ -29,6 +29,7 @@
 #include <wx/button.h>
 #include <wx/menu.h>
 
+#include "csutil/hash.h"
 #include "ieditor/layout.h"
 #include "ieditor/space.h"
 

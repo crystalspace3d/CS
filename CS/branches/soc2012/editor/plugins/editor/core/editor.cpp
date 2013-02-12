@@ -133,15 +133,17 @@ iEditor* EditorManager::CreateEditor (const char* name, const char* title, iCont
     return nullptr;
   }
 
-  Editor* editor = new Editor (this, name, title, context);
+  csRef<Editor> editor;
+  editor.AttachNew (new Editor (this, name, title, context));
   editors.Push (editor);
 
   return editor;
 }
 
-void EditorManager::RemoveEditor (iEditor* editor)
+void EditorManager::DeleteEditor (iEditor* editor)
 {
-  editor->GetwxFrame ()->Close (false);
+  Editor* cseditor = static_cast<Editor*> (editor);
+  editors.Delete (cseditor);
 }
 
 iEditor* EditorManager::FindEditor (const char* name)
@@ -180,7 +182,7 @@ void EditorManager::OnIdle (wxIdleEvent& event)
 
   // Ask for more idle events
   // TODO: add an option defining whether or not this is suitable
-  event.RequestMore();
+  //event.RequestMore();
 }
 
 //------------------------------------  Editor  ------------------------------------
@@ -188,35 +190,22 @@ void EditorManager::OnIdle (wxIdleEvent& event)
 Editor::Editor (EditorManager* manager, const char* name, const char* title,
 		iContext* context)
   // TODO: use size from CS config
-  : scfImplementationType (this),
-  wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition,
-	   wxSize (1024, 768)),
-    name (name), manager (manager), context (context), statusBar (nullptr)
+  : scfImplementationType (this), name (name), title (title), manager (manager),
+    context (context), statusBar (nullptr)
 {
   // Create the main objects and managers
   actionManager.AttachNew (new ActionManager (manager->object_reg, this));
   menuManager.AttachNew (new MenuManager (this));
   operatorManager.AttachNew (new OperatorManager (manager->object_reg, this));
   perspectiveManager.AttachNew (new PerspectiveManager (manager->object_reg, this));
-  spaceManager.AttachNew (new SpaceManager (this));
+  componentManager.AttachNew (new ComponentManager (this));
 
-  // Create the status bar
-  statusBar = new StatusBar (this);
-  SetStatusBar (statusBar);
-
-  //PositionStatusBar ();
-  statusBar->Show ();
-
-  // Make this window visible
-  Show (true);
+  // Create the default frame
+  CreateFrame (title);
 }
 
 Editor::~Editor ()
 {
-  // Remove ourself from the list maintained by the editor manager
-  manager->editors.Delete (this);
-
-  delete statusBar;
 }
 
 iContext* Editor::GetContext () const
@@ -224,14 +213,14 @@ iContext* Editor::GetContext () const
   return context;
 }
 
-iEditorManager* Editor::GetManager () const
-{
-  return manager;
-}
-
 iActionManager* Editor::GetActionManager () const
 {
   return actionManager;
+}
+
+iEditorManager* Editor::GetEditorManager () const
+{
+  return manager;
 }
 
 iMenuManager* Editor::GetMenuManager () const
@@ -249,9 +238,9 @@ iPerspectiveManager* Editor::GetPerspectiveManager () const
   return perspectiveManager;
 }
 
-iSpaceManager* Editor::GetSpaceManager () const
+iComponentManager* Editor::GetComponentManager () const
 {
-  return spaceManager;
+  return componentManager;
 }
 
 csPtr<iProgressMeter> Editor::CreateProgressMeter () const
@@ -263,14 +252,35 @@ csPtr<iProgressMeter> Editor::CreateProgressMeter () const
 
 void Editor::ReportStatus (const char* text)
 {
-  SetStatusText (wxString::FromUTF8 (text));
+  if (frames.GetSize ())
+    frames[0]->SetStatusText (wxString::FromUTF8 (text));
   csReport (manager->object_reg, CS_REPORTER_SEVERITY_NOTIFY,
 	    "status", text, nullptr);
 }
 
-wxFrame* Editor::GetwxFrame ()
+iEditorFrame* Editor::CreateFrame (const char* title, iPerspective* perspective)
 {
-  return this;
+  csString cstitle = title;
+  if (!title) cstitle = this->title;
+
+  EditorFrame* frame = new EditorFrame (this, cstitle, perspective);
+  frames.Push (frame);
+  return frame;
+}
+
+void Editor::DeleteFrame (iEditorFrame* frame)
+{
+  frame->GetwxFrame ()->Close (false);
+}
+
+size_t Editor::GetFrameCount () const
+{
+  return frames.GetSize ();
+}
+
+iEditorFrame* Editor::GetFrame (size_t index) const
+{
+  return frames[index];
 }
 
 void Editor::Save (iDocumentNode* node) const
@@ -284,23 +294,116 @@ bool Editor::Load (iDocumentNode* node)
 
 void Editor::Init ()
 {
-  // Setup the current perspective or create a default one
-  iPerspective* perspective = perspectiveManager->GetCurrentPerspective ();
-  if (!perspective) perspective = perspectiveManager->CreatePerspective ("Default");
+  // Create a default perspective if none have been defined
+  if (!perspectiveManager->GetPerspectiveCount ())
+    perspectiveManager->CreatePerspective ("Default");
 
-  // Create the main splitter window
-  Window* window = perspectiveManager->CreateWindow (perspective);
-
-  // Reset the window size
-  //SetSize (wxSize (1024, 768));
-  PositionStatusBar ();
+  for (size_t i = 0; i < frames.GetSize (); i++)
+    frames[i]->Init ();
 
   ReportStatus ("Ready");
 }
 
 void Editor::Update ()
 {
-  spaceManager->Update ();
+  componentManager->Update ();
+}
+
+void Editor::Close ()
+{
+  componentManager.Invalidate ();
+  perspectiveManager.Invalidate ();
+  operatorManager.Invalidate ();
+  menuManager.Invalidate ();
+  actionManager.Invalidate ();
+}
+
+//------------------------------------  EditorFrame  ------------------------------------
+
+EditorFrame::EditorFrame (Editor* editor, const char* title, iPerspective* perspective)
+  : wxFrame (nullptr, -1, wxString::FromAscii (title), wxDefaultPosition,
+	     wxSize (1024, 768)),
+    scfImplementationType (this), editor (editor)
+{
+  if (perspective)
+    this->perspective = static_cast<Perspective*> (perspective);
+
+  // If this is the first frame created, then add the status and menu bars to it
+  if (!editor->frames.GetSize ())
+  {
+    // Setup the menu
+    editor->menuManager->SetFrame (this);
+
+    // Create the status bar
+    editor->statusBar = new StatusBar (this);
+    editor->statusBar->Show ();
+    SetStatusBar (editor->statusBar);
+    //PositionStatusBar ();
+  }    
+
+  // Make this frame visible
+  Show (true);
+}
+
+EditorFrame::~EditorFrame ()
+{
+  // Remove this frame from the list maintained by the editor
+  editor->frames.Delete (this);
+
+  // If this was the last frame, then close the editor managers
+  if (!editor->frames.GetSize ())
+    editor->Close ();
+
+  // TODO: transmit the ownership of the menu and status bar
+}
+
+void EditorFrame::Init ()
+{
+  // Setup the perspective of the window
+  if (!perspective)
+    perspective = editor->perspectiveManager->perspectives[0];
+  perspective->CreateWindow (this);
+
+  // Reset the window size
+  //SetSize (wxSize (1024, 768));
+  PositionStatusBar ();
+
+  Show (true);
+  Layout ();
+}
+
+wxFrame* EditorFrame::GetwxFrame ()
+{
+  return this;
+}
+
+bool EditorFrame::SetPerspective (iPerspective* perspective)
+{
+  if (this->perspective == perspective)
+    return true;
+
+  // Remove the previous window
+  // TODO: Or keep a cache of the active perspectives instead
+  GetSizer ()->Clear (true);
+  SetSizer (nullptr);
+
+  // Setup the perspective
+  if (perspective)
+  {
+    this->perspective = static_cast<Perspective*> (perspective);
+    this->perspective->CreateWindow (this);
+  }
+  else
+    this->perspective = nullptr;
+
+  Layout ();
+
+  return true;
+}
+
+iPerspective* EditorFrame::GetPerspective () const
+{
+  return perspective;
 }
 
 }

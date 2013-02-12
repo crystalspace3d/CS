@@ -40,7 +40,7 @@ bool TextLog::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
   factory = fact;
 
   // Find the logger component and 
-  iEditorComponent* component = editor->GetSpaceManager ()->FindComponent
+  iEditorComponent* component = editor->GetComponentManager ()->FindComponent
     ("crystalspace.editor.component.logger");
   if (!component)
     return ReportError ("The logger component is not registered to the space manager");

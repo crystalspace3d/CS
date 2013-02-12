@@ -46,14 +46,18 @@ Context::Context (iObjectRegistry* obj_reg)
   // Initialize the event ID's
   csRef<iEventNameRegistry> registry =
     csQueryRegistry<iEventNameRegistry> (object_reg);
+  eventUpdatePerspective =
+    registry->GetID ("crystalspace.editor.context.base.updateperspective");
+  eventDeletePerspective =
+    registry->GetID ("crystalspace.editor.context.base.deleteperspective");
   eventSetActiveObject =
     registry->GetID ("crystalspace.editor.context.selection.setactiveobject");
   eventSetSelectedObjects =
     registry->GetID ("crystalspace.editor.context.selection.setselectedobjects");
   eventAddSelectedObject =
     registry->GetID ("crystalspace.editor.context.selection.addselectedobject");
-  eventRemoveSelectedObject =
-    registry->GetID ("crystalspace.editor.context.selection.removeselectedobject");
+  eventDeleteSelectedObject =
+    registry->GetID ("crystalspace.editor.context.selection.deleteselectedobject");
   eventClearSelectedObjects =
     registry->GetID ("crystalspace.editor.context.selection.clearselectedobjects");
   eventSetCamera =
@@ -119,6 +123,22 @@ iBase* Context::GetData (csStringID id)
   return cdata->data;
 }
 
+void Context::UpdatePerspective (size_t index)
+{
+  csRef<iEvent> event = eventQueue->CreateEvent (eventUpdatePerspective);
+  event->Add ("index", index);
+  eventQueue->Post (event);
+  eventQueue->Process ();
+}
+
+void Context::DeletePerspective (size_t index)
+{
+  csRef<iEvent> event = eventQueue->CreateEvent (eventDeletePerspective);
+  event->Add ("index", index);
+  eventQueue->Post (event);
+  eventQueue->Process ();
+}
+
 void Context::PostEvent (csEventID eventID)
 {
   csRef<iEvent> event = eventQueue->CreateEvent (eventID);
@@ -162,14 +182,14 @@ void Context::AddSelectedObject (iObject* object)
   eventQueue->Process ();
 }
 
-void Context::RemoveSelectedObject (iObject* object)
+void Context::DeleteSelectedObject (iObject* object)
 {
   if (!object || !ContainsSelectedObject (object))
     return;
   selection.Delete (object);
 
   // Post the event
-  csRef<iEvent> event = eventQueue->CreateEvent (eventRemoveSelectedObject);
+  csRef<iEvent> event = eventQueue->CreateEvent (eventDeleteSelectedObject);
   event->Add ("object", object);
   eventQueue->Post (event);
   eventQueue->Process ();

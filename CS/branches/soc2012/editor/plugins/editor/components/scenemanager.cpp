@@ -447,6 +447,7 @@ bool SceneManager::EventListener::HandleEvent (iEvent &event)
 {
   iEventNameRegistry* nameRegistry = csEventNameRegistry::GetRegistry (manager->object_reg);
 
+  // Object selection through mouse click
   if (event.Name == csevMouseDown (nameRegistry, 0)
       && csMouseEventHelper::GetButton (&event) == 0)
   {
@@ -456,7 +457,8 @@ bool SceneManager::EventListener::HandleEvent (iEvent &event)
     return true;
   }
 
-  if (CS_IS_KEYBOARD_EVENT (manager->object_reg, event)) 
+  // Object motion through keyboard key
+  if (CS_IS_KEYBOARD_EVENT (manager->object_reg, event))
   {
     if (csKeyEventHelper::GetEventType (&event) == csKeyEventTypeDown
 	&& csKeyEventHelper::GetCookedCode (&event) == 'g')

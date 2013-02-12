@@ -42,8 +42,10 @@ CS3DHeader::~CS3DHeader ()
 void CS3DHeader::Draw (iContext* context, iLayout* layout)
 {
   layout->AppendMenu ("crystalspace.editor.menu.3dmenu", "View");
+  layout->AppendLabel ("Test");
   layout->AppendSeparator ();
   //layout->AppendOperator ("crystalspace.editor.operator.select", "Select", "");
+  //layout->AppendOperator ("crystalspace.editor.operator.move", "Move", "");
 }
 
 }

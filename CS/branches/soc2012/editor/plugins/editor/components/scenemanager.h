@@ -22,6 +22,7 @@
 #include "csutil/csbaseeventh.h"
 #include "csutil/scf_implementation.h"
 #include "ieditor/editor.h"
+#include "ieditor/space.h"
 #include "ivaria/cameramanager.h"
 #include "ivaria/reporter.h"
 

@@ -23,6 +23,7 @@
 #include "csutil/threadmanager.h"
 #include "ieditor/components.h"
 #include "ieditor/editor.h"
+#include "ieditor/space.h"
 #include "ivaria/reporter.h"
 
 #include <wx/datetime.h>

@@ -23,6 +23,7 @@
 #include "csutil/scf_implementation.h"
 #include "ieditor/editor.h"
 #include "ieditor/menu.h"
+#include "ieditor/space.h"
 #include "iutil/comp.h"
 #include "ivaria/reporter.h"
 

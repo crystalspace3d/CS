@@ -57,23 +57,24 @@ private:
   bool allowMultiple;
   csWeakRefArray<iSpace> spaces;
 
-  friend class SpaceManager;
+  friend class ComponentManager;
 };
 
-class SpaceManager
-  : public scfImplementation1<SpaceManager, iSpaceManager>, public csBaseEventHandler
+class ComponentManager
+  : public scfImplementation1<ComponentManager, iComponentManager>, public csBaseEventHandler
 {
 public:
-  SpaceManager (Editor* editor);
-  virtual ~SpaceManager ();
+  ComponentManager (Editor* editor);
+  virtual ~ComponentManager ();
   
-  //-- iSpaceManager
+  //-- iComponentManager
   virtual bool RegisterComponent (const char* pluginName);
   virtual bool RegisterSpace (const char* pluginName);
   virtual bool RegisterHeader (const char* pluginName);
   virtual bool RegisterPanel (const char* pluginName);
 
   virtual iEditorComponent* FindComponent (const char* pluginName) const;
+  virtual iSpaceFactory* FindSpaceFactory (const char* pluginName, size_t& index) const;
   
   //-- iEventHandler
   bool HandleEvent (iEvent &event);

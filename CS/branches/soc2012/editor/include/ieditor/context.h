@@ -55,6 +55,9 @@ struct iContext : public virtual iBase
 
   /// Get a specific context data
   virtual iBase* GetData (csStringID id) = 0;
+
+  virtual void UpdatePerspective (size_t index) = 0;
+  virtual void DeletePerspective (size_t index) = 0;
 };
 
 // TODO: in cseditor
@@ -73,7 +76,7 @@ struct iContextObjectSelection : public virtual iBase
   virtual const csWeakRefArray<iObject>& GetSelectedObjects () const = 0;
 
   virtual void AddSelectedObject (iObject* object) = 0;
-  virtual void RemoveSelectedObject (iObject* object) = 0;
+  virtual void DeleteSelectedObject (iObject* object) = 0;
   virtual void ClearSelectedObjects () = 0;
 
   virtual bool ContainsSelectedObject (iObject* object) const = 0;

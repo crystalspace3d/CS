@@ -128,8 +128,8 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
     registry->GetID ("crystalspace.editor.context.selection.setselectedobjects");
   eventAddSelectedObject =
     registry->GetID ("crystalspace.editor.context.selection.addselectedobject");
-  eventRemoveSelectedObject =
-    registry->GetID ("crystalspace.editor.context.selection.removeselectedobject");
+  eventDeleteSelectedObject =
+    registry->GetID ("crystalspace.editor.context.selection.deleteselectedobject");
   eventClearSelectedObjects =
     registry->GetID ("crystalspace.editor.context.selection.clearselectedobjects");
 
@@ -137,7 +137,7 @@ SceneTreeCtrl::SceneTreeCtrl (iObjectRegistry* object_reg, iEditor* editor,
     eventSetCollection,
     eventSetSelectedObjects,
     eventAddSelectedObject,
-    eventRemoveSelectedObject,
+    eventDeleteSelectedObject,
     eventClearSelectedObjects,
     CS_EVENTLIST_END
   };
@@ -173,8 +173,8 @@ bool SceneTreeCtrl::HandleEvent (iEvent &event)
       OnSetSelectedObjects ();
     else if (event.Name == eventAddSelectedObject)
       OnAddSelectedObject (event);
-    else if (event.Name == eventRemoveSelectedObject)
-      OnRemoveSelectedObject (event);
+    else if (event.Name == eventDeleteSelectedObject)
+      OnDeleteSelectedObject (event);
     else if (event.Name == eventClearSelectedObjects)
       OnClearSelectedObjects ();
   }
@@ -402,6 +402,7 @@ void SceneTreeCtrl::OnSelChanged (wxTreeEvent& event)
   if (objectSelectionContext->GetSelectedObjects ().GetSize ())
     objectSelectionContext->ClearSelectedObjects ();
   
+  // TODO: use iContext::SetSelectedObjects
   for (unsigned int i = 0; i < selSize; i++)
   {
     wxTreeItemId itemId = selectionIds[i];
@@ -456,7 +457,7 @@ void SceneTreeCtrl::OnAddSelectedObject (iEvent& event)
   }
 }
 
-void SceneTreeCtrl::OnRemoveSelectedObject (iEvent& event)
+void SceneTreeCtrl::OnDeleteSelectedObject (iEvent& event)
 {
   csRef<iBase> base;
   event.Retrieve ("object", base);

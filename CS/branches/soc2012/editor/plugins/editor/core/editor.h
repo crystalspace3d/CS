@@ -20,6 +20,7 @@
 #define __EDITOR_H__
 
 #include "csutil/csstring.h"
+#include "csutil/weakref.h"
 #include "ieditor/editor.h"
 #include "iutil/comp.h"
 
@@ -35,11 +36,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
 class ActionManager;
+class ComponentManager;
 class Editor;
+class EditorFrame;
 class MenuManager;
 class OperatorManager;
+class Perspective;
 class PerspectiveManager;
-class SpaceManager;
 class StatusBar;
 
 class EditorManager
@@ -62,7 +65,7 @@ public:
   virtual bool StartApplication ();
 
   virtual iEditor* CreateEditor (const char* name, const char* title, iContext* context);
-  virtual void RemoveEditor (iEditor* editor);
+  virtual void DeleteEditor (iEditor* editor);
   virtual iEditor* FindEditor (const char* name);
   virtual iEditor* GetEditor (size_t index);
   virtual size_t GetEditorCount () const;
@@ -73,7 +76,7 @@ private:
 
 public:
   iObjectRegistry* object_reg;
-  csArray<Editor*> editors;
+  csRefArray<Editor> editors;
   csRef<iVirtualClock> vc;
   csRef<iEventQueue> eventQueue;
 
@@ -93,7 +96,7 @@ private:
 };
 
 class Editor
-  : public scfImplementation1<Editor, iEditor>, public wxFrame
+  : public scfImplementation1<Editor, iEditor>
 {
 public:
   Editor (EditorManager* manager, const char* name,
@@ -103,17 +106,21 @@ public:
   //-- iEditor
   virtual iContext* GetContext () const;
 
-  virtual iEditorManager* GetManager () const;
   virtual iActionManager* GetActionManager () const;
+  virtual iEditorManager* GetEditorManager () const;
   virtual iMenuManager* GetMenuManager () const;
   virtual iOperatorManager* GetOperatorManager () const;
   virtual iPerspectiveManager* GetPerspectiveManager () const;
-  virtual iSpaceManager* GetSpaceManager () const;
+  virtual iComponentManager* GetComponentManager () const;
 
   virtual csPtr<iProgressMeter> CreateProgressMeter () const;
   virtual void ReportStatus (const char* text);
 
-  virtual wxFrame* GetwxFrame ();
+  virtual iEditorFrame* CreateFrame (const char* title,
+				     iPerspective* perspective = nullptr);
+  virtual void DeleteFrame (iEditorFrame* frame);
+  virtual size_t GetFrameCount () const;
+  virtual iEditorFrame* GetFrame (size_t index = 0) const;
 
   virtual void Save (iDocumentNode* node) const;
   virtual bool Load (iDocumentNode* node);
@@ -121,17 +128,41 @@ public:
 public:
   void Init ();
   void Update ();
+  void Close ();
 
 public:
   csString name;
+  csString title;
   EditorManager* manager;
   csRef<iContext> context;
   csRef<ActionManager> actionManager;
   csRef<MenuManager> menuManager;
   csRef<OperatorManager> operatorManager;
   csRef<PerspectiveManager> perspectiveManager;
-  csRef<SpaceManager> spaceManager;
+  csRef<ComponentManager> componentManager;
   StatusBar* statusBar;
+  csArray<EditorFrame*> frames;
+};
+
+class EditorFrame
+: public wxFrame, public scfImplementation1<EditorFrame, iEditorFrame>
+{
+public:
+  EditorFrame (Editor* editor, const char* title, iPerspective* perspective);
+  ~EditorFrame ();
+
+  void Init ();
+
+  //-- iEditorFrame
+  virtual wxFrame* GetwxFrame ();
+
+  virtual bool SetPerspective (iPerspective* perspective);
+  virtual iPerspective* GetPerspective () const;
+  //virtual iPerspective* CloneCurrentPerspective () const;
+
+private:
+  Editor* editor;
+  csWeakRef<Perspective> perspective;
 };
 
 }

@@ -35,15 +35,37 @@ enum SplitMode
 /**
  *
  */
-struct iPerspective : public virtual iBase
+struct iPerspectiveWindow : public virtual iBase
 {
-  SCF_INTERFACE (iPerspective, 1, 0, 0);
+  SCF_INTERFACE (iPerspectiveWindow, 1, 0, 0);
 
   virtual void SetSpace (const char* pluginName) = 0;
   virtual void SetSplitMode (SplitMode mode) = 0;
   virtual void SetSplitPosition (int position) = 0;
-  virtual iPerspective* GetChild1 () const = 0;
-  virtual iPerspective* GetChild2 () const = 0;
+  virtual iPerspectiveWindow* GetChild1 () const = 0;
+  virtual iPerspectiveWindow* GetChild2 () const = 0;
+
+/*
+  virtual void Save (iDocumentNode* node) const = 0;
+  virtual bool Load (iDocumentNode* node) = 0;
+*/
+};
+
+/**
+ *
+ */
+struct iPerspective : public virtual iBase
+{
+  SCF_INTERFACE (iPerspective, 1, 0, 0);
+
+  virtual void SetName (const char* name) = 0;
+  virtual const char* GetName () const = 0;
+
+  virtual iPerspectiveWindow* GetRootWindow () const = 0;
+/*
+  virtual void Save (iDocumentNode* node) const = 0;
+  virtual bool Load (iDocumentNode* node) = 0;
+*/
 };
 
 /**
@@ -55,11 +77,14 @@ struct iPerspectiveManager : public virtual iBase
 
   virtual iPerspective* CreatePerspective
     (const char* name, iPerspective* other = nullptr) = 0;
-  virtual void DeletePerspective (const char* name) = 0;
-  virtual void SetCurrentPerspective (const char* name, size_t frameIndex = 0) = 0;
-  virtual iPerspective* GetCurrentPerspective (size_t frameIndex = 0) const = 0;
-  virtual iPerspective* GetPerspective (const char* name) const = 0;
-  virtual void RenamePerspective (const char* oldName, const char* newName) = 0;
+  virtual void DeletePerspective (size_t index) = 0;
+  virtual size_t GetPerspectiveCount () const = 0;
+  virtual iPerspective* GetPerspective (size_t index) const = 0;
+
+/*
+  virtual void Save (iDocumentNode* node) const = 0;
+  virtual bool Load (iDocumentNode* node) = 0;
+*/
 };
 
 } // namespace EditorApp

@@ -22,7 +22,7 @@
 
 #include "exit.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
 SCF_IMPLEMENT_FACTORY (Exit)
@@ -49,7 +49,7 @@ bool Exit::Initialize (iEditor* editor)
   RegisterQueue (editor->GetContext ()->GetEventQueue (), events);
 
   // Connect to the closing window event
-  editor->GetwxFrame ()->Connect
+  editor->GetFrame (0)->GetwxFrame ()->Connect
     (wxEVT_CLOSE_WINDOW, wxCommandEventHandler (Exit::OnQuit), 0, this);
 
   return true;
@@ -71,7 +71,7 @@ bool Exit::Load (iDocumentNode* node)
 bool Exit::HandleEvent (iEvent &event)
 {
   // Forward the event to the closing of the window
-  editor->GetwxFrame ()->Close ();
+  editor->GetFrame (0)->GetwxFrame ()->Close ();
 
   return true;
 }
@@ -81,9 +81,9 @@ void Exit::OnQuit (wxCommandEvent& event)
   editor->ReportStatus ("Quit");
 
   // Destroy this top-level window
-  editor->GetwxFrame ()->Destroy ();
+  editor->GetFrame (0)->GetwxFrame ()->Destroy ();
 }
 
 }
-CS_PLUGIN_NAMESPACE_END(CSEditor)
+CS_PLUGIN_NAMESPACE_END (CSEditor)
 

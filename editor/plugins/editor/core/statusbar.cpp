@@ -26,9 +26,9 @@
 CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
 {
 
-BEGIN_EVENT_TABLE(StatusBar, wxStatusBar)
-  EVT_SIZE(StatusBar::OnSize)
-END_EVENT_TABLE()
+BEGIN_EVENT_TABLE (StatusBar, wxStatusBar)
+  EVT_SIZE (StatusBar::OnSize)
+END_EVENT_TABLE ()
 
 StatusBar::StatusBar (wxWindow* parent)
   : wxStatusBar (parent)

@@ -151,14 +151,18 @@ MenuManager::MenuManager (Editor* editor)
   : scfImplementationType (this), editor (editor)
 {
   menuBar = new wxMenuBar ();
-  editor->SetMenuBar (menuBar);
-  menuBar->Reparent (editor);
 }
 
 MenuManager::~MenuManager ()
 {
   // The 'menuBar' doesn't need to be deleted since this is made
   // automatically by wxWidgets
+}
+
+void MenuManager::SetFrame (wxFrame* frame)
+{
+  frame->SetMenuBar (menuBar);
+  menuBar->Reparent (frame);
 }
 
 wxMenuBar* MenuManager::GetwxMenuBar () const

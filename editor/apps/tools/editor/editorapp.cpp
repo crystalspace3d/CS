@@ -130,42 +130,50 @@ bool EditorApplication::OnInit (void)
   iEditor* editor = editorManager->CreateEditor ("cseditor", "Crystal Space Editor", context);
 
   // Load the specific plugins for the Crystal Space editor
-  iSpaceManager* spaceManager = editor->GetSpaceManager ();
+  iComponentManager* componentManager = editor->GetComponentManager ();
 
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.logger")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.translation")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.undoredo")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;
-  if (!spaceManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.logger")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.translation")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.undoredo")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.perspectives")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.maploader")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.scenemanager")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.2dinfo")) return false;
+  if (!componentManager->RegisterComponent ("crystalspace.editor.component.exit")) return false;
 
-  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
-  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.scenetree")) return false;
-  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.partedit")) return false; 
-  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.textlog")) return false;
-  if (!spaceManager->RegisterSpace ("crystalspace.editor.space.properties")) return false;
+  if (!componentManager->RegisterSpace ("crystalspace.editor.space.3dview")) return false;
+  if (!componentManager->RegisterSpace ("crystalspace.editor.space.scenetree")) return false;
+  if (!componentManager->RegisterSpace ("crystalspace.editor.space.partedit")) return false; 
+  if (!componentManager->RegisterSpace ("crystalspace.editor.space.textlog")) return false;
+  if (!componentManager->RegisterSpace ("crystalspace.editor.space.properties")) return false;
 
-  if (!spaceManager->RegisterPanel ("crystalspace.editor.panel.camera")) return false;
-  if (!spaceManager->RegisterHeader ("crystalspace.editor.header.3dheader")) return false;
+  if (!componentManager->RegisterPanel ("crystalspace.editor.panel.camera")) return false;
+  if (!componentManager->RegisterHeader ("crystalspace.editor.header.3dheader")) return false;
 
-  // Create a default pespective
+  // Create a 'Default' pespective
   iPerspectiveManager* perspectiveManager = editor->GetPerspectiveManager ();
 
   iPerspective* perspective = perspectiveManager->CreatePerspective ("Default");
-  perspective->SetSplitMode (SPLIT_VERTICAL);
-  perspective->SetSplitPosition (220);
+  iPerspectiveWindow* window = perspective->GetRootWindow ();
+  window->SetSplitMode (SPLIT_VERTICAL);
+  window->SetSplitPosition (220);
 
-  iPerspective* perspective1 = perspective->GetChild1 ();
-  perspective1->SetSpace ("crystalspace.editor.space.scenetree");
+  iPerspectiveWindow* window1 = window->GetChild1 ();
+  window1->SetSpace ("crystalspace.editor.space.scenetree");
 
-  iPerspective* perspective2 = perspective->GetChild2 ();
-  perspective2->SetSplitMode (SPLIT_VERTICAL);
-  perspective2->SetSplitPosition (550);
+  iPerspectiveWindow* window2 = window->GetChild2 ();
+  window2->SetSplitMode (SPLIT_VERTICAL);
+  window2->SetSplitPosition (550);
 
-  perspective2->GetChild1 ()->SetSpace ("crystalspace.editor.space.3dview");
-  perspective2->GetChild2 ()->SetSpace ("crystalspace.editor.space.partedit");
+  window2->GetChild1 ()->SetSpace ("crystalspace.editor.space.3dview");
+  window2->GetChild2 ()->SetSpace ("crystalspace.editor.space.partedit");
+
+  // Create a 'Terrain' pespective
+  perspective = perspectiveManager->CreatePerspective ("Terrain");
+  window = perspective->GetRootWindow ();
+  //window->SetSpace ("crystalspace.editor.space.3dview");
+  window->SetSpace ("crystalspace.editor.space.scenetree");
 
   // Start the application
   if (!editorManager->StartApplication ()) return false;

@@ -46,9 +46,9 @@ bool CS3DMenu::Poll (iContext* context)
 
 void CS3DMenu::Draw (iContext* context, iLayout* layout)
 {
-  layout->AppendOperator ("crystalspace.editor.operator.select", "Select", "");
-  layout->AppendSeparator ();
-  //layout->AppendOperator ("crystalspace.editor.operator.move", "Move", "");
+  layout->AppendOperator ("crystalspace.editor.operator.select", "Select", "S");
+  //layout->AppendSeparator ();
+  //layout->AppendOperator ("crystalspace.editor.operator.move", "Move", "G");
 }
 
 }

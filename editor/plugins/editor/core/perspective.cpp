@@ -17,6 +17,7 @@
 */
 #include "cssysdef.h"
 #include "csutil/stringquote.h"
+#include "ieditor/context.h"
 #include "ivaria/reporter.h"
 
 #include "editor.h"
@@ -29,8 +30,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 //------------------------------------  PerspectiveManager  ------------------------------------
 
 PerspectiveManager::PerspectiveManager (iObjectRegistry* object_reg, Editor* editor)
-  : scfImplementationType (this), object_reg (object_reg), editor (editor),
-  currentPerspective (nullptr)
+  : scfImplementationType (this), object_reg (object_reg), editor (editor)
 {
 }
 
@@ -41,98 +41,114 @@ PerspectiveManager::~PerspectiveManager ()
 iPerspective* PerspectiveManager::CreatePerspective (const char* name, iPerspective* iother)
 {
   csRef<Perspective> perspective;
-  Perspective* other = dynamic_cast<Perspective*> (iother);
-  perspective.AttachNew (other ? new Perspective (other) : new Perspective ());
-  perspectives.Put (name, perspective);
+  if (iother)
+  {
+    Perspective* other = static_cast<Perspective*> (iother);
+    perspective.AttachNew (new Perspective (this, name, other));
+  }
+  else perspective.AttachNew (new Perspective (this, name));
+  perspectives.Push (perspective);
+  // TODO: ensure no name conflict
+
+  editor->context->UpdatePerspective (perspectives.GetSize () - 1);
 
   return perspective;
 }
 
-void PerspectiveManager::DeletePerspective (const char* name)
+size_t PerspectiveManager::GetPerspectiveCount () const
 {
-  perspectives.DeleteAll (name);
+  return perspectives.GetSize ();
 }
 
-void PerspectiveManager::SetCurrentPerspective (const char* name, size_t frameIndex)
+iPerspective* PerspectiveManager::GetPerspective (size_t index) const
 {
-  currentPerspective = *perspectives.GetElementPointer (name);
+  return perspectives[index];
 }
 
-iPerspective* PerspectiveManager::GetCurrentPerspective (size_t frameIndex) const
+void PerspectiveManager::DeletePerspective (size_t index)
 {
-  if (currentPerspective)
-    return currentPerspective;
-  if (perspectives.GetSize ())
-    return perspectives.GetIterator ().Next ();
-  return nullptr;
-}
-
-iPerspective* PerspectiveManager::GetPerspective (const char* name) const
-{
-  return *perspectives.GetElementPointer (name);
-}
-
-void PerspectiveManager::RenamePerspective (const char* oldName, const char* newName)
-{
-  Perspective* perspective = *perspectives.GetElementPointer (oldName);
-
-#ifdef CS_DEBUG
-  if (!perspective)
-  {
-    csReport (editor->manager->object_reg, CS_REPORTER_SEVERITY_ERROR,
-	      "crystalspace.editor.core.perspective",
-	      "The perspective to rename %s does not exist",
-	      CS::Quote::Single (oldName));
-    return;
-  }
-#endif // CS_DEBUG
-  
-  perspectives.DeleteAll (oldName);
-  perspectives.Put (newName, perspective);
-}
-
-Window* PerspectiveManager::CreateWindow (iPerspective* perspective)
-{
-  Window* window = new Window (object_reg, editor, editor);
-
-  wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
-  box->Add (window, 1, wxEXPAND | wxALL, 0);
-  editor->GetwxFrame ()->SetSizer (box);
-  box->Layout ();
-
-  ((Perspective*) perspective)->SetupWindow (window);
-
-  return window;
+  editor->context->DeletePerspective (index);
+  perspectives.DeleteIndex (index);
 }
 
 //------------------------------------  Perspective  ------------------------------------
 
-Perspective::Perspective ()
-  : scfImplementationType (this), mode (SPLIT_NONE), position (0)
+Perspective::Perspective (PerspectiveManager* manager, const char* name)
+  : scfImplementationType (this), manager (manager), name (name)
 {
+  root.AttachNew (new PerspectiveWindow ());
 }
 
-Perspective::Perspective (Perspective* other)
-  : scfImplementationType (this), mode (other->mode), pluginName (other->pluginName),
-  position (other->position)
+Perspective::Perspective (PerspectiveManager* manager, const char* name,
+			  Perspective* other)
+  : scfImplementationType (this), manager (manager), name (name)
 {
-  if (mode != SPLIT_NONE)
-  {
-    child1.AttachNew (new Perspective (other->child1));
-    child2.AttachNew (new Perspective (other->child2));
-  }
+  root.AttachNew (new PerspectiveWindow (other->root));
 }
 
 Perspective::~Perspective ()
 {
 }
 
-void Perspective::SetSpace (const char* pluginName)
+Window* Perspective::CreateWindow (wxFrame* frame)
+{
+  Window* window = new Window (manager->object_reg, manager->editor, frame);
+
+  wxBoxSizer* box = new wxBoxSizer (wxHORIZONTAL);
+  box->Add (window, 1, wxEXPAND | wxALL, 0);
+  frame->SetSizer (box);
+  box->Layout ();
+
+  root->SetupWindow (window);
+
+  return window;
+}
+
+void Perspective::SetName (const char* name)
+{
+  this->name = name;
+  // TODO: ensure no name conflict
+  // TODO: context event UpdatePerspective
+}
+
+const char* Perspective::GetName () const
+{
+  return name;
+}
+
+iPerspectiveWindow* Perspective::GetRootWindow () const
+{
+  return root;
+}
+
+//------------------------------------  PerspectiveWindow  ------------------------------------
+
+PerspectiveWindow::PerspectiveWindow ()
+  : scfImplementationType (this), mode (SPLIT_NONE), position (0)
+{
+}
+
+PerspectiveWindow::PerspectiveWindow (PerspectiveWindow* other)
+  : scfImplementationType (this), mode (other->mode), pluginName (other->pluginName),
+  position (other->position)
+{
+  if (mode != SPLIT_NONE)
+  {
+    child1.AttachNew (new PerspectiveWindow (other->child1));
+    child2.AttachNew (new PerspectiveWindow (other->child2));
+  }
+}
+
+PerspectiveWindow::~PerspectiveWindow ()
+{
+}
+
+void PerspectiveWindow::SetSpace (const char* pluginName)
 {
   this->pluginName = pluginName;
 }
 
-void Perspective::SetSplitMode (SplitMode mode)
+void PerspectiveWindow::SetSplitMode (SplitMode mode)
 {
   this->mode = mode;
 
@@ -144,27 +160,27 @@ void Perspective::SetSplitMode (SplitMode mode)
 
   else if (!child1)
   {
-    child1.AttachNew (new Perspective ());
-    child2.AttachNew (new Perspective ());
+    child1.AttachNew (new PerspectiveWindow ());
+    child2.AttachNew (new PerspectiveWindow ());
   }
 }
 
-void Perspective::SetSplitPosition (int position)
+void PerspectiveWindow::SetSplitPosition (int position)
 {
   this->position = position;
 }
 
-iPerspective* Perspective::GetChild1 () const
+iPerspectiveWindow* PerspectiveWindow::GetChild1 () const
 {
   return child1;
 }
 
-iPerspective* Perspective::GetChild2 () const
+iPerspectiveWindow* PerspectiveWindow::GetChild2 () const
 {
   return child2;
 }
 
-void Perspective::SetupWindow (Window* window)
+void PerspectiveWindow::SetupWindow (Window* window)
 {
   if (mode == SPLIT_NONE)
   {

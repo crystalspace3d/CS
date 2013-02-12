@@ -53,7 +53,7 @@ private:
     Field_Max
   };
   
-  DECLARE_EVENT_TABLE ()
+  DECLARE_EVENT_TABLE ();
 };
 
 /// Implementation of iProgressMeter using StatusBar

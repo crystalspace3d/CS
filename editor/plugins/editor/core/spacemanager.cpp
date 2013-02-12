@@ -125,7 +125,7 @@ size_t SpaceFactory::GetEnabledCount ()
 
 //----------------------------------------------------------------------
 
-SpaceManager::SpaceManager (Editor* editor)
+ComponentManager::ComponentManager (Editor* editor)
   : scfImplementationType (this), editor (editor)
 {
   csRef<iEventNameRegistry> registry =
@@ -134,11 +134,11 @@ SpaceManager::SpaceManager (Editor* editor)
 		 registry->GetID ("crystalspace.editor.context"));
 }
 
-SpaceManager::~SpaceManager ()
+ComponentManager::~ComponentManager ()
 {
 }
 
-bool SpaceManager::RegisterComponent (const char* pluginName)
+bool ComponentManager::RegisterComponent (const char* pluginName)
 {
   // Check if this component is already registered
   if (components.Contains (pluginName))
@@ -183,10 +183,11 @@ bool SpaceManager::RegisterComponent (const char* pluginName)
     return false;
 
   components.PutUnique (pluginName, ref);
+  // TODO: notify component loaded. In debug mode only? No for user error reports
   return true;
 }
 
-bool SpaceManager::RegisterSpace (const char* pluginName)
+bool ComponentManager::RegisterSpace (const char* pluginName)
 {
   // Check if this space is already registered
   for (size_t i = 0; i < spaceFactories.GetSize (); i++)
@@ -230,7 +231,7 @@ bool SpaceManager::RegisterSpace (const char* pluginName)
   return false;
 }
 
-bool SpaceManager::RegisterHeader (const char* pluginName)
+bool ComponentManager::RegisterHeader (const char* pluginName)
 {
   csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
   if (!base)
@@ -303,7 +304,7 @@ bool SpaceManager::RegisterHeader (const char* pluginName)
   return false;
 }
 
-bool SpaceManager::RegisterPanel (const char* pluginName)
+bool ComponentManager::RegisterPanel (const char* pluginName)
 {
   csRef<iBase> base = iSCF::SCF->CreateInstance (pluginName);
   if (!base)
@@ -359,12 +360,26 @@ bool SpaceManager::RegisterPanel (const char* pluginName)
   return false;
 }
 
-iEditorComponent* SpaceManager::FindComponent (const char* pluginName) const
+iSpaceFactory* ComponentManager::FindSpaceFactory (const char* pluginName, size_t& index) const
+{
+  index = 0;
+  for (csRefArray<SpaceFactory>::ConstIterator it =
+	 spaceFactories.GetIterator (); it.HasNext (); index++)
+  {
+    iSpaceFactory* n = it.Next ();
+    SpaceFactory* factory = static_cast<SpaceFactory*> (n);
+    if (factory->identifier == pluginName) return factory;
+  }
+
+  return nullptr;
+}
+
+iEditorComponent* ComponentManager::FindComponent (const char* pluginName) const
 {
   return *components.GetElementPointer (pluginName);
 }
 
-bool SpaceManager::HandleEvent (iEvent &event)
+bool ComponentManager::HandleEvent (iEvent &event)
 {
   for (csRefArray<SpaceFactory>::Iterator it =
 	 spaceFactories.GetIterator (); it.HasNext (); )
@@ -384,13 +399,13 @@ bool SpaceManager::HandleEvent (iEvent &event)
   return false;
 }
 
-const csRefArray<SpaceFactory>& SpaceManager::GetSpaceFactories ()
+const csRefArray<SpaceFactory>& ComponentManager::GetSpaceFactories ()
 {
   return spaceFactories;
 }
 
 
-void SpaceManager::ReDraw (iSpace* space)
+void ComponentManager::ReDraw (iSpace* space)
 {
   if (!space || !space->GetFactory ()) return;
   const char* id = space->GetFactory ()->GetIdentifier ();
@@ -456,7 +471,7 @@ void SpaceManager::ReDraw (iSpace* space)
   }
 }
 
-void SpaceManager::Update ()
+void ComponentManager::Update ()
 {
   // Update the editor components
   for (csHash<csRef<iEditorComponent>, csString>::GlobalIterator it =

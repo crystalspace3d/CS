@@ -76,7 +76,7 @@ bool CS3DEngine::Initialize (iEditor* editor)
               "The drawing canvas is not a iWxWindow plugin!");
     return false;
   }
-  wxwin->SetParent (editor->GetwxFrame ());
+  wxwin->SetParent (editor->GetFrame (0)->GetwxFrame ());
 
   // Setup the default menus
   fileMenu = editor->GetMenuManager ()->GetSubMenu ("&File");

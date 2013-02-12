@@ -27,6 +27,7 @@
 #include "ivideo/fontserv.h"
 
 #include "ieditor/editor.h"
+#include "ieditor/space.h"
 
 using namespace CS::EditorApp;
 

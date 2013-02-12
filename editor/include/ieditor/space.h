@@ -45,7 +45,8 @@ struct iSpace : public virtual iBase
 {
   SCF_INTERFACE (iSpace, 1, 0, 0);
 
-  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* factory, wxWindow* parent) = 0;
+  virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+			   iSpaceFactory* factory, wxWindow* parent) = 0;
 
   virtual iSpaceFactory* GetFactory () const = 0;
 
@@ -80,11 +81,26 @@ struct iSpaceFactory : public virtual iBase
 };
 
 /**
+ *
+ */
+struct iEditorComponent : public virtual iBase
+{
+  SCF_INTERFACE (iEditorComponent, 1, 0, 0);
+
+  virtual bool Initialize (iEditor* editor) = 0;
+  virtual void Update () = 0;
+
+  virtual void Save (iDocumentNode* node) const = 0;
+  virtual bool Load (iDocumentNode* node) = 0;
+};
+
+/**
  * Manages a set of spaces which make up the visible parts of the editor.
  */
-struct iSpaceManager : public virtual iBase
+// TODO: iComponentManager?
+struct iComponentManager : public virtual iBase
 {
-  SCF_INTERFACE (iSpaceManager, 1, 0, 0);
+  SCF_INTERFACE (iComponentManager, 1, 0, 0);
 
   virtual bool RegisterComponent (const char* pluginName) = 0;
 
@@ -95,6 +111,7 @@ struct iSpaceManager : public virtual iBase
   virtual bool RegisterPanel (const char* pluginName) = 0;
 
   virtual iEditorComponent* FindComponent (const char* pluginName) const = 0;
+  virtual iSpaceFactory* FindSpaceFactory (const char* pluginName, size_t& index) const = 0;
 };
 
 } // namespace EditorApp

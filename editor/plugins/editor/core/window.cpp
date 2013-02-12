@@ -20,9 +20,10 @@
 #include "csutil/objreg.h"
 #include "csutil/scf.h"
 #include "csutil/stringquote.h"
-#include "ieditor/editor.h"
 #include "ivaria/reporter.h"
 
+#include "editor.h"
+#include "perspective.h"
 #include "spacemanager.h"
 #include "window.h"
 
@@ -166,8 +167,8 @@ ViewControl::~ViewControl ()
 
 void ViewControl::Realize (const char* pluginName)
 {
-  iSpaceManager* imgr = editor->GetSpaceManager ();
-  SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
+  iComponentManager* imgr = editor->GetComponentManager ();
+  ComponentManager* mgr = static_cast<ComponentManager*> (imgr);
 
   // Look for any space provided
   if (pluginName)
@@ -231,8 +232,8 @@ void ViewControl::Realize (const char* pluginName)
 
 void ViewControl::CreateSpace (iSpaceFactory* factory, size_t index)
 {
-  iSpaceManager* imgr = editor->GetSpaceManager ();
-  SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
+  iComponentManager* imgr = editor->GetComponentManager ();
+  ComponentManager* mgr = static_cast<ComponentManager*> (imgr);
 
   space = factory->CreateInstance (this);
   spaces.Put (index, space);
@@ -258,10 +259,18 @@ void ViewControl::OnClicked (wxCommandEvent& event)
   }
   else
   {
-    wxFrame* frame = new wxFrame (this, wxID_ANY, wxT ("3D View"), wxDefaultPosition, GetSize ());
-    Window* window = new Window (object_reg, editor, frame);
-    window->Realize ();
-    frame->Show (true);
+    // Create a new perspective for this view
+    iPerspectiveManager* perspectiveManager = editor->GetPerspectiveManager ();
+    iPerspective* perspective = perspectiveManager->CreatePerspective
+      (csString ().Format ("Perspective %zu",
+			   perspectiveManager->GetPerspectiveCount () +1));
+    iPerspectiveWindow* window = perspective->GetRootWindow ();
+    window->SetSpace (space->GetFactory ()->GetIdentifier ());
+
+    // Create the editor frame
+    iEditorFrame* frame = editor->CreateFrame (nullptr, perspective);
+    EditorFrame* csframe = static_cast<EditorFrame*> (frame);
+    csframe->Init ();
   }
 }
 
@@ -280,8 +289,8 @@ SpaceComboBox::SpaceComboBox
     object_reg (object_reg), editor (editor), control (ctrl), lastIndex ((size_t) ~0)
 {
   // Build the list of menu entries for all spaces
-  iSpaceManager* imgr = editor->GetSpaceManager ();
-  SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
+  iComponentManager* imgr = editor->GetComponentManager ();
+  ComponentManager* mgr = static_cast<ComponentManager*> (imgr);
   csRefArray<SpaceFactory>::ConstIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();
 
@@ -311,8 +320,8 @@ void SpaceComboBox::SetSelectedIndex (size_t index)
 void SpaceComboBox::OnSelected (wxCommandEvent& event)
 {
   // Search the space that is being selected
-  iSpaceManager* imgr = editor->GetSpaceManager ();
-  SpaceManager* mgr = static_cast<SpaceManager*> (imgr);
+  iComponentManager* imgr = editor->GetComponentManager ();
+  ComponentManager* mgr = static_cast<ComponentManager*> (imgr);
 
   csRefArray<SpaceFactory>::ConstIterator spaces =
     mgr->GetSpaceFactories ().GetIterator ();

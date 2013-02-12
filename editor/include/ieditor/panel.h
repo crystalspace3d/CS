@@ -47,8 +47,12 @@ struct iPanel : public virtual iBase
    * changed.
    */
   virtual void Draw (iContext* context, iLayout* layout) = 0;
-};
 
+/*
+  virtual void Save (iDocumentNode* node) const = 0;
+  virtual bool Load (iDocumentNode* node) = 0;
+*/
+};
 
 } // namespace EditorApp
 } // namespace CS

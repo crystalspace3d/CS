@@ -105,9 +105,11 @@ class MenuManager
 public:
   MenuManager (Editor* editor);
   virtual ~MenuManager ();
-  
+
+  void SetFrame (wxFrame* frame);
+
+  //-- iMenuManager
   virtual wxMenuBar* GetwxMenuBar () const;
-  
   virtual csRef<iSubMenu> GetSubMenu (const char* item);
 
 private:

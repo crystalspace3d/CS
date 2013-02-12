@@ -23,6 +23,7 @@
 #include "csutil/scf_implementation.h"
 #include "ieditor/editor.h"
 #include "ieditor/menu.h"
+#include "ieditor/perspective.h"
 #include "ieditor/space.h"
 #include "iutil/comp.h"
 #include "ivaria/reporter.h"
@@ -34,14 +35,14 @@ using namespace CS::EditorApp;
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
 
-class Exit
+class Perspectives
   : public wxEvtHandler,
-    public scfImplementation1<Exit, iEditorComponent>,
+    public scfImplementation1<Perspectives, iEditorComponent>,
     public csBaseEventHandler
 {
 public:
-  Exit (iBase* parent);
-  virtual ~Exit();
+  Perspectives (iBase* parent);
+  virtual ~Perspectives();
 
   //-- iEditorComponent
   virtual bool Initialize (iEditor* editor);
@@ -53,14 +54,16 @@ public:
   virtual bool HandleEvent (iEvent &event);
 
 private:
-  void OnQuit (wxCommandEvent& event);
+  void AddPerspective (iPerspective* perspective);
 
 private:
   iEditor* editor;
 
-  csRef<iSubMenu> fileMenu;
+  csRef<iSubMenu> viewMenu;
+  csRef<iMenuItem> createItem;
   csRef<iMenuItem> separator;
-  csRef<iMenuItem> quitItem;
+  csRefArray<iMenuItem> perspectives;
+  csEventID eventUpdatePerspective;
 };
 
 }

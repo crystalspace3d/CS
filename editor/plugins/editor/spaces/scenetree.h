@@ -119,7 +119,7 @@ private:
 
   void OnSetSelectedObjects ();
   void OnAddSelectedObject (iEvent& event);
-  void OnRemoveSelectedObject (iEvent& event);
+  void OnDeleteSelectedObject (iEvent& event);
   void OnClearSelectedObjects ();
 
   void OnEnterWindow (wxMouseEvent& event);
@@ -137,7 +137,7 @@ private:
   csEventID eventSetCollection;
   csEventID eventSetSelectedObjects;
   csEventID eventAddSelectedObject;
-  csEventID eventRemoveSelectedObject;
+  csEventID eventDeleteSelectedObject;
   csEventID eventClearSelectedObjects;
 
   bool selecting;

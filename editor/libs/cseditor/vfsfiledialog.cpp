@@ -176,7 +176,11 @@ wxDialog( parent, id, title, position, size, style), vfs (vfs)
     while (!path.IsEmpty ())
     {
       size_t index = path.FindFirst ('/');
-      if (index == (size_t) -1) break;
+      if (index == (size_t) -1)
+      {
+	filename = path;
+	break;
+      }
       csString dir = path.Slice (0, index);
       path = path.Slice (index + 1);
       OpenTreeItemChild(wxString(dir.GetData(), wxConvUTF8));

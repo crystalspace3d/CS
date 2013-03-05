@@ -15,21 +15,13 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
-#ifndef __MODIFIABLE_EDITOR_H__
-#define __MODIFIABLE_EDITOR_H__
+#ifndef __CSEDITOR_MODIFIABLE_EDITOR_H__
+#define __CSEDITOR_MODIFIABLE_EDITOR_H__
 
 // Misc
 #include "cssysdef.h"
+#include "csutil/hash.h"
 #include "csutil/ref.h"
-#include <wx/wx.h>
-
-// Translator
-#include <ivaria/translator.h>
-
-// Needed for the properties
-#include <csutil/cscolor.h>
-#include <csgeom/vector3.h>
 
 // Property grid manager
 #include "cseditor/wx/propgrid/manager.h"
@@ -37,17 +29,11 @@
 #include "cseditor/wx/propgrid/propdev.h"
 #include "cseditor/wx/propgrid/editors.h"
 
-// Modifiable
-#include "iutil/modifiable.h"
-
-// Editor stuff
-#include "ieditor/editor.h"
-#include "ieditor/context.h"
-#include "ieditor/operator.h"
-#include "ieditor/space.h"
-
-// iObject
-#include "iutil/object.h"
+class csVariant;
+struct iModifiable;
+struct iModifiableConstraint;
+struct iModifiableDescription;
+struct iTranslator;
 
 namespace CS {
 namespace EditorApp {
@@ -55,61 +41,60 @@ namespace EditorApp {
 class /*CS_CRYSTALSPACE_EXPORT*/ ModifiableEditor : public wxPanel 
 {
 public:
-  ModifiableEditor  ( iObjectRegistry*  object_reg, 
-                      wxWindow*         parent,
-                      wxWindowID        id,
-                      const wxPoint&    position,
-                      const wxSize&     size,
-                      long              style,
-                      const wxString&   name 
-                    );
-
-  virtual ~ModifiableEditor() {}
+  /// Constructor
+  ModifiableEditor (iObjectRegistry* object_reg, 
+		    wxWindow* parent,
+		    wxWindowID id,
+		    const wxPoint& position,
+		    const wxSize& size,
+		    long style,
+		    const wxString& name);
 
   /// Sets the current active modifiable entity in the grid
-  virtual void SetModifiable            (iModifiable* modifiable);
-  /// Sets the current active modifiable, as well as its name
-  virtual void SetModifiableLabel       (iModifiable* modifiable, csString& label);
+  virtual void SetModifiable (iModifiable* modifiable);
   /// Gets the currently active modifiable entity in the grid
-  virtual iModifiable* GetModifiable    () const;
-  /// Gets called by the space owning this component
-  virtual void OnSize                   (wxSizeEvent& event);
+  virtual iModifiable* GetModifiable () const;
   /// Sets the property grid's message
-  void SetMessage                       (const wxString& title, const wxString& message);
+  void SetMessage (const wxString& title, const wxString& message);
   // Clears all the data from the editor
-  void Clear                            ();
-    
-  DECLARE_EVENT_TABLE();
+  void Clear ();
 
 private:
-  /// Populates the property grid with the editable traits of the active modifiable object
-  void Populate ();
+  /// Gets called by the space owning this component
+  virtual void OnSize (wxSizeEvent& event);
+
   /// Appends the element to the property grid, in its own category
-  void Append   (iModifiable* element, csString& name);
+  void Append (wxPropertyCategory* category, const iModifiableDescription* description, size_t offset);
 
   /**
-    * Actually does the work of taking the variant, its name, translation and translated
-    * description and generating the corresponding GUI element for each of them.
-    */
-  void AppendVariant(wxPGPropArg categoryID, csVariant* variant, const iModifiableConstraint* param, const wxString& originalName, const wxString& translatedName, const wxString& translatedDescription);
+   * Actually does the work of taking the variant, its name, translation and translated
+   * description and generating the corresponding GUI element for each of them.
+   */
+  void AppendVariant (wxPGPropArg categoryID, csVariant* variant, size_t index,
+		      const iModifiableConstraint* param,
+		      const wxString& originalName, const wxString& translatedName,
+		      const wxString& translatedDescription);
 
-  void OnGetNewValue            (wxPGProperty* property);
-  void OnPropertyGridChanging   (wxPropertyGridEvent& event);
-  void OnPropertyGridChanged    (wxPropertyGridEvent& event);
+  void OnPropertyGridChanging (wxPropertyGridEvent& event);
+  void OnPropertyGridChanged (wxPropertyGridEvent& event);
 
   enum
   {
     pageId = 1
   };
 
-  iObjectRegistry*          object_reg;
-  iModifiable*              activeModifiable;
-  csString                  activeModifiableName;
+  iObjectRegistry* object_reg;
+  csRef<iModifiable> modifiable;
+  csRef<iModifiableDescription> description;
 
-  wxPropertyGridPage*       page;
-  wxPropertyGridManager*    pgMan;
+  wxPropertyGridPage* page;
+  wxPropertyGridManager* pgMananager;
 
-  csRef<iTranslator>        translator;
+  csHash<size_t, wxPGProperty*> indexes;
+
+  csRef<iTranslator> translator;
+
+  DECLARE_EVENT_TABLE ();
 };
 
 } // namespace EditorApp

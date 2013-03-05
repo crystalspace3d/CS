@@ -15,7 +15,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __CS_IUTIL_PLUGINCONFIG_H__
 #define __CS_IUTIL_PLUGINCONFIG_H__
 
@@ -34,6 +33,8 @@
 #include "csutil/scfstr.h"
 #include "csutil/array.h"
 
+// TODO: move the variant structs in a separate file
+
 /// Type of the values that can be contained within a csVariant.
 enum csVariantType
 {
@@ -42,6 +43,7 @@ enum csVariantType
   /// Boolean type
   CSVAR_BOOL,
   /// A command. A command has no value, it is just a flag which can be set or not.
+  // TODO: command being a constraint of the bool type?
   //CSVAR_CMD,
   /// Float type
   CSVAR_FLOAT,
@@ -60,17 +62,13 @@ enum csVariantType
   /// csVector4 type
   CSVAR_VECTOR4,
   /// A key-value pair
-  //CSVAR_KEYVAL, // put on hold
-  /// A list of key-value pairs, such as a hashmap
-  //CSVAR_KEYVALLIST, // put on hold
+  //CSVAR_KEYVAL,
   /// csMatrix3 type
   CSVAR_MATRIX3,
   /// csTransform type
   CSVAR_TRANSFORM,
   /// An iBase entity
-  CSVAR_IBASE,
-  /// An array type
-  CSVAR_ARRAY
+  CSVAR_IBASE
 };
 
 /**
@@ -92,21 +90,18 @@ private:
     csMatrix3* m;
     csTransform* t;
     iBase* ib;
-    csArray<csVariant>* a;
   } val;
 
-  void Clear()
+  void Clear ()
   {
     if ((type == CSVAR_STRING)
-	&& (val.s != 0)) val.s->DecRef();
+	&& (val.s != 0)) val.s->DecRef ();
     else if ((type == CSVAR_MATRIX3) && (val.m != 0))
       delete val.m;
     else if ((type == CSVAR_TRANSFORM) && (val.t != 0))
       delete val.t;
     else if ((type == CSVAR_IBASE) && (val.ib != 0))
-      val.ib->DecRef();
-    else if ((type == CSVAR_ARRAY) && (val.a != 0))
-      delete val.a;
+      val.ib->DecRef ();
   }
 
 public:
@@ -126,7 +121,7 @@ public:
   /// Constructor initialized with a value of type CSVAR_STRING (from a char*)
   csVariant (const char* s) { type = CSVAR_STRING; val.s = s ? new scfString (s) : nullptr; }
   /// Constructor initialized with a value of type CSVAR_STRING (from an scfString)
-  csVariant (scfString& s) { type = CSVAR_STRING; val.s = s ? new scfString(s) : nullptr; }
+  csVariant (scfString& s) { type = CSVAR_STRING; val.s = s ? new scfString (s) : nullptr; }
   /// Constructor initialized with a value of type CSVAR_COLOR
   csVariant (const csColor& c) { type = CSVAR_COLOR; val.f[0] = c[0]; val.f[1] = c[1]; val.f[2] = c[2]; }
   /// Constructor initialized with a value of type CSVAR_COLOR4
@@ -141,10 +136,8 @@ public:
   csVariant (const csMatrix3& m) { type = CSVAR_MATRIX3; val.m = new csMatrix3 (m); }
   /// Constructor initialized with a value of type CSVAR_TRANSFORM
   csVariant (const csTransform& t) { type = CSVAR_TRANSFORM; val.t = new csTransform (t); }
-  /// Constructor initialized with a csArray
-  csVariant (const csArray<csVariant>& a) { type = CSVAR_ARRAY; val.a = new csArray<csVariant>(a); }
   /// Constructor initialized with an iBase
-  csVariant (iBase* ib) { type = CSVAR_IBASE; val.ib = ib; }
+  csVariant (iBase* ib) { type = CSVAR_IBASE; val.ib = ib; val.ib->IncRef (); }
 
   /// Copy constructor.
   csVariant (const csVariant& var)
@@ -154,13 +147,13 @@ public:
     type = var.type;
     val = var.val;
     if ((type == CSVAR_STRING)
-	&& (val.s != 0)) val.s->IncRef(); 
+	&& (val.s != 0)) val.s->IncRef (); 
 
     if ((type == CSVAR_IBASE)
-      && (val.ib != 0)) val.ib->IncRef();
+      && (val.ib != 0)) val.ib->IncRef ();
   }
 
-  ~csVariant () { Clear(); }
+  ~csVariant () { Clear (); }
 
   /// Assignment operator.
   const csVariant& operator = (const csVariant& var)
@@ -172,7 +165,7 @@ public:
 	&& (val.s != 0)) val.s->IncRef ();
 
     if ((type == CSVAR_IBASE)
-       && (val.ib != 0)) val.ib->IncRef();
+       && (val.ib != 0)) val.ib->IncRef ();
 
     return var;
   }
@@ -180,28 +173,28 @@ public:
   /// Assign a long
   void SetLong (long l)
   {
-    Clear();
+    Clear ();
     type = CSVAR_LONG;
     val.l = l;
   }
   /// Assign a bool
   void SetBool (bool b)
   {
-    Clear();
+    Clear ();
     type = CSVAR_BOOL;
     val.b = b;
   }
   /// Assign a float
   void SetFloat (float f)
   {
-    Clear();
+    Clear ();
     type = CSVAR_FLOAT;
     val.f[0] = f;
   }
   /// Assign a string
   void SetString (const char* s)
   {
-    Clear();
+    Clear ();
     type = CSVAR_STRING;
     if (s)
       val.s = new scfString (s);
@@ -211,7 +204,7 @@ public:
   /// Assign a csColor
   void SetColor (const csColor& c)
   {
-    Clear();
+    Clear ();
     type = CSVAR_COLOR;
     val.f[0] = c[0];
     val.f[1] = c[1];
@@ -220,7 +213,7 @@ public:
   /// Assign a csColor4
   void SetColor4 (const csColor4& c)
   {
-    Clear();
+    Clear ();
     type = CSVAR_COLOR4;
     val.f[0] = c[0];
     val.f[1] = c[1];
@@ -230,7 +223,7 @@ public:
   /// Assign a csVector2
   void SetVector2 (const csVector2& v)
   {
-    Clear();
+    Clear ();
     type = CSVAR_VECTOR2;
     val.f[0] = v[0];
     val.f[1] = v[1];
@@ -238,7 +231,7 @@ public:
   /// Assign a csVector3
   void SetVector3 (const csVector3& v)
   {
-    Clear();
+    Clear ();
     type = CSVAR_VECTOR3;
     val.f[0] = v[0];
     val.f[1] = v[1];
@@ -247,7 +240,7 @@ public:
   /// Assign a csVector4
   void SetVector4 (const csVector4& v)
   {
-    Clear();
+    Clear ();
     type = CSVAR_VECTOR4;
     val.f[0] = v[0];
     val.f[1] = v[1];
@@ -257,31 +250,24 @@ public:
   /// Assign a csMatrix3
   void SetMatrix3 (const csMatrix3& m)
   {
-    Clear();
+    Clear ();
     type = CSVAR_MATRIX3;
     val.m = new csMatrix3 (m);
   }
   /// Assign a csTransform
   void SetTransform (const csTransform& t)
   {
-    Clear();
+    Clear ();
     type = CSVAR_TRANSFORM;
     val.t = new csTransform (t);
   }
   /// Assign an iBase
-  void SetIBase(const csRef<iBase>& ib)
+  void SetIBase (const csRef<iBase>& ib)
   {
-    Clear();
+    Clear ();
     type = CSVAR_IBASE;
     val.ib = ib;
-    ib->IncRef();
-  }
-  /// Assign a csArray
-  void SetArray ( const csArray<csVariant>& a)
-  {
-    Clear();
-    type = CSVAR_ARRAY;
-    val.a = new csArray<csVariant>(a);
+    ib->IncRef ();
   }
 
   /// Retrieve a long
@@ -306,7 +292,7 @@ public:
   const char* GetString () const
   {
     CS_ASSERT (type == CSVAR_STRING);
-    return val.s->GetData();
+    return val.s->GetData ();
   }
   /// Retrieve a csColor
   csColor GetColor () const
@@ -351,20 +337,64 @@ public:
     return *val.t;
   }
   /// Retrieve an iBase
-  iBase* GetIBase() const
+  iBase* GetIBase () const
   {
-    CS_ASSERT(type == CSVAR_IBASE);
+    CS_ASSERT (type == CSVAR_IBASE);
     return val.ib;
-  }
-  /// Retrieve a csArray
-  csArray<csVariant> GetArray() const 
-  {
-    CS_ASSERT (type == CSVAR_ARRAY);
-    return *val.a;
   }
 
   /// Get the type of the contained value. The default value is CSVAR_CMD.
   csVariantType GetType () const { return type; }
+
+  /// Prints out a variant's value; used in debugging.
+  // TODO: convert to "csString csVariant::Description() const"
+  void PrintVariant (csVariant* variant)
+  {
+    switch (variant->GetType ())
+    {
+    case CSVAR_LONG:
+      printf ("[variant type: long value: %li]", variant->GetLong ());
+      break;
+    case CSVAR_FLOAT:
+      printf ("[variant type: float value: %f]", variant->GetFloat ());
+      break;
+    case CSVAR_BOOL:
+      printf ("[variant type: bool value: %i]", variant->GetBool ());
+      break;
+    case CSVAR_STRING:
+      printf ("[variant type: string value: %s]", variant->GetString ());
+      break;
+    case CSVAR_VECTOR3 :
+      printf ("[variant type: vector3 value: %f ; %f ; %f]",
+	      variant->GetVector3 ().x, variant->GetVector3 ().y, variant->GetVector3 ().z);
+      break;
+    case CSVAR_VECTOR2 :
+      printf ("[variant type: vector2 value: %f ; %f]",
+	      variant->GetVector2 ().x, variant->GetVector2 ().y);
+      break;
+    case CSVAR_VECTOR4 :
+      printf ("[variant type: vector4 value: %f ; %f ; %f ; %f]",
+	      variant->GetVector4 ().x, variant->GetVector4 ().y,
+	      variant->GetVector4 ().z, variant->GetVector4 ().w);
+      break;
+    case CSVAR_COLOR :
+    {
+      csColor col = variant->GetColor ();
+      printf ("[variant type: color value: %f ; %f ; %f]", col[0], col[1], col[2]);
+    }
+    break;
+    case CSVAR_IBASE:
+/*
+      csRef<iObject> asObj = scfQueryInterface<iObject>(variant->GetIBase ());
+      printf ("[variant type: iBase pointer, name: %s]\n", 
+	      asObj.IsValid () ? asObj->GetName () : "unknown");
+*/
+      break;
+    default:
+      // TODO
+      break;
+    }
+  }
 };
 
 /// Description of a configuration option, to be used by the iPluginConfig interfaces

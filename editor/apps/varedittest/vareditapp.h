@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
+  Copyright (C) 2012 Christian Van Brussel, Andrei Barsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -29,11 +29,11 @@ public:
    * Generates some test properties for GUI generation and sets up
    * the CS environment.
    */
-  virtual bool OnInit();
-  virtual int  OnExit();
+  virtual bool OnInit ();
+  virtual int OnExit ();
 
 private:
-  iObjectRegistry*  object_reg;   
+  iObjectRegistry* object_reg;   
 };
 
 #endif // __VAREDIT_APP_H__

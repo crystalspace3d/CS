@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
+  Copyright (C) 2012 Christian Van Brussel, Andrei Barsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -17,184 +17,231 @@
 */
 
 #include "cssysdef.h"
-#include "testmodifiable.h"
+#include "csutil/cscolor.h"
 #include "csutil/event.h"
+#include "csutil/ref.h"
 #include "cstool/initapp.h"
-#include <csutil/ref.h>
-#include <iutil/eventq.h>
-#include <csutil/cscolor.h>
+#include "iutil/eventq.h"
 #include "iutil/object.h"
 
-csTestModifiable :: csTestModifiable(const char* name, const char* job, long itemCount, iObjectRegistry* object_reg) :
-  name(name),
-  job(job),
-  object_reg(object_reg),
-  itemCount(itemCount),
-  awesome(false),
-  floatThingy(123.55F),
-  position(10, 12),
-  color(0.5f, 0.2f, 0.2f),
-  vfsFile(""), vfsPath(""), vfsDir(""),
-  scfImplementationType(this)
-{
-  // We need to generate unique IDs for all the properties needing to be made 
-  // modifiable through our system.
-  GENERATE_ID_START();
-  GENERATE_ID(name);
-  GENERATE_ID(job);
-  GENERATE_ID(color);
-  GENERATE_ID(position);
-  GENERATE_ID(itemCount);
-  GENERATE_ID(awesome);
-  GENERATE_ID(floatThingy);
-  GENERATE_ID(floatArray);
-  GENERATE_ID(testModifiable);
-  GENERATE_ID(vfsFile);
-  GENERATE_ID(vfsDir);
-  GENERATE_ID(vfsPath);
+#include "testmodifiable.h"
 
-  floatArray.Push(40.0f);
-  floatArray.Push(41.0f);
-  floatArray.Push(42.0f);
+// -------------------------------- csTestModifiable --------------------------------
+
+csTestModifiable::csTestModifiable
+(const char* name, const char* job, long itemCount) :
+  scfImplementationType (this),
+  name (name),
+  job (job),
+  itemCount (itemCount),
+  awesome (false),
+  floatThingy (123.55F),
+  position (10, 12),
+  color (0.5f, 0.2f, 0.2f),
+  vfsFile (""), vfsDir (""), vfsPath ("")
+{
 }
 
-csTestModifiable :: ~csTestModifiable() { }
-
-const csStringID csTestModifiable :: GetID() const
+csTestModifiable::~csTestModifiable () { }
+/*
+const csStringID csTestModifiable::GetID () const
 {
-  return id_testModifiable;
+  csRef<iStringSet> strings =
+    csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset");
+  return strings->Request ("csTestModifiable");
+}
+*/
+csPtr<iModifiableDescription> csTestModifiable::GetDescription (iObjectRegistry* object_reg) const 
+{
+  csBasicModifiableDescription* description = new csBasicModifiableDescription ("Player stats");
+  csRef<csBasicModifiableParameter> parameter;
+  csRef<iModifiableConstraint> constraint;
+  csRef<iStringSet> strings =
+    csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset");
+  csStringID id;
+
+  id = strings->Request ("NAME");
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "Name", "The dude's name"));
+  description->Push (parameter);
+
+  id = strings->Request ("JOB");
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "Job", "The dude's jawb"));
+  description->Push (parameter);
+
+  id = strings->Request ("ITEMS");
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_LONG, id, "Item count", "How many items this guy has"));
+  description->Push (parameter);
+
+  id = strings->Request ("AWESOME");
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_BOOL, id, "Awesome", "Am I awesome, or what?"));
+  description->Push (parameter);
+
+  csRef<csBasicModifiableDescription> child;
+  child.AttachNew (new csBasicModifiableDescription ("Other stats"));
+  description->Push (child);
+
+  id = strings->Request ("FLOATY");
+  constraint.AttachNew (new csConstraintBounded (csVariant (-100.0f), csVariant (500.0f)));
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_FLOAT, id, "FloatThingy", "Some float", constraint));
+  child->Push (parameter);
+
+  id = strings->Request ("POSITION");
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_VECTOR2, id, "Position", "Spatial position of the unit"));
+  child->Push (parameter);
+
+  id = strings->Request ("COLOR");
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_COLOR, id, "Color", "My color"));
+  child->Push (parameter);
+
+  csRef<csBasicModifiableDescription> subChild;
+  subChild.AttachNew (new csBasicModifiableDescription ("Sub-other stats"));
+  child->Push (subChild);
+
+  id = strings->Request ("FILE");
+  constraint.AttachNew (new csConstraintVfsFile);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "VFS file", "A VFS file name", constraint));
+  subChild->Push (parameter);
+
+  id = strings->Request ("DIR");
+  constraint.AttachNew (new csConstraintVfsDir);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "VFS dir", "A VFS dir name", constraint));
+  subChild->Push (parameter);
+
+  id = strings->Request ("PATH");
+  constraint.AttachNew (new csConstraintVfsPath);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "VFS path", "A VFS path name", constraint));
+  subChild->Push (parameter);
+
+  return description;
 }
 
-csPtr<iModifiableDescription> csTestModifiable :: GetDescription () const 
+void csTestModifiable::GetParameterValue (size_t index, csVariant& value) const
 {
-  csBasicModifiableDescription* description = new csBasicModifiableDescription();
-  iModifiableConstraint *constraint;
-
-  PUSH_PARAM(CSVAR_STRING, name, "Name", "the dude's name");
-  PUSH_PARAM(CSVAR_STRING, job, "Job", "the dude's jawb");
-  PUSH_PARAM(CSVAR_LONG, itemCount, "Item count", "How many items this guy has (unrelated to the array)."); 
-  PUSH_PARAM(CSVAR_BOOL, awesome, "Awesome", "Am I awesome, or what?");
-  constraint = new csConstraintBounded(csVariant(-100.0f), csVariant(500.0f));
-  PUSH_PARAM_CONSTRAINT(CSVAR_FLOAT, floatThingy, "FloatThingy", "some float", constraint);
-  // Removed until better tools are brought to deal with arrays of modifiable things
-  //PUSH_PARAM(CSVAR_ARRAY, floatArray, "Array of floats", "testing arrays being editable in the propgrid");
-  PUSH_PARAM(CSVAR_COLOR, color, "Color", "my color");
-  PUSH_PARAM(CSVAR_VECTOR2, position, "Position", "spatial position of the unit");
-  
-    constraint = new csConstraintVfsFile;
-  PUSH_PARAM_CONSTRAINT(CSVAR_STRING, vfsFile, "VFS file", "A VFS file name", constraint);
-
-  return csPtr<iModifiableDescription>(description);
+  switch (index)
+  {
+  case 0:
+    value.SetString (name);
+    break;
+  case 1:
+    value.SetString (job);
+    break;
+  case 2:
+    value.SetLong (itemCount);
+    break;
+  case 3:
+    value.SetBool (awesome);
+    break;
+  case 4:
+    value.SetFloat (floatThingy);
+    break;
+  case 5:
+    value.SetVector2 (position);
+    break;
+  case 6:
+    value.SetColor (color);
+    break;
+  case 7:
+    value.SetString (vfsFile);
+    break;
+  case 8:
+    value.SetString (vfsDir);
+    break;
+  case 9:
+    value.SetString (vfsPath);
+    break;
+  default:
+    //TODO: error message? return false?
+    break;
+  }
 }
 
-csVariant* csTestModifiable :: GetParameterValue(csStringID id) const
+void csTestModifiable::GetParameterValue (size_t parameterIndex, size_t arrayIndex, csVariant& value) const
 {
-  if(id == id_name) {
-    return new csVariant(name);
-  } else if(id == id_job) {
-      return new csVariant(job);
-  } else if(id == id_itemCount) {
-      return new csVariant(itemCount);
-  } else if(id == id_awesome) {
-    return new csVariant(awesome);
-  } else if(id == id_floatThingy) {
-    return new csVariant(floatThingy);
-  } else if(id == id_floatArray) {
-    //return new csVariant(MakeVariantArray(floatArray));
-  } else if(id == id_position) {    
-    return new csVariant(position);
-  } else if(id == id_color) {
-    return new csVariant(color);
-  } else if(id == id_vfsFile) {
-    return new csVariant(vfsFile);
-  } else if(id == id_vfsDir) {
-    return new csVariant(vfsDir);
-  } else if(id == id_vfsPath) {
-    return new csVariant(vfsPath);
+}
+
+bool csTestModifiable::SetParameterValue (size_t index, const csVariant& value)
+{
+  switch (index)
+  {
+  case 0:
+    name = value.GetString ();
+    break;
+  case 1:
+    job = value.GetString ();
+    break;
+  case 2:
+    itemCount = value.GetLong ();
+    break;
+  case 3:
+    awesome = value.GetBool ();
+    break;
+  case 4:
+    floatThingy = value.GetFloat ();
+    break;
+  case 5:
+    position = value.GetVector2 ();
+    break;
+  case 6:
+    color = value.GetColor ();
+    break;
+  case 7:
+    vfsFile = value.GetString ();
+    break;
+  case 8:
+    vfsDir = value.GetString ();
+    break;
+  case 9:
+    vfsPath = value.GetString ();
+    break;
+  default:
+    //TODO: error message?
+    return false;
   }
 
-  return nullptr;
-}
-
-bool csTestModifiable :: SetParameterValue(csStringID id, const csVariant& value)
-{
   // Broadcast a variant set event
-  BROADCAST_SET_EVENT();
+  for (size_t i = 0; i < listeners.GetSize (); i++)
+    listeners[i]->ValueChanged (this, index);
 
-  if(id == id_name) {
-    name = value.GetString();
-    return true;
-  } else if(id == id_job) {
-    job = value.GetString();
-    return true;
-  } else if(id == id_itemCount) {
-    itemCount = value.GetLong();
-    return true;
-  } else if(id == id_awesome) {
-    awesome = value.GetBool();
-    return true;
-  } else if(id == id_floatThingy) {
-    floatThingy = value.GetFloat();
-    return true;
-  } else if(id == id_floatArray) {
-    //floatArray = GetRegularArray<float>(value.GetArray());
-    return true;
-  } else if(id == id_position) {
-    position = value.GetVector2();
-    return true;
-  } else if(id == id_color) {
-    color = value.GetColor();
-    return true;
-  } else if(id == id_vfsFile) {
-    vfsFile = value.GetString();
-    return true;
-  } else if(id == id_vfsDir) {
-    vfsDir = value.GetString();
-    return true;
-  } else if(id == id_vfsPath) {
-    vfsPath = value.GetString();
-    return true;
-  }
+  return true;
+}
 
+bool csTestModifiable::SetParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)
+{
   return false;
 }
 
-/// Prints out a variant's value; used in debugging.
-void PrintVariant (csVariant* variant)
+bool csTestModifiable::PushParameterValue (size_t parameterIndex, const csVariant& value)
 {
-  switch (variant->GetType ())
-    {
-    case CSVAR_LONG:
-      printf ("[variant type: long value: %li]", variant->GetLong ());
-      break;
-    case CSVAR_FLOAT:
-      printf ("[variant type: float value: %f]", variant->GetFloat ());
-      break;
-    case CSVAR_BOOL:
-      printf ("[variant type: bool value: %i]", variant->GetBool ());
-      break;
-    case CSVAR_STRING:
-      printf ("[variant type: string value: %s]", variant->GetString ());
-      break;
-    case CSVAR_VECTOR3 :
-      printf ("[variant type: vector3 value: %f ; %f ; %f]", variant->GetVector3 ().x,variant->GetVector3 ().y,variant->GetVector3 ().z);
-      break;
-    case CSVAR_VECTOR2 :
-      printf ("[variant type: vector2 value: %f ; %f]", variant->GetVector2 ().x,variant->GetVector2 ().y);
-      break;
-    case CSVAR_VECTOR4 :
-      printf ("[variant type: vector4 value: %f ; %f ; %f ; %f]", variant->GetVector4 ().x,variant->GetVector4 ().y,variant->GetVector4 ().z,variant->GetVector4 ().w);
-      break;
-    case CSVAR_COLOR :
-      {
-      csColor col = variant->GetColor();
-      printf ("[variant type: color value: %f ; %f ; %f]", col[0], col[1], col[2]);
-      }
-      break;
-    case CSVAR_IBASE:
-      csRef<iObject> asObj = scfQueryInterface<iObject>(variant->GetIBase());
-      printf ("[variant type: iBase pointer, name: %s]\n", 
-        asObj.IsValid() ? asObj->GetName() : "unknown");
-      break;
-    }
+  return false;
+}
+
+bool csTestModifiable::DeleteParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)
+{
+  return false;
+}
+
+void csTestModifiable::AddListener (iModifiableListener* listener)
+{
+  listeners.Push (listener);
+}
+
+void csTestModifiable::RemoveListener (iModifiableListener* listener)
+{
+  listeners.Delete (listener);
+}
+
+// -------------------------------- csTestModifiable2 --------------------------------
+
+csTestModifiable2::csTestModifiable2
+(const char* name, const char* job, long itemCount) :
+  scfImplementationType (this),
+  name (name),
+  job (job),
+  itemCount (itemCount),
+  awesome (false),
+  floatThingy (123.55F),
+  position (10, 12),
+  color (0.5f, 0.2f, 0.2f),
+  vfsFile (""), vfsDir (""), vfsPath ("")
+{
 }

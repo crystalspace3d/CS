@@ -81,18 +81,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     transformMode (CS_PARTICLE_LOCAL_MODE),
     commonDirection (1.0f, 0, 0), individualSize (false), particleSize (1.0f)
   {
-    // Setup the ids for various properties
-    GENERATE_ID_START_REG(objectType->object_reg);
-    GENERATE_ID(particleOrientation);
-    GENERATE_ID(rotationMode);
-    GENERATE_ID(sortMode);
-    GENERATE_ID(integrationMode);
-    GENERATE_ID(transformMode);
-    GENERATE_ID(individualSize);
-    GENERATE_ID(commonDirection);
-    GENERATE_ID(particleSize);
-    GENERATE_ID(emitters);
-    GENERATE_ID(effectors);
   }
 
   ParticlesMeshFactory::~ParticlesMeshFactory()

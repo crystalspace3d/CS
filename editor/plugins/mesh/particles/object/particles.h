@@ -83,7 +83,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return objectType;
     }
 
-
     /**\name iMeshObjectFactory implementation
      * @{ */
     virtual csFlags& GetFlags ()
@@ -161,129 +160,84 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     /**\name iModifiable implementation
       * @{ */
-    const csStringID GetID() const {
-      // TODO: proper, unique ID
-      return 42;
-    }
+    MODIF_DECLARE ();
+    MODIF_GETDESCRIPTION_BEGIN ("Particle mesh object");
 
-    csPtr<iModifiableDescription> GetDescription () const {
-      csBasicModifiableDescription* description = new csBasicModifiableDescription();
-      csBasicModifiableParameter* param = new csBasicModifiableParameter("Particle render orientation", "", CSVAR_LONG, id_particleOrientation);
-      csConstraintEnum* constraint = new csConstraintEnum;
-      constraint->PushValue(CS_PARTICLE_CAMERAFACE, 
-        "Billboard always facing the camera");
-      constraint->PushValue(CS_PARTICLE_CAMERAFACE_APPROX,
-        "Billboard always facing the camera direction");
-      constraint->PushValue(CS_PARTICLE_ORIENT_COMMON,
-        "Orient around a common direction (y/up direction), facing the camera");
-      constraint->PushValue(CS_PARTICLE_ORIENT_COMMON_APPROX,
-        "Orient around a common direction (y/up direction), facing the camera, using the camera direction");
-      constraint->PushValue(CS_PARTICLE_ORIENT_VELOCITY,
-        "Use velocity vector as direction");
-      constraint->PushValue(CS_PARTICLE_ORIENT_SELF,
-        "Orient particles according to their internal rotation");
-      constraint->PushValue(CS_PARTICLE_ORIENT_SELF_FORWARD,
-        "Orient self forward - towards camera");
-      param->SetConstraint(constraint);
-      description->Push(param);
+    MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_CAMERAFACE, 
+				     "Billboard always facing the camera");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_CAMERAFACE_APPROX,
+				     "Billboard always facing the camera direction");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_ORIENT_COMMON,
+				     "Orient around a common direction (y/up direction), facing the camera");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_ORIENT_COMMON_APPROX,
+				     "Orient around a common direction (y/up direction), facing the camera, using the camera direction");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_ORIENT_VELOCITY,
+				     "Use velocity vector as direction");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_ORIENT_SELF,
+				     "Orient particles according to their internal rotation");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_ORIENT_SELF_FORWARD,
+				     "Orient self forward - towards camera");
+    MODIF_GETDESCRIPTION_CENUM (LONG, "ORIENTATION", "Orientation", "Particle render orientation");
 
-      param = new csBasicModifiableParameter("Rotation mode", "", CSVAR_LONG, id_rotationMode);
-      constraint = new csConstraintEnum;
-      constraint->PushValue(CS_PARTICLE_ROTATE_NONE, "No rotation");
-      constraint->PushValue(CS_PARTICLE_ROTATE_TEXCOORD, "Rotate texture coordinates");
-      constraint->PushValue(CS_PARTICLE_ROTATE_VERTICES, "Rotate particle vertices in the billboard plane");
-      param->SetConstraint(constraint);
-      description->Push(param);
+    MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_ROTATE_NONE, "No rotation");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_SORT_DISTANCE, "Sort by distance to the camera");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_SORT_DOT,
+				     "Sort by the dot product of the normalized camera vector and the particle direction");
+    MODIF_GETDESCRIPTION_CENUM (LONG, "ROTATION", "Rotation mode", "Rotation mode applied on each particle");
 
-      param = new csBasicModifiableParameter("Sort mode", "", CSVAR_LONG, id_sortMode);
-      constraint = new csConstraintEnum;
-      constraint->PushValue(CS_PARTICLE_SORT_NONE, "No sorting");
-      constraint->PushValue(CS_PARTICLE_SORT_DISTANCE, "Sort by distance to the camera");
-      constraint->PushValue(CS_PARTICLE_SORT_DOT, "Sort by the dot product of the normalized camera vector and the particle direction");
-      param->SetConstraint(constraint);
-      description->Push(param);
+    MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_SORT_NONE, "No sorting");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_SORT_DISTANCE, "Sort by distance to the camera");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_SORT_DOT,
+				     "Sort by the dot product of the normalized camera vector and the particle direction");
+    MODIF_GETDESCRIPTION_CENUM (LONG, "SORT", "Sort mode", "Mode used to sort the particles before rendering them");
 
-      param = new csBasicModifiableParameter("Integration mode", "", CSVAR_LONG, id_integrationMode);
-      constraint = new csConstraintEnum;
-      constraint->PushValue(CS_PARTICLE_INTEGRATE_NONE, "No integration");
-      constraint->PushValue(CS_PARTICLE_INTEGRATE_LINEAR, "Integrate linear velocity into linear position");
-      constraint->PushValue(CS_PARTICLE_INTEGRATE_BOTH, "Integrate both linear and angular velocity into pose");
-      param->SetConstraint(constraint);
-      description->Push(param);
+    MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_INTEGRATE_NONE, "No integration");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_INTEGRATE_LINEAR, "Integrate linear velocity into linear position");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_INTEGRATE_BOTH, "Integrate both linear and angular velocity into pose");
+    MODIF_GETDESCRIPTION_CENUM (LONG, "INTEGRATION", "Integration mode",
+				"Mode used to integrate the linear and/or angular velocities of the particles");
 
-      param = new csBasicModifiableParameter("Transformation mode", "", CSVAR_LONG, id_transformMode);
-      constraint = new csConstraintEnum;
-      constraint->PushValue(CS_PARTICLE_LOCAL_MODE, "Fully local mode - all positions and coordinates are relative to the particle system");
-      constraint->PushValue(CS_PARTICLE_LOCAL_EMITTER, "Particle positions and effectors operate in world space, emitters in local mode");
-      constraint->PushValue(CS_PARTICLE_WORLD_MODE, "All coordinates are in world space");
-      param->SetConstraint(constraint);
-      description->Push(param);
+    MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_LOCAL_MODE,
+				     "Fully local mode - all positions and coordinates are relative to the particle system");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_LOCAL_EMITTER,
+				     "Particle positions and effectors operate in world space, emitters in local mode");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_WORLD_MODE, "All coordinates are in world space");
+    MODIF_GETDESCRIPTION_CENUM (LONG, "TRANSFORMATION", "Transformation mode",
+				"Coordinate system to be used for the computation of the transforms of the particles");
 
-      description->Push(new csBasicModifiableParameter("Individual size", "", CSVAR_BOOL, id_individualSize));
-      description->Push(new csBasicModifiableParameter("Common direction", "", CSVAR_VECTOR3, id_commonDirection));
-      description->Push(new csBasicModifiableParameter("Particle size", "", CSVAR_VECTOR2, id_particleSize));
+    MODIF_GETDESCRIPTION (BOOL, "SIZE_INDIV", "Individual size", "Whether or not individual sizes should be computed for each particles");
+    MODIF_GETDESCRIPTION (VECTOR2, "SIZE_PARTICLE", "Particle size", "Size to be used for all particles");
+    MODIF_GETDESCRIPTION (VECTOR3, "DIRECTION", "Common direction", "Common motion direction for all particles");
 
-      return description;
-    }
+    MODIF_GETDESCRIPTION_END ();
 
-    csVariant* GetParameterValue (csStringID id) const {
-      if(id ==  id_particleOrientation)
-        return new csVariant(particleOrientation);
-      else if(id == id_rotationMode)
-        return new csVariant(rotationMode);
-      else if(id == id_sortMode)
-        return new csVariant(sortMode);
-      else if(id == id_integrationMode)
-        return new csVariant(integrationMode);
-      else if(id == id_transformMode)
-        return new csVariant(transformMode);
-      else if(id == id_individualSize)
-        return new csVariant(individualSize);
-      else if(id == id_commonDirection)
-        return new csVariant(commonDirection);
-      else if(id == id_particleSize)
-        return new csVariant(particleSize);
-      return nullptr;
-    }
+    MODIF_GETPARAMETERVALUE_BEGIN ();
+    MODIF_GETPARAMETERVALUE (0, Long, particleOrientation);
+    MODIF_GETPARAMETERVALUE (1, Long, rotationMode);
+    MODIF_GETPARAMETERVALUE (2, Long, sortMode);
+    MODIF_GETPARAMETERVALUE (3, Long, integrationMode);
+    MODIF_GETPARAMETERVALUE (4, Long, transformMode);
+    MODIF_GETPARAMETERVALUE (5, Bool, individualSize);
+    MODIF_GETPARAMETERVALUE (6, Vector2, particleSize);
+    MODIF_GETPARAMETERVALUE (7, Vector3, commonDirection);
+    MODIF_GETPARAMETERVALUE_END ();
 
-    bool SetParameterValue (csStringID id, const csVariant& value) {
-      if(id ==  id_particleOrientation) {
-        particleOrientation = (csParticleRenderOrientation)value.GetLong();
-        return true;
-      }
-      else if(id == id_rotationMode) {
-        rotationMode = (csParticleRotationMode)value.GetLong();
-        return true;
-      } 
-      else if(id == id_sortMode) {
-        SetSortMode((csParticleSortMode)value.GetLong());
-        return true;
-      }
-      else if(id == id_integrationMode)
-      {
-        SetIntegrationMode((csParticleIntegrationMode)value.GetLong());
-        return true;
-      }
-      else if(id == id_transformMode)
-      {
-        SetTransformMode(((csParticleTransformMode)value.GetLong()));
-        return true;
-      }
-      else if(id == id_individualSize) {
-        individualSize = value.GetBool();
-        return true;
-      }
-      else if(id == id_commonDirection) {
-        commonDirection = value.GetVector3();
-        return true;
-      }
-      else if(id == id_particleSize) {
-        particleSize = value.GetVector2();
-        return true;
-      }
+    MODIF_SETPARAMETERVALUE_BEGIN ();
+    MODIF_SETPARAMETERVALUE_ENUM (0, Long, particleOrientation, csParticleRenderOrientation);
+    MODIF_SETPARAMETERVALUE_ENUM (1, Long, rotationMode, csParticleRotationMode);
+    MODIF_SETPARAMETERVALUE_ENUM (2, Long, sortMode, csParticleSortMode);
+    MODIF_SETPARAMETERVALUE_ENUM (3, Long, integrationMode, csParticleIntegrationMode);
+    MODIF_SETPARAMETERVALUE_ENUM (4, Long, transformMode, csParticleTransformMode);
+    MODIF_SETPARAMETERVALUE (5, Bool, individualSize);
+    MODIF_SETPARAMETERVALUE (6, Vector2, particleSize);
+    MODIF_SETPARAMETERVALUE (7, Vector3, commonDirection);
+    MODIF_SETPARAMETERVALUE_END ();
 
-      return false;
-    }
     /** @} */
 
     /**\name iParticleSystemBase implementation
@@ -445,9 +399,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     csRefArray<iParticleEmitter> emitters;
     csRefArray<iParticleEffector> effectors;
-
-    //-- iModifiable
-    csStringID id_particleOrientation, id_rotationMode, id_sortMode, id_integrationMode, id_transformMode, id_individualSize, id_commonDirection, id_particleSize, id_emitters, id_effectors;
   };
 
   /**

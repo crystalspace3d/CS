@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2012 by Andrei Bârsan
+    Copyright (C) 2012 by Andrei Barsan
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,59 +19,26 @@
 #ifndef __SPACE_PARTICLEEDITOR_H__
 #define __SPACE_PARTICLEEDITOR_H__
 
+#include "cseditor/modifiableeditor.h"
 #include "csutil/csbaseeventh.h"
 #include "csutil/eventnames.h"
+#include "csutil/ref.h"
 #include "csutil/scf_implementation.h"
 #include "ieditor/editor.h"
 #include "ieditor/space.h"
 #include "iutil/event.h"
 #include "iutil/comp.h"
-
-#ifndef WX_PRECOMP
-  #include <wx/wx.h>
-  #include <iostream>
-#endif
-
-#include <csutil/refarr.h>
-#include "csutil/ref.h"
-
-// Contains iWxWindow
-#include "ivideo/wxwin.h"
-
-// iGraphics3D
-#include "ivideo/graph3d.h"
-
-#include <csutil/weakref.h>
-
-// For the gist - displaying modifiable stuff in a GUI
 #include "iutil/modifiable.h"
 
-// The particle stuff
-#include <imesh/particles.h>
-
-#include "ivaria/translator.h"
-
-#include "cseditor/modifiableeditor.h"
-
-#include "csutil/array.h"
-#include "csutil/csstring.h"
-#include <iutil/event.h>
-#include <iutil/objreg.h>
-
-#include <wx/dnd.h>
-#include <wx/event.h>
-#include <wx/listctrl.h>
-
-CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
+CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
   using namespace CS::EditorApp;
-  using namespace std;
 
   class CSPartEditSpace : public wxPanel, public csBaseEventHandler, public scfImplementation1<CSPartEditSpace, iSpace>
   {
   public:
-    CSPartEditSpace(iBase* parent);
-    virtual ~CSPartEditSpace();
+    CSPartEditSpace (iBase* parent);
+    virtual ~CSPartEditSpace ();
 
     // iSpace
     virtual bool Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent);
@@ -82,7 +49,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     virtual void Update ();
     
     // iEventHandler 
-    bool HandleEvent(iEvent &event);
+    bool HandleEvent (iEvent &event);
 
     // Various events
     void OnSize           (wxSizeEvent& event);
@@ -92,13 +59,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
      * particle system, passing it to the modifiable editor and updating the rest of
      * the GUI.
      */
-    void Populate();
+    void Populate ();
 
     /**
      * Called when the editor should be cleared, e.g. when the selected data isn't
      * a particle system, with the message containing the reason.
      */
-    void Empty(const wxString& message);
+    void Empty (const wxString& message);
 
     // Various event ids
     iEventNameRegistry* nameRegistry;
@@ -106,13 +73,12 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     csStringID          clearObjects;
     csStringID          activateObject;
 
-    
-    void OnButtonAddEmitter(wxCommandEvent &event);
-    void OnButtonRemoveEmitter(wxCommandEvent &event);
-    void OnButtonAddEffector(wxCommandEvent &event);
-    void OnButtonRemoveEffector(wxCommandEvent &event);
-    void OnEmitterSelect(wxCommandEvent& event);
-    void OnEffectorSelect(wxCommandEvent& event);
+    void OnButtonAddEmitter (wxCommandEvent &event);
+    void OnButtonRemoveEmitter (wxCommandEvent &event);
+    void OnButtonAddEffector (wxCommandEvent &event);
+    void OnButtonRemoveEffector (wxCommandEvent &event);
+    void OnEmitterSelect (wxCommandEvent& event);
+    void OnEffectorSelect (wxCommandEvent& event);
 
   private:
     static const int      borderWidth = 4; 
@@ -140,20 +106,20 @@ CS_PLUGIN_NAMESPACE_BEGIN(CSEditor)
     void UpdateEmitterList  ();
     void UpdateEffectorList ();
 
-      enum {
-        idMainEditor = 42,
-        idSecondaryEditor,
-        idButtonAddEmitter,
-        idButtonRemoveEmitter,
-        idButtonAddEffector,
-        idButtonRemoveEffector,
-        idEmitterList,
-        idEffectorList
+    enum {
+      idMainEditor = 42,
+      idSecondaryEditor,
+      idButtonAddEmitter,
+      idButtonRemoveEmitter,
+      idButtonAddEffector,
+      idButtonRemoveEffector,
+      idEmitterList,
+      idEffectorList
     };
 
-      DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE ();
   };
 }
-CS_PLUGIN_NAMESPACE_END(CSEditor)
+CS_PLUGIN_NAMESPACE_END (CSEditor)
 
 #endif

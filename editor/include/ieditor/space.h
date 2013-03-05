@@ -97,7 +97,6 @@ struct iEditorComponent : public virtual iBase
 /**
  * Manages a set of spaces which make up the visible parts of the editor.
  */
-// TODO: iComponentManager?
 struct iComponentManager : public virtual iBase
 {
   SCF_INTERFACE (iComponentManager, 1, 0, 0);

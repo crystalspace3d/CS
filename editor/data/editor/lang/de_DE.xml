@@ -8,5 +8,5 @@
 	<msg><src>Position</src><dst>Standort</dst></msg>
 	<msg><src>FloatThingy</src><dst>Float-Ding</dst></msg>
 	<msg><src>Job</src><dst>Job</dst></msg>
-  <msg><src>Particle orientation</src><dst>Partikel Ausrichtung</dst></msg>
+        <msg><src>Particle orientation</src><dst>Partikel Ausrichtung</dst></msg>
 </language>

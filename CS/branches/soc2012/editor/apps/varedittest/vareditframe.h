@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
+  Copyright (C) 2012 Christian Van Brussel, Andrei Barsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -24,49 +24,23 @@
 #endif
 
 #include "vareditapp.h"
-#include "cseditor/wxpgslider.h"
-#include <csutil/refarr.h>
-#include <csutil/weakref.h>
-
-// Main propertygrid header.
-#include "cseditor/wx/propgrid/propgrid.h"
-#include "cseditor/wx/propgrid/editors.h"
-
-// Needed for implementing custom properties.
-#include "cseditor/wx/propgrid/propdev.h"
-#include <wx/panel.h>
-
-// Extra property classes.
-#include "cseditor/wx/propgrid/advprops.h"
-
-// This defines wxPropertyGridManager.
-#include "cseditor/wx/propgrid/manager.h"
-
-// Includes basic iModifiable data types
-#include "cseditor/modifiableimpl.h"
 #include "cseditor/modifiableeditor.h"
-
-#include <stdarg.h>
+#include "cseditor/wxpgslider.h"
+#include "cstool/initapp.h"
 #include "csutil/array.h"
 #include "csutil/csstring.h"
-#include "cstool/initapp.h"
+#include "csutil/refarr.h"
+#include "csutil/weakref.h"
 #include "iutil/document.h"
-#include "ivaria/translator.h"
+#include "iutil/event.h"
 #include "iutil/eventq.h"
-#include <iutil/event.h>
-#include <iutil/objreg.h>
+#include "iutil/objreg.h"
+#include "ivaria/translator.h"
+
 #include <wx/variant.h>
-#include <string>
 
-using namespace std;
-using namespace CS::EditorApp;
-
-#if wxUSE_DATEPICKCTRL
-    #include <wx/datectrl.h>
-#endif
-
-#include <wx/artprov.h>
 struct csVariant;
+struct iModifiable;
 
 // We need to implement WeakReferenced for the pump's weakref
 class ModifiableTestFrame : public wxFrame,
@@ -82,13 +56,13 @@ class ModifiableTestFrame : public wxFrame,
 
   void OnPopulateClick        (wxCommandEvent &event);
   void OnEsc                  (wxKeyEvent& event);
-	wxPropertyGridManager *     GetManager();	
+	wxPropertyGridManager *     GetManager ();	
 	
  private:
    /// Generates the GUI based on an iModifiable entity
   void Populate (iModifiable* dataSource);
 
-  csRefArray<iModifiable> *modifiableEntities;
+  csRefArray<iModifiable> modifiableEntities;
   size_t focusedIndex;
 
   // Main window sizer
@@ -98,11 +72,10 @@ class ModifiableTestFrame : public wxFrame,
   wxStaticBoxSizer *right_vsizer;
   
   wxButton *btnCycle;
-  wxButton *btnSave;
 
   iObjectRegistry* object_reg;
-  static bool GeneralEventHandler(iEvent& ev);
-  bool TestModifiableEvents(iEvent& ev);
+  static bool GeneralEventHandler (iEvent& ev);
+  bool TestModifiableEvents (iEvent& ev);
 	     
 private:
 
@@ -120,15 +93,25 @@ private:
     pageId = 1
   };
 
-  // Container of the iModifiable editing gui
-  ModifiableEditor* modifiableEditor;
+  // Container of the iModifiable editing GUI
+  CS::EditorApp::ModifiableEditor* modifiableEditor;
 
-  void OnClose(wxCloseEvent& event);
-  void OnQuit(wxCommandEvent& event);
-  void OnAbout(wxCommandEvent& event);
+  void OnClose (wxCloseEvent& event);
+  void OnQuit (wxCommandEvent& event);
+  void OnAbout (wxCommandEvent& event);
 
-  DECLARE_EVENT_TABLE()
+  DECLARE_EVENT_TABLE ();
 };
 
+class Pump : public wxTimer
+{
+public:
+  csWeakRef<ModifiableTestFrame> s;
+
+  virtual void Notify ()
+  {
+    if (s) s->PushFrame ();
+  }
+};
 
 #endif // __VAREDITFRAME_H__

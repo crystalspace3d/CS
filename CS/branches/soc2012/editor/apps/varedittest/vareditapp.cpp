@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Christian Van Brussel, Andrei Bârsan
+  Copyright (C) 2012 Christian Van Brussel, Andrei Barsan
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Library General Public
@@ -16,8 +16,8 @@
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #define CS_IMPLEMENT_PLATFORM_APPLICATION
-/* This is needed due the WX headers using free() inline, but the opposing
- * malloc() is in the WX libs. */
+/* This is needed due the WX headers using free () inline, but the opposing
+ * malloc () is in the WX libs. */
 #define CS_NO_MALLOC_OVERRIDE
 
 #include "cssysdef.h"
@@ -26,48 +26,42 @@
 #include "vareditframe.h"
 #include "testmodifiable.h"
 
+#include "cstool/wxappargconvert.h"
 #include "imap/reader.h"
 #include "iutil/document.h"
 #include "iutil/stringarray.h"
 #include "iutil/vfs.h"
 #include "ivaria/translator.h"
-#include <iostream>
 
 CS_IMPLEMENT_APPLICATION
 
-IMPLEMENT_APP(VarEditTestApp);
+IMPLEMENT_APP (VarEditTestApp);
 
 using namespace std;
 
-bool VarEditTestApp::OnInit()
+bool VarEditTestApp::OnInit ()
 {
-#if defined(wxUSE_UNICODE) && wxUSE_UNICODE
-  char** csargv;
-  csargv = (char**)cs_malloc(sizeof(char*) * argc);
-  for(int i = 0; i < argc; i++) 
-  {
-    csargv[i] = strdup (wxString(argv[i]).mb_str().data());
-  }
-  object_reg = csInitializer::CreateEnvironment (argc, csargv);
-#else
-  object_reg = csInitializer::CreateEnvironment (argc, argv);
-#endif
+  wxInitAllImageHandlers ();
+
+  // Create the Crystal Space environment
+  CS::WX::AppArgConvert args (argc, argv);
+  object_reg = csInitializer::CreateEnvironment (args.csArgc(), args.csArgv());
 
   // Load the needed plugins; so far, just the translator is needed
   if (!csInitializer::RequestPlugins (object_reg, 
-    // We need a file system to read stuff from it
-    CS_REQUEST_PLUGIN("crystalspace.kernel.vfs", iVFS),
-    // Read the XML required for the name translations
-    CS_REQUEST_PLUGIN("crystalspace.documentsystem.xmlread", iDocumentSystem),
-    // The translator itself
-    CS_REQUEST_PLUGIN("crystalspace.translator.standard", iTranslator),
-    // Translator component for transforming the XML data into usable translations
-    CS_REQUEST_PLUGIN("crystalspace.translator.loader.xml", iLoaderPlugin),
-    CS_REQUEST_END ))
+				      // We need a file system to read stuff from it
+				      CS_REQUEST_PLUGIN ("crystalspace.kernel.vfs", iVFS),
+				      // Read the XML required for the name translations
+				      CS_REQUEST_PLUGIN ("crystalspace.documentsystem.xmlread", iDocumentSystem),
+				      // The translator itself
+				      CS_REQUEST_PLUGIN ("crystalspace.translator.standard", iTranslator),
+				      // Translator component for transforming the XML data into usable translations
+				      CS_REQUEST_PLUGIN ("crystalspace.translator.loader.xml", iLoaderPlugin),
+				      CS_REQUEST_END ))
   {
     csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-      "crystalspace.application.varedittest",
-      "Can't initialize plugins!");
+	      "crystalspace.application.varedittest",
+	      "Can't initialize plugins!");
     return false;
   }
   
@@ -83,60 +77,67 @@ bool VarEditTestApp::OnInit()
   string langPath ("/data/editor/lang/");
   string langFile ("de_DE.xml");
   
-    csRef<iDataBuffer> path(vfs->GetRealPath(langPath.data()));
-    if(path.IsValid()) {
-      cout << "Path functioning: " << langPath << endl;
-      cout << path->GetData() << endl;
-    } else {
-      cout << "Path is not active" << endl;
-    }
+  csRef<iDataBuffer> path (vfs->GetRealPath (langPath.data ()));
+  if (path.IsValid ()) {
+    cout << "Path functioning: " << langPath << endl;
+    cout << path->GetData () << endl;
+  } else {
+    cout << "Path is not active" << endl;
+  }
 
-    csRef<iStringArray> ls(vfs->FindFiles(langPath.data()));
-    cout << "Available language files in /lang/:" << endl;
-    for(size_t i = 0; i < ls->GetSize(); i++)
-      cout << ls->Get(i) << endl;
+  csRef<iStringArray> ls (vfs->FindFiles (langPath.data ()));
+  cout << "Available language files in /lang/:" << endl;
+  for (size_t i = 0; i < ls->GetSize (); i++)
+    cout << ls->Get (i) << endl;
 
-    cout << endl << "Opening translation: " << langFile << endl;
+  cout << endl << "Opening translation: " << langFile << endl;
 
-    string fullPath(langPath);
-    fullPath += langFile;
+  string fullPath (langPath);
+  fullPath += langFile;
 
-    csRef<iFile> file(vfs->Open(fullPath.data() , VFS_FILE_READ));
-    if(file.IsValid()) {
-      csRef<iDataBuffer> data(file->GetAllData());
-      csRef<iDocumentSystem> documentSystem(csQueryRegistry<iDocumentSystem>( object_reg ));
-      csRef<iDocument> document(documentSystem->CreateDocument());
+  csRef<iFile> file (vfs->Open (fullPath.data () , VFS_FILE_READ));
+  if (file.IsValid ()) {
+    csRef<iDataBuffer> data (file->GetAllData ());
+    csRef<iDocumentSystem> documentSystem (csQueryRegistry<iDocumentSystem>(object_reg ));
+    csRef<iDocument> document (documentSystem->CreateDocument ());
 
-      document->Parse(data->GetData());
-      csRef<iDocumentNode> root = document->GetRoot();
-      csRef<iBase> result = loader->Parse(root, 0, 0, translator);
+    document->Parse (data->GetData ());
+    csRef<iDocumentNode> root = document->GetRoot ();
+    csRef<iBase> result = loader->Parse (root, 0, 0, translator);
       
-      cout << dynamic_cast<iTranslator*>( &*result )->GetMsg("Hello world") << endl;
+    cout << dynamic_cast<iTranslator*>(&*result )->GetMsg ("Hello world") << endl;
 
-    } else {
-      cout << "Could not open file..." << fullPath << endl;
-    }
+  } else {
+    cout << "Could not open file..." << fullPath << endl;
+  }
 
-  csRef<iStringArray> mnt(vfs->GetMounts());
+  csRef<iStringArray> mnt (vfs->GetMounts ());
 
   // Create the main frame
   ModifiableTestFrame* frame = new ModifiableTestFrame (object_reg);
   
   // Setup the frame's CS stuff
-  frame->Initialize();
+  frame->Initialize ();
 
-  // Add some test objects to the varedittest to check its functionality. 
-  // csTestModifiable implements iModifiable
-  frame->AddModifiable(new csTestModifiable("Bob", "murderer", 11, object_reg));
-  frame->AddModifiable(new csTestModifiable("Jake", "garbage man", 0, object_reg));
-  frame->AddModifiable(new csTestModifiable("Frodo", "part-time orc slayer", 2, object_reg));
-  frame->Show();
+  // Add some test modifiable objects to the varedittest in order to check its functionality. 
+  csRef<iModifiable> modifiable;
 
-	return true;
+  modifiable.AttachNew (new csTestModifiable ("Bob", "murderer", 11));
+  frame->AddModifiable (modifiable);
+
+  modifiable.AttachNew (new csTestModifiable2 ("Jake", "garbage man", 0));
+  frame->AddModifiable (modifiable);
+
+  modifiable.AttachNew (new csTestModifiable ("Frodo", "part-time orc slayer", 2));
+  frame->AddModifiable (modifiable);
+
+  frame->Show ();
+
+  return true;
 }
 
-int VarEditTestApp::OnExit()
+int VarEditTestApp::OnExit ()
 {
-  csInitializer::DestroyApplication( object_reg );
+  csInitializer::DestroyApplication (object_reg );
   return 0;
 }

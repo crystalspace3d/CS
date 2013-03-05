@@ -1,167 +1,286 @@
+/*
+  Copyright (C) 2012 Christian Van Brussel, Andrei Barsan
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public
+  License along with this library; if not, write to the Free
+  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #ifndef MODIFIABLE_IMPL_H
 #define MODIFIABLE_IMPL_H
 
-#include "iutil/objreg.h"
 #include "iutil/modifiable.h"
+#include "iutil/objreg.h"
 #include "iutil/stringarray.h"
-#include "iutil/array.h"
-#include "csutil/stringarray.h"
+#include "csutil/refarr.h"
 #include "csutil/regexp.h"
+#include "csutil/stringarray.h"
 
-/**
- * Sets up the generation of modifiable property IDs. This should be followed 
- * with calls to the GENERATE_ID(varName) macro. It's a bit similar to how the 
- * wx event tables are defined, only these IDs should be generated in the constructor
- * of the iModifiable object (the Initialize method of an iComponent could also work).
- * 
- * Assumes a scoped pointer to the object registry called object_reg. For a custom
- * named one, use GENERATE_ID_START_EXT
- */
-#define GENERATE_ID_START() GENERATE_ID_START_REG(object_reg)
+// TODO: move in csutil
 
-/**
- * Sets up the generation of modifiable property IDs. Takes in a custom name for the
- * pointer to the object registry.
- * 
- * See GENERATE_ID_START for more info.
- */
-#define GENERATE_ID_START_REG(regName)  csRef<iStringSet> strings( csQueryRegistryTagInterface<iStringSet>(regName, "crystalspace.shared.stringset") )
+// TODO: using such macros is both tiresome and error-prone.
+// Maybe use instead a XML description + a compiler for the code generation?
+#define MODIF_DECLARE()\
+  csRefArray<iModifiableListener> listeners;\
+  virtual void GetParameterValue (size_t parameterIndex, size_t arrayIndex, csVariant& value) const {}\
+  virtual bool SetParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)\
+  {return false;}\
+  virtual bool PushParameterValue (size_t parameterIndex, const csVariant& value)\
+  {return false;}\
+  virtual bool DeleteParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)\
+  {return false;}\
+  virtual void AddListener (iModifiableListener* listener) {listeners.Push (listener);}\
+  virtual void RemoveListener (iModifiableListener* listener) {listeners.Delete (listener);}
 
-/**
- * Syntactic sugar to make the generation of ids corresponding to object properties
- * a bit nicer. Should follow the GENERATE_ID_START macro.
- */
-#define GENERATE_ID(varName) id_##varName = strings->Request(#varName)
+#define MODIF_GETDESCRIPTION_BEGIN(name)		\
+csPtr<iModifiableDescription> GetDescription (iObjectRegistry* object_reg) const\
+{\
+  csBasicModifiableDescription* description = new csBasicModifiableDescription (name);\
+  csRef<csBasicModifiableParameter> parameter;\
+  csRef<iModifiableConstraint> constraint;\
+  csRef<iStringSet> strings =\
+    csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset");\
+  csStringID id;
 
-/**
- * Used to help build a csBasicModifiableDescription.
- */
-#define PUSH_PARAM(type, varName, name, desc)                                         \
-  description->Push(new csBasicModifiableParameter(name, desc, type, id_##varName))   \
+#define MODIF_GETDESCRIPTION(type, id, name, desc)\
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (id), name, desc));\
+  description->Push (parameter);
 
-/**
- * Similar to PUSH_PARAM, only also allows a constraint to be set for that parameter's value.
- */
-#define PUSH_PARAM_CONSTRAINT(type, varName, name, desc, constraint)                              \
-  description->Push(new csBasicModifiableParameter(name, desc, type, id_##varName, constraint))   \
+#define MODIF_GETDESCRIPTION_C(type, id, name, desc, constr)\
+  constraint.AttachNew (new constr);\
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (id), name, desc, constraint));\
+  description->Push (parameter);
 
-/**
- * Quick helper macro to allow classes who implement iModifiable to broadcas
- * the required set event when SetParameterValue is called
- */
-#define BROADCAST_SET_EVENT() \
-  csRef<iEventQueue> eq( csQueryRegistry<iEventQueue>( object_reg ) );  \
-csRef<iEventNameRegistry> nameReg( csQueryRegistry<iEventNameRegistry>( object_reg ) ); \
-csRef<iEvent> event( eq->CreateBroadcastEvent( \
-          nameReg->GetID("crystalspace.modifiable.param.set") ) \
-        );  \
-eq->GetEventOutlet()->Broadcast(event->GetName());  \
+#define MODIF_GETDESCRIPTION_CENUM_DECLARE()\
+  {csRef<csConstraintEnum> constraint;\
+  constraint.AttachNew (new csConstraintEnum);
+
+#define MODIF_GETDESCRIPTION_CENUM_PUSH(value, desc)\
+  constraint->PushValue (value, desc);
+
+#define MODIF_GETDESCRIPTION_CENUM(type, id, name, desc)\
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (id), name, desc, constraint));\
+  description->Push (parameter);}
+
+#define MODIF_GETDESCRIPTION_END()\
+  return description;\
+}
+
+#define MODIF_GETDESCRIPTION_CHILD_BEGIN(name)\
+  {\
+  csRef<csBasicModifiableDescription> child;\
+  child.AttachNew (new csBasicModifiableDescription (name));\
+  description->Push (child);\
+  {\
+    csBasicModifiableDescription* description = child;
+
+#define MODIF_GETDESCRIPTION_CHILD_END()\
+  }}
+
+#define MODIF_GETPARAMETERVALUE_BEGIN()\
+void GetParameterValue (size_t index, csVariant& value) const\
+{\
+  switch (index)\
+  {
+
+#define MODIF_GETPARAMETERVALUE(id, type, val)	\
+  case id:\
+    value.Set##type (val);\
+    break;
+
+#define MODIF_GETPARAMETERVALUE_END()\
+  default:\
+    break;\
+  }\
+}
+
+#define MODIF_SETPARAMETERVALUE_BEGIN()\
+bool SetParameterValue (size_t index, const csVariant& value)\
+{\
+  switch (index)\
+  {
+
+#define MODIF_SETPARAMETERVALUE(id, type, val)\
+  case id:\
+    val = value.Get##type ();\
+    break;
+
+#define MODIF_SETPARAMETERVALUE_F(id, type, func)\
+  case id:\
+    func (value.Get##type ());\
+    break;
+
+#define MODIF_SETPARAMETERVALUE_ENUM(id, type, val, enumt)\
+  case id:\
+  val = (enumt) value.Get##type ();\
+    break;
+
+#define MODIF_SETPARAMETERVALUE_END()\
+  default:\
+    return false;\
+  }\
+  for (size_t i = 0; i < listeners.GetSize (); i++)\
+    listeners[i]->ValueChanged (this, index);\
+  return true;\
+}
 
 /**
  * Implementation of some of the most common iModifiableParameter usage. 
  * Stores the parameter's name, description, type, ID and an optional constraint.
  */
-class csBasicModifiableParameter : public scfImplementation1<csBasicModifiableParameter, iModifiableParameter> 
+class csBasicModifiableParameter
+: public scfImplementation1<csBasicModifiableParameter, iModifiableParameter> 
 {
 public:
-  csBasicModifiableParameter(const char* name, const char* description, csVariantType type, csStringID id, iModifiableConstraint* constraint = nullptr) :
-      scfImplementationType (this),
-      name(name),
-      description(description),
-      id(id),
-      type(type),
-      constraint(constraint)
-  { }
+  csBasicModifiableParameter (csVariantType type, csStringID id,
+			      const char* name, const char* description,
+			      iModifiableConstraint* constraint = nullptr)
+    : scfImplementationType (this),
+    id (id),
+    name (name),
+    description (description),
+    type (type),
+    constraint (constraint)
+    {}
 
-  ~csBasicModifiableParameter() 
-  {
-    delete constraint;
-    delete[] name;
-    delete[] description;
-  }
+  virtual csStringID GetID () const
+  { return id; }
 
-  csStringID GetID() const
-  {
-    return id;
-  }
+  virtual const char* GetName () const
+  { return name; }
 
-  const char* GetName() const
-  {
-    return name;
-  }
+  virtual const char* GetDescription () const
+  { return description; }
 
-  const char* GetDescription() const
-  {
-    return description;
-  }
+  virtual csVariantType GetType () const 
+  { return type; }
 
-  csVariantType GetType() const 
-  {
-    return type;
-  }
+  virtual void SetConstraint (iModifiableConstraint* constraint)
+  { this->constraint = constraint; }
 
-  void SetConstraint(iModifiableConstraint* constraint)
-  {
-    this->constraint = constraint;
-  }
-
-  const iModifiableConstraint* GetConstraint() const 
-  {
-    return constraint;
-  }
+  virtual const iModifiableConstraint* GetConstraint () const 
+  { return constraint; }
 
 private:
-  const char* name;
-  const char* description;
   csStringID id;
+  csString name;
+  csString description;
   csVariantType type;
-  iModifiableConstraint* constraint;
+  csRef<iModifiableConstraint> constraint;
 };
-
 
 /**
  * Basic implementation of iModifiableDescription, suitable for most uses. 
  * Simply holds a csRefArray of iModifiableParameter and implements 
- * GetParameterCount, GetParameter and GetParameterByIndex.
+ * GetParameterCount() and GetParameter().
  */
-class csBasicModifiableDescription : public scfImplementation1<csBasicModifiableDescription, iModifiableDescription>
+class csBasicModifiableDescription
+: public scfImplementation1<csBasicModifiableDescription, iModifiableDescription>
 {
 public:
-  csBasicModifiableDescription() :
-      scfImplementationType (this) {}
+  csBasicModifiableDescription (const char* name) :
+  scfImplementationType (this), name (name) {}
 
-  size_t GetParameterCount() const { return parameters.GetSize(); }
+  /// Default implementation for iModifiableDescription::GetName()
+  virtual const char* GetName () const
+  { return name; }
 
-  /**
-   * Gets the parameter that corresponds to the given id. Note that it's not a 
-   * direct pointer to the modifiable object's member, but rather a copy. A call
-   * to the iModifiable object's SetParameterValue(id, variant) should be made
-   * to actually set that property's value.
-   */
-  const iModifiableParameter* GetParameter(csStringID id) const 
+  /// Default implementation for iModifiableDescription::GetParameterCount()
+  virtual size_t GetParameterCount () const
+  { return parameters.GetSize (); }
+
+  /// Default implementation for iModifiableDescription::GetParameter(csStringID)
+  virtual const iModifiableParameter* GetParameter (csStringID id) const 
   {
-    for (size_t i = 0; i < parameters.GetSize(); i++)
-      if (parameters.Get(i)->GetID() == id)
-        return parameters.Get(i);
+    for (size_t i = 0; i < parameters.GetSize (); i++)
+      if (parameters.Get (i)->GetID () == id)
+        return parameters.Get (i);
+
+    for (size_t i = 0; i < children.GetSize (); i++)
+    {
+      const iModifiableParameter* parameter = children[i]->GetParameter (id);
+      if (parameter) return parameter;
+    }
 
     return nullptr;
   }
 
-  /**
-   * \see GetParameter for more info regarding the manipulation of the parameter's
-   * value.
-   */
-  const iModifiableParameter* GetParameterByIndex(size_t index) const 
+  /// Default implementation for iModifiableDescription::GetParameter(size_t)
+  virtual const iModifiableParameter* GetParameter (size_t index) const
   {
-    return parameters[index];
+    return GetParameterInternal (index);
   }
 
-  void Push(iModifiableParameter* param) {
-    parameters.Push(param);
+  /// Default implementation for iModifiableDescription::FindParameter()
+  virtual size_t FindParameter (csStringID id) const
+  {
+    for (size_t i = 0; i < parameters.GetSize (); i++)
+      if (parameters.Get (i)->GetID () == id)
+        return i;
+
+    for (size_t i = 0; i < children.GetSize (); i++)
+    {
+      size_t index = children[i]->FindParameter (id);
+      if (index != (size_t) ~0) return index;
+    }
+
+    return (size_t) ~0;
+  }
+
+  // TODO: remove?
+  inline void Push (iModifiableParameter* param)
+  {
+    parameters.Push (param);
+  }
+
+  /// Default implementation for iModifiableDescription::GetChildrenCount()
+  virtual size_t GetChildrenCount () const
+  {
+    return children.GetSize ();
+  }
+
+  /// Default implementation for iModifiableDescription::GetChild()
+  virtual const iModifiableDescription* GetChild (size_t index) const
+  {
+    return children[index];
+  }
+
+  // TODO: remove?
+  inline void Push (iModifiableDescription* child)
+  {
+    children.Push (child);
   }
 
 private:
-  csArray<iModifiableParameter*> parameters;
+  virtual const iModifiableParameter* GetParameterInternal (size_t& index) const
+  {
+    if (index < parameters.GetSize ())
+      return parameters[index];
+
+    index -= parameters.GetSize ();
+    for (size_t i = 0; i < children.GetSize (); i++)
+    {
+      const iModifiableParameter* parameter = children[i]->GetParameter (index);
+      if (parameter) return parameter;
+    }
+
+    return nullptr;
+  }
+
+private:
+  csString name;
+  csRefArray<iModifiableParameter> parameters;
+  csRefArray<iModifiableDescription> children;
 };
 
 
@@ -174,32 +293,14 @@ class csConstraintEnum : public scfImplementation1<csConstraintEnum, iModifiable
 {
 public:
   /**
-   * Doesn't initialize the lists. Requires calls to PushValue(value, label) to
-   * populate the valid fields.
+   * Constructor
    */
-  csConstraintEnum()
-      : scfImplementationType (this)
+  csConstraintEnum ()
+    : scfImplementationType (this)
   {
   }  
 
-  /**
-   * \remark Takes ownership of the arrays.  
-   */
-  csConstraintEnum(const csStringArray& labels, const csArray<long>& values)
-    : scfImplementationType (this)
-  {
-    CS_ASSERT_MSG ("Number of labels must match number of values.",
-      labels.GetSize() == values.GetSize());
-
-    this->labels = labels;
-    this->values = values;
-  }
-
-  ~csConstraintEnum()
-  {
-  }
-
-  bool Validate(const csVariant* variant) const
+  virtual bool Validate (const csVariant* variant) const
   {
     // No point performing the check - the value was selected from
     // a combo box. And nobody is trying to hack the editor either.
@@ -207,29 +308,29 @@ public:
   }
 
   //-- iModifiableConstraintEnum
-  size_t GetValueCount () const 
+  virtual size_t GetValueCount () const 
   {
-    return labels.GetSize();
+    return labels.GetSize ();
   }
 
-  long GetValue (size_t index) const
+  virtual long GetValue (size_t index) const
   {
-    return values.Get(index);
+    return values.Get (index);
   }
 
-  iModifiableConstraintType GetType() const
+  virtual iModifiableConstraintType GetType () const
   {
     return MODIFIABLE_CONSTRAINT_ENUM;
   }
 
   //-- csConstraintEnum
-  void PushValue(long value, const char* label)
+  virtual void PushValue (long value, const char* label)
   {
-    values.Push(value);
-    labels.Push(label);
+    values.Push (value);
+    labels.Push (label);
   }
 
-  const char* GetLabel(size_t index) const
+  virtual const char* GetLabel (size_t index) const
   {
     return labels[index];
   }
@@ -245,133 +346,137 @@ private:
  * CSVAR_FLOAT, CSVAR_LONG, CSVAR_VECTOR2, CSVAR_VECTOR3, CSVAR_VECTOR4
  */
 class csConstraintBounded : public scfImplementation1<csConstraintBounded, 
-                                                      iModifiableConstraintBounded>
+  iModifiableConstraintBounded>
 {
 public:
   /// Initializes this constraint with both a min and a max value
-  csConstraintBounded(const csVariant& min, const csVariant& max)
-    : scfImplementationType(this),
-      min(new csVariant(min)),
-      max(new csVariant(max))
-  {
-    CheckTypes();
-  }
+  csConstraintBounded (const csVariant& min, const csVariant& max)
+    : scfImplementationType (this),
+    min (new csVariant (min)),
+    max (new csVariant (max))
+    {
+      CheckTypes ();
+    }
 
   /// Initializes the constraint to have just a maximum value
-  csConstraintBounded(const csVariant& max)
-    : scfImplementationType(this),
-      min(nullptr),
-      max(new csVariant(max))
-  {
-    CheckTypes();
-  }
+  csConstraintBounded (const csVariant& max)
+    : scfImplementationType (this),
+    min (nullptr),
+    max (new csVariant (max))
+    {
+      CheckTypes ();
+    }
 
-  ~csConstraintBounded()
+  ~csConstraintBounded ()
   {
     delete min;
     delete max;
   }
 
-  void SetMinimum(csVariant* min)
+  virtual void SetMinimum (csVariant* min)
   {
     delete this->min;
     this->min = min;
-    CheckTypes();
+    CheckTypes ();
   }
 
-  void SetMaximum(csVariant* max)
+  virtual void SetMaximum (csVariant* max)
   {
     delete this->max;
     this->max = max;
-    CheckTypes();
+    CheckTypes ();
   }
 
   //-- iModifiableConstraint
 
-  iModifiableConstraintType GetType() const 
+  virtual iModifiableConstraintType GetType () const 
   {
     return MODIFIABLE_CONSTRAINT_BOUNDED;
   }
 
-  bool Validate(const csVariant* variant) const 
+  bool Validate (const csVariant* variant) const 
   {
-    if(min != nullptr)
-      CS_ASSERT_MSG("Bounds must be of the same type as the variant", 
-        variant->GetType() == min->GetType());
+    if (min != nullptr)
+      CS_ASSERT_MSG ("Bounds must be of the same type as the variant", 
+		     variant->GetType () == min->GetType ());
 
-    if(max != nullptr)
-      CS_ASSERT_MSG("Bounds must be of the same type as the variant", 
-      variant->GetType() == max->GetType());
+    if (max != nullptr)
+      CS_ASSERT_MSG ("Bounds must be of the same type as the variant", 
+		     variant->GetType () == max->GetType ());
 
-    switch(variant->GetType()) {
+    switch (variant->GetType ())
+    {
     case CSVAR_FLOAT:
-      if(max != nullptr) {
-        if(variant->GetFloat() > max->GetFloat()) return false;
+      if (max != nullptr) {
+        if (variant->GetFloat () > max->GetFloat ()) return false;
       }
-      if(min != nullptr) {
-        if(variant->GetFloat() < min->GetFloat()) return false;
+      if (min != nullptr) {
+        if (variant->GetFloat () < min->GetFloat ()) return false;
       }
       break;
 
     case CSVAR_LONG:
-      if(max != nullptr) {
-        if(variant->GetLong() > max->GetLong()) return false;
+      if (max != nullptr) {
+        if (variant->GetLong () > max->GetLong ()) return false;
       }
-      if(min != nullptr) {
-        if(variant->GetLong() < min->GetLong()) return false;
+      if (min != nullptr) {
+        if (variant->GetLong () < min->GetLong ()) return false;
       }
       break;
 
     case CSVAR_VECTOR2:
-      if(max != nullptr) {
-        if(variant->GetVector2().x > max->GetVector2().x
-            || variant->GetVector2().y > max->GetVector2().y
-          )
+      if (max != nullptr) {
+        if (variant->GetVector2 ().x > max->GetVector2 ().x
+            || variant->GetVector2 ().y > max->GetVector2 ().y
+	  )
           return false;
       }
-      if(min != nullptr) {
-        if(variant->GetVector2().x < min->GetVector2().x
-            || variant->GetVector2().y < min->GetVector2().y
-          )
+      if (min != nullptr) {
+        if (variant->GetVector2 ().x < min->GetVector2 ().x
+            || variant->GetVector2 ().y < min->GetVector2 ().y
+	  )
           return false;
       }
       break;
 
     case CSVAR_VECTOR3:
-      if(max != nullptr) {
-        if(variant->GetVector3().x > max->GetVector3().x
-          || variant->GetVector3().y > max->GetVector3().y
-          || variant->GetVector3().z > max->GetVector3().z
-          || variant->GetVector3().z > max->GetVector3().z
-          )
+      if (max != nullptr) {
+        if (variant->GetVector3 ().x > max->GetVector3 ().x
+	    || variant->GetVector3 ().y > max->GetVector3 ().y
+	    || variant->GetVector3 ().z > max->GetVector3 ().z
+	    || variant->GetVector3 ().z > max->GetVector3 ().z
+	  )
           return false;
       }
-      if(min != nullptr) {
-        if(variant->GetVector3().x < min->GetVector3().x
-          || variant->GetVector3().y < min->GetVector3().y
-          || variant->GetVector3().z < min->GetVector3().z
-          )
+      if (min != nullptr) {
+        if (variant->GetVector3 ().x < min->GetVector3 ().x
+	    || variant->GetVector3 ().y < min->GetVector3 ().y
+	    || variant->GetVector3 ().z < min->GetVector3 ().z
+	  )
           return false;
       }
       break;
 
     case CSVAR_VECTOR4:
-      if(max != nullptr) {
-        if(variant->GetVector4().x > max->GetVector4().x
-          || variant->GetVector4().y > max->GetVector4().y
-          || variant->GetVector4().z > max->GetVector4().z
-          || variant->GetVector4().w > max->GetVector4().w
+      if (max != nullptr) {
+        if (variant->GetVector4 ().x > max->GetVector4 ().x
+	    || variant->GetVector4 ().y > max->GetVector4 ().y
+	    || variant->GetVector4 ().z > max->GetVector4 ().z
+	    || variant->GetVector4 ().w > max->GetVector4 ().w
+	  )
+          return false;
+      }
+      if (min != nullptr) {
+        if (variant->GetVector4 ().x < min->GetVector4 ().x
+	    || variant->GetVector4 ().y < min->GetVector4 ().y
+	    || variant->GetVector4 ().z < min->GetVector4 ().z
+	    || variant->GetVector4 ().w > max->GetVector4 ().w
           )
           return false;
       }
-      if(min != nullptr) {
-        if(variant->GetVector4().x < min->GetVector4().x
-          || variant->GetVector4().y < min->GetVector4().y
-          || variant->GetVector4().z < min->GetVector4().z
-          || variant->GetVector4().w > max->GetVector4().w
-          )
-          return false;
-      }
+
+    default:
+      // TODO
       break;
     }
 
@@ -380,22 +485,22 @@ public:
 
   //-- iModifiableConstraintBounded
 
-  bool HasMinimum() const 
+  bool HasMinimum () const 
   {
     return min != nullptr;
   }
 
-  bool HasMaximum() const 
+  bool HasMaximum () const 
   {
     return max != nullptr;
   }
 
-  csVariant& GetMinimum() const 
+  csVariant& GetMinimum () const 
   {
     return *min;
   }
 
-  csVariant& GetMaximum() const
+  csVariant& GetMaximum () const
   {
     return *max;
   }
@@ -404,23 +509,23 @@ private:
   csVariant *min, *max;
 
   /// Some helpful assertions to make sure no funny stuff is going on
-  void CheckTypes() {
-    if(min != nullptr && max != nullptr)
-      CS_ASSERT_MSG("Bounds must be of the same type", min->GetType() == max->GetType());
+  void CheckTypes () {
+    if (min != nullptr && max != nullptr)
+      CS_ASSERT_MSG ("Bounds must be of the same type", min->GetType () == max->GetType ());
 
     csVariantType t;
-    if(min != nullptr) {
-      t = min->GetType();
-    } else if(max != nullptr) {
-      t = max->GetType();
+    if (min != nullptr) {
+      t = min->GetType ();
+    } else if (max != nullptr) {
+      t = max->GetType ();
     } else {
-      CS_ASSERT_MSG("Both constraints can't be null!", false);
+      CS_ASSERT_MSG ("Both constraints can't be null!", false);
       return;
     }
 
-    CS_ASSERT_MSG("Invalid type for comparing...",
-      t == CSVAR_FLOAT || t == CSVAR_LONG || t == CSVAR_VECTOR2 
-      ||  t == CSVAR_VECTOR3 || t == CSVAR_VECTOR4);
+    CS_ASSERT_MSG ("Invalid type for comparing...",
+		   t == CSVAR_FLOAT || t == CSVAR_LONG || t == CSVAR_VECTOR2 
+		   ||  t == CSVAR_VECTOR3 || t == CSVAR_VECTOR4);
   }
 };
 
@@ -431,30 +536,30 @@ private:
 class csConstraintVfsFile : public scfImplementation1<csConstraintVfsFile, iModifiableConstraint>
 {
 public:
-  csConstraintVfsFile() 
-    : scfImplementationType(this)
+  csConstraintVfsFile () 
+    : scfImplementationType (this)
   {
     // Should match anything that's got a special delimiter in it
-    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$-]");
+    matcher = new csRegExpMatcher ("[^][[:alnum:]_ ,~!@#%.{}$-]");
   }
 
-  virtual ~csConstraintVfsFile() 
+  virtual ~csConstraintVfsFile () 
   {
     delete matcher;
   }
 
-  iModifiableConstraintType GetType() const
+  iModifiableConstraintType GetType () const
   {
     return MODIFIABLE_CONSTRAINT_VFS_FILE;
   }
 
-  bool Validate(const csVariant* variant) const
+  bool Validate (const csVariant* variant) const
   {
-    CS_ASSERT(variant->GetType() == CSVAR_STRING);
-    csRegExpMatchError result = matcher->Match(variant->GetString());
+    CS_ASSERT (variant->GetType () == CSVAR_STRING);
+    csRegExpMatchError result = matcher->Match (variant->GetString ());
     // It's ok as long as not special delimiters are found
     return result == csrxNoMatch;
-   }
+  }
 
 private:
   csRegExpMatcher* matcher;
@@ -467,27 +572,27 @@ private:
 class csConstraintVfsDir : public scfImplementation1<csConstraintVfsDir, iModifiableConstraint>
 {
 public:
-  csConstraintVfsDir()
-    : scfImplementationType(this)
+  csConstraintVfsDir ()
+    : scfImplementationType (this)
   {
     // Just like the file matcher, only allows colons and forward slashes
-    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$/-]");
+    matcher = new csRegExpMatcher ("[^][[:alnum:]_ ,~!@#%.{}$/-]");
   }
 
-  virtual ~csConstraintVfsDir() 
+  virtual ~csConstraintVfsDir () 
   {
     delete matcher;
   }
 
-  iModifiableConstraintType GetType() const
+  iModifiableConstraintType GetType () const
   {
     return MODIFIABLE_CONSTRAINT_VFS_DIR;
   }
 
-  bool Validate(const csVariant* variant) const
+  bool Validate (const csVariant* variant) const
   {
-    CS_ASSERT(variant->GetType() == CSVAR_STRING);
-    return matcher->Match(variant->GetString()) == csrxNoMatch;
+    CS_ASSERT (variant->GetType () == CSVAR_STRING);
+    return matcher->Match (variant->GetString ()) == csrxNoMatch;
   }
 
 private:
@@ -502,27 +607,27 @@ private:
 class csConstraintVfsPath : public scfImplementation1<csConstraintVfsPath, iModifiableConstraint>
 {
 public:
-  csConstraintVfsPath()
-    : scfImplementationType(this)
+  csConstraintVfsPath ()
+    : scfImplementationType (this)
   {
     // Just like the dir regex
-    matcher = new csRegExpMatcher("[^][[:alnum:]_ ,~!@#%.{}$/-]");
+    matcher = new csRegExpMatcher ("[^][[:alnum:]_ ,~!@#%.{}$/-]");
   }
 
-  virtual ~csConstraintVfsPath() 
+  virtual ~csConstraintVfsPath () 
   {
     delete matcher;
   }
 
-  iModifiableConstraintType GetType() const
+  iModifiableConstraintType GetType () const
   {
     return MODIFIABLE_CONSTRAINT_VFS_PATH;
   }
 
-  bool Validate(const csVariant* variant) const
+  bool Validate (const csVariant* variant) const
   {
-    CS_ASSERT(variant->GetType() == CSVAR_STRING);
-    return matcher->Match(variant->GetString()) == csrxNoMatch;
+    CS_ASSERT (variant->GetType () == CSVAR_STRING);
+    return matcher->Match (variant->GetString ()) == csrxNoMatch;
   }
 
 private:
@@ -535,38 +640,38 @@ private:
 class csConstraintTextEntry : public scfImplementation1<csConstraintTextEntry, iModifiableConstraint>
 {
 public:
-  csConstraintTextEntry(long maxLength = -1, long minLength = -1, const char* regex = 0)
-    : scfImplementationType(this),
-      minLength(minLength),
-      maxLength(maxLength)
-  {
-    if(regex)
-      matcher = new csRegExpMatcher(regex);
-    else
-      matcher = nullptr;
-  }
+  csConstraintTextEntry (long maxLength = -1, long minLength = -1, const char* regex = 0)
+    : scfImplementationType (this),
+    minLength (minLength),
+    maxLength (maxLength)
+    {
+      if (regex)
+	matcher = new csRegExpMatcher (regex);
+      else
+	matcher = nullptr;
+    }
 
-  virtual ~csConstraintTextEntry() 
+  virtual ~csConstraintTextEntry () 
   {
     delete matcher;
   }
 
-  iModifiableConstraintType GetType() const
+  iModifiableConstraintType GetType () const
   {
     return MODIFIABLE_CONSTRAINT_TEXT_ENTRY;
   }
 
-  bool Validate(const csVariant* variant) const
+  bool Validate (const csVariant* variant) const
   {
-    CS_ASSERT(variant->GetType() == CSVAR_STRING);
-    csString val = variant->GetString();
+    CS_ASSERT (variant->GetType () == CSVAR_STRING);
+    csString val = variant->GetString ();
+/*
+  if (minLength >= 0 && (val.Length () < minLength || val.Length () > maxLength))
+  return false;
 
-    if(minLength >= 0 && (val.Length() < minLength || val.Length() > maxLength))
-      return false;
-
-    if(maxLength >= 0 && (matcher != nullptr && matcher->Match(val) == csrxNoMatch))
-      return false;
-
+  if (maxLength >= 0 && (matcher != nullptr && matcher->Match (val) == csrxNoMatch))
+  return false;
+*/
     return true;
   }
 
@@ -581,21 +686,21 @@ private:
  */
 class csConstraintBitMask : public scfImplementation1<csConstraintBitMask, iModifiableConstraint>
 {
-  csConstraintBitMask(long mask)
-    : scfImplementationType(this),
-      mask(mask)
-  {
-  }
+  csConstraintBitMask (long mask)
+    : scfImplementationType (this),
+    mask (mask)
+    {
+    }
 
-  iModifiableConstraintType GetType() const
+  iModifiableConstraintType GetType () const
   {
     return MODIFIABLE_CONSTRAINT_BITMASK;
   }
 
-  bool Validate(const csVariant* variant) const
+  bool Validate (const csVariant* variant) const
   {
-    CS_ASSERT_MSG("Can only apply bitmasks on integer-type values.", variant->GetType() == CSVAR_LONG);
-    return (variant->GetLong() & (~mask)) == 0;
+    CS_ASSERT_MSG ("Can only apply bitmasks on integer-type values.", variant->GetType () == CSVAR_LONG);
+    return (variant->GetLong () & (~mask)) == 0;
   }
 
 private:

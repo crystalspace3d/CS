@@ -95,6 +95,7 @@ bool MapLoader::Initialize (iEditor* editor)
   //lastResource.path = "/data/scaletest/"; lastResource.file = "world";
   //lastResource.path = "/data/frankie/"; lastResource.file = "frankie.xml";
   //lastResource.path = "/data/particles/"; lastResource.file = "fire1.cslib";
+  //lastResource.path = "/data/partsys/"; lastResource.file = "world";
   //resourceData.Push (lastResource);
 
   // Analyze the command line arguments for a file to be loaded

@@ -19,11 +19,10 @@
 #ifndef __CS_MESH_BUILTINEMITTERS_H__
 #define __CS_MESH_BUILTINEMITTERS_H__
 
+#include "cseditor/modifiableimpl.h"
 #include "csutil/scf_implementation.h"
-
 #include "imesh/particles.h"
 #include "iutil/comp.h"
-#include "cseditor/modifiableimpl.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
@@ -110,20 +109,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       initialLinearVelocity (0.0f), initialAngularVelocity (0.0f), 
       initialVelocityMag (0.0f), uniformVelocity (false)
     {
-      GENERATE_ID_START();   
-        GENERATE_ID(isEnabled);
-        GENERATE_ID(startTime);
-        GENERATE_ID(duration);
-        GENERATE_ID(initialTTLMin);
-        GENERATE_ID(initialTTLMax);
-        GENERATE_ID(initialMassMin);
-        GENERATE_ID(initialMassMax);
-        GENERATE_ID(position);
-        GENERATE_ID(placement);
-        GENERATE_ID(initialLinearVelocity);
-        GENERATE_ID(initialAngularVelocity);
-        GENERATE_ID(initialVelocityMag);
-        GENERATE_ID(uniformVelocity);
     }
 
     //-- iParticleEmitter
@@ -249,122 +234,55 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- iModifiable
-    const csStringID GetID() const
-    {
-      // TODO: maybe an equivalent of wxID_ANY?
-      return 42;
-    }
+    MODIF_DECLARE ();
 
-    csPtr<iModifiableDescription> GetDescription() const
-    {
-      csBasicModifiableDescription* description = new csBasicModifiableDescription();
+    MODIF_GETDESCRIPTION_BEGIN ("Emitter");
+    MODIF_GETDESCRIPTION (BOOL, "ENABLED", "Enabled", "Whether this emitter is emitting particles");
+    MODIF_GETDESCRIPTION (FLOAT, "START", "Start time", "Time, in milliseconds, when this emitter starts producing particles");
+    MODIF_GETDESCRIPTION (FLOAT, "DURATION", "Duration", "Time, in milliseconds, this particle emitter should emit particles");
+    MODIF_GETDESCRIPTION (FLOAT, "MINTTL", "Initial minimum TTL", "Minimum initial particle lifespan");
+    MODIF_GETDESCRIPTION (FLOAT, "MAXTTL", "Initial maximum TTL", "Maximum initial particle lifespan");
+    MODIF_GETDESCRIPTION (FLOAT, "MINMASS", "Initial minimum mass", "");
+    MODIF_GETDESCRIPTION (FLOAT, "MAXMASS", "Initial maximum mass", "");
+    MODIF_GETDESCRIPTION (VECTOR3, "POSITION", "Position", "Emitter position relative to the system(?)");
+    MODIF_GETDESCRIPTION (LONG, "PLACE", "PS placement", "");  // TODO: drop-down for this enum
+    MODIF_GETDESCRIPTION (VECTOR3, "LINVEL", "Initial linear velocity", "");
+    MODIF_GETDESCRIPTION (VECTOR3, "ANGVEL", "Initial angular velocity", "");
+    MODIF_GETDESCRIPTION (FLOAT, "VELMAGN", "Initial velocity magnitude", "");
+    MODIF_GETDESCRIPTION (BOOL, "VELUNI", "Uniform velocity", "");
+    MODIF_GETDESCRIPTION_END ();
 
-      PUSH_PARAM (CSVAR_BOOL, isEnabled, "Enabled", "Whether this emitter is emitting particles");
-      PUSH_PARAM (CSVAR_FLOAT, startTime, "Start time", "Time, in milliseconds, when this emitter starts producing particles");
-      PUSH_PARAM (CSVAR_FLOAT, duration, "Duration", "Time, in milliseconds, this particle emitter should emit particles");
-      PUSH_PARAM (CSVAR_FLOAT, initialTTLMin, "Initial minimum TTL", "Minimum initial particle lifespan");
-      PUSH_PARAM (CSVAR_FLOAT, initialTTLMax, "Initial maximum TTL", "Maximum initial particle lifespan");
-      PUSH_PARAM (CSVAR_FLOAT, initialMassMin, "Initial minimum mass", "");
-      PUSH_PARAM (CSVAR_FLOAT, initialMassMax, "Initial maximum mass", "");
-      PUSH_PARAM (CSVAR_VECTOR3, position, "Position", "Emitter position relative to the system(?)");
-      PUSH_PARAM (CSVAR_LONG, placement, "PS placement", "");  // TODO: drop-down for this enum
-      PUSH_PARAM (CSVAR_VECTOR3, initialLinearVelocity, "Initial linear velocity", "");
-      PUSH_PARAM (CSVAR_VECTOR3, initialAngularVelocity, "Initial angular velocity", "");
-      PUSH_PARAM (CSVAR_FLOAT, initialVelocityMag, "Initial velocity magnitude", "");
-      PUSH_PARAM (CSVAR_BOOL, uniformVelocity, "Uniform velocity", "");
+    MODIF_GETPARAMETERVALUE_BEGIN ();
+    MODIF_GETPARAMETERVALUE (0, Bool, isEnabled);
+    MODIF_GETPARAMETERVALUE (1, Float, startTime);
+    MODIF_GETPARAMETERVALUE (2, Float, duration);
+    MODIF_GETPARAMETERVALUE (3, Float, initialTTLMin);
+    MODIF_GETPARAMETERVALUE (4, Float, initialTTLMax);
+    MODIF_GETPARAMETERVALUE (5, Float, initialMassMin);
+    MODIF_GETPARAMETERVALUE (6, Float, initialMassMax);
+    MODIF_GETPARAMETERVALUE (7, Vector3, position);
+    MODIF_GETPARAMETERVALUE (8, Long, placement);
+    MODIF_GETPARAMETERVALUE (9, Vector3, initialLinearVelocity);
+    MODIF_GETPARAMETERVALUE (10, Vector3, initialAngularVelocity);
+    MODIF_GETPARAMETERVALUE (11, Float, initialVelocityMag);
+    MODIF_GETPARAMETERVALUE (12, Bool, uniformVelocity);
+    MODIF_GETPARAMETERVALUE_END ();
 
-      return description;
-    }
-
-    csVariant* GetParameterValue(csStringID id) const 
-    {
-      if(id == id_isEnabled) 
-        return new csVariant(isEnabled);
-      else if(id == id_startTime)
-        return new csVariant(startTime);
-      else if(id == id_duration)
-        return new csVariant(duration);
-      else if(id == id_initialTTLMin)
-        return new csVariant(initialTTLMin);
-      else if(id == id_initialTTLMax)
-        return new csVariant(initialTTLMax);
-      else if(id == id_initialMassMin)
-        return new csVariant(initialMassMin);
-      else if(id == id_initialMassMax)
-        return new csVariant(initialMassMax);
-      else if(id == id_position)
-        return new csVariant(position);
-      else if(id == id_placement)
-        return new csVariant(placement);
-      else if(id == id_initialLinearVelocity)
-        return new csVariant(initialLinearVelocity);
-      else if(id == id_initialAngularVelocity)
-        return new csVariant(initialAngularVelocity);
-      else if(id == id_initialVelocityMag)
-        return new csVariant(initialVelocityMag);
-      else if(id == id_uniformVelocity)
-        return new csVariant(uniformVelocity);
-      
-      return nullptr;
-    }
-
-    bool SetParameterValue(csStringID id, const csVariant& value) 
-    {
-      if(id == id_isEnabled) {
-        SetEnabled(value.GetBool());
-        return true;
-      }
-      else if(id == id_startTime) {
-        SetStartTime(value.GetFloat());
-        return true;
-      }
-      else if(id == id_duration) {
-        SetDuration(value.GetFloat());
-        return true;
-      }
-      else if(id == id_initialTTLMin) {
-        SetInitialTTL(value.GetFloat(), initialTTLMax);
-        return true;
-      }
-      else if(id == id_initialTTLMax) {
-        SetInitialTTL(initialTTLMin, value.GetFloat());
-        return true;
-      }
-      else if(id == id_initialMassMin) {
-        SetInitialMass(value.GetFloat(), initialMassMax);
-        return true;
-      }
-      else if(id == id_initialMassMax) {
-        SetInitialMass(initialMassMin, value.GetFloat());
-        return true;
-      }
-      else if(id == id_position) {
-        SetPosition(value.GetVector3());
-        return true;
-      }
-      else if(id == id_placement) {
-        SetParticlePlacement(static_cast<csParticleBuiltinEmitterPlacement>(value.GetLong()));
-        return true;
-      }
-      else if(id == id_initialLinearVelocity) {
-        SetInitialVelocity(value.GetVector3(), initialAngularVelocity);
-        return true;
-      }
-      else if(id == id_initialAngularVelocity) {
-        SetInitialVelocity(initialLinearVelocity, value.GetVector3());
-        return true;
-      }
-      else if(id == id_initialVelocityMag) {
-        initialVelocityMag = value.GetFloat();
-        return true;
-      }
-      else if(id == id_uniformVelocity) {
-        SetUniformVelocity(value.GetBool());
-        return true;
-      }
-
-      return false;
-    }
+    MODIF_SETPARAMETERVALUE_BEGIN ();
+    MODIF_SETPARAMETERVALUE (0, Bool, isEnabled);
+    MODIF_SETPARAMETERVALUE (1, Float, startTime);
+    MODIF_SETPARAMETERVALUE (2, Float, duration);
+    MODIF_SETPARAMETERVALUE (3, Float, initialTTLMin);
+    MODIF_SETPARAMETERVALUE (4, Float, initialTTLMax);
+    MODIF_SETPARAMETERVALUE (5, Float, initialMassMin);
+    MODIF_SETPARAMETERVALUE (6, Float, initialMassMax);
+    MODIF_SETPARAMETERVALUE (7, Vector3, position);
+    MODIF_SETPARAMETERVALUE_ENUM (8, Long, placement, csParticleBuiltinEmitterPlacement);
+    MODIF_SETPARAMETERVALUE (9, Vector3, initialLinearVelocity);
+    MODIF_SETPARAMETERVALUE (10, Vector3, initialAngularVelocity);
+    MODIF_SETPARAMETERVALUE (11, Float, initialVelocityMag);
+    MODIF_SETPARAMETERVALUE (12, Bool, uniformVelocity);
+    MODIF_SETPARAMETERVALUE_END ();
 
   protected:
     //-- iParticleEmitter
@@ -385,12 +303,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     bool uniformVelocity;
 
     typedef ParticleEmitterHelper<T> BaseType;
-
-    private:
-      //-- iModifiable
-      csStringID id_isEnabled, id_startTime, id_duration, id_initialTTLMin, id_initialTTLMax,
-        id_initialMassMin, id_initialMassMax, id_position, id_placement, id_initialLinearVelocity,
-        id_initialAngularVelocity, id_initialVelocityMag, id_uniformVelocity;
   };
 
   class ParticleEmitterSphere : public ParticleEmitterHelper<iParticleBuiltinEmitterSphere>

@@ -77,11 +77,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       acceleration (0.0f), force (0.0f), randomAcceleration (0.0f, 0.0f, 0.0f),
       do_randomAcceleration (false)
     {
-      GENERATE_ID_START();
-        GENERATE_ID(acceleration);
-        GENERATE_ID(force);
-        GENERATE_ID(randomAcceleration);
-        GENERATE_ID(do_randomAcceleration);
     }
 
     //-- iParticleEffector
@@ -126,69 +121,34 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- iModifiable
-    const csStringID GetID() const
-    {
-      return 42;
-    }
+    MODIF_DECLARE ();
 
-    csPtr<iModifiableDescription> GetDescription() const 
-    {
-      iModifiableDescription* description = new csBasicModifiableDescription();
-      PUSH_PARAM(CSVAR_VECTOR3, acceleration, "Acceleration", "Rate at which the force increases");
-      PUSH_PARAM(CSVAR_VECTOR3, force, "Force", "Effector's initial force");
-      PUSH_PARAM(CSVAR_BOOL, do_randomAcceleration, "Enable random acceleration", "");
-      PUSH_PARAM(CSVAR_VECTOR3, randomAcceleration, "Random acceleration", "");
-      return description;
-    }
+    MODIF_GETDESCRIPTION_BEGIN ("Force effector");
+    MODIF_GETDESCRIPTION (VECTOR3, "ACCELERATION", "Acceleration", "Rate at which the force increases");
+    MODIF_GETDESCRIPTION (VECTOR3, "FORCE", "Force", "Effector's initial force");
+    MODIF_GETDESCRIPTION (BOOL, "ENABLE_RANDOMACC", "Enable random acceleration", "");
+    MODIF_GETDESCRIPTION (VECTOR3, "RANDOMACC", "Random acceleration", "");
+    MODIF_GETDESCRIPTION_END ();
 
-    csVariant* GetParameterValue(csStringID id) const
-    {
-      if(id == id_acceleration) {
-        return new csVariant(GetAcceleration());
-      } 
-      if(id == id_force) {
-        return new csVariant(GetForce());
-      }
-      if(id == id_randomAcceleration) {
-        return new csVariant(GetRandomAcceleration());
-      }
-      if(id == id_do_randomAcceleration) {
-        return new csVariant(do_randomAcceleration);
-      }
+    MODIF_GETPARAMETERVALUE_BEGIN ();
+    MODIF_GETPARAMETERVALUE (0, Vector3, acceleration);
+    MODIF_GETPARAMETERVALUE (1, Vector3, force);
+    MODIF_GETPARAMETERVALUE (2, Bool, do_randomAcceleration);
+    MODIF_GETPARAMETERVALUE (3, Vector3, randomAcceleration);
+    MODIF_GETPARAMETERVALUE_END ();
 
-      return nullptr;
-    }
-
-    bool SetParameterValue(csStringID id, const csVariant& value)
-    {
-      if(id == id_acceleration) {
-        SetAcceleration(value.GetVector3());
-        return true;
-      } 
-      if(id == id_force) {
-        SetForce(value.GetVector3());
-        return true;
-      }
-      if(id == id_randomAcceleration) {
-        SetRandomAcceleration(value.GetVector3());
-        return true;
-      }
-      if(id == id_do_randomAcceleration) {
-        do_randomAcceleration = value.GetBool();
-        return true;
-      }
-
-      return false;
-    }
+    MODIF_SETPARAMETERVALUE_BEGIN ();
+    MODIF_SETPARAMETERVALUE (0, Vector3, acceleration);
+    MODIF_SETPARAMETERVALUE (1, Vector3, force);
+    MODIF_SETPARAMETERVALUE (2, Bool, do_randomAcceleration);
+    MODIF_SETPARAMETERVALUE_F (3, Vector3, SetRandomAcceleration);
+    MODIF_SETPARAMETERVALUE_END ();
 
   private:
     csVector3 acceleration;
     csVector3 force;
     csVector3 randomAcceleration;
     bool do_randomAcceleration;
-
-    //-- iModifiable
-    csStringID id_acceleration, id_force, id_randomAcceleration, id_do_randomAcceleration;
   };
 
   //------------------------------------------------------------------------
@@ -241,28 +201,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- iModifiable
-    const csStringID GetID() const
-    {
-      return 42;
-    }
+    MODIF_DECLARE ();
 
-    csPtr<iModifiableDescription> GetDescription() const
-    {
-      csBasicModifiableDescription* description = new csBasicModifiableDescription;
+    MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
+    MODIF_GETDESCRIPTION_END ();
 
-      return description;
-    }
+    MODIF_GETPARAMETERVALUE_BEGIN ();
+    MODIF_GETPARAMETERVALUE_END ();
 
-    csVariant* GetParameterValue(csStringID id) const
-    {
-
-      return nullptr;
-    }
-
-    bool SetParameterValue(csStringID id, const csVariant& value)
-    {
-      return false;
-    }
+    MODIF_SETPARAMETERVALUE_BEGIN ();
+    MODIF_SETPARAMETERVALUE_END ();
 
   private:
     void Precalc ();
@@ -284,9 +232,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     };
     bool precalcInvalid;
     csArray<PrecalcEntry> precalcList;
-
-    //-- iModifiable
-    // ...
   };
 
   //------------------------------------------------------------------------
@@ -346,28 +291,16 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- iModifiable
-    const csStringID GetID() const
-    {
-      return 42;
-    }
+    MODIF_DECLARE ();
 
-    csPtr<iModifiableDescription> GetDescription() const
-    {
-      csBasicModifiableDescription* description = new csBasicModifiableDescription;
+    MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
+    MODIF_GETDESCRIPTION_END ();
 
-      return description;
-    }
+    MODIF_GETPARAMETERVALUE_BEGIN ();
+    MODIF_GETPARAMETERVALUE_END ();
 
-    csVariant* GetParameterValue(csStringID id) const
-    {
-
-      return nullptr;
-    }
-
-    bool SetParameterValue(csStringID id, const csVariant& value)
-    {
-      return false;
-    }
+    MODIF_SETPARAMETERVALUE_BEGIN ();
+    MODIF_SETPARAMETERVALUE_END ();
 
   private:
     void Precalc ();
@@ -391,9 +324,6 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     };
     bool precalcInvalid;
     csArray<PrecalcEntry> precalcList;
-
-    //- iModifiable
-    //...
   };
 
   //------------------------------------------------------------------------
@@ -485,36 +415,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- iModifiable
-    const csStringID GetID() const
-    {
-      return 42;
-    }
+    MODIF_DECLARE ();
 
-    csPtr<iModifiableDescription> GetDescription() const
-    {
-      csBasicModifiableDescription* description = new csBasicModifiableDescription;
+    MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
+    MODIF_GETDESCRIPTION_END ();
 
-      return description;
-    }
+    MODIF_GETPARAMETERVALUE_BEGIN ();
+    MODIF_GETPARAMETERVALUE_END ();
 
-    csVariant* GetParameterValue(csStringID id) const
-    {
-
-      return nullptr;
-    }
-
-    bool SetParameterValue(csStringID id, const csVariant& value)
-    {
-      return false;
-    }
+    MODIF_SETPARAMETERVALUE_BEGIN ();
+    MODIF_SETPARAMETERVALUE_END ();
 
   private:
     csParticleBuiltinEffectorVFType type;
     csArray<csVector3> vparams;
     csArray<float> fparams;
-
-    //-- iModifiable
-    //...
   };
 
   //------------------------------------------------------------------------

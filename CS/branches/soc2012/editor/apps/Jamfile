@@ -8,4 +8,4 @@ SubInclude TOP apps tutorial ;
 SubInclude TOP apps walktest ;
 
 SubInclude TOP apps varedittest ;
-SubInclude TOP apps btgraphtest ;
+#SubInclude TOP apps btgraphtest ;

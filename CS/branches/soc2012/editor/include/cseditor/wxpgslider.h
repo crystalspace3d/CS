@@ -27,8 +27,7 @@ class WXDLLIMPEXP_PG wxPGSliderEditor : public wxPGEditor
 
 public:
   wxPGSliderEditor (float min = 0, float max = 100, int precision = 1)
-      : min(min), max(max),
-        precision(precision)
+    : precision(precision), min(min), max(max)        
   {
   }
 

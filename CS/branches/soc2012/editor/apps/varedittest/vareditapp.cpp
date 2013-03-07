@@ -119,16 +119,27 @@ bool VarEditTestApp::OnInit ()
   // Setup the frame's CS stuff
   frame->Initialize ();
 
+  // Create a test modifiable listener
+  csRef<CS::Utility::iModifiableListener> listener;
+  listener.AttachNew (new ModifiableListener ());
+
   // Add some test modifiable objects to the varedittest in order to check its functionality. 
-  csRef<iModifiable> modifiable;
+  csRef<CS::Utility::iModifiable> modifiable;
 
   modifiable.AttachNew (new csTestModifiable ("Bob", "murderer", 11));
+  modifiable->AddListener (listener);
   frame->AddModifiable (modifiable);
 
   modifiable.AttachNew (new csTestModifiable2 ("Jake", "garbage man", 0));
+  modifiable->AddListener (listener);
   frame->AddModifiable (modifiable);
 
   modifiable.AttachNew (new csTestModifiable ("Frodo", "part-time orc slayer", 2));
+  modifiable->AddListener (listener);
+  frame->AddModifiable (modifiable);
+
+  modifiable.AttachNew (new csTestModifiable3 ());
+  modifiable->AddListener (listener);
   frame->AddModifiable (modifiable);
 
   frame->Show ();
@@ -140,4 +151,11 @@ int VarEditTestApp::OnExit ()
 {
   csInitializer::DestroyApplication (object_reg );
   return 0;
+}
+
+void ModifiableListener::ValueChanged (CS::Utility::iModifiable* modifiable, size_t parameterIndex)
+{
+  csVariant value;
+  modifiable->GetParameterValue (parameterIndex, value);
+  printf ("New value set for parameter %zu: %s\n", parameterIndex, value.Description ().GetData ());
 }

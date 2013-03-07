@@ -23,17 +23,15 @@
 #include "cstool/rendermeshholder.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/flags.h"
+#include "csutil/modifiableimpl.h"
 #include "csutil/radixsort.h"
 #include "csutil/weakref.h"
 
 #include "imesh/object.h"
 #include "imesh/particles.h"
 #include "iutil/comp.h"
-#include "ivideo/rndbuf.h"
-
-// iModifiable
 #include "iutil/modifiable.h"
-#include "include/cseditor/modifiableimpl.h"
+#include "ivideo/rndbuf.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 {
@@ -67,7 +65,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
   class ParticlesMeshFactory : public scfImplementation4<ParticlesMeshFactory,
                                                          iMeshObjectFactory,
                                                          iParticleSystemFactory,
-                                                         iModifiable,
+                                                         CS::Utility::iModifiable,
                                                          scfFakeInterface<iParticleSystemBase> >
   {
   public:
@@ -158,7 +156,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
     /** @} */
 
-    /**\name iModifiable implementation
+    /**\name CS::Utility::iModifiable implementation
       * @{ */
     MODIF_DECLARE ();
     MODIF_GETDESCRIPTION_BEGIN ("Particle mesh object");

@@ -20,16 +20,17 @@
 #define __MODIFIABLE_H__
 
 #include "csutil/scf_interface.h"
+#include "csutil/variant.h"
 #include "iutil/strset.h"
 
-// csVariant and whatnot; long path required so the wrong one doesn't get picked up
-// TODO: remove that
-#include "apps/varedittest/pluginconfig.h"
+struct iObjectRegistry;
+
+namespace CS {
+namespace Utility {
 
 struct iModifiable;
 struct iModifiableConstraint;
 struct iModifiableDescription;
-struct iObjectRegistry;
 
 //----------------- iModifiableParameter ---------------------
 
@@ -63,7 +64,7 @@ struct iModifiableParameter : public virtual iBase
   /**
    * Return this parameter's constraint, or nullptr if there are none.
    */
-  virtual const iModifiableConstraint* GetConstraint () const = 0;
+  virtual iModifiableConstraint* GetConstraint () const = 0;
 };
 
 //----------------- iModifiableDescription ---------------------
@@ -93,17 +94,17 @@ struct iModifiableDescription : public virtual iBase
   /**
    * Return a parameter based on its csStringID.
    */
-  virtual const iModifiableParameter* GetParameter (csStringID id) const = 0;
+  virtual iModifiableParameter* GetParameter (csStringID id) const = 0;
 
   /**
    * Return a parameter based on its index.
    */
-  virtual const iModifiableParameter* GetParameter (size_t index) const = 0;
+  virtual iModifiableParameter* GetParameter (size_t index) const = 0;
 
   virtual size_t FindParameter (csStringID id) const = 0;
 
   virtual size_t GetChildrenCount () const = 0;
-  virtual const iModifiableDescription* GetChild (size_t index) const = 0;
+  virtual iModifiableDescription* GetChild (size_t index) const = 0;
 };
 
 //----------------- iModifiableListener ---------------------
@@ -243,5 +244,8 @@ struct iModifiableConstraintEnum : public virtual iModifiableConstraint
   virtual long GetValue (size_t index) const = 0;
   virtual const char* GetLabel (size_t index) const = 0;
 };
+
+} // namespace Utility
+} // namespace CS
 
 #endif // __MODIFIABLE_H__

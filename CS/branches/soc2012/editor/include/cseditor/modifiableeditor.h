@@ -30,10 +30,17 @@
 #include "cseditor/wx/propgrid/editors.h"
 
 class csVariant;
+struct iTranslator;
+
+namespace CS {
+namespace Utility {
+
 struct iModifiable;
 struct iModifiableConstraint;
 struct iModifiableDescription;
-struct iTranslator;
+
+} // namespace Utility
+} // namespace CS
 
 namespace CS {
 namespace EditorApp {
@@ -41,6 +48,7 @@ namespace EditorApp {
 class /*CS_CRYSTALSPACE_EXPORT*/ ModifiableEditor : public wxPanel 
 {
 public:
+  // TODO: use CS types instead of wx ones?
   /// Constructor
   ModifiableEditor (iObjectRegistry* object_reg, 
 		    wxWindow* parent,
@@ -51,9 +59,9 @@ public:
 		    const wxString& name);
 
   /// Sets the current active modifiable entity in the grid
-  virtual void SetModifiable (iModifiable* modifiable);
+  virtual void SetModifiable (CS::Utility::iModifiable* modifiable);
   /// Gets the currently active modifiable entity in the grid
-  virtual iModifiable* GetModifiable () const;
+  virtual CS::Utility::iModifiable* GetModifiable () const;
   /// Sets the property grid's message
   void SetMessage (const wxString& title, const wxString& message);
   // Clears all the data from the editor
@@ -64,14 +72,15 @@ private:
   virtual void OnSize (wxSizeEvent& event);
 
   /// Appends the element to the property grid, in its own category
-  void Append (wxPropertyCategory* category, const iModifiableDescription* description, size_t offset);
+  void Append (wxPropertyCategory* category,
+	       CS::Utility::iModifiableDescription* description, size_t& offset);
 
   /**
    * Actually does the work of taking the variant, its name, translation and translated
    * description and generating the corresponding GUI element for each of them.
    */
   void AppendVariant (wxPGPropArg categoryID, csVariant* variant, size_t index,
-		      const iModifiableConstraint* param,
+		      CS::Utility::iModifiableConstraint* param,
 		      const wxString& originalName, const wxString& translatedName,
 		      const wxString& translatedDescription);
 
@@ -84,8 +93,8 @@ private:
   };
 
   iObjectRegistry* object_reg;
-  csRef<iModifiable> modifiable;
-  csRef<iModifiableDescription> description;
+  csRef<CS::Utility::iModifiable> modifiable;
+  csRef<CS::Utility::iModifiableDescription> description;
 
   wxPropertyGridPage* page;
   wxPropertyGridManager* pgMananager;

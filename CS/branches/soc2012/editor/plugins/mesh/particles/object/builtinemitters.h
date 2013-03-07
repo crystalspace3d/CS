@@ -19,7 +19,7 @@
 #ifndef __CS_MESH_BUILTINEMITTERS_H__
 #define __CS_MESH_BUILTINEMITTERS_H__
 
-#include "cseditor/modifiableimpl.h"
+#include "csutil/modifiableimpl.h"
 #include "csutil/scf_implementation.h"
 #include "imesh/particles.h"
 #include "iutil/comp.h"
@@ -91,14 +91,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
                                                           T,
                                                           scfFakeInterface<iParticleBuiltinEmitterBase>,
                                                           scfFakeInterface<iParticleEmitter>,
-                                                          iModifiable>
+                                                          CS::Utility::iModifiable>
   {
   public:
     typedef scfImplementation4<ParticleEmitterHelper<T>,
                                T,
                                scfFakeInterface<iParticleBuiltinEmitterBase>,
                                scfFakeInterface<iParticleEmitter>,
-                               iModifiable> base;
+                               CS::Utility::iModifiable> base;
 
     ParticleEmitterHelper (iObjectRegistry* object_reg)
       : base (this),
@@ -233,7 +233,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       angular = initialAngularVelocity;
     }
 
-    //-- iModifiable
+    //-- CS::Utility::iModifiable
     MODIF_DECLARE ();
 
     MODIF_GETDESCRIPTION_BEGIN ("Emitter");

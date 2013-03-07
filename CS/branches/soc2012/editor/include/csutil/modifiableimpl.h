@@ -15,7 +15,6 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef MODIFIABLE_IMPL_H
 #define MODIFIABLE_IMPL_H
 
@@ -26,12 +25,15 @@
 #include "csutil/regexp.h"
 #include "csutil/stringarray.h"
 
-// TODO: move in csutil
+using namespace CS::Utility;
+
+namespace CS {
+namespace Utility {
 
 // TODO: using such macros is both tiresome and error-prone.
 // Maybe use instead a XML description + a compiler for the code generation?
 #define MODIF_DECLARE()\
-  csRefArray<iModifiableListener> listeners;\
+  csRefArray<iModifiableListener> listeners;		\
   virtual void GetParameterValue (size_t parameterIndex, size_t arrayIndex, csVariant& value) const {}\
   virtual bool SetParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)\
   {return false;}\
@@ -135,7 +137,7 @@ bool SetParameterValue (size_t index, const csVariant& value)\
 }
 
 /**
- * Implementation of some of the most common iModifiableParameter usage. 
+ * Implementation of some of the most common CS::Utility::iModifiableParameter usage. 
  * Stores the parameter's name, description, type, ID and an optional constraint.
  */
 class csBasicModifiableParameter
@@ -168,7 +170,7 @@ public:
   virtual void SetConstraint (iModifiableConstraint* constraint)
   { this->constraint = constraint; }
 
-  virtual const iModifiableConstraint* GetConstraint () const 
+  virtual iModifiableConstraint* GetConstraint () const 
   { return constraint; }
 
 private:
@@ -180,8 +182,8 @@ private:
 };
 
 /**
- * Basic implementation of iModifiableDescription, suitable for most uses. 
- * Simply holds a csRefArray of iModifiableParameter and implements 
+ * Basic implementation of CS::Utility::iModifiableDescription, suitable for most uses. 
+ * Simply holds a csRefArray of CS::Utility::iModifiableParameter and implements 
  * GetParameterCount() and GetParameter().
  */
 class csBasicModifiableDescription
@@ -191,16 +193,16 @@ public:
   csBasicModifiableDescription (const char* name) :
   scfImplementationType (this), name (name) {}
 
-  /// Default implementation for iModifiableDescription::GetName()
+  /// Default implementation for CS::Utility::iModifiableDescription::GetName()
   virtual const char* GetName () const
   { return name; }
 
-  /// Default implementation for iModifiableDescription::GetParameterCount()
+  /// Default implementation for CS::Utility::iModifiableDescription::GetParameterCount()
   virtual size_t GetParameterCount () const
   { return parameters.GetSize (); }
 
-  /// Default implementation for iModifiableDescription::GetParameter(csStringID)
-  virtual const iModifiableParameter* GetParameter (csStringID id) const 
+  /// Default implementation for CS::Utility::iModifiableDescription::GetParameter(csStringID)
+  virtual iModifiableParameter* GetParameter (csStringID id) const 
   {
     for (size_t i = 0; i < parameters.GetSize (); i++)
       if (parameters.Get (i)->GetID () == id)
@@ -208,20 +210,20 @@ public:
 
     for (size_t i = 0; i < children.GetSize (); i++)
     {
-      const iModifiableParameter* parameter = children[i]->GetParameter (id);
+      iModifiableParameter* parameter = children[i]->GetParameter (id);
       if (parameter) return parameter;
     }
 
     return nullptr;
   }
 
-  /// Default implementation for iModifiableDescription::GetParameter(size_t)
-  virtual const iModifiableParameter* GetParameter (size_t index) const
+  /// Default implementation for CS::Utility::iModifiableDescription::GetParameter(size_t)
+  virtual iModifiableParameter* GetParameter (size_t index) const
   {
     return GetParameterInternal (index);
   }
 
-  /// Default implementation for iModifiableDescription::FindParameter()
+  /// Default implementation for CS::Utility::iModifiableDescription::FindParameter()
   virtual size_t FindParameter (csStringID id) const
   {
     for (size_t i = 0; i < parameters.GetSize (); i++)
@@ -237,32 +239,32 @@ public:
     return (size_t) ~0;
   }
 
-  // TODO: remove?
+  /// Add the given parameter to the list
   inline void Push (iModifiableParameter* param)
   {
     parameters.Push (param);
   }
 
-  /// Default implementation for iModifiableDescription::GetChildrenCount()
+  /// Default implementation for CS::Utility::iModifiableDescription::GetChildrenCount()
   virtual size_t GetChildrenCount () const
   {
     return children.GetSize ();
   }
 
-  /// Default implementation for iModifiableDescription::GetChild()
-  virtual const iModifiableDescription* GetChild (size_t index) const
+  /// Default implementation for CS::Utility::iModifiableDescription::GetChild()
+  virtual iModifiableDescription* GetChild (size_t index) const
   {
     return children[index];
   }
 
-  // TODO: remove?
-  inline void Push (iModifiableDescription* child)
+  /// Add the given description to the list of children
+  inline void Push (csBasicModifiableDescription* child)
   {
     children.Push (child);
   }
 
 private:
-  virtual const iModifiableParameter* GetParameterInternal (size_t& index) const
+  virtual iModifiableParameter* GetParameterInternal (size_t& index) const
   {
     if (index < parameters.GetSize ())
       return parameters[index];
@@ -270,7 +272,7 @@ private:
     index -= parameters.GetSize ();
     for (size_t i = 0; i < children.GetSize (); i++)
     {
-      const iModifiableParameter* parameter = children[i]->GetParameter (index);
+      iModifiableParameter* parameter = children[i]->GetParameterInternal (index);
       if (parameter) return parameter;
     }
 
@@ -280,12 +282,12 @@ private:
 private:
   csString name;
   csRefArray<iModifiableParameter> parameters;
-  csRefArray<iModifiableDescription> children;
+  csRefArray<csBasicModifiableDescription> children;
 };
 
 
 /**
- * Implements an enum constraint for a CSVAR_LONG iModifiable field. Contains a list of
+ * Implements an enum constraint for a CSVAR_LONG CS::Utility::iModifiable field. Contains a list of
  * long values that are members of the respective enum, as well as their string labels,
  * for displaying in a combo box.
  */
@@ -307,7 +309,7 @@ public:
     return true;
   }
 
-  //-- iModifiableConstraintEnum
+  //-- CS::Utility::iModifiableConstraintEnum
   virtual size_t GetValueCount () const 
   {
     return labels.GetSize ();
@@ -341,7 +343,7 @@ private:
 };
 
 /**
- * Implementation of iModifiableConstraintBounded. See its documentation for a bit more help.
+ * Implementation of CS::Utility::iModifiableConstraintBounded. See its documentation for a bit more help.
  * Currently works for the following value types:
  * CSVAR_FLOAT, CSVAR_LONG, CSVAR_VECTOR2, CSVAR_VECTOR3, CSVAR_VECTOR4
  */
@@ -387,7 +389,7 @@ public:
     CheckTypes ();
   }
 
-  //-- iModifiableConstraint
+  //-- CS::Utility::iModifiableConstraint
 
   virtual iModifiableConstraintType GetType () const 
   {
@@ -483,7 +485,7 @@ public:
     return true;
   }
 
-  //-- iModifiableConstraintBounded
+  //-- CS::Utility::iModifiableConstraintBounded
 
   bool HasMinimum () const 
   {
@@ -530,7 +532,7 @@ private:
 };
 
 /**
- * Attached to an iModifiable parameters, verifies that the value entered within
+ * Attached to an CS::Utility::iModifiable parameters, verifies that the value entered within
  * is always a VFS file, not a path or a directory.
  */
 class csConstraintVfsFile : public scfImplementation1<csConstraintVfsFile, iModifiableConstraint>
@@ -566,7 +568,7 @@ private:
 };
 
 /**
- * Attached to an iModifiable parameters, verifies that the value entered within
+ * Attached to an CS::Utility::iModifiable parameters, verifies that the value entered within
  * is always a VFS directory, relative or absolute.
  */
 class csConstraintVfsDir : public scfImplementation1<csConstraintVfsDir, iModifiableConstraint>
@@ -601,7 +603,7 @@ private:
 
 
 /**
- * Attached to an iModifiable parameters, verifies that the value entered within
+ * Attached to an CS::Utility::iModifiable parameters, verifies that the value entered within
  * is always a full VFS path - a directory and a file, relative or absolute.
  */
 class csConstraintVfsPath : public scfImplementation1<csConstraintVfsPath, iModifiableConstraint>
@@ -706,5 +708,8 @@ class csConstraintBitMask : public scfImplementation1<csConstraintBitMask, iModi
 private:
   long mask;
 };
+
+} // namespace Utility
+} // namespace CS
 
 #endif

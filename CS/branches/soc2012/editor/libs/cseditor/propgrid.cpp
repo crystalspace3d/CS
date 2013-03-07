@@ -7599,7 +7599,7 @@ bool wxPropertyGrid::DoSelectProperty( wxPGProperty* p, unsigned int flags )
                                                                 p,
                                                                 goodPos,
                                                                 grect.GetSize());
-printf("wxPropertyGrid::DoSelectProperty--CreateControls()\n");
+
                 //
                 // Below, bear in mind the difference between primaryCtrl and m_wndEditor:
                 // m_wndEditor is the actual wxWindow on canvas, and primaryCtrl is
@@ -8750,7 +8750,6 @@ bool wxPropertyGrid::OnMouseCommon( wxMouseEvent& event, int* px, int* py )
 
 void wxPropertyGrid::OnMouseClick( wxMouseEvent &event )
 {
-printf("wxPropertyGrid::OnMouseClick\n");
     int x, y;
     if ( OnMouseCommon( event, &x, &y ) )
     {

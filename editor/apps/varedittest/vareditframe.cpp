@@ -98,11 +98,6 @@ ModifiableTestFrame::ModifiableTestFrame (iObjectRegistry* object_reg )
 
   frame = this;
 
-  // Initialize the pump driving the CS loop
-  Pump* p = new Pump ();
-  p->s = this;
-  p->Start (20);
-  
   //-------------------------------------------
 
   // create a menu bar
@@ -139,53 +134,15 @@ ModifiableTestFrame::~ModifiableTestFrame ()
 
 bool ModifiableTestFrame::Initialize ()
 {
-  if (!csInitializer::SetupEventHandler (object_reg, GeneralEventHandler))
-  {
-    csReport (object_reg, CS_REPORTER_SEVERITY_ERROR,
-	      "crystalspace.application.varedittest",
-	      "Can't initialize event handler!");
-
-    return false;
-  }
-
   return true;
 }
 
-/* static */ bool ModifiableTestFrame::GeneralEventHandler (iEvent& event)
-{
-  if (frame)
-    return frame->TestModifiableEvents (event);
-
-  return true;
-}
-
-bool ModifiableTestFrame::TestModifiableEvents (iEvent& event)
-{
-  csRef<iEventNameRegistry> strings = csQueryRegistry<iEventNameRegistry> (object_reg );
-
-  // Ignore the frame event
-  if (event.GetName () == strings->GetID ("crystalspace.frame"))
-    return true;
-
-  printf ("\tCaught event: %s (ID #%u)\n",
-	  strings->GetString (event.GetName () ),
-	  (unsigned int) event.GetName () );
-  return true;
-}
-
-void ModifiableTestFrame::AddModifiable (iModifiable* modifiable)
+void ModifiableTestFrame::AddModifiable (CS::Utility::iModifiable* modifiable)
 {
   modifiableEntities.Push (modifiable);
 }
 
-void ModifiableTestFrame::PushFrame ()
-{
-  // No point broadcasting our events if the queue doesn't get to process them
-  csRef<iEventQueue> eq (csQueryRegistry<iEventQueue>(object_reg ));
-  eq->Process ();
-}
-
-void ModifiableTestFrame::Populate (iModifiable* dataSource)
+void ModifiableTestFrame::Populate (CS::Utility::iModifiable* dataSource)
 {
   modifiableEditor->SetModifiable (dataSource);
 }

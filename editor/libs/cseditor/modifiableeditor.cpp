@@ -26,6 +26,8 @@
 
 #include <wx/variant.h>
 
+using namespace CS::Utility;
+
 //----------------- Custom properties for the property grid ---------------------
 
 class wxVector3f
@@ -192,8 +194,8 @@ void wxToCS (csVariantType type, const wxVariant& original, csVariant& variant)
 using namespace CS::EditorApp;
 
 BEGIN_EVENT_TABLE (ModifiableEditor, wxPanel)
-EVT_PG_CHANGING (pageId,  ModifiableEditor::OnPropertyGridChanging)
-EVT_PG_CHANGED (pageId,  ModifiableEditor::OnPropertyGridChanged)
+EVT_PG_CHANGING (pageId, ModifiableEditor::OnPropertyGridChanging)
+EVT_PG_CHANGED (pageId, ModifiableEditor::OnPropertyGridChanged)
 EVT_SIZE (ModifiableEditor::OnSize)
 END_EVENT_TABLE ()
 
@@ -241,7 +243,8 @@ void ModifiableEditor::SetModifiable (iModifiable* modifiable)
   //pgMananager->SetExtraStyle (wxPG_EX_HELP_AS_TOOLTIPS);
 
   // Append the main item as the root
-  Append (nullptr, description, 0);
+  size_t offset = 0;
+  Append (nullptr, description, offset);
 }
 
 iModifiable* ModifiableEditor::GetModifiable () const 
@@ -250,8 +253,8 @@ iModifiable* ModifiableEditor::GetModifiable () const
 }
 
 void ModifiableEditor::Append
-(wxPropertyCategory* category, const iModifiableDescription* description,
- size_t offset)
+(wxPropertyCategory* category, iModifiableDescription* description,
+ size_t& offset)
 {
   bool root = false;
   if (!category)
@@ -265,7 +268,7 @@ void ModifiableEditor::Append
   // Add all parameters
   for (size_t i = 0; i < description->GetParameterCount (); i++)
   {
-    const iModifiableParameter* param = description->GetParameter (i);
+    iModifiableParameter* param = description->GetParameter (i);
     csVariant variant;
     modifiable->GetParameterValue (i + offset, variant);
     //CS_ASSERT_MSG ("iModifiable object must return a value for each valid parameter id!", variant != nullptr);
@@ -281,7 +284,7 @@ void ModifiableEditor::Append
   offset += description->GetParameterCount ();
   for (size_t i = 0; i < description->GetChildrenCount (); i++)
   {
-    const iModifiableDescription* child = description->GetChild (i);
+    iModifiableDescription* child = description->GetChild (i);
 
     wxString categoryName (child->GetName (), wxConvUTF8);
     wxPropertyCategory* childCategory = new wxPropertyCategory (categoryName);
@@ -290,14 +293,13 @@ void ModifiableEditor::Append
     else category->AppendChild (childCategory);
 
     Append (childCategory, child, offset);
-    offset += child->GetParameterCount ();
   }
 
   pgMananager->Refresh ();
 }
 
 void ModifiableEditor::AppendVariant
-(wxPGPropArg categoryID, csVariant* variant, size_t index, const iModifiableConstraint* constraint,
+(wxPGPropArg categoryID, csVariant* variant, size_t index, iModifiableConstraint* constraint,
  const wxString& originalName, const wxString& translatedName, const wxString& translatedDescription)
 {
   switch (variant->GetType ())
@@ -319,7 +321,8 @@ void ModifiableEditor::AppendVariant
 	&& constraint->GetType () == MODIFIABLE_CONSTRAINT_ENUM)
     {
       // Generate a combo-box based on enum values
-      const iModifiableConstraintEnum* ec = dynamic_cast<const iModifiableConstraintEnum*>(constraint);
+      csRef<iModifiableConstraintEnum> ec =
+	scfQueryInterface<iModifiableConstraintEnum> (constraint);
 
       wxArrayInt values;
       wxArrayString labels;
@@ -360,8 +363,8 @@ void ModifiableEditor::AppendVariant
     float min = 0, max = 100;
     if (constraint != nullptr && constraint->GetType () == MODIFIABLE_CONSTRAINT_BOUNDED) {
       // Set the slider limits
-      const iModifiableConstraintBounded* bc =
-	dynamic_cast<const iModifiableConstraintBounded*>(constraint);
+      csRef<iModifiableConstraintBounded> bc =
+	scfQueryInterface<iModifiableConstraintBounded> (constraint);
       if (bc->HasMinimum ()) min = bc->GetMinimum ().GetFloat ();
       if (bc->HasMaximum ()) max = bc->GetMaximum ().GetFloat ();
     }
@@ -472,8 +475,8 @@ void ModifiableEditor::OnPropertyGridChanging (wxPropertyGridEvent& event)
   wxVariant newValue = event.GetValue ();
   
   size_t index = *indexes.GetElementPointer (event.GetProperty ());
-  const iModifiableParameter* parameter = description->GetParameter (index);
-  const iModifiableConstraint* constraint = parameter->GetConstraint ();
+  iModifiableParameter* parameter = description->GetParameter (index);
+  iModifiableConstraint* constraint = parameter->GetConstraint ();
 
   if (constraint != nullptr) {
     csVariant newCSValue;
@@ -495,7 +498,7 @@ void ModifiableEditor::OnPropertyGridChanged (wxPropertyGridEvent& event)
     return;
 
   size_t index = *indexes.GetElementPointer (event.GetProperty ());
-  const iModifiableParameter* parameter = description->GetParameter (index);
+  iModifiableParameter* parameter = description->GetParameter (index);
   csVariant variant;
   wxToCS (parameter->GetType (), newValue, variant);
   modifiable->SetParameterValue (index, variant);

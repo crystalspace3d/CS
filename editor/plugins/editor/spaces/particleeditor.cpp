@@ -47,6 +47,8 @@
 
 #include "particleeditor.h"
 
+using namespace CS::Utility;
+
 CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 {
   CSPartEditSpace* editorSpace;

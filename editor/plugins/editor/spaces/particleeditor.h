@@ -48,6 +48,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     virtual bool GetEnabled () const;
     virtual void Update ();
     
+  private:
     // iEventHandler 
     bool HandleEvent (iEvent &event);
 
@@ -67,12 +68,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
      */
     void Empty (const wxString& message);
 
-    // Various event ids
-    iEventNameRegistry* nameRegistry;
-    csStringID          addObject;
-    csStringID          clearObjects;
-    csStringID          activateObject;
-
     void OnButtonAddEmitter (wxCommandEvent &event);
     void OnButtonRemoveEmitter (wxCommandEvent &event);
     void OnButtonAddEffector (wxCommandEvent &event);
@@ -80,31 +75,37 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     void OnEmitterSelect (wxCommandEvent& event);
     void OnEffectorSelect (wxCommandEvent& event);
 
-  private:
-    static const int      borderWidth = 4; 
-    bool                  enabled;
-    wxBoxSizer            *mainSizer, *middleSizer, *middleLSizer, *middleRSizer;
-    wxListBox             *emitterList, *effectorList;
-    csRef<iEditor>        editor;
-    csRef<iEventQueue>    queue;
-    csRef<iTranslator>    translator;
-
-    iObjectRegistry*                        object_reg;
-    csRef<iSpaceFactory>                    spaceFactory;
-    /// The PS factory currently being edited
-    csRef<iParticleSystemFactory>           factory;
-    /// The corresponding emitter factory
-    csRef<iParticleBuiltinEmitterFactory>   emitterFactory;
-    /// The corresponding effector factory
-    csRef<iParticleBuiltinEffectorFactory>  effectorFactory;
-
-    /// Used to edit the general PS propertiees
-    ModifiableEditor*     mainEditor;
-    /// Used to edit the selectid emitter/ effector
-    ModifiableEditor*     secondaryEditor;
-
     void UpdateEmitterList  ();
     void UpdateEffectorList ();
+
+  private:
+    static const int borderWidth = 4; 
+    bool enabled;
+    wxBoxSizer* mainSizer, *middleSizer, *middleLSizer, *middleRSizer;
+    wxListBox *emitterList, *effectorList;
+    csRef<iEditor> editor;
+    csRef<iEventQueue> queue;
+    csRef<iTranslator> translator;
+
+    iObjectRegistry* object_reg;
+    csRef<iSpaceFactory> spaceFactory;
+    /// The PS factory currently being edited
+    csRef<iParticleSystemFactory> factory;
+    /// The corresponding emitter factory
+    csRef<iParticleBuiltinEmitterFactory> emitterFactory;
+    /// The corresponding effector factory
+    csRef<iParticleBuiltinEffectorFactory> effectorFactory;
+
+    /// Used to edit the general PS propertiees
+    ModifiableEditor* mainEditor;
+    /// Used to edit the selectid emitter/ effector
+    ModifiableEditor* secondaryEditor;
+
+    // Various event ids
+    iEventNameRegistry* nameRegistry;
+    csStringID addObject;
+    csStringID clearObjects;
+    csStringID activateObject;
 
     enum {
       idMainEditor = 42,

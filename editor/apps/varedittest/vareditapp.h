@@ -15,12 +15,14 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __VAREDIT_APP_H__
 #define __VAREDIT_APP_H__
 
-#include "wx/wx.h"
+#include "csutil/scf_implementation.h"
+#include "iutil/modifiable.h"
 #include "iutil/objreg.h"
+
+#include <wx/wx.h>
 
 class VarEditTestApp : public wxApp
 {
@@ -34,6 +36,16 @@ public:
 
 private:
   iObjectRegistry* object_reg;   
+};
+
+class ModifiableListener
+: public scfImplementation1<ModifiableListener, CS::Utility::iModifiableListener>
+{
+public:
+  ModifiableListener ()
+    : scfImplementationType (this) {}
+
+  virtual void ValueChanged (CS::Utility::iModifiable* modifiable, size_t parameterIndex);
 };
 
 #endif // __VAREDIT_APP_H__

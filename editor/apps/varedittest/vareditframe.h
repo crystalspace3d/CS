@@ -18,12 +18,6 @@
 #ifndef __VAREDITFRAME_H__
 #define __VAREDITFRAME_H__
 
-#ifndef WX_PRECOMP
-    #include <wx/wx.h>
-    #include <iostream>
-#endif
-
-#include "vareditapp.h"
 #include "cseditor/modifiableeditor.h"
 #include "cseditor/wxpgslider.h"
 #include "cstool/initapp.h"
@@ -32,10 +26,10 @@
 #include "csutil/refarr.h"
 #include "csutil/weakref.h"
 #include "iutil/document.h"
-#include "iutil/event.h"
-#include "iutil/eventq.h"
 #include "iutil/objreg.h"
 #include "ivaria/translator.h"
+
+#include "vareditapp.h"
 
 #include <wx/variant.h>
 
@@ -47,35 +41,32 @@ class ModifiableTestFrame : public wxFrame,
                             public CS::Utility::WeakReferenced
 {
  public:
-  ModifiableTestFrame         (iObjectRegistry* object_reg);
+  ModifiableTestFrame (iObjectRegistry* object_reg);
   ~ModifiableTestFrame ();
 
-  void AddModifiable          (iModifiable* modifiable);
+  void AddModifiable (CS::Utility::iModifiable* modifiable);
   bool Initialize ();
-  void PushFrame ();
 
-  void OnPopulateClick        (wxCommandEvent &event);
-  void OnEsc                  (wxKeyEvent& event);
-	wxPropertyGridManager *     GetManager ();	
+  void OnPopulateClick (wxCommandEvent &event);
+  void OnEsc (wxKeyEvent& event);
+  wxPropertyGridManager* GetManager ();	
 	
  private:
    /// Generates the GUI based on an iModifiable entity
-  void Populate (iModifiable* dataSource);
+  void Populate (CS::Utility::iModifiable* dataSource);
 
-  csRefArray<iModifiable> modifiableEntities;
+  iObjectRegistry* object_reg;
+
+  csRefArray<CS::Utility::iModifiable> modifiableEntities;
   size_t focusedIndex;
 
   // Main window sizer
-  wxBoxSizer *mainsizer;
+  wxBoxSizer* mainsizer;
   // Left/ right sizers
-  wxStaticBoxSizer *left_vsizer;
-  wxStaticBoxSizer *right_vsizer;
+  wxStaticBoxSizer* left_vsizer;
+  wxStaticBoxSizer* right_vsizer;
   
-  wxButton *btnCycle;
-
-  iObjectRegistry* object_reg;
-  static bool GeneralEventHandler (iEvent& ev);
-  bool TestModifiableEvents (iEvent& ev);
+  wxButton* btnCycle;
 	     
 private:
 
@@ -101,17 +92,6 @@ private:
   void OnAbout (wxCommandEvent& event);
 
   DECLARE_EVENT_TABLE ();
-};
-
-class Pump : public wxTimer
-{
-public:
-  csWeakRef<ModifiableTestFrame> s;
-
-  virtual void Notify ()
-  {
-    if (s) s->PushFrame ();
-  }
 };
 
 #endif // __VAREDITFRAME_H__

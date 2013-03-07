@@ -42,7 +42,6 @@ csTestModifiable::csTestModifiable
 {
 }
 
-csTestModifiable::~csTestModifiable () { }
 /*
 const csStringID csTestModifiable::GetID () const
 {
@@ -51,6 +50,7 @@ const csStringID csTestModifiable::GetID () const
   return strings->Request ("csTestModifiable");
 }
 */
+
 csPtr<iModifiableDescription> csTestModifiable::GetDescription (iObjectRegistry* object_reg) const 
 {
   csBasicModifiableDescription* description = new csBasicModifiableDescription ("Player stats");
@@ -228,20 +228,4 @@ void csTestModifiable::AddListener (iModifiableListener* listener)
 void csTestModifiable::RemoveListener (iModifiableListener* listener)
 {
   listeners.Delete (listener);
-}
-
-// -------------------------------- csTestModifiable2 --------------------------------
-
-csTestModifiable2::csTestModifiable2
-(const char* name, const char* job, long itemCount) :
-  scfImplementationType (this),
-  name (name),
-  job (job),
-  itemCount (itemCount),
-  awesome (false),
-  floatThingy (123.55F),
-  position (10, 12),
-  color (0.5f, 0.2f, 0.2f),
-  vfsFile (""), vfsDir (""), vfsPath ("")
-{
 }

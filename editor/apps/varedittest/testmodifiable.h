@@ -18,19 +18,20 @@
 #ifndef __TEST_MODIFIABLE_H__
 #define __TEST_MODIFIABLE_H__
 
-#include "cseditor/modifiableimpl.h"
+#include "csutil/modifiableimpl.h"
 #include "csutil/refarr.h"
+
+using namespace CS::Utility;
 
 // Test modifiable object for the GUI generation.
 // This first version is a full implementation
 class csTestModifiable
-: public scfImplementation1<csTestModifiable, iModifiable>
+: public scfImplementation1<csTestModifiable, CS::Utility::iModifiable>
 {
 public:
   csTestModifiable (const char* name, const char* job, long itemCount);
-  virtual ~csTestModifiable ();
   
-  //-- iModifiable
+  //-- CS::Utility::iModifiable
   //virtual const csStringID GetID () const;
   virtual csPtr<iModifiableDescription> GetDescription (iObjectRegistry* object_reg) const;
 
@@ -60,15 +61,34 @@ private:
   csRefArray<iModifiableListener> listeners;
 };
 
+// Some custom test enum
+enum CustomType
+{
+  VALUE1 = 0,
+  VALUE2,
+  VALUE3,
+  VALUE4,
+};
+
 // This second version of the modifiable object is using the dedicated macro's
 class csTestModifiable2
-: public scfImplementation1<csTestModifiable2, iModifiable>
+: public scfImplementation1<csTestModifiable2, CS::Utility::iModifiable>
 {
 public:
-  csTestModifiable2 (const char* name, const char* job, long itemCount);
-  virtual ~csTestModifiable2 () {}
+  csTestModifiable2 (const char* name, const char* job, long itemCount)
+    : scfImplementationType (this),
+    name (name),
+    job (job),
+    itemCount (itemCount),
+    awesome (false),
+    floatThingy (123.55F),
+    position (10, 12),
+    color (0.5f, 0.2f, 0.2f),
+    vfsFile (""), vfsDir (""), vfsPath (""),
+    customType (VALUE2)
+  {}
   
-  //-- iModifiable
+  //-- CS::Utility::iModifiable
   MODIF_DECLARE ();
 
   MODIF_GETDESCRIPTION_BEGIN ("Player stats");
@@ -87,6 +107,14 @@ public:
       MODIF_GETDESCRIPTION_C (STRING, "PATH", "VFS path", "A VFS path name", csConstraintVfsPath);
     MODIF_GETDESCRIPTION_CHILD_END ();
   MODIF_GETDESCRIPTION_CHILD_END ();
+  MODIF_GETDESCRIPTION_CHILD_BEGIN ("Other stats (cont'd)");
+    MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+    MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE1, "Value 1");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE2, "Value 2");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE3, "Value 3");
+    MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE4, "Value 4");
+    MODIF_GETDESCRIPTION_CENUM (LONG, "ENUM", "Enumeration", "An enumeration of values of type 'int'");
+  MODIF_GETDESCRIPTION_CHILD_END ();
   MODIF_GETDESCRIPTION_END ();
 
   MODIF_GETPARAMETERVALUE_BEGIN ();
@@ -100,6 +128,7 @@ public:
   MODIF_GETPARAMETERVALUE (7, String, vfsFile);
   MODIF_GETPARAMETERVALUE (8, String, vfsDir);
   MODIF_GETPARAMETERVALUE (9, String, vfsPath);
+  MODIF_GETPARAMETERVALUE (10, Long, customType);
   MODIF_GETPARAMETERVALUE_END ();
 
   MODIF_SETPARAMETERVALUE_BEGIN ();
@@ -113,6 +142,7 @@ public:
   MODIF_SETPARAMETERVALUE (7, String, vfsFile);
   MODIF_SETPARAMETERVALUE (8, String, vfsDir);
   MODIF_SETPARAMETERVALUE (9, String, vfsPath);
+  MODIF_SETPARAMETERVALUE_ENUM (10, Long, customType, CustomType);
   MODIF_SETPARAMETERVALUE_END ();
 
 private:
@@ -126,6 +156,40 @@ private:
   csString vfsFile;
   csString vfsDir;
   csString vfsPath;
+  CustomType customType;
+};
+
+class csTestModifiable3
+: public scfImplementation1<csTestModifiable3, CS::Utility::iModifiable>
+{
+public:
+  csTestModifiable3 ()
+    : scfImplementationType (this),
+    customType (VALUE2)
+  {}
+  
+  //-- CS::Utility::iModifiable
+  MODIF_DECLARE ();
+
+  MODIF_GETDESCRIPTION_BEGIN ("Player stats");
+  MODIF_GETDESCRIPTION_CENUM_DECLARE ();
+  MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE1, "Value 1");
+  MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE2, "Value 2");
+  MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE3, "Value 3");
+  MODIF_GETDESCRIPTION_CENUM_PUSH (VALUE4, "Value 4");
+  MODIF_GETDESCRIPTION_CENUM (LONG, "ENUM", "Enumeration", "An enumeration of values of type 'int'");
+  MODIF_GETDESCRIPTION_END ();
+
+  MODIF_GETPARAMETERVALUE_BEGIN ();
+  MODIF_GETPARAMETERVALUE (0, Long, customType);
+  MODIF_GETPARAMETERVALUE_END ();
+
+  MODIF_SETPARAMETERVALUE_BEGIN ();
+  MODIF_SETPARAMETERVALUE_ENUM (0, Long, customType, CustomType);
+  MODIF_SETPARAMETERVALUE_END ();
+
+private:
+  CustomType customType;
 };
 
 #endif // __TEST_MODIFIABLE_H__

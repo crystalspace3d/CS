@@ -19,12 +19,11 @@
 #ifndef __CS_MESH_BUILTINEFFECTORS_H__
 #define __CS_MESH_BUILTINEFFECTORS_H__
 
+#include "csutil/modifiableimpl.h"
 #include "csutil/scf_implementation.h"
 
 #include "imesh/particles.h"
 #include "iutil/comp.h"
-
-#include "cseditor/modifiableimpl.h"
 
 struct iLight;
 
@@ -69,7 +68,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     scfImplementation3<ParticleEffectorForce,
                        iParticleBuiltinEffectorForce,
                        scfFakeInterface<iParticleEffector>,
-                       iModifiable>
+                       CS::Utility::iModifiable>
   {
   public:
     ParticleEffectorForce (iObjectRegistry* object_reg)
@@ -120,7 +119,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return randomAcceleration;
     }
 
-    //-- iModifiable
+    //-- CS::Utility::iModifiable
     MODIF_DECLARE ();
 
     MODIF_GETDESCRIPTION_BEGIN ("Force effector");
@@ -157,7 +156,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     scfImplementation3<ParticleEffectorLinColor,
                        iParticleBuiltinEffectorLinColor,
                        scfFakeInterface<iParticleEffector>,
-                       iModifiable>
+                       CS::Utility::iModifiable>
   {
   public:
     //-- ParticleEffectorLinColor
@@ -200,7 +199,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return colorList.GetSize ();
     }
 
-    //-- iModifiable
+    //-- CS::Utility::iModifiable
     MODIF_DECLARE ();
 
     MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
@@ -240,7 +239,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     scfImplementation3<ParticleEffectorLinear,
                        iParticleBuiltinEffectorLinear,
                        scfFakeInterface<iParticleEffector>,
-                       iModifiable>
+                       CS::Utility::iModifiable>
   {
   public:
     //-- ParticleEffectorLinear
@@ -290,7 +289,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       return paramList.GetSize ();
     }
 
-    //-- iModifiable
+    //-- CS::Utility::iModifiable
     MODIF_DECLARE ();
 
     MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
@@ -332,7 +331,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     scfImplementation3<ParticleEffectorVelocityField,
                        iParticleBuiltinEffectorVelocityField,
                        scfFakeInterface<iParticleEffector>,
-                       iModifiable>
+                       CS::Utility::iModifiable>
   {
   public:
     ParticleEffectorVelocityField  (iObjectRegistry* object_reg)
@@ -414,7 +413,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
       vparams.DeleteIndex(index);
     }
 
-    //-- iModifiable
+    //-- CS::Utility::iModifiable
     MODIF_DECLARE ();
 
     MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");

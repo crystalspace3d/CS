@@ -15,14 +15,16 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#ifndef __CS_IUTIL_PLUGINCONFIG_H__
-#define __CS_IUTIL_PLUGINCONFIG_H__
+#ifndef __CS_CSUTIL_VARIANT_H__
+#define __CS_CSUTIL_VARIANT_H__
 
 /**\file
- * Plugin configuration interface and variant types
+ * Variant class for generic typing of data.
  */
+
 /**\addtogroup util
  * @{ */
+
 #include "csgeom/matrix3.h"
 #include "csgeom/transfrm.h"
 #include "csgeom/vector2.h"
@@ -33,8 +35,6 @@
 #include "csutil/scfstr.h"
 #include "csutil/array.h"
 
-// TODO: move the variant structs in a separate file
-
 /// Type of the values that can be contained within a csVariant.
 enum csVariantType
 {
@@ -44,23 +44,24 @@ enum csVariantType
   CSVAR_BOOL,
   /// A command. A command has no value, it is just a flag which can be set or not.
   // TODO: command being a constraint of the bool type?
-  //CSVAR_CMD,
+  CSVAR_CMD,
   /// Float type
   CSVAR_FLOAT,
   /// Double-precision floating point number
   //CSVAR_DOUBLE,
   /// String type
   CSVAR_STRING,
-  /// csColor type
-  CSVAR_COLOR,
-  /// csColor4 type
-  CSVAR_COLOR4,
   /// csVector2 type
   CSVAR_VECTOR2,
   /// csVector3 type
   CSVAR_VECTOR3,
   /// csVector4 type
   CSVAR_VECTOR4,
+  /// csColor type
+  // TODO: color being a constraint of csVector
+  CSVAR_COLOR,
+  /// csColor4 type
+  CSVAR_COLOR4,
   /// A key-value pair
   //CSVAR_KEYVAL,
   /// csMatrix3 type
@@ -183,6 +184,12 @@ public:
     Clear ();
     type = CSVAR_BOOL;
     val.b = b;
+  }
+  /// Assign a command. A command has no value, it is just a flag which can be set or not.
+  void SetCommand ()
+  {
+    Clear();
+    type = CSVAR_CMD;
   }
   /// Assign a float
   void SetFloat (float f)
@@ -346,47 +353,47 @@ public:
   /// Get the type of the contained value. The default value is CSVAR_CMD.
   csVariantType GetType () const { return type; }
 
-  /// Prints out a variant's value; used in debugging.
-  // TODO: convert to "csString csVariant::Description() const"
-  void PrintVariant (csVariant* variant)
+  /// Return a textual description of this variant.
+  csString Description() const
   {
-    switch (variant->GetType ())
+    csString s;
+    switch (type)
     {
     case CSVAR_LONG:
-      printf ("[variant type: long value: %li]", variant->GetLong ());
-      break;
-    case CSVAR_FLOAT:
-      printf ("[variant type: float value: %f]", variant->GetFloat ());
+      s.Format ("[variant type: long value: %li]", val.l);
       break;
     case CSVAR_BOOL:
-      printf ("[variant type: bool value: %i]", variant->GetBool ());
+      s.Format ("[variant type: bool value: %i]", val.b);
+      break;
+    case CSVAR_FLOAT:
+      s.Format ("[variant type: float value: %f]", val.f[0]);
       break;
     case CSVAR_STRING:
-      printf ("[variant type: string value: %s]", variant->GetString ());
-      break;
-    case CSVAR_VECTOR3 :
-      printf ("[variant type: vector3 value: %f ; %f ; %f]",
-	      variant->GetVector3 ().x, variant->GetVector3 ().y, variant->GetVector3 ().z);
+      s.Format ("[variant type: string value: %s]", val.s->GetData ());
       break;
     case CSVAR_VECTOR2 :
-      printf ("[variant type: vector2 value: %f ; %f]",
-	      variant->GetVector2 ().x, variant->GetVector2 ().y);
+      s.Format ("[variant type: vector2 value: %f ; %f]",
+		val.f[0], val.f[1]);
+      break;
+    case CSVAR_VECTOR3 :
+      s.Format ("[variant type: vector3 value: %f ; %f ; %f]",
+		val.f[0], val.f[1], val.f[2]);
       break;
     case CSVAR_VECTOR4 :
-      printf ("[variant type: vector4 value: %f ; %f ; %f ; %f]",
-	      variant->GetVector4 ().x, variant->GetVector4 ().y,
-	      variant->GetVector4 ().z, variant->GetVector4 ().w);
+      s.Format ("[variant type: vector4 value: %f ; %f ; %f ; %f]",
+		val.f[0], val.f[1], val.f[2], val.f[3]);
       break;
     case CSVAR_COLOR :
-    {
-      csColor col = variant->GetColor ();
-      printf ("[variant type: color value: %f ; %f ; %f]", col[0], col[1], col[2]);
-    }
+      s.Format ("[variant type: color value: %f ; %f ; %f]",
+		val.f[0], val.f[1], val.f[2]);
+    case CSVAR_COLOR4 :
+      s.Format ("[variant type: color value: %f ; %f ; %f ; %f]",
+		val.f[0], val.f[1], val.f[2], val.f[3]);
     break;
     case CSVAR_IBASE:
 /*
-      csRef<iObject> asObj = scfQueryInterface<iObject>(variant->GetIBase ());
-      printf ("[variant type: iBase pointer, name: %s]\n", 
+      csRef<iObject> asObj = scfQueryInterface<iObject>(GetIBase ());
+      s.Format ("[variant type: iBase pointer, name: %s]\n", 
 	      asObj.IsValid () ? asObj->GetName () : "unknown");
 */
       break;
@@ -394,91 +401,12 @@ public:
       // TODO
       break;
     }
+
+    return s;
   }
 };
 
-/// Description of a configuration option, to be used by the iPluginConfig interfaces
-struct csOptionDescription
-{
-  /// Description index (or ID)
-  int id;
-  /// Short name of this option.
-  csString name;
-  /// Description for this option.
-  csString description;
-  /// Type to use for this option.
-  csVariantType type;
-
-  /// Constructor
-  csOptionDescription () {}
-
-  /**
-   * Constructor
-   * \param id Description index (or ID)
-   * \param name Short name of this option.
-   * \param description Description for this option.
-   * \param type Type to use for this option.
-   */
-  csOptionDescription (int id, const char* name, const char* description, csVariantType type)
-  : id (id), name (name), description (description), type (type) {}
-
-  /**
-   * Constructor
-   * \param name Short name of this option.
-   * \param description Description for this option.
-   * \param type Type to use for this option.
-   * \warning The \a id is initialized to 0 in this constructor!
-   */
-  csOptionDescription (const char* name, const char* description, csVariantType type)
-  : id (0), name (name), description (description), type (type) {}
-
-  ~csOptionDescription () {}
-};
-
-/**
- * Interface to a configurator object. If a SCF module
- * has an object implementing this interface then this can
- * be used to query or set configuration options.
- *
- * Main creators of instances implementing this interface:
- * - Some plugins implement this.
- * 
- * Main ways to get pointers to this interface:
- * - scfQueryInterface() from a plugin instance.
- * 
- * Main users of this interface:
- * - csCommandLineHelper
- * - csPluginManager
- */
-struct iPluginConfig : public virtual iBase
-{
-  SCF_INTERFACE (iPluginConfig,2,1,0);
-
-  /**
-   * Get the description of the option of index \a idx. Return \a false if this
-   * option does not exist, true otherwise.
-   * \param index The index of the option
-   * \param option The returned description of the option
-   */
-  virtual bool GetOptionDescription (int index, csOptionDescription* option) = 0;
-
-  /**
-   * Set the value of the option of index \a idx. Return \a false if this
-   * option does not exist, true otherwise.
-   * \param index The index of the option
-   * \param value The new value to be set for the option
-   */
-  virtual bool SetOption (int index, csVariant* value) = 0;
-
-  /**
-   * Get the value of the option of index \a idx. Return \a false if this
-   * option does not exist, true otherwise.
-   * \param index The index of the option
-   * \param value A variant where to store the value of the option
-   */
-  virtual bool GetOption (int index, csVariant* value) = 0;
-};
 /** @} */
 
+#endif // __CS_CSUTIL_VARIANT_H__
 
-#endif // __CS_IUTIL_PLUGINCONFIG_H__

@@ -27,6 +27,7 @@
 #include "csutil/sysfunc.h"
 #include "ieditor/context.h"
 #include "ieditor/operator.h"
+#include "imap/reader.h"
 #include "imesh/object.h"
 #include "imesh/objmodel.h"
 #include "imesh/particles.h"
@@ -64,13 +65,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
   // the fact that the wxPanel is the first class being inherited, there
   // shouldn't be any problems.
   BEGIN_EVENT_TABLE (CSPartEditSpace, wxPanel)
-    EVT_SIZE  (                       CSPartEditSpace::OnSize)
-    EVT_BUTTON (idButtonAddEmitter,    CSPartEditSpace::OnButtonAddEmitter)
+    EVT_SIZE  (CSPartEditSpace::OnSize)
+    EVT_BUTTON (idButtonAddEmitter, CSPartEditSpace::OnButtonAddEmitter)
     EVT_BUTTON (idButtonRemoveEmitter, CSPartEditSpace::OnButtonRemoveEmitter)
-    EVT_BUTTON (idButtonAddEffector,   CSPartEditSpace::OnButtonAddEffector)
-    EVT_BUTTON (idButtonRemoveEffector,CSPartEditSpace::OnButtonRemoveEffector)
-    EVT_LISTBOX (idEmitterList,        CSPartEditSpace::OnEmitterSelect)
-    EVT_LISTBOX (idEffectorList,       CSPartEditSpace::OnEffectorSelect)
+    EVT_BUTTON (idButtonAddEffector, CSPartEditSpace::OnButtonAddEffector)
+    EVT_BUTTON (idButtonRemoveEffector, CSPartEditSpace::OnButtonRemoveEffector)
+    EVT_LISTBOX (idEmitterList, CSPartEditSpace::OnEmitterSelect)
+    EVT_LISTBOX (idEffectorList, CSPartEditSpace::OnEffectorSelect)
   END_EVENT_TABLE ()
 
   SCF_IMPLEMENT_FACTORY (CSPartEditSpace)
@@ -90,7 +91,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     delete secondaryEditor;
   }
 
-  bool CSPartEditSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor, iSpaceFactory* fact, wxWindow* parent)
+  bool CSPartEditSpace::Initialize (iObjectRegistry* obj_reg, iEditor* editor,
+				    iSpaceFactory* fact, wxWindow* parent)
   {
     object_reg = obj_reg;
     this->editor = editor;
@@ -100,13 +102,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     // Initializes the wxPanel part of the space
     Create (parent);
 
-    // Load PS plugins
+    // Load the particle plugins
     csRef<iPluginManager> pluginManager = csQueryRegistry<iPluginManager> (object_reg);
-
-    // Load translator and document system plugins
-    emitterFactory = csLoadPlugin<iParticleBuiltinEmitterFactory>(pluginManager, "crystalspace.mesh.object.particles.emitter");
-
-    effectorFactory = csLoadPlugin<iParticleBuiltinEffectorFactory>(pluginManager, "crystalspace.mesh.object.particles.effector");      
+    emitterFactory = csLoadPlugin<iParticleBuiltinEmitterFactory>
+      (pluginManager, "crystalspace.mesh.object.particles.emitter");
+    effectorFactory = csLoadPlugin<iParticleBuiltinEffectorFactory>
+      (pluginManager, "crystalspace.mesh.object.particles.effector");      
 
     // Setup the event names
     nameRegistry = csEventNameRegistry::GetRegistry (object_reg);
@@ -118,11 +119,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     //csEventID contextSelect = nameRegistry->GetID ("crystalspace.editor.context");
     RegisterQueue (editor->GetContext ()->GetEventQueue (), activateObject);
     
-    // Prepare translations 
-    translator = csQueryRegistry<iTranslator>(object_reg);    
-    
     // Prepare modifiable editors
-    mainEditor = new ModifiableEditor (object_reg, this, idMainEditor, wxDefaultPosition, parent->GetSize (), 0L, wxT ("Modifiable editor"));
+    mainEditor = new ModifiableEditor (object_reg, this, idMainEditor, wxDefaultPosition,
+				       parent->GetSize (), 0L, wxT ("Modifiable editor"));
     mainSizer->Add (mainEditor, 1, wxEXPAND | wxALL, borderWidth);
     SetSizer (mainSizer);
     mainSizer->SetSizeHints (this);
@@ -217,7 +216,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
     //csString entityName (result->GetName ());
 
-    csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper>(result);
+    csRef<iMeshFactoryWrapper> fac = scfQueryInterface<iMeshFactoryWrapper> (result);
     if (!fac)
     {
       Empty (wxT ("No mesh factory selected."));
@@ -225,14 +224,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     }
 
     csRef<iParticleSystemFactory> partSys =
-      scfQueryInterface<iParticleSystemFactory>(fac->GetMeshObjectFactory ()); 
+      scfQueryInterface<iParticleSystemFactory> (fac->GetMeshObjectFactory ()); 
     if (!partSys)
     {
       Empty (wxT ("No particle system selected."));
       return;
     }
 
-    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable>(fac->GetMeshObjectFactory ());  
+    csRef<iModifiable> modifiable = scfQueryInterface<iModifiable> (fac->GetMeshObjectFactory ());  
     if (!modifiable)
     {
       Empty (wxT ("Selected particle system is non-standard and doesn't implement iModifiable. It cannot be edited."));
@@ -273,7 +272,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
 
   bool CSPartEditSpace::HandleEvent (iEvent& event)
   {
-    csRef<iEventNameRegistry> strings = csQueryRegistry<iEventNameRegistry>( object_reg );
+    csRef<iEventNameRegistry> strings = csQueryRegistry<iEventNameRegistry> ( object_reg );
 
 #ifdef CS_DEBUG
     printf ("\tCaught event: %s (ID #%u)\n",
@@ -299,7 +298,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     // Add the emitter to the actual previewed mesh
     csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
     iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
-    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem> (mesh->GetMeshObject ());
     sys->AddEmitter (em);
   }
 
@@ -313,7 +312,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     // Remove the emitter from the actual previewed mesh
     csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
     iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
-    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem> (mesh->GetMeshObject ());
     sys->RemoveEmitter (event.GetSelection ());
   }
 
@@ -327,7 +326,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     // Add the effector to the actual previewed mesh
     csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
     iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
-    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem> (mesh->GetMeshObject ());
     sys->AddEffector (eff);
   }
 
@@ -341,15 +340,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     // Remove the effector from the actual previewed mesh
     csRef<iEngine> engine = csQueryRegistry<iEngine> (object_reg);
     iMeshWrapper* mesh = engine->FindMeshObject ("viewmesh");
-    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem>(mesh->GetMeshObject ());
+    csRef<iParticleSystem> sys = scfQueryInterface<iParticleSystem> (mesh->GetMeshObject ());
     sys->RemoveEffector (event.GetSelection ());
   }
 
   void CSPartEditSpace::OnEmitterSelect ( wxCommandEvent& event )
   {
     effectorList->DeselectAll ();
-    iParticleEmitter* emt = static_cast<iParticleEmitter*>(emitterList->GetClientData (event.GetSelection ()));
-    csRef<iModifiable> mod = scfQueryInterface<iModifiable>(emt);
+    iParticleEmitter* emt = static_cast<iParticleEmitter*> (emitterList->GetClientData (event.GetSelection ()));
+    csRef<iModifiable> mod = scfQueryInterface<iModifiable> (emt);
 
     if (mod.IsValid ()) {
       secondaryEditor->SetModifiable (mod);
@@ -365,8 +364,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
   void CSPartEditSpace::OnEffectorSelect ( wxCommandEvent& event )
   {
     emitterList->DeselectAll ();
-    iParticleEffector* eff = static_cast<iParticleEffector*>(effectorList->GetClientData (event.GetSelection ()));
-    csRef<iModifiable> mod = scfQueryInterface<iModifiable>(eff);
+    iParticleEffector* eff = static_cast<iParticleEffector*> (effectorList->GetClientData (event.GetSelection ()));
+    csRef<iModifiable> mod = scfQueryInterface<iModifiable> (eff);
 
     if (mod.IsValid ()) {
       secondaryEditor->SetModifiable (mod);
@@ -396,5 +395,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
       effectorList->Append (wxString::Format (wxT ("Effector #%u"), i), (void*)em);
     }
   }
+
 }
 CS_PLUGIN_NAMESPACE_END (CSEditor)

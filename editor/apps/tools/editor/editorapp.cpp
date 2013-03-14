@@ -133,7 +133,6 @@ bool EditorApplication::OnInit (void)
   iComponentManager* componentManager = editor->GetComponentManager ();
 
   if (!componentManager->RegisterComponent ("crystalspace.editor.component.logger")) return false;
-  if (!componentManager->RegisterComponent ("crystalspace.editor.component.translation")) return false;
   if (!componentManager->RegisterComponent ("crystalspace.editor.component.engine")) return false;
   if (!componentManager->RegisterComponent ("crystalspace.editor.component.undoredo")) return false;
   if (!componentManager->RegisterComponent ("crystalspace.editor.component.perspectives")) return false;

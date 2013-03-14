@@ -85,11 +85,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (CSEditor)
     wxListBox *emitterList, *effectorList;
     csRef<iEditor> editor;
     csRef<iEventQueue> queue;
-    csRef<iTranslator> translator;
 
     iObjectRegistry* object_reg;
     csRef<iSpaceFactory> spaceFactory;
-    /// The PS factory currently being edited
+    /// The particle system factory currently being edited
     csRef<iParticleSystemFactory> factory;
     /// The corresponding emitter factory
     csRef<iParticleBuiltinEmitterFactory> emitterFactory;

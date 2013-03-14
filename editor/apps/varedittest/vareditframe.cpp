@@ -114,10 +114,12 @@ ModifiableTestFrame::ModifiableTestFrame (iObjectRegistry* object_reg )
 
   //------------------------------------------
 
-  btnCycle = new wxButton (this, idBtnTest1, wxT ("Cycle through nodes"), wxDefaultPosition, wxDefaultSize, 0);
+  btnCycle = new wxButton (this, idBtnTest1, wxT ("Cycle through nodes"),
+			   wxDefaultPosition, wxDefaultSize, 0);
   left_vsizer->Add (btnCycle);
   SetSizer (mainsizer);
- 
+
+  // Create the modifiable editor
   modifiableEditor = new CS::EditorApp::ModifiableEditor (object_reg,
 							  this,
 							  wxID_ANY,
@@ -126,6 +128,10 @@ ModifiableTestFrame::ModifiableTestFrame (iObjectRegistry* object_reg )
 							  0L,
 							  wxT ("Modifiable editor") );
   mainsizer->Add (modifiableEditor, 1, wxEXPAND | wxALL, 10);
+
+  // Setup the data path where reside the translations of the description of the
+  // modifiable objects
+  modifiableEditor->SetResourcePath ("/data/varedittest");
 }
 
 ModifiableTestFrame::~ModifiableTestFrame ()
@@ -173,8 +179,18 @@ void ModifiableTestFrame::OnEsc (wxKeyEvent& event)
 
 void ModifiableTestFrame::OnAbout (wxCommandEvent &event)
 {
-  // TODO: more pertinent info message
-  wxString msg = wxT ("This demo has been compiled using the ");
+  csString message;
+  message.Format (
+    "Test application for the automated generation of a Graphical User Interface "
+    "from iModifiable objects.\n\n"
+    "The translation language to be used for this application is defined system-widely "
+    "in the file %s. The list of languages that are available for the application are "
+    "defined in %s and are %s, %s and %s.\n\n"
+    "This demo has been compiled using the ", CS::Quote::Single ("data/config-plugins/translator.cfg"),
+    CS::Quote::Single ("data/varedittest"),
+    CS::Quote::Single ("en"), CS::Quote::Single ("de"), CS::Quote::Single ("fr"));
+
+  wxString msg (message, wxConvUTF8);
   msg += wxbuildinfo (long_f);
   msg += wxT (".");
   wxMessageBox (msg, _("varedittest"));

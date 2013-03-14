@@ -20,11 +20,12 @@
 #include "cseditor/wxpgslider.h"
 #include "csgeom/vector3.h"
 #include "csutil/cscolor.h"
+#include "imap/reader.h"
 #include "iutil/modifiable.h"
 #include "iutil/objreg.h"
+#include "iutil/plugin.h"
+#include "iutil/stringarray.h"
 #include "ivaria/translator.h"
-
-#include <wx/variant.h>
 
 using namespace CS::Utility;
 
@@ -199,11 +200,26 @@ EVT_PG_CHANGED (pageId, ModifiableEditor::OnPropertyGridChanged)
 EVT_SIZE (ModifiableEditor::OnSize)
 END_EVENT_TABLE ()
 
-ModifiableEditor::ModifiableEditor
-(iObjectRegistry* object_reg, wxWindow* parent, wxWindowID id, const wxPoint& position,
- const wxSize& size, long style, const wxString& name)
-: wxPanel (parent, id, position, size, style, name), object_reg (object_reg)
+bool ModifiableEditor::ReportError (const char* description, ...)
 {
+  va_list arg;
+  va_start (arg, description);
+  csReportV (objectRegistry, CS_REPORTER_SEVERITY_ERROR,
+	     "cseditor.modifiable.editor",
+	     description, arg);
+  va_end (arg);
+  return false;
+}
+
+ModifiableEditor::ModifiableEditor
+(iObjectRegistry* objectRegistry, wxWindow* parent, wxWindowID id, const wxPoint& position,
+ const wxSize& size, long style, const wxString& name)
+: wxPanel (parent, id, position, size, style, name), objectRegistry (objectRegistry),
+resourcePath ("")
+{
+  pluginManager = csQueryRegistry<iPluginManager> (objectRegistry);
+  if (!pluginManager) ReportError ("Could not find the plugin manager!");
+
   // Since the PG components are being dynamically loaded, this function never gets
   // to be run and initialize the wxpg resource module, causing some pretty nasty
   // errors (on Windows, at least)
@@ -225,15 +241,37 @@ ModifiableEditor::ModifiableEditor
   pgMananager->SetPropertyAttributeAll (wxPG_BOOL_USE_CHECKBOX, true);
   pgMananager->SetDescBoxHeight (56, true);
 
-  // Get the iTranslator, to attempt to fetch existing translations of
-  // the parameter names and descriptions
-  translator = csQueryRegistry<iTranslator> (object_reg);  
+  // Load the translator loader plugin
+  translatorLoader = csLoadPlugin<iLoaderPlugin>
+    (pluginManager, "crystalspace.translator.loader.xml");
+  if (!translatorLoader) ReportError ("Could not find the translator loader plugin!");
+}
+
+void ModifiableEditor::SetResourcePath (const char* path)
+{
+  resourcePath = path;
 }
 
 void ModifiableEditor::SetModifiable (iModifiable* modifiable) 
 {
   this->modifiable = modifiable;
-  description = modifiable->GetDescription (object_reg);
+  description = modifiable->GetDescription (objectRegistry);
+
+  // Create a new translator and parse the translation data of the given modifiable
+  translator = csLoadPlugin<iTranslator>
+    (pluginManager, "crystalspace.translator.standard");
+  if (!translator) ReportError ("Could not load the translator plugin!");
+  else
+  {
+    iStringArray* resources = description->GetResources ();
+    csString path;
+    for (size_t i = 0; i < resources->GetSize (); i++)
+    {
+      // TODO: stronger path building
+      path.Format ("%s/%s.xml", resourcePath.GetData (), resources->Get (i));
+      translator->LoadTranslation (path, translatorLoader);
+    }
+  }
 
   // Clear all pages from the page manager and re-initialize it
   pgMananager->Clear ();
@@ -260,8 +298,13 @@ void ModifiableEditor::Append
   if (!category)
   {
     root = true;
-    wxString categoryName (description->GetName (), wxConvUTF8);
-    category = new wxPropertyCategory (categoryName);
+
+    csString key = description->GetLabel ();
+    csString value = translator->GetMsg (key, false);
+    if (!value) value = description->GetName ();
+ 
+    wxString name (value, wxConvUTF8);
+    category = new wxPropertyCategory (name);
     page->Append (category);
   }
 
@@ -272,12 +315,24 @@ void ModifiableEditor::Append
     csVariant variant;
     modifiable->GetParameterValue (i + offset, variant);
     //CS_ASSERT_MSG ("iModifiable object must return a value for each valid parameter id!", variant != nullptr);
-    wxString originalName (param->GetName (), wxConvUTF8);
-    wxString translation (translator->GetMsg (param->GetName ()), wxConvUTF8);
-    wxString desc (param->GetDescription (), wxConvUTF8);
+
+    // Search for the translations
+    wxString label (param->GetLabel (), wxConvUTF8);
+
+    csString key = param->GetLabel ();
+    key += ".NAME";
+    csString value = translator->GetMsg (key, false);
+    if (!value) value = param->GetName ();
+    wxString name (value, wxConvUTF8);
+
+    key = param->GetLabel ();
+    key += ".DESC";
+    value = translator->GetMsg (key, false);
+    if (!value) value = param->GetDescription ();
+    wxString description (value, wxConvUTF8);
 
     AppendVariant (category, &variant, i + offset, param->GetConstraint (),
-		   originalName, translation, desc);
+		   label, name, description);
   }
 
   // Add all children
@@ -286,8 +341,12 @@ void ModifiableEditor::Append
   {
     iModifiableDescription* child = description->GetChild (i);
 
-    wxString categoryName (child->GetName (), wxConvUTF8);
-    wxPropertyCategory* childCategory = new wxPropertyCategory (categoryName);
+    csString key = child->GetLabel ();
+    csString value = translator->GetMsg (key, false);
+    if (!value) value = child->GetName ();
+ 
+    wxString name (value, wxConvUTF8);
+    wxPropertyCategory* childCategory = new wxPropertyCategory (name);
 
     if (root) page->Append (childCategory);
     else category->AppendChild (childCategory);
@@ -300,7 +359,7 @@ void ModifiableEditor::Append
 
 void ModifiableEditor::AppendVariant
 (wxPGPropArg categoryID, csVariant* variant, size_t index, iModifiableConstraint* constraint,
- const wxString& originalName, const wxString& translatedName, const wxString& translatedDescription)
+ const wxString& label, const wxString& name, const wxString& description)
 {
   switch (variant->GetType ())
   {
@@ -308,7 +367,7 @@ void ModifiableEditor::AppendVariant
   {
     wxString stringValue (variant->GetString (), wxConvUTF8);
 
-    wxStringProperty* stringP = new wxStringProperty (translatedName, originalName);
+    wxStringProperty* stringP = new wxStringProperty (name, label);
     page->AppendIn (categoryID, stringP);
     indexes.Put (stringP, index);
     stringP->SetValue (stringValue);
@@ -324,6 +383,8 @@ void ModifiableEditor::AppendVariant
       csRef<iModifiableConstraintEnum> ec =
 	scfQueryInterface<iModifiableConstraintEnum> (constraint);
 
+      // TODO: translations of the enum labels
+
       wxArrayInt values;
       wxArrayString labels;
       for (size_t i = 0; i < ec->GetValueCount (); i++)
@@ -332,8 +393,8 @@ void ModifiableEditor::AppendVariant
 	labels.Add (wxString (ec->GetLabel (i), wxConvUTF8));
       }
 
-      wxEnumProperty* enumP = new wxEnumProperty (translatedName,
-						  originalName,
+      wxEnumProperty* enumP = new wxEnumProperty (name,
+						  label,
 						  labels,
 						  values,
 						  (int)variant->GetLong ()); 
@@ -344,7 +405,7 @@ void ModifiableEditor::AppendVariant
     {
       // Plain old text field
       wxString longValue = wxString::Format (wxT ("%ld"), (int) variant->GetLong ());
-      wxIntProperty* intP = new wxIntProperty (translatedName, originalName);
+      wxIntProperty* intP = new wxIntProperty (name, label);
       page->AppendIn (categoryID, intP);
       indexes.Put (intP, index);
       // Needed to actually refresh the grid and show the value
@@ -359,7 +420,7 @@ void ModifiableEditor::AppendVariant
     double value = variant->GetFloat ();
 
     // Generate a homebrewed slider
-    wxFloatProperty* fp = new wxFloatProperty (translatedName, originalName, value);
+    wxFloatProperty* fp = new wxFloatProperty (name, label, value);
     float min = 0, max = 100;
     if (constraint != nullptr && constraint->GetType () == MODIFIABLE_CONSTRAINT_BOUNDED) {
       // Set the slider limits
@@ -378,7 +439,7 @@ void ModifiableEditor::AppendVariant
 
   case CSVAR_BOOL:
   {
-    wxBoolProperty* boolP = new wxBoolProperty (translatedName, originalName);
+    wxBoolProperty* boolP = new wxBoolProperty (name, label);
     boolP->SetValue (variant->GetBool ());
     page->AppendIn (categoryID, boolP);
     indexes.Put (boolP, index);
@@ -393,7 +454,7 @@ void ModifiableEditor::AppendVariant
     int blue  = colorValue[1] * 255;
     int green = colorValue[2] * 255;
     wxColourProperty* colorP = new wxColourProperty
-      (translatedName, originalName, wxColour (red, blue, green));
+      (name, label, wxColour (red, blue, green));
     page->AppendIn (categoryID, colorP);
     indexes.Put (colorP, index);
   }
@@ -405,7 +466,7 @@ void ModifiableEditor::AppendVariant
     double x = vector2Value.x;
     double y = vector2Value.y;
     wxVector2Property* vector2P = new wxVector2Property
-      (translatedName, originalName ,wxVector2f (x,y));
+      (name, label ,wxVector2f (x,y));
     page->AppendIn (categoryID, vector2P);
     indexes.Put (vector2P, index);
   }
@@ -418,7 +479,7 @@ void ModifiableEditor::AppendVariant
     double y = vector3Value.y;
     double z = vector3Value.z;
     wxVectorProperty* vector3P = new wxVectorProperty
-      (translatedName, originalName, wxVector3f (x,y,z));
+      (name, label, wxVector3f (x,y,z));
     page->AppendIn (categoryID, vector3P);
     indexes.Put (vector3P, index);
   }
@@ -432,7 +493,7 @@ void ModifiableEditor::AppendVariant
     double z = vector4Value.z;
     double w = vector4Value.w;
     wxVector4Property* vector4P = new wxVector4Property
-      (translatedName, originalName, wxVector4f (x,y,z,w));
+      (name, label, wxVector4f (x,y,z,w));
     page->AppendIn (categoryID, vector4P);
     indexes.Put (vector4P, index);
   }
@@ -456,11 +517,11 @@ void ModifiableEditor::AppendVariant
 
   } // end switch
       
-  if (page->GetProperty (originalName))
-    page->SetPropertyHelpString (originalName, translatedDescription);
+  if (page->GetProperty (label))
+    page->SetPropertyHelpString (label, description);
   else {
     // Needed in order to print out the wide char type from GetData
-    wprintf (wxT ("Couldn't find property with name: %s \n"), originalName.GetData ());
+    wprintf (wxT ("Couldn't find property with name: %s \n"), label.GetData ());
   }
 }
 

@@ -15,14 +15,14 @@
   License along with this library; if not, write to the Free
   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#ifndef MODIFIABLE_IMPL_H
-#define MODIFIABLE_IMPL_H
+#ifndef __CSUTIL_MODIFIABLE_IMPL_H
+#define __CSUTIL_MODIFIABLE_IMPL_H
 
 #include "iutil/modifiable.h"
 #include "iutil/objreg.h"
-#include "iutil/stringarray.h"
 #include "csutil/refarr.h"
 #include "csutil/regexp.h"
+#include "csutil/scfstringarray.h"
 #include "csutil/stringarray.h"
 
 using namespace CS::Utility;
@@ -32,109 +32,165 @@ namespace Utility {
 
 // TODO: using such macros is both tiresome and error-prone.
 // Maybe use instead a XML description + a compiler for the code generation?
-#define MODIF_DECLARE()\
-  csRefArray<iModifiableListener> listeners;		\
-  virtual void GetParameterValue (size_t parameterIndex, size_t arrayIndex, csVariant& value) const {}\
-  virtual bool SetParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)\
-  {return false;}\
-  virtual bool PushParameterValue (size_t parameterIndex, const csVariant& value)\
-  {return false;}\
-  virtual bool DeleteParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)\
-  {return false;}\
-  virtual void AddListener (iModifiableListener* listener) {listeners.Push (listener);}\
-  virtual void RemoveListener (iModifiableListener* listener) {listeners.Delete (listener);}
+#define MODIF_DECLARE(count)						\
+  virtual inline size_t GetTotalParameterCount () const { return count; } \
+  csRefArray<iModifiableListener> listeners;				\
+  virtual inline void AddListener (iModifiableListener* listener) {listeners.Push (listener);} \
+  virtual inline void RemoveListener (iModifiableListener* listener) {listeners.Delete (listener);}
+  
+#define MODIF_GETDESCRIPTION_BEGIN(label, name)				\
+  csPtr<iModifiableDescription> GetDescription (iObjectRegistry* object_reg) const \
+  {									\
+    csBasicModifiableDescription* description = new csBasicModifiableDescription (label, name); \
+    csRef<csBasicModifiableParameter> parameter;			\
+    csRef<iModifiableConstraint> constraint;				\
+    csRef<iStringSet> strings =						\
+      csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset"); \
+    csStringID id;
 
-#define MODIF_GETDESCRIPTION_BEGIN(name)		\
-csPtr<iModifiableDescription> GetDescription (iObjectRegistry* object_reg) const\
-{\
-  csBasicModifiableDescription* description = new csBasicModifiableDescription (name);\
-  csRef<csBasicModifiableParameter> parameter;\
-  csRef<iModifiableConstraint> constraint;\
-  csRef<iStringSet> strings =\
-    csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset");\
-  csStringID id;
+#define MODIF_GETDESCRIPTION_END()		\
+  return description;				\
+}
 
-#define MODIF_GETDESCRIPTION(type, id, name, desc)\
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (id), name, desc));\
+#define MODIF_GETDESCRIPTION(type, label, name, desc)			\
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (label), label, name, desc)); \
   description->Push (parameter);
 
-#define MODIF_GETDESCRIPTION_C(type, id, name, desc, constr)\
-  constraint.AttachNew (new constr);\
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (id), name, desc, constraint));\
+#define MODIF_GETDESCRIPTION_C(type, label, name, desc, constr)		\
+  constraint.AttachNew (new constr);					\
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (label), label, name, desc, constraint)); \
   description->Push (parameter);
 
-#define MODIF_GETDESCRIPTION_CENUM_DECLARE()\
-  {csRef<csConstraintEnum> constraint;\
+#define MODIF_GETDESCRIPTION_CENUM_DECLARE()	\
+  {csRef<csConstraintEnum> constraint;		\
   constraint.AttachNew (new csConstraintEnum);
 
-#define MODIF_GETDESCRIPTION_CENUM_PUSH(value, desc)\
+#define MODIF_GETDESCRIPTION_CENUM_PUSH(value, desc)	\
   constraint->PushValue (value, desc);
 
-#define MODIF_GETDESCRIPTION_CENUM(type, id, name, desc)\
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (id), name, desc, constraint));\
+#define MODIF_GETDESCRIPTION_CENUM(type, label, name, desc)		\
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_##type, strings->Request (label), label, name, desc, constraint)); \
   description->Push (parameter);}
 
-#define MODIF_GETDESCRIPTION_END()\
-  return description;\
-}
+#define MODIF_GETDESCRIPTION_PARENT(parent)				\
+  {									\
+    csRef<iModifiableDescription> child = parent::GetDescription (object_reg); \
+    iStringArray* resources = child->GetResources ();			\
+    for (size_t i = 0; i < resources->GetSize (); i++)			\
+      description->Push (resources->Get (i));				\
+    csBasicModifiableDescription* csChild =				\
+      static_cast<csBasicModifiableDescription*> ((iModifiableDescription*) child); \
+    description->Push (csChild);					\
+  }
 
-#define MODIF_GETDESCRIPTION_CHILD_BEGIN(name)\
-  {\
-  csRef<csBasicModifiableDescription> child;\
-  child.AttachNew (new csBasicModifiableDescription (name));\
-  description->Push (child);\
-  {\
-    csBasicModifiableDescription* description = child;
+#define MODIF_GETDESCRIPTION_CHILD_BEGIN(label, name)			\
+  {									\
+    csRef<csBasicModifiableDescription> child;				\
+    child.AttachNew (new csBasicModifiableDescription (label, name));	\
+    description->Push (child);						\
+    {									\
+      csBasicModifiableDescription* description = child;
 
-#define MODIF_GETDESCRIPTION_CHILD_END()\
+#define MODIF_GETDESCRIPTION_CHILD_END()	\
   }}
 
-#define MODIF_GETPARAMETERVALUE_BEGIN()\
-void GetParameterValue (size_t index, csVariant& value) const\
-{\
-  switch (index)\
-  {
+#define MODIF_GETDESCRIPTION_RESOURCE(resource)	\
+  description->Push (resource);
+
+#define MODIF_GETPARAMETERVALUE_BEGIN()				\
+  void GetParameterValue (size_t index, csVariant& value) const	\
+  {								\
+    switch (index)						\
+    {
+
+#define MODIF_GETPARAMETERVALUE_END()		\
+  default:					\
+    break;					\
+}						\
+}
 
 #define MODIF_GETPARAMETERVALUE(id, type, val)	\
-  case id:\
-    value.Set##type (val);\
-    break;
+  case id:					\
+    value.Set##type (val);			\
+    return;
 
-#define MODIF_GETPARAMETERVALUE_END()\
-  default:\
-    break;\
-  }\
-}
+#define MODIF_GETPARAMETERVALUE_PARENT_BEGIN()	\
+  default:					\
+    break;					\
+}						\
+  size_t offset = GetTotalParameterCount ();	\
+  size_t count;
 
-#define MODIF_SETPARAMETERVALUE_BEGIN()\
-bool SetParameterValue (size_t index, const csVariant& value)\
-{\
-  switch (index)\
-  {
+#define MODIF_GETPARAMETERVALUE_PARENT_END()	\
+  }
 
-#define MODIF_SETPARAMETERVALUE(id, type, val)\
-  case id:\
-    val = value.Get##type ();\
-    break;
+#define MODIF_GETPARAMETERVALUE_PARENT(parent)		\
+  count = parent::GetTotalParameterCount ();		\
+  if (index - offset < count)				\
+  {							\
+    parent::GetParameterValue (index - offset, value);	\
+    return;						\
+  }							\
+  offset += count;					\
 
-#define MODIF_SETPARAMETERVALUE_F(id, type, func)\
-  case id:\
-    func (value.Get##type ());\
-    break;
+#define MODIF_SETPARAMETERVALUE_BEGIN()				\
+  bool SetParameterValue (size_t index, const csVariant& value)	\
+  {								\
+    bool changed = true;					\
+    switch (index)						\
+    {
 
-#define MODIF_SETPARAMETERVALUE_ENUM(id, type, val, enumt)\
-  case id:\
-  val = (enumt) value.Get##type ();\
-    break;
+// TODO: Have a more memory efficient listener management, eg through a general
+// manager accessible from the registry
+#define MODIF_SETPARAMETERVALUE_END()					\
+    default:								\
+      changed = false;							\
+  }									\
+    if (changed) for (size_t i = 0; i < listeners.GetSize (); i++)	\
+		   listeners[i]->ValueChanged (this, index);		\
+    return changed;							\
+  }
 
-#define MODIF_SETPARAMETERVALUE_END()\
-  default:\
-    return false;\
-  }\
-  for (size_t i = 0; i < listeners.GetSize (); i++)\
-    listeners[i]->ValueChanged (this, index);\
-  return true;\
-}
+#define MODIF_SETPARAMETERVALUE(id, type, val)	\
+    case id:					\
+      val = value.Get##type ();			\
+      break;
+
+#define MODIF_SETPARAMETERVALUE_F(id, type, func)	\
+    case id:						\
+      func (value.Get##type ());			\
+      break;
+
+#define MODIF_SETPARAMETERVALUE_ENUM(id, type, val, enumt)	\
+    case id:							\
+      val = (enumt) value.Get##type ();				\
+      break;
+
+#define MODIF_SETPARAMETERVALUE_PARENT_BEGIN()	\
+    default:					\
+      changed = false;				\
+  }						\
+    size_t offset = GetTotalParameterCount ();	\
+    size_t count;
+
+#define MODIF_SETPARAMETERVALUE_PARENT_END()				\
+  if (changed) printf ("changed\n");					\
+    if (changed) for (size_t i = 0; i < listeners.GetSize (); i++)	\
+		   listeners[i]->ValueChanged (this, index);		\
+    return changed;							\
+  }
+
+#define MODIF_SETPARAMETERVALUE_PARENT(parent)			\
+    if (!changed)						\
+    {								\
+      count = parent::GetTotalParameterCount ();		\
+      if (index - offset < count)				\
+      {								\
+	parent::SetParameterValue (index - offset, value);	\
+	changed = true;						\
+      }								\
+      offset += count;						\
+    }
 
 /**
  * Implementation of some of the most common CS::Utility::iModifiableParameter usage. 
@@ -144,11 +200,12 @@ class csBasicModifiableParameter
 : public scfImplementation1<csBasicModifiableParameter, iModifiableParameter> 
 {
 public:
-  csBasicModifiableParameter (csVariantType type, csStringID id,
+  csBasicModifiableParameter (csVariantType type, csStringID id, const char* label,
 			      const char* name, const char* description,
 			      iModifiableConstraint* constraint = nullptr)
     : scfImplementationType (this),
     id (id),
+    label (label),
     name (name),
     description (description),
     type (type),
@@ -157,6 +214,9 @@ public:
 
   virtual csStringID GetID () const
   { return id; }
+
+  virtual const char* GetLabel () const
+  { return label; }
 
   virtual const char* GetName () const
   { return name; }
@@ -173,8 +233,9 @@ public:
   virtual iModifiableConstraint* GetConstraint () const 
   { return constraint; }
 
-private:
+protected:
   csStringID id;
+  csString label;
   csString name;
   csString description;
   csVariantType type;
@@ -190,8 +251,15 @@ class csBasicModifiableDescription
 : public scfImplementation1<csBasicModifiableDescription, iModifiableDescription>
 {
 public:
-  csBasicModifiableDescription (const char* name) :
-  scfImplementationType (this), name (name) {}
+  csBasicModifiableDescription (const char* label, const char* name) :
+  scfImplementationType (this), label (label), name (name)
+  {
+    resources.AttachNew (new scfStringArray ());
+  }
+
+  /// Default implementation for CS::Utility::iModifiableDescription::GetLabel()
+  virtual const char* GetLabel () const
+  { return label; }
 
   /// Default implementation for CS::Utility::iModifiableDescription::GetName()
   virtual const char* GetName () const
@@ -200,6 +268,15 @@ public:
   /// Default implementation for CS::Utility::iModifiableDescription::GetParameterCount()
   virtual size_t GetParameterCount () const
   { return parameters.GetSize (); }
+
+  /// Default implementation for CS::Utility::iModifiableDescription::GetTotalParameterCount()
+  virtual size_t GetTotalParameterCount () const
+  {
+    size_t total = parameters.GetSize ();
+    for (size_t i = 0; i < children.GetSize (); i++)
+      total += children[i]->GetTotalParameterCount ();
+    return total;
+  }
 
   /// Default implementation for CS::Utility::iModifiableDescription::GetParameter(csStringID)
   virtual iModifiableParameter* GetParameter (csStringID id) const 
@@ -263,6 +340,15 @@ public:
     children.Push (child);
   }
 
+  virtual iStringArray* GetResources () const
+  { return resources; }
+
+  /// Add the given resource to the list
+  inline void Push (const char* resource)
+  {
+    resources->Push (resource);
+  }
+
 private:
   virtual iModifiableParameter* GetParameterInternal (size_t& index) const
   {
@@ -279,10 +365,12 @@ private:
     return nullptr;
   }
 
-private:
+protected:
+  csString label;
   csString name;
   csRefArray<iModifiableParameter> parameters;
   csRefArray<csBasicModifiableDescription> children;
+  csRef<iStringArray> resources;
 };
 
 
@@ -712,4 +800,4 @@ private:
 } // namespace Utility
 } // namespace CS
 
-#endif
+#endif // __CSUTIL_MODIFIABLE_IMPL_H

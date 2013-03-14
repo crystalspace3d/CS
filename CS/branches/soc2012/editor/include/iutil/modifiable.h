@@ -16,8 +16,8 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#ifndef __MODIFIABLE_H__
-#define __MODIFIABLE_H__
+#ifndef __IUTIL_MODIFIABLE_H__
+#define __IUTIL_MODIFIABLE_H__
 
 #include "csutil/scf_interface.h"
 #include "csutil/variant.h"
@@ -43,6 +43,7 @@ struct iModifiableParameter : public virtual iBase
 
   /// Return the ID of this parameter
   virtual csStringID GetID () const = 0;
+  virtual const char* GetLabel () const = 0;
 
   /**
    * Return the parameter's name
@@ -80,24 +81,31 @@ struct iModifiableDescription : public virtual iBase
   SCF_INTERFACE (iModifiableDescription, 1, 0, 0);
 
   //virtual csStringID GetID () const = 0;
+  virtual const char* GetLabel () const = 0;
 
   /**
-   * Return the name of this modifiable
+   * Get the name of this modifiable
    */
   virtual const char* GetName () const = 0;
 
   /**
-   * Return the number of editable parameters of the current object.
+   * Get the number of editable parameters of this description.
    */
   virtual size_t GetParameterCount () const = 0;
 
   /**
-   * Return a parameter based on its csStringID.
+   * Get the total number of editable parameters of this description, that is
+   * including the parameters of all children and grand-children.
+   */
+  virtual size_t GetTotalParameterCount () const = 0;
+
+  /**
+   * Get a parameter based on its csStringID.
    */
   virtual iModifiableParameter* GetParameter (csStringID id) const = 0;
 
   /**
-   * Return a parameter based on its index.
+   * Get a parameter based on its index.
    */
   virtual iModifiableParameter* GetParameter (size_t index) const = 0;
 
@@ -105,6 +113,8 @@ struct iModifiableDescription : public virtual iBase
 
   virtual size_t GetChildrenCount () const = 0;
   virtual iModifiableDescription* GetChild (size_t index) const = 0;
+
+  virtual iStringArray* GetResources () const = 0;
 };
 
 //----------------- iModifiableListener ---------------------
@@ -168,6 +178,12 @@ struct iModifiable : public virtual iBase
    * that index couldn't be found
    */
   virtual bool SetParameterValue (size_t parameterIndex, const csVariant& value) = 0;
+
+  /**
+   * This method is there only to help securing the current code generation. This method
+   * should therefore be removed once a better code generation system would be implemented.
+   */
+  virtual size_t GetTotalParameterCount () const = 0;
 
   virtual void AddListener (iModifiableListener* listener) = 0;
   virtual void RemoveListener (iModifiableListener* listener) = 0;
@@ -248,4 +264,4 @@ struct iModifiableConstraintEnum : public virtual iModifiableConstraint
 } // namespace Utility
 } // namespace CS
 
-#endif // __MODIFIABLE_H__
+#endif // __IUTIL_MODIFIABLE_H__

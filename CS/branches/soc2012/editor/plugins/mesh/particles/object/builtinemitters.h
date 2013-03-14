@@ -19,7 +19,7 @@
 #ifndef __CS_MESH_BUILTINEMITTERS_H__
 #define __CS_MESH_BUILTINEMITTERS_H__
 
-#include "csutil/modifiableimpl.h"
+#include "cstool/modifiableimpl.h"
 #include "csutil/scf_implementation.h"
 #include "imesh/particles.h"
 #include "iutil/comp.h"
@@ -234,9 +234,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- CS::Utility::iModifiable
-    MODIF_DECLARE ();
+    MODIF_DECLARE (13);
 
-    MODIF_GETDESCRIPTION_BEGIN ("Emitter");
+    MODIF_GETDESCRIPTION_BEGIN ("EMIT", "Emitter");
     MODIF_GETDESCRIPTION (BOOL, "ENABLED", "Enabled", "Whether this emitter is emitting particles");
     MODIF_GETDESCRIPTION (FLOAT, "START", "Start time", "Time, in milliseconds, when this emitter starts producing particles");
     MODIF_GETDESCRIPTION (FLOAT, "DURATION", "Duration", "Time, in milliseconds, this particle emitter should emit particles");

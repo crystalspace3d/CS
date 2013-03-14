@@ -19,11 +19,11 @@
 #ifndef __CS_MESH_PARTICLES_H__
 #define __CS_MESH_PARTICLES_H__
 
+#include "cstool/modifiableimpl.h"
 #include "cstool/objmodel.h"
 #include "cstool/rendermeshholder.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/flags.h"
-#include "csutil/modifiableimpl.h"
 #include "csutil/radixsort.h"
 #include "csutil/weakref.h"
 
@@ -158,8 +158,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
 
     /**\name CS::Utility::iModifiable implementation
       * @{ */
-    MODIF_DECLARE ();
-    MODIF_GETDESCRIPTION_BEGIN ("Particle mesh object");
+    MODIF_DECLARE (8);
+    MODIF_GETDESCRIPTION_BEGIN ("PARTICLE_MESH", "Particle mesh object");
 
     MODIF_GETDESCRIPTION_CENUM_DECLARE ();
     MODIF_GETDESCRIPTION_CENUM_PUSH (CS_PARTICLE_CAMERAFACE, 

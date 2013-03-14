@@ -73,9 +73,10 @@ VFS.Mount.lib/sintel   = $(CS_DATADIR)$/sintel$/
 VFS.Mount.lib/startme  = $(CS_DATADIR)$/startme.zip
 VFS.Mount.lib/hairtest = $(CS_DATADIR)$/hairtest$/
 VFS.Mount.lib/sky      = $(CS_DATADIR)$/sky$/
+VFS.Mount.lib/varedittest = $(CS_DATADIR)$/varedittest$/
 
 ; General CEGUI data
-VFS.Mount.cegui  			= $(CS_DATADIR)$/cegui$/
+VFS.Mount.cegui         = $(CS_DATADIR)$/cegui$/
 ; CEgui test
 VFS.Mount.ceguitest  	= $(CS_DATADIR)$/ceguitest$/
 ; CEgui hairtest

@@ -26,9 +26,9 @@
 
 #include "testmodifiable.h"
 
-// -------------------------------- csTestModifiable --------------------------------
+// -------------------------------- RawModifiable --------------------------------
 
-csTestModifiable::csTestModifiable
+RawModifiable::RawModifiable
 (const char* name, const char* job, long itemCount) :
   scfImplementationType (this),
   name (name),
@@ -43,79 +43,92 @@ csTestModifiable::csTestModifiable
 }
 
 /*
-const csStringID csTestModifiable::GetID () const
+const csStringID RawModifiable::GetID () const
 {
   csRef<iStringSet> strings =
     csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset");
-  return strings->Request ("csTestModifiable");
+  return strings->Request ("RawModifiable");
 }
 */
 
-csPtr<iModifiableDescription> csTestModifiable::GetDescription (iObjectRegistry* object_reg) const 
+csPtr<iModifiableDescription> RawModifiable::GetDescription (iObjectRegistry* object_reg) const 
 {
-  csBasicModifiableDescription* description = new csBasicModifiableDescription ("Player stats");
+  csBasicModifiableDescription* description = new csBasicModifiableDescription ("STATS_PLAYER", "Player stats");
   csRef<csBasicModifiableParameter> parameter;
   csRef<iModifiableConstraint> constraint;
   csRef<iStringSet> strings =
     csQueryRegistryTagInterface<iStringSet> (object_reg, "crystalspace.shared.stringset");
   csStringID id;
+  csString label;
 
-  id = strings->Request ("NAME");
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "Name", "The dude's name"));
+  label = "NAME";
+  id = strings->Request (label);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, label, "Name", "The dude's name"));
   description->Push (parameter);
 
-  id = strings->Request ("JOB");
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "Job", "The dude's jawb"));
+  label = "JOB";
+  id = strings->Request (label);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, label, "Job", "The dude's jawb"));
   description->Push (parameter);
 
-  id = strings->Request ("ITEMS");
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_LONG, id, "Item count", "How many items this guy has"));
+  label = "ITEMS";
+  id = strings->Request (label);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_LONG, id, label, "Item count", "How many items this guy has"));
   description->Push (parameter);
 
-  id = strings->Request ("AWESOME");
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_BOOL, id, "Awesome", "Am I awesome, or what?"));
+  label = "AWESOME";
+  id = strings->Request (label);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_BOOL, id, label, "Awesome", "Am I awesome, or what?"));
   description->Push (parameter);
 
   csRef<csBasicModifiableDescription> child;
-  child.AttachNew (new csBasicModifiableDescription ("Other stats"));
+  child.AttachNew (new csBasicModifiableDescription ("STATS_OTHER", "Other stats"));
   description->Push (child);
 
-  id = strings->Request ("FLOATY");
+  label = "FLOATY";
+  id = strings->Request (label);
   constraint.AttachNew (new csConstraintBounded (csVariant (-100.0f), csVariant (500.0f)));
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_FLOAT, id, "FloatThingy", "Some float", constraint));
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_FLOAT, id, label, "FloatThingy", "Some float", constraint));
   child->Push (parameter);
 
-  id = strings->Request ("POSITION");
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_VECTOR2, id, "Position", "Spatial position of the unit"));
+  label = "POSITION";
+  id = strings->Request (label);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_VECTOR2, id, label, "Position", "Spatial position of the guy"));
   child->Push (parameter);
 
-  id = strings->Request ("COLOR");
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_COLOR, id, "Color", "My color"));
+  label = "COLOR";
+  id = strings->Request (label);
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_COLOR, id, label, "Color", "My color"));
   child->Push (parameter);
 
   csRef<csBasicModifiableDescription> subChild;
-  subChild.AttachNew (new csBasicModifiableDescription ("Sub-other stats"));
+  subChild.AttachNew (new csBasicModifiableDescription ("STATS_SUBOTHER", "Sub-other stats"));
   child->Push (subChild);
 
-  id = strings->Request ("FILE");
+  label = "FILE";
+  id = strings->Request (label);
   constraint.AttachNew (new csConstraintVfsFile);
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "VFS file", "A VFS file name", constraint));
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, label, "VFS file", "A VFS file name", constraint));
   subChild->Push (parameter);
 
-  id = strings->Request ("DIR");
+  label = "DIR";
+  id = strings->Request (label);
   constraint.AttachNew (new csConstraintVfsDir);
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "VFS dir", "A VFS dir name", constraint));
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, label, "VFS dir", "A VFS dir name", constraint));
   subChild->Push (parameter);
 
-  id = strings->Request ("PATH");
+  label = "PATH";
+  id = strings->Request (label);
   constraint.AttachNew (new csConstraintVfsPath);
-  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, "VFS path", "A VFS path name", constraint));
+  parameter.AttachNew (new csBasicModifiableParameter (CSVAR_STRING, id, label, "VFS path", "A VFS path name", constraint));
   subChild->Push (parameter);
+
+  description->Push ("rawtest");
 
   return description;
 }
 
-void csTestModifiable::GetParameterValue (size_t index, csVariant& value) const
+void RawModifiable::GetParameterValue (size_t index, csVariant& value) const
 {
   switch (index)
   {
@@ -155,11 +168,7 @@ void csTestModifiable::GetParameterValue (size_t index, csVariant& value) const
   }
 }
 
-void csTestModifiable::GetParameterValue (size_t parameterIndex, size_t arrayIndex, csVariant& value) const
-{
-}
-
-bool csTestModifiable::SetParameterValue (size_t index, const csVariant& value)
+bool RawModifiable::SetParameterValue (size_t index, const csVariant& value)
 {
   switch (index)
   {
@@ -205,27 +214,17 @@ bool csTestModifiable::SetParameterValue (size_t index, const csVariant& value)
   return true;
 }
 
-bool csTestModifiable::SetParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)
+size_t RawModifiable::GetTotalParameterCount () const
 {
-  return false;
+  return 10;
 }
 
-bool csTestModifiable::PushParameterValue (size_t parameterIndex, const csVariant& value)
-{
-  return false;
-}
-
-bool csTestModifiable::DeleteParameterValue (size_t parameterIndex, size_t arrayIndex, const csVariant& value)
-{
-  return false;
-}
-
-void csTestModifiable::AddListener (iModifiableListener* listener)
+void RawModifiable::AddListener (iModifiableListener* listener)
 {
   listeners.Push (listener);
 }
 
-void csTestModifiable::RemoveListener (iModifiableListener* listener)
+void RawModifiable::RemoveListener (iModifiableListener* listener)
 {
   listeners.Delete (listener);
 }

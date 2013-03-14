@@ -18,8 +18,8 @@
 #ifndef __CSEDITOR_MODIFIABLE_EDITOR_H__
 #define __CSEDITOR_MODIFIABLE_EDITOR_H__
 
-// Misc
 #include "cssysdef.h"
+#include "csutil/csstring.h"
 #include "csutil/hash.h"
 #include "csutil/ref.h"
 
@@ -30,6 +30,8 @@
 #include "cseditor/wx/propgrid/editors.h"
 
 class csVariant;
+struct iLoaderPlugin;
+struct iPluginManager;
 struct iTranslator;
 
 namespace CS {
@@ -50,13 +52,15 @@ class /*CS_CRYSTALSPACE_EXPORT*/ ModifiableEditor : public wxPanel
 public:
   // TODO: use CS types instead of wx ones?
   /// Constructor
-  ModifiableEditor (iObjectRegistry* object_reg, 
+  ModifiableEditor (iObjectRegistry* objectRegistry, 
 		    wxWindow* parent,
 		    wxWindowID id,
 		    const wxPoint& position,
 		    const wxSize& size,
 		    long style,
 		    const wxString& name);
+
+  virtual void SetResourcePath (const char* path);
 
   /// Sets the current active modifiable entity in the grid
   virtual void SetModifiable (CS::Utility::iModifiable* modifiable);
@@ -81,27 +85,32 @@ private:
    */
   void AppendVariant (wxPGPropArg categoryID, csVariant* variant, size_t index,
 		      CS::Utility::iModifiableConstraint* param,
-		      const wxString& originalName, const wxString& translatedName,
-		      const wxString& translatedDescription);
+		      const wxString& label, const wxString& name,
+		      const wxString& description);
 
   void OnPropertyGridChanging (wxPropertyGridEvent& event);
   void OnPropertyGridChanged (wxPropertyGridEvent& event);
+
+  bool ReportError (const char* description, ...);
+
+private:
+  iObjectRegistry* objectRegistry;
+  csRef<CS::Utility::iModifiable> modifiable;
+  csRef<CS::Utility::iModifiableDescription> description;
+
+  csRef<iPluginManager> pluginManager;
+  csRef<iTranslator> translator;
+  csRef<iLoaderPlugin> translatorLoader;
+  csString resourcePath;
 
   enum
   {
     pageId = 1
   };
 
-  iObjectRegistry* object_reg;
-  csRef<CS::Utility::iModifiable> modifiable;
-  csRef<CS::Utility::iModifiableDescription> description;
-
   wxPropertyGridPage* page;
   wxPropertyGridManager* pgMananager;
-
   csHash<size_t, wxPGProperty*> indexes;
-
-  csRef<iTranslator> translator;
 
   DECLARE_EVENT_TABLE ();
 };

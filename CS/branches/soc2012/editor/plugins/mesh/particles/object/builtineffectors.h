@@ -19,7 +19,7 @@
 #ifndef __CS_MESH_BUILTINEFFECTORS_H__
 #define __CS_MESH_BUILTINEFFECTORS_H__
 
-#include "csutil/modifiableimpl.h"
+#include "cstool/modifiableimpl.h"
 #include "csutil/scf_implementation.h"
 
 #include "imesh/particles.h"
@@ -120,9 +120,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- CS::Utility::iModifiable
-    MODIF_DECLARE ();
+    MODIF_DECLARE (4);
 
-    MODIF_GETDESCRIPTION_BEGIN ("Force effector");
+    MODIF_GETDESCRIPTION_BEGIN ("EFFECT.FORCE", "Force effector");
     MODIF_GETDESCRIPTION (VECTOR3, "ACCELERATION", "Acceleration", "Rate at which the force increases");
     MODIF_GETDESCRIPTION (VECTOR3, "FORCE", "Force", "Effector's initial force");
     MODIF_GETDESCRIPTION (BOOL, "ENABLE_RANDOMACC", "Enable random acceleration", "");
@@ -200,9 +200,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- CS::Utility::iModifiable
-    MODIF_DECLARE ();
+    MODIF_DECLARE (0);
 
-    MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
+    MODIF_GETDESCRIPTION_BEGIN ("EFFECT.COLOR", "Linear color effector");
     MODIF_GETDESCRIPTION_END ();
 
     MODIF_GETPARAMETERVALUE_BEGIN ();
@@ -290,9 +290,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- CS::Utility::iModifiable
-    MODIF_DECLARE ();
+    MODIF_DECLARE (0);
 
-    MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
+    MODIF_GETDESCRIPTION_BEGIN ("EFFECT.LINEAR", "Linear effector");
     MODIF_GETDESCRIPTION_END ();
 
     MODIF_GETPARAMETERVALUE_BEGIN ();
@@ -414,9 +414,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Particles)
     }
 
     //-- CS::Utility::iModifiable
-    MODIF_DECLARE ();
+    MODIF_DECLARE (0);
 
-    MODIF_GETDESCRIPTION_BEGIN ("Linear color effector");
+    MODIF_GETDESCRIPTION_BEGIN ("EFFECT.VELOCITY", "Velocity field effector");
     MODIF_GETDESCRIPTION_END ();
 
     MODIF_GETPARAMETERVALUE_BEGIN ();

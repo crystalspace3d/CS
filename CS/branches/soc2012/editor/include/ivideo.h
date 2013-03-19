@@ -30,7 +30,6 @@
 #include "ivideo/graph2d.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/halo.h"
-#include "ivideo/lighting.h"
 #include "ivideo/material.h"
 #include "ivideo/natwin.h"
 #include "ivideo/rendermesh.h"
@@ -39,5 +38,6 @@
 #include "ivideo/shader/xmlshader.h"
 #include "ivideo/texture.h"
 #include "ivideo/txtmgr.h"
+#include "ivideo/videodecode.h"
 #endif /* __IVIDEO_H__ */
 

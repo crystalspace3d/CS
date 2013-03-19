@@ -608,10 +608,11 @@ BEGIN_EVENT_TABLE(csGLCanvas, wxGLCanvas)
   EVT_ERASE_BACKGROUND(csGLCanvas::OnEraseBackground)
   EVT_KEY_DOWN(csGLCanvas::OnKeyDown)
   EVT_KEY_UP(csGLCanvas::OnKeyUp)
-  EVT_SET_FOCUS(csGLCanvas::OnSetFocus)
-  EVT_KILL_FOCUS(csGLCanvas::OnKillFocus)
+  EVT_CHAR(csGLCanvas::OnKeyChar)
   EVT_MOUSE_EVENTS(csGLCanvas::OnMouseEvent)
   EVT_MOUSE_CAPTURE_LOST(csGLCanvas::OnMouseCaptureLost)
+  EVT_SET_FOCUS(csGLCanvas::OnSetFocus)
+  EVT_KILL_FOCUS(csGLCanvas::OnKillFocus)
 END_EVENT_TABLE()
 
 csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
@@ -620,7 +621,7 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
                        const wxSize& size, long style,
                        const wxString& name, int* attr)
   : wxGLCanvas(parent, id, pos, size, style | wxWANTS_CHARS, name, attr),
-  g2d(g), mouseState(0), wheelPosition (0)
+        g2d (g), mouseState (0), wheelPosition (0), lastKeyCode (-1)
 {
   int w, h;
   GetClientSize(&w, &h);
@@ -639,7 +640,7 @@ csGLCanvas::csGLCanvas(csGraphics2DWX* g, wxWindow *parent,
     p = p->GetParent();
   }
   if (visible) SetCurrent();
-  g2d->Resize(w, h);
+  g2d->ResizeNotify (w, h);
 }
 
 
@@ -672,16 +673,6 @@ void csGLCanvas::OnSize(wxSizeEvent& event)
 void csGLCanvas::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
 {
   // Do nothing, to avoid flashing.
-}
-
-void csGLCanvas::OnKeyUp( wxKeyEvent& event )
-{
-  EmitKeyEvent(event, false);
-}
-
-void csGLCanvas::OnKeyDown( wxKeyEvent& event )
-{
-  EmitKeyEvent(event, true);
 }
 
 void csGLCanvas::OnMouseEvent(wxMouseEvent& event)
@@ -809,8 +800,8 @@ static bool wxCodeToCSCode(int wxkey, utf32_char& raw, utf32_char& cooked)
     MAP (MENU,            CONTEXT,      CONTEXT)
     MAP (PAUSE,           PAUSE,        PAUSE)
     MAP (CAPITAL,         CAPSLOCK,     CAPSLOCK)
-    MAP (PRIOR,           PGUP,         PGUP)
-    MAP (NEXT,            PGDN,         PGDN)
+    MAP (PAGEUP,          PGUP,         PGUP)
+    MAP (PAGEDOWN,        PGDN,         PGDN)
     MAP (END,             END,          END)
     MAP (HOME,            HOME,         HOME)
     MAP (LEFT,            LEFT,         LEFT)
@@ -826,10 +817,7 @@ static bool wxCodeToCSCode(int wxkey, utf32_char& raw, utf32_char& cooked)
     MAPC (NUMPAD2,        PAD2,         '2')
     MAP (NUMPAD_DOWN,     PAD2,         DOWN)
     MAPC (NUMPAD3,        PAD3,         '3')
-    MAP (NUMPAD_NEXT,     PAD3,         PGDN)
-#if wxVERSION_NUMBER < 2700
     MAP (NUMPAD_PAGEDOWN, PAD3,         PGDN)
-#endif
     MAPC (NUMPAD4,        PAD4,         '4')
     MAP (NUMPAD_LEFT,     PAD4,         LEFT)
     MAPC (NUMPAD5,        PAD5,         '5')
@@ -840,10 +828,7 @@ static bool wxCodeToCSCode(int wxkey, utf32_char& raw, utf32_char& cooked)
     MAPC (NUMPAD8,        PAD8,         '8')
     MAP (NUMPAD_UP,       PAD8,         UP)
     MAPC (NUMPAD9,        PAD9,         '9')
-    MAP (NUMPAD_PRIOR,    PAD9,         PGUP)
-#if wxVERSION_NUMBER < 2700
     MAP (NUMPAD_PAGEUP,   PAD9,         PGUP)
-#endif
     MAPC (MULTIPLY,       PADMULT,      '*')
     MAPC (NUMPAD_MULTIPLY,PADMULT,      '*')
     MAPC (ADD,            PADPLUS,      '+')
@@ -869,10 +854,6 @@ static bool wxCodeToCSCode(int wxkey, utf32_char& raw, utf32_char& cooked)
     MAP (F12,             F12,          F12)
     MAP (NUMLOCK,         PADNUM,       PADNUM)
     MAP (SCROLL,          SCROLLLOCK,   SCROLLLOCK)
-#if wxVERSION_NUMBER < 2700
-    MAP (PAGEUP,          PGUP,         PGUP)
-    MAP (PAGEDOWN,        PGDN,         PGDN)
-#endif
     MAP (NUMPAD_ENTER,    PADENTER,     ENTER)
     default: return false;
   }
@@ -885,25 +866,66 @@ void csGLCanvas::EmitKeyEvent(wxKeyEvent& event, bool down)
   utf32_char cskey_raw = 0, cskey_cooked = 0, cskey_cooked_new = 0;
   wxCodeToCSCode (event.GetKeyCode(), cskey_raw, cskey_cooked);
 
-#if wxUSE_UNICODE
-  cskey_cooked_new = event.GetUnicodeKey();
-#else
   // Argh! Seems there is no way to get the character code for non-ASCII keys
   // in non-Unicode builds... not even a character in the local charset...
   if (event.GetKeyCode() <= 127)
   {
     cskey_cooked_new = event.GetKeyCode();
   }
+#if wxUSE_UNICODE
+  else
+  {
+    cskey_cooked_new = event.GetUnicodeKey();
+  }
 #endif
-  // @@@ This is not very nice. But WX sends keycodes for alpha characters
-  // only in uppercase so we have to correct it to lower case. The EVT_CHAR
-  // event should generate the correct case but I don't see how it can be used
-  // in this situation as there doesn't appear to be an 'up' and 'down'. So
-  // we have to translate it manually here.
-  if (event.GetModifiers () != wxMOD_SHIFT)
-    cskey_cooked_new = csUnicodeTransform::MapToLower (cskey_cooked_new);
-  if (cskey_raw == 0)
-    cskey_raw = csUnicodeTransform::MapToLower (cskey_cooked_new);
-  if (cskey_cooked == 0) cskey_cooked = cskey_cooked_new;
-  if (cskey_raw != 0) g2d->EventOutlet->Key (cskey_raw, cskey_cooked, down);
+
+  if (down)
+  {
+    if (cskey_raw == 0)
+      cskey_raw = csUnicodeTransform::MapToLower (cskey_cooked_new);
+    if (cskey_cooked == 0) cskey_cooked = cskey_cooked_new;
+    if ((cskey_raw != 0) && (lastKeyCode >= 0))
+    {
+      // Store away the key codes so we restore them in the KEY_UP event
+      keyCodeToCS.PutUnique (lastKeyCode, KeyEventCodes (cskey_raw, cskey_cooked));
+      lastKeyCode = -1;
+    }
+  }
+  else
+  {
+    const KeyEventCodes* codes = keyCodeToCS.GetElementPointer (event.GetKeyCode());
+    if (codes)
+    {
+      cskey_raw = codes->raw;
+      cskey_cooked = codes->cooked;
+    }
+    keyCodeToCS.DeleteAll (event.GetKeyCode());
+  }
+  if (cskey_raw != 0)
+  {
+    g2d->EventOutlet->Key (cskey_raw, cskey_cooked, down);
+  }
+}
+
+void csGLCanvas::OnKeyDown( wxKeyEvent& event )
+{
+  if ((event.GetKeyCode() >= 32) && (event.GetKeyCode() < WXK_START))
+  {
+    // Non-special characters: defer to EVT_CHAR handling to produce event
+    lastKeyCode = event.GetKeyCode();
+    event.Skip ();
+    return;
+  }
+
+  EmitKeyEvent(event, true);
+}
+
+void csGLCanvas::OnKeyUp( wxKeyEvent& event )
+{
+  EmitKeyEvent(event, false);
+}
+
+void csGLCanvas::OnKeyChar( wxKeyEvent& event )
+{
+  EmitKeyEvent(event, true);
 }

@@ -1,7 +1,7 @@
 SubDir TOP plugins ;
 
 SubInclude TOP plugins collide ;
-SubInclude TOP plugins collisions ;
+#SubInclude TOP plugins collisions ;
 SubInclude TOP plugins console ;
 SubInclude TOP plugins cscript ;
 SubInclude TOP plugins csparser ;
@@ -31,6 +31,8 @@ SubInclude TOP plugins terraformer ;
 SubInclude TOP plugins translator ;
 SubInclude TOP plugins utilities ;
 SubInclude TOP plugins video ;
+SubInclude TOP plugins videodecode ;
+
 
 # Assemble big static plugins lib
 if [ Property build : projgen ] = msvc
@@ -43,3 +45,6 @@ else
 {
   StaticPluginLibrary crystalspace_staticplugins ;
 }
+# Enable compiler-provided multithreading.
+# This makes sense here since the static plugins lib is usually built alone.
+MsvcParallelCompile crystalspace_staticplugins ;

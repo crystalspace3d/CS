@@ -37,7 +37,7 @@
   #pragma warning(disable:4251)	  /* 'identifier' : class 'type' needs to have
 				   * dll-interface to be used by clients of 
 				   * class 'type2' */
-  #pragma warning(disable:4275)	  /* non – DLL-interface class 'identifier'
+  #pragma warning(disable:4275)	  /* non DLL-interface class 'identifier'
 				   * used as base for DLL-interface class 
 				   * 'identifier' */
   #pragma warning(disable:4290)   // C++ exception specification ignored
@@ -92,12 +92,6 @@
 #endif
 
   #define CS_HAVE_BITSCAN_INTRINSICS
-
-  #if defined(__CRYSTAL_SPACE__) && !defined(CS_DEBUG)
-    #pragma code_seg("CSpace")	  // Just for fun :)
-    // However, doing this in debug builds prevents Edit & Continue from
-    // functioning properly :/
-  #endif
 
   // VC8 quirks
   #if (_MSC_VER >= 1400)

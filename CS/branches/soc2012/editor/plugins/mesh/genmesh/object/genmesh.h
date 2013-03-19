@@ -310,7 +310,7 @@ public:
     csVector3& isect, float *pr);
   virtual bool HitBeamObject (const csVector3& start, const csVector3& end,
   	csVector3& isect, float* pr, int* polygon_idx = 0,
-	iMaterialWrapper** material = 0);
+	iMaterialWrapper** material = 0, bool bf = false);
   virtual void SetMeshWrapper (iMeshWrapper* lp)
   {
     logparent = lp;
@@ -543,6 +543,7 @@ public:
   void GenerateBox (const csBox3& box);
   void GenerateCylinder (float l, float r, uint sides);
   void GenerateCapsule (float l, float r, uint sides);
+  void GenerateCone (float l, float r, uint sides);
   void GenerateSphere (const csEllipsoid& ellips, int rim_vertices,
       	bool cyl_mapping = false, bool toponly = false,
 	bool reversed = false);

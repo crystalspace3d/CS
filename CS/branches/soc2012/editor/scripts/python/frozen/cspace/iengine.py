@@ -942,6 +942,7 @@ class iSceneNode(core.iBase):
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
     def GetMovable(*args): return _iengine.iSceneNode_GetMovable(*args)
+    def GetObjectModel(*args): return _iengine.iSceneNode_GetObjectModel(*args)
     def QueryMesh(*args): return _iengine.iSceneNode_QueryMesh(*args)
     def QueryLight(*args): return _iengine.iSceneNode_QueryLight(*args)
     def QueryCamera(*args): return _iengine.iSceneNode_QueryCamera(*args)
@@ -1061,10 +1062,7 @@ class iMeshWrapper(core.iBase):
     def CreateStaticLOD(*args): return _iengine.iMeshWrapper_CreateStaticLOD(*args)
     def DestroyStaticLOD(*args): return _iengine.iMeshWrapper_DestroyStaticLOD(*args)
     def GetStaticLOD(*args): return _iengine.iMeshWrapper_GetStaticLOD(*args)
-    def AddMeshToStaticLOD(*args): return _iengine.iMeshWrapper_AddMeshToStaticLOD(*args)
-    def RemoveMeshFromStaticLOD(*args): return _iengine.iMeshWrapper_RemoveMeshFromStaticLOD(*args)
     def GetSVContext(*args): return _iengine.iMeshWrapper_GetSVContext(*args)
-    def GetRenderMeshes(*args): return _iengine.iMeshWrapper_GetRenderMeshes(*args)
     def AddExtraRenderMesh(*args): return _iengine.iMeshWrapper_AddExtraRenderMesh(*args)
     def GetExtraRenderMesh(*args): return _iengine.iMeshWrapper_GetExtraRenderMesh(*args)
     def GetExtraRenderMeshCount(*args): return _iengine.iMeshWrapper_GetExtraRenderMeshCount(*args)
@@ -1100,8 +1098,6 @@ class iMeshFactoryWrapper(core.iBase):
     def DestroyStaticLOD(*args): return _iengine.iMeshFactoryWrapper_DestroyStaticLOD(*args)
     def SetStaticLOD(*args): return _iengine.iMeshFactoryWrapper_SetStaticLOD(*args)
     def GetStaticLOD(*args): return _iengine.iMeshFactoryWrapper_GetStaticLOD(*args)
-    def AddFactoryToStaticLOD(*args): return _iengine.iMeshFactoryWrapper_AddFactoryToStaticLOD(*args)
-    def RemoveFactoryFromStaticLOD(*args): return _iengine.iMeshFactoryWrapper_RemoveFactoryFromStaticLOD(*args)
     def SetZBufMode(*args): return _iengine.iMeshFactoryWrapper_SetZBufMode(*args)
     def GetZBufMode(*args): return _iengine.iMeshFactoryWrapper_GetZBufMode(*args)
     def SetZBufModeRecursive(*args): return _iengine.iMeshFactoryWrapper_SetZBufModeRecursive(*args)

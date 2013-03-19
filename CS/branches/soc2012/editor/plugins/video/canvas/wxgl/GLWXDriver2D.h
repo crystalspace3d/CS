@@ -110,6 +110,8 @@ public:
 #endif
   
   void *GetProcAddress (const char *funcname);
+
+  using CS::PluginCommon::CanvasCommonBase::ResizeNotify;
 };
 
 enum MouseState
@@ -123,8 +125,28 @@ class csGLCanvas: public wxGLCanvas
 {
 private:
   csGraphics2DWX* g2d;
+
   int mouseState;
   int wheelPosition;
+
+  /**\name Keyboard input state handling
+   * @{ */
+  /// Last keycode received through a EVT_KEY_DOWN event
+  int lastKeyCode;
+  /// CS key codes associated with a keyboard event
+  struct KeyEventCodes
+  {
+    utf32_char raw, cooked;
+
+    KeyEventCodes (utf32_char raw, utf32_char cooked)
+      : raw (raw), cooked (cooked) {}
+  };
+  /**
+   * Mapping of WX KeyCode to CS key codes; used to obtain right codes
+   * for "key up" events
+   */
+  csHash<KeyEventCodes, int> keyCodeToCS;
+  /** @} */
 
 public:
   csGLCanvas(csGraphics2DWX* g2d, wxWindow *parent, wxWindowID id = wxID_ANY,
@@ -140,8 +162,9 @@ public:
   void OnPaint(wxPaintEvent& event);
   void OnSize(wxSizeEvent& event);
   void OnEraseBackground(wxEraseEvent& event);
-  void OnKeyUp(wxKeyEvent& event);
   void OnKeyDown(wxKeyEvent& event);
+  void OnKeyUp(wxKeyEvent& event);
+  void OnKeyChar(wxKeyEvent& event);
   void OnMouseEvent(wxMouseEvent& event);
   void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
   void OnSetFocus(wxFocusEvent& event);

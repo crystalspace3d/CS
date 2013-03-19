@@ -381,7 +381,7 @@ bool ViewMesh::CreateGui()
 
   cegui->GetSystemPtr ()->setDefaultMouseCursor("ice", "MouseArrow");
 
-  cegui->GetFontManagerPtr ()->createFreeTypeFont("DejaVuSans", 10, true, "/fonts/ttf/DejaVuSans.ttf");
+  cegui->GetFontManagerPtr ()->createFreeTypeFont("DejaVuSans", 10, true, "/fonts/dejavu/DejaVuSans.ttf");
 
   CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
 
@@ -759,13 +759,7 @@ void ViewMesh::AttachMesh (const char* file)
 
 void ViewMesh::ScaleSprite (float newScale)
 {
-  csMatrix3 scalingHt; scalingHt.Identity(); scalingHt *= scale/newScale;
-  csReversibleTransform rTH;
-  rTH.SetT2O (scalingHt);
-  if (asset->GetMesh())
-    asset->GetMesh()->HardTransform (rTH);
-
-  csMatrix3 scaling; scaling.Identity(); scaling /= newScale;
+  csMatrix3 scaling; scaling.Identity(); scaling *= newScale;
   csReversibleTransform rT;
   rT.SetT2O (scaling);
   if (asset->GetMesh())

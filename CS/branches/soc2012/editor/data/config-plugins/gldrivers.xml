@@ -336,6 +336,15 @@
        </OpenGL>
       </Video>
     </config>
+    <config name="nooccq2">
+      <Video>
+	    <OpenGL>
+	      <UseExtension>
+	        <GL_ARB_occlusion_query2>no</GL_ARB_occlusion_query2>
+	      </UseExtension>
+	    </OpenGL>
+      </Video>
+    </config>
   </configs>
   <rules>
     <!-- rule description="Some more examples">
@@ -707,7 +716,7 @@
       <conditions fulfill="all">
 	<regexp string="vendor" pattern="^ATI" />
 	<conditions fulfill="one">
-	  <comparever version="win32_driver" relation="ge 6.14.10.4517" />
+	  <comparever version="win32_driver" relation="lt 8.14.1.6268" />
 	  <regexp string="platform" pattern="Unix" />
 	</conditions>
       </conditions>
@@ -822,11 +831,16 @@
         broken. Since S3TC may also be used through generic
 		compression formats, disable TC completely.
       * 2008-11-18: Still broken on 7.0.4
+      * 2013-03-04: Works.
+		    Renderer: Mesa DRI Intel(R) Sandybridge Mobile
+		    Vendor: Intel Open Source Technology Center
+		    Version: 2.1 Mesa 9.0.1
     -->
     <rule description="Intel DRI: Disable texture compression">
       <conditions>
         <regexp string="renderer" pattern="Mesa.*Intel" />
-        <comparever version="glvendor" relation="ge Mesa 6.5" />
+        <comparever version="glvendor" relation="ge 6.5" />
+        <comparever version="glvendor" relation="gt 9.0.1" />
       </conditions>
       <applicable>
         <usecfg>disableTC</usecfg>
@@ -944,6 +958,23 @@
       </conditions>
       <applicable>
 	<usecfg>noArbColorBufferFloat</usecfg>
+      </applicable>
+    </rule>
+    
+    <!--
+      * 2013-02-23: Mesa 9.0. Intel DRI: GL_ARB_occlusion_query2 not present or
+        not working as expected on Ubuntu 12.04.2 and 12.10.
+    -->
+    <rule description="Intel DRI: Disable GL_ARB_occlusion_query2">
+      <conditions fulfill="all">
+        <regexp string="platform" pattern="Unix" />
+        <regexp string="renderer" pattern="Mesa.*Intel" />
+        <conditions fulfill="all">
+          <comparever version="glvendor" relation="ge 9.0" />
+        </conditions>
+      </conditions>
+      <applicable>
+        <usecfg>nooccq2</usecfg>
       </applicable>
     </rule>
   </rules>

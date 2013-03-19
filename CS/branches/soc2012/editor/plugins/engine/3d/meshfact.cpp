@@ -131,6 +131,12 @@ void csMeshFactoryWrapper::SetMeshObjectFactory (iMeshObjectFactory *meshFact)
   csMeshFactoryWrapper::meshFact = meshFact;
 }
 
+void csMeshFactoryWrapper::SetInstanceFactory (iMeshFactoryWrapper* meshfact)
+{
+  instanceFactory = meshfact;
+  meshFact = instanceFactory->GetMeshObjectFactory();
+}
+
 csPtr<iMeshWrapper> csMeshFactoryWrapper::CreateMeshWrapper ()
 {
   csRef<iMeshObject> basemesh = meshFact->NewInstance ();
@@ -164,28 +170,15 @@ csPtr<iMeshWrapper> csMeshFactoryWrapper::CreateMeshWrapper ()
   int i;
   for (i = 0; i < children.GetCount (); i++)
   {
-    iMeshFactoryWrapper *childfact = children.Get (i);
-    csRef<iMeshWrapper> child = childfact->CreateMeshWrapper ();
-    child->QuerySceneNode ()->SetParent (mesh->QuerySceneNode ());
-    child->GetMovable ()->SetTransform (childfact->GetTransform ());
-    child->GetMovable ()->UpdateMove ();
-
     if (static_lod)
     {
-      // We have static lod so we need to put the child in the right
-      // lod level.
-      int l;
-      for (l = 0 ; l < static_lod->GetLODCount () ; l++)
-      {
-        csArray<iMeshFactoryWrapper*>& facts_for_lod =
-      	  static_lod->GetMeshesForLOD (l);
-        size_t j;
-	for (j = 0 ; j < facts_for_lod.GetSize () ; j++)
-	{
-	  if (facts_for_lod[j] == childfact)
-	    mesh->AddMeshToStaticLOD (l, child);
-	}
-      }
+      // New-style static LOD. There is no nullmesh but there are children.
+      // In this case we don't add the children to the mesh object.
+      iMeshFactoryWrapper *childfact = children.Get (i);
+      csStaticLODMesh* slmesh = cmesh->GetStaticLODMesh ();
+      csRef<iMeshObject> obj = childfact->GetMeshObjectFactory ()->NewInstance ();
+      obj->SetMeshWrapper (mesh);
+      slmesh->AddMeshObjectForLOD (obj);
     }
   }
 
@@ -230,28 +223,6 @@ void csMeshFactoryWrapper::GetStaticLOD (float& m, float& a) const
     m = 0;
     a = 0;
   }
-}
-
-void csMeshFactoryWrapper::RemoveFactoryFromStaticLOD (
-	iMeshFactoryWrapper* fact)
-{
-  if (!static_lod) return;	// No static lod, nothing to do here.
-  int lod;
-  for (lod = 0 ; lod < static_lod->GetLODCount () ; lod++)
-  {
-    csArray<iMeshFactoryWrapper*>& meshes_for_lod =
-    	static_lod->GetMeshesForLOD (lod);
-    meshes_for_lod.Delete (fact);
-  }
-}
-
-void csMeshFactoryWrapper::AddFactoryToStaticLOD (int lod,
-	iMeshFactoryWrapper* fact)
-{
-  if (!static_lod) return;	// No static lod, nothing to do here.
-  csArray<iMeshFactoryWrapper*>& meshes_for_lod =
-  	static_lod->GetMeshesForLOD (lod);
-  meshes_for_lod.Push (fact);
 }
 
 void csMeshFactoryWrapper::AddImposter(iMeshWrapper* mesh, iRenderView* rview)
@@ -456,6 +427,5 @@ void csMeshFactoryFactoryList::FreeFactory (iMeshFactoryWrapper* item)
 {
   CS_ASSERT (meshfact != 0);
   item->SetParentContainer (0);
-  meshfact->RemoveFactoryFromStaticLOD (item);
   csMeshFactoryList::FreeFactory (item);
 }

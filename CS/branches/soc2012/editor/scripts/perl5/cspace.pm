@@ -6759,6 +6759,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 @ISA = qw( cspace::iBase cspace );
 %OWNER = ();
 %ITERATORS = ();
+*QueryObject = *cspacec::iDecalTemplate_QueryObject;
 *GetTimeToLive = *cspacec::iDecalTemplate_GetTimeToLive;
 *GetMaterialWrapper = *cspacec::iDecalTemplate_GetMaterialWrapper;
 *GetRenderPriority = *cspacec::iDecalTemplate_GetRenderPriority;
@@ -13615,6 +13616,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *PlanePolygon = *cspacec::csIntersect3_PlanePolygon;
 *SegmentFrustum = *cspacec::csIntersect3_SegmentFrustum;
 *SegmentTriangle = *cspacec::csIntersect3_SegmentTriangle;
+*SegmentTriangleBF = *cspacec::csIntersect3_SegmentTriangleBF;
 *SegmentPolygon = *cspacec::csIntersect3_SegmentPolygon;
 *SegmentPlanes = *cspacec::csIntersect3_SegmentPlanes;
 *SegmentPlane = *cspacec::csIntersect3_SegmentPlane;
@@ -15583,6 +15585,8 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *Compress = *cspacec::iGeneralFactoryState_Compress;
 *GenerateBox = *cspacec::iGeneralFactoryState_GenerateBox;
 *GenerateCapsule = *cspacec::iGeneralFactoryState_GenerateCapsule;
+*GenerateCone = *cspacec::iGeneralFactoryState_GenerateCone;
+*GenerateCylinder = *cspacec::iGeneralFactoryState_GenerateCylinder;
 *GenerateSphere = *cspacec::iGeneralFactoryState_GenerateSphere;
 *SetBack2Front = *cspacec::iGeneralFactoryState_SetBack2Front;
 *IsAutoNormals = *cspacec::iGeneralFactoryState_IsAutoNormals;
@@ -15596,7 +15600,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *GetSubMeshCount = *cspacec::iGeneralFactoryState_GetSubMeshCount;
 *GetSubMesh = *cspacec::iGeneralFactoryState_GetSubMesh;
 *DisableAutoNormals = *cspacec::iGeneralFactoryState_DisableAutoNormals;
-*GenerateCylinder = *cspacec::iGeneralFactoryState_GenerateCylinder;
 *GetNumProgLODLevels = *cspacec::iGeneralFactoryState_GetNumProgLODLevels;
 *GetProgLODDistances = *cspacec::iGeneralFactoryState_GetProgLODDistances;
 *SetProgLODDistances = *cspacec::iGeneralFactoryState_SetProgLODDistances;
@@ -17351,6 +17354,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *RegisterAnimCallback = *cspacec::iSpriteCal3DFactoryState_RegisterAnimCallback;
 *RemoveAnimCallback = *cspacec::iSpriteCal3DFactoryState_RemoveAnimCallback;
 *AbsoluteRescaleFactory = *cspacec::iSpriteCal3DFactoryState_AbsoluteRescaleFactory;
+*GetScaleFactor = *cspacec::iSpriteCal3DFactoryState_GetScaleFactor;
 sub DESTROY {
     return unless $_[0]->isa('HASH');
     my $self = tied(%{$_[0]});
@@ -19282,6 +19286,41 @@ sub ACQUIRE {
 }
 
 
+############# Class : cspace::iParticleBuiltinEffectorPhysical ##############
+
+package cspace::iParticleBuiltinEffectorPhysical;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( cspace::iParticleBuiltinEffectorForce cspace );
+%OWNER = ();
+%ITERATORS = ();
+*SetRestitution = *cspacec::iParticleBuiltinEffectorPhysical_SetRestitution;
+*GetRestitution = *cspacec::iParticleBuiltinEffectorPhysical_GetRestitution;
+*SetRestitutionMagnitude = *cspacec::iParticleBuiltinEffectorPhysical_SetRestitutionMagnitude;
+*GetRestitutionMagnitude = *cspacec::iParticleBuiltinEffectorPhysical_GetRestitutionMagnitude;
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        cspacec::delete_iParticleBuiltinEffectorPhysical($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
 ############# Class : cspace::iParticleBuiltinEffectorLinColor ##############
 
 package cspace::iParticleBuiltinEffectorLinColor;
@@ -19502,6 +19541,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *CreateVelocityField = *cspacec::iParticleBuiltinEffectorFactory_CreateVelocityField;
 *CreateLinear = *cspacec::iParticleBuiltinEffectorFactory_CreateLinear;
 *CreateLight = *cspacec::iParticleBuiltinEffectorFactory_CreateLight;
+*CreatePhysical = *cspacec::iParticleBuiltinEffectorFactory_CreatePhysical;
 *scfGetVersion = *cspacec::iParticleBuiltinEffectorFactory_scfGetVersion;
 *scfGetName = *cspacec::iParticleBuiltinEffectorFactory_scfGetName;
 sub DESTROY {
@@ -21071,6 +21111,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 %OWNER = ();
 %ITERATORS = ();
 *GetMovable = *cspacec::iSceneNode_GetMovable;
+*GetObjectModel = *cspacec::iSceneNode_GetObjectModel;
 *QueryMesh = *cspacec::iSceneNode_QueryMesh;
 *QueryLight = *cspacec::iSceneNode_QueryLight;
 *QueryCamera = *cspacec::iSceneNode_QueryCamera;
@@ -21278,10 +21319,7 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *CreateStaticLOD = *cspacec::iMeshWrapper_CreateStaticLOD;
 *DestroyStaticLOD = *cspacec::iMeshWrapper_DestroyStaticLOD;
 *GetStaticLOD = *cspacec::iMeshWrapper_GetStaticLOD;
-*AddMeshToStaticLOD = *cspacec::iMeshWrapper_AddMeshToStaticLOD;
-*RemoveMeshFromStaticLOD = *cspacec::iMeshWrapper_RemoveMeshFromStaticLOD;
 *GetSVContext = *cspacec::iMeshWrapper_GetSVContext;
-*GetRenderMeshes = *cspacec::iMeshWrapper_GetRenderMeshes;
 *AddExtraRenderMesh = *cspacec::iMeshWrapper_AddExtraRenderMesh;
 *GetExtraRenderMesh = *cspacec::iMeshWrapper_GetExtraRenderMesh;
 *GetExtraRenderMeshCount = *cspacec::iMeshWrapper_GetExtraRenderMeshCount;
@@ -21337,8 +21375,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *DestroyStaticLOD = *cspacec::iMeshFactoryWrapper_DestroyStaticLOD;
 *SetStaticLOD = *cspacec::iMeshFactoryWrapper_SetStaticLOD;
 *GetStaticLOD = *cspacec::iMeshFactoryWrapper_GetStaticLOD;
-*AddFactoryToStaticLOD = *cspacec::iMeshFactoryWrapper_AddFactoryToStaticLOD;
-*RemoveFactoryFromStaticLOD = *cspacec::iMeshFactoryWrapper_RemoveFactoryFromStaticLOD;
 *SetZBufMode = *cspacec::iMeshFactoryWrapper_SetZBufMode;
 *GetZBufMode = *cspacec::iMeshFactoryWrapper_GetZBufMode;
 *SetZBufModeRecursive = *cspacec::iMeshFactoryWrapper_SetZBufModeRecursive;

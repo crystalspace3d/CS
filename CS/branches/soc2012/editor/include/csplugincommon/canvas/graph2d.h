@@ -99,7 +99,7 @@ namespace CS
       virtual iGraphicsCanvas* GetCanvas() = 0;
 
       /// Handle a resize event from the canvas.
-      void HandleResize ();
+      void HandleResize (iEvent& Event);
     public:
       /// Create csGraphics2D object
       Graphics2DCommon ();
@@ -158,7 +158,7 @@ namespace CS
       }
       virtual void GetRGB (int color, int& r, int& g, int& b, int& a)
       {
-        a = 255 - (color >> 24);
+        a = (255 - (color >> 24)) & 0xff;
         GetRGB (color, r, g, b);
       }
 

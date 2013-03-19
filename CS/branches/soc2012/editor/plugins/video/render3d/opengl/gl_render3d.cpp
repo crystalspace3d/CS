@@ -1415,6 +1415,8 @@ void csGLGraphics3D::UnsetRenderTargets()
   viewwidth = G2D->GetWidth();
   viewheight = G2D->GetHeight();
   needViewportUpdate = true;
+
+  currentAttachments = 0;
 }
 
 void csGLGraphics3D::CopyFromRenderTargets (size_t num,
@@ -1669,7 +1671,6 @@ void csGLGraphics3D::FinishDraw ()
     RecordProfileEvent ("Unset render targets");
     r2tbackend->FinishDraw ((current_drawflags & CSDRAW_READBACK) != 0);
     UnsetRenderTargets();
-    currentAttachments = 0;
   }
   
   current_drawflags = 0;
@@ -1827,7 +1828,6 @@ bool csGLGraphics3D::ActivateTexture (iTextureHandle *txthandle, int unit)
   if (ext->CS_GL_ARB_multitexture)
   {
     statecache->SetCurrentImageUnit (unit);
-    statecache->ActivateImageUnit ();
   }
   else if (unit != 0) return false;
 
@@ -1945,7 +1945,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -1962,7 +1961,6 @@ void csGLGraphics3D::SetTextureComparisonModes (int* units,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (unit);
-	statecache->ActivateImageUnit ();
       }
       else if (unit != 0) continue;
       
@@ -2019,7 +2017,6 @@ void csGLGraphics3D::DrawMesh (const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    //makeGLMatrixInverted (o2w, matrix);
     makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
@@ -3234,8 +3231,8 @@ void csGLGraphics3D::SetClipper (iClipper2D* clipper, int cliptype)
       r2tbackend->SetClipRect (scissorRect);
     else
     {
-      GLint vp[4];
-      glGetIntegerv (GL_VIEWPORT, vp);
+      int vp[4];
+      G2D->GetViewport (vp[0], vp[1], vp[2], vp[3]);
       glScissor (vp[0] + scissorRect.xmin, vp[1] + scissorRect.ymin, scissorRect.Width(),
 	scissorRect.Height());
     }
@@ -3459,7 +3456,6 @@ void csGLGraphics3D::DrawSimpleMeshes (const csSimpleRenderMesh* meshes,
       if (ext->CS_GL_ARB_multitexture)
       {
 	statecache->SetCurrentImageUnit (0);
-	statecache->ActivateImageUnit ();
 	statecache->SetCurrentTCUnit (0);
 	statecache->ActivateTCUnit (csGLStateCache::activateTexCoord);
       }
@@ -3655,6 +3651,8 @@ bool csGLGraphics3D::OQIsVisible(unsigned int occlusion_query, unsigned int samp
   }
 }
 
+// @@@ Temporary comment: Core dumps below on Mesa 9.0 with Intel hardware on Ubuntu. No
+// support for 'GL_ANY_SAMPLES_PASSED_ARB'. Update coming. Check on release.
 void csGLGraphics3D::OQBeginQuery (unsigned int occlusion_query)
 {
   if (ext->CS_GL_ARB_occlusion_query2)
@@ -4227,7 +4225,6 @@ void csGLGraphics3D::DrawMeshBasic(const csCoreRenderMesh* mymesh,
   if (needMatrix)
   {
     float matrix[16];
-    //makeGLMatrixInverted (o2w, matrix);
     makeGLMatrix (o2w, matrix);
     statecache->SetMatrixMode (GL_MODELVIEW);
     glPushMatrix ();

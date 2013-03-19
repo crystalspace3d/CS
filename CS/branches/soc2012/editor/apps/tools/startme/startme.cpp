@@ -56,13 +56,15 @@ void StartMe::Frame ()
   // First get elapsed time from the virtual clock.
   double time = vc->GetElapsedTicks ();
 
-  // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER))
+  // Since there are no 3D objects in the scene, nothing will be rendered and
+  // the render buffer will therefore not be cleared correctly. Work around that
+  // problem by clearing the render buffer manually.
+  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS | CSDRAW_CLEARSCREEN))
     return;
-
-  // Tell the camera to render into the frame buffer.
-  view->Draw ();
   
+  // Render the 3D view
+  engine->GetRenderManager ()->RenderView (view);
+
   /* CEGUI rendering is done by the CEGUI plugin itself since
      we called SetAutoRender (true). */
 
@@ -316,13 +318,13 @@ bool StartMe::Application()
 
   // Setup the fonts
   cegui->GetFontManagerPtr ()->createFreeTypeFont
-    (FONT_NORMAL, 10, true, "/fonts/ttf/DejaVuSerif.ttf");
+    (FONT_NORMAL, 10, true, "/fonts/dejavu/DejaVuSerif.ttf");
   cegui->GetFontManagerPtr ()->createFreeTypeFont
-    (FONT_NORMAL_ITALIC, 10, true, "/fonts/ttf/DejaVuSerif-Italic.ttf");
+    (FONT_NORMAL_ITALIC, 10, true, "/fonts/dejavu/DejaVuSerif-Italic.ttf");
   cegui->GetFontManagerPtr ()->createFreeTypeFont
-    (FONT_TITLE, 15, true, "/fonts/ttf/DejaVuSerif-Bold.ttf");
+    (FONT_TITLE, 15, true, "/fonts/dejavu/DejaVuSerif-Bold.ttf");
   cegui->GetFontManagerPtr ()->createFreeTypeFont
-    (FONT_TITLE_ITALIC, 15, true, "/fonts/ttf/DejaVuSerif-BoldItalic.ttf");
+    (FONT_TITLE_ITALIC, 15, true, "/fonts/dejavu/DejaVuSerif-BoldItalic.ttf");
 
   CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
 

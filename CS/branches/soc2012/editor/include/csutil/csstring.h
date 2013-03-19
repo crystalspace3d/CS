@@ -625,7 +625,7 @@ public:
    * \remarks The comparison is case-sensitive.
    */
   bool Compare (const char* iStr) const
-  { return (strcmp (GetDataSafe(), iStr) == 0); }
+  { return (strcmp (GetDataSafe(), iStr ? iStr : "") == 0); }
 
   /**
    * Check if another string is equal to this one.
@@ -698,6 +698,52 @@ public:
       return (csStrNCaseCmp (p, iStr, n) == 0);
     else
       return (strncmp (p, iStr, n) == 0);
+  }
+
+  /**
+   * Check if this string ends with another one.
+   * \param iStr Other string.
+   * \param ignore_case Causes the comparison to be case insensitive if true.
+   * \return True if they are equal up to the length of iStr; false if not.
+   */
+  bool EndsWith (const csStringBase& iStr, bool ignore_case = false) const
+  {
+    char const* p = GetDataSafe();
+    if (&iStr == this)
+      return true;
+    size_t const n = iStr.Length();
+    if (n == 0)
+      return true;
+    if (n > Size)
+      return false;
+    CS_ASSERT(p != 0);
+    if (ignore_case)
+      return (csStrNCaseCmp (p+(Size-n), iStr.GetDataSafe (), n) == 0);
+    else
+      return (strncmp (p+(Size-n), iStr.GetDataSafe (), n) == 0);
+  }
+
+  /**
+   * Check if this string ends with another one.
+   * \param iStr Other string.
+   * \param ignore_case Causes the comparison to be case insensitive if true.
+   * \return True if they are equal up to the length of iStr; false if not.
+   */
+  bool EndsWith (const char* iStr, bool ignore_case = false) const
+  {
+    char const* p = GetDataSafe();
+    if (iStr == 0)
+      return false;
+    size_t const n = strlen (iStr);
+    if (n == 0)
+      return true;
+    if (n > Size)
+      return false;
+    CS_ASSERT(p != 0);
+    if (ignore_case)
+      return (csStrNCaseCmp (p+(Size-n), iStr, n) == 0);
+    else
+      return (strncmp (p+(Size-n), iStr, n) == 0);
   }
 
   /**
@@ -977,9 +1023,9 @@ protected:
       csStringBase::SetCapacityInternal(NewSize, soft);
     else
     {
-      NewSize++; // Plus one for implicit null byte.
-      if (NewSize <= LEN)
+      if (NewSize < LEN)
       {
+        NewSize++; // Plus one for implicit null byte.
 	// minibuff may still be wholly uninitialized, so ensure a null terminator
 	if (miniused == 0) minibuff[0] = 0;
 	miniused = NewSize;
@@ -987,14 +1033,8 @@ protected:
       else
       {
 	CS_ASSERT(MaxSize == 0);
-	if (soft)
-	  NewSize = ComputeNewSize (NewSize);
-	Data = new char[NewSize];
-	MaxSize = NewSize;
-	if (Size == 0)
-	  Data[0] = '\0';
-	else
-	  memcpy(Data, minibuff, Size + 1);
+        csStringBase::SetCapacityInternal(NewSize, soft);
+	memcpy(Data, minibuff, miniused);
       }
     }
   }

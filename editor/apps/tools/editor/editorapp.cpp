@@ -37,6 +37,8 @@
 #include <wx/wx.h>
 #include "csutil/custom_new_enable.h"
 
+#include "cstool/wxappargconvert.h"
+
 CS_IMPLEMENT_APPLICATION
 
 #if defined (CS_PLATFORM_WIN32)

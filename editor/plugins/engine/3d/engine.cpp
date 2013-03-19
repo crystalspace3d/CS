@@ -25,6 +25,7 @@
 #include "csgfx/imagememory.h"
 #include "csqint.h"
 #include "cstool/vfsdirchange.h"
+#include "cstool/objectcomment.h"
 #include "csutil/cfgacc.h"
 #include "csutil/databuf.h"
 #include "csutil/scf.h"
@@ -516,7 +517,7 @@ csEngine::csEngine (iBase *iParent) :
   sectors (this), textures (new csTextureList (this)), 
   materials (new csMaterialList), sharedVariables (new csSharedVariableList),
   defaultRenderLoopTried (false), renderLoopManager (0),
-  topLevelClipper (0), resize (false),
+  topLevelClipper (0),
   worldSaveable (false), defaultKeepImage (false), maxAspectRatio (0),
   nextframePending (0), currentFrameNumber (0), 
   currentRenderContext (0), weakEventHandler(0),
@@ -681,7 +682,7 @@ bool csEngine::HandleEvent (iEvent &Event)
     if (Event.Name == CanvasResize)
     {
       //if (((iGraphics2D *)csCommandEventHelper::GetInfo(&Event)) == G2D)
-      resize = true;
+      Resize ();
       return false;
     }
     else if (Event.Name == CanvasClose)
@@ -1163,13 +1164,6 @@ void csEngine::StartDraw (iCamera *c, iClipper2D* /*view*/,
 {
   rview.SetEngine (this);
   rview.SetOriginalCamera (c);
-
-  // This flag is set in HandleEvent on a CanvasResize event
-  if (resize)
-  {
-    resize = false;
-    Resize ();
-  }
 
   topLevelClipper = &rview;
 
@@ -2150,23 +2144,6 @@ csPtr<iObjectIterator> csEngine::GetVisibleObjects (
   return 0;
 }
 
-static void HandleStaticLOD (csMeshWrapper* cmesh, const csVector3& pos,
-	csArray<iMeshWrapper*>& list)
-{
-  csStaticLODMesh* static_lod = cmesh->GetStaticLODMesh ();
-  if (!static_lod) return;
-  // We also need to add the child here that is at the right LOD
-  // distance from the start of the segment.
-  float distance = csQsqrt (cmesh->GetSquaredDistance (pos));
-  float lod = static_lod->GetLODValue (distance);
-  csArray<iMeshWrapper*>& meshes = static_lod->GetMeshesForLOD (lod);
-  size_t i;
-  // @@@ We assume here that there will be no portals as children.
-  // This is perhaps a bad assumption.
-  for (i = 0 ; i < meshes.GetSize () ; i++)
-    list.Push (meshes[i]);
-}
-
 void csEngine::GetNearbyMeshList (iSector* sector,
     const csVector3& start, const csVector3& end,
     csArray<iMeshWrapper*>& list,
@@ -2184,8 +2161,6 @@ void csEngine::GetNearbyMeshList (iSector* sector,
     if (imw)
     {
       list.Push (imw); 
-      csMeshWrapper* cmesh = (csMeshWrapper*)imw;
-      HandleStaticLOD (cmesh, start, list);
 
       if (crossPortals && imw->GetPortalContainer ())
       {
@@ -2250,8 +2225,6 @@ void csEngine::GetNearbyMeshList (iSector* sector,
     if (imw)
     {
       list.Push (imw); 
-      csMeshWrapper* cmesh = (csMeshWrapper*)imw;
-      HandleStaticLOD (cmesh, pos, list);
 
       if (crossPortals && imw->GetPortalContainer ())
       {
@@ -2287,8 +2260,6 @@ void csEngine::GetNearbyMeshList (iSector* sector,
     if (imw)
     {
       list.Push (imw); 
-      csMeshWrapper* cmesh = (csMeshWrapper*)imw;
-      HandleStaticLOD (cmesh, pos, list);
       if (crossPortals && imw->GetPortalContainer ())
       {
         iPortalContainer* portals = imw->GetPortalContainer ();
@@ -2804,6 +2775,11 @@ public:
   virtual uint GetKeepFlags() const { return keepFlags; }
   virtual bool CurrentCollectionOnly() const { return searchCollectionOnly; }
   virtual void AddToCollection(iObject* obj);
+  virtual bool LoadComment (iObject* obj, iDocumentNode* commentNode,
+		  bool replace = false)
+  {
+    return CS::Persistence::LoadComment (Engine, obj, commentNode, replace);
+  }
   bool GetVerbose() { return false; }
 };
 

@@ -554,7 +554,7 @@ bool csGenmeshMeshObject::HitBeamOutline (const csVector3& start,
 
 bool csGenmeshMeshObject::HitBeamObject (const csVector3& start,
   const csVector3& end, csVector3& isect, float *pr, int* polygon_idx,
-  iMaterialWrapper** material)
+  iMaterialWrapper** material, bool bf)
 {
   if (polygon_idx) *polygon_idx = -1;
   // This is the slow version. Use for an accurate hit on the object.
@@ -580,10 +580,13 @@ bool csGenmeshMeshObject::HitBeamObject (const csVector3& start,
       CS_MESHTYPE_TRIANGLES);
     while (triangles.HasNext())
     {
-      CS::TriangleT<uint> t (triangles.Next());
-      if (csIntersect3::SegmentTriangle (seg, 
-	vrt[t.a], vrt[t.b], vrt[t.c], 
-	tmp))
+      CS::TriangleT<uint> t = triangles.Next();
+      bool hit;
+      if (bf)
+        hit = csIntersect3::SegmentTriangleBF (seg, vrt[t.a], vrt[t.b], vrt[t.c], tmp);
+      else
+        hit = csIntersect3::SegmentTriangle (seg, vrt[t.a], vrt[t.b], vrt[t.c], tmp);
+      if (hit)
       {
 	temp = csSquaredDist::PointPoint (start, tmp);
 	if (temp < dist)
@@ -816,9 +819,12 @@ iRenderBuffer* csGenmeshMeshObject::GetRenderBuffer (const char* name)
 {
   CS::ShaderVarStringID bufID = factory->GetSVStrings()->Request (name);
   iRenderBuffer* buf = userBuffers.GetRenderBuffer (bufID);
-  if (buf != 0) return 0;
+  if (buf == 0)
+  {
+     buf = factory->GetRenderBuffer (name);
+  }
 
-  return factory->GetRenderBuffer (name);
+  return buf;
 }
 
 iRenderBuffer* csGenmeshMeshObject::GetRenderBuffer (csRenderBufferName name)
@@ -826,9 +832,12 @@ iRenderBuffer* csGenmeshMeshObject::GetRenderBuffer (csRenderBufferName name)
   const char* nameStr = csRenderBuffer::GetDescrFromBufferName (name);
   CS::ShaderVarStringID bufID = factory->GetSVStrings()->Request (nameStr);
   iRenderBuffer* buf = userBuffers.GetRenderBuffer (bufID);
-  if (buf != 0) return 0;
+  if (buf == 0)
+  {
+     buf = factory->GetRenderBuffer (name);
+  }
 
-  return factory->GetRenderBuffer (name);
+  return buf;
 }
 
 iMeshObjectFactory* csGenmeshMeshObject::GetFactory () const
@@ -1454,6 +1463,19 @@ void csGenmeshMeshObjectFactory::GenerateCapsule (float l, float r, uint sides)
   subMeshes.GetDefaultSubmesh()->CreateLegacyBuffer();
   CS::Geometry::DensityTextureMapper mapper (10);
   CS::Geometry::Primitives::GenerateCapsule (
+      l, r, sides, legacyBuffers.mesh_vertices, legacyBuffers.mesh_texels,
+      legacyBuffers.mesh_normals, 
+      subMeshes.GetDefaultSubmesh()->legacyTris.mesh_triangles, &mapper);
+  legacyBuffers.mesh_colors.DeleteAll ();
+  Invalidate ();
+}
+
+void csGenmeshMeshObjectFactory::GenerateCone (float l, float r, uint sides)
+{
+  CreateLegacyBuffers();
+  subMeshes.GetDefaultSubmesh()->CreateLegacyBuffer();
+  CS::Geometry::DensityTextureMapper mapper (10);
+  CS::Geometry::Primitives::GenerateCone (
       l, r, sides, legacyBuffers.mesh_vertices, legacyBuffers.mesh_texels,
       legacyBuffers.mesh_normals, 
       subMeshes.GetDefaultSubmesh()->legacyTris.mesh_triangles, &mapper);

@@ -237,7 +237,7 @@ bool DeferredDemo::SetupGui(bool reload)
     cegui->GetSchemeManagerPtr ()->create ("ice.scheme");
     cegui->GetSystemPtr ()->setDefaultMouseCursor ("ice", "MouseArrow");
 
-    cegui->GetFontManagerPtr ()->createFreeTypeFont ("DejaVuSans", 10, true, "/fonts/ttf/DejaVuSans.ttf");
+    cegui->GetFontManagerPtr ()->createFreeTypeFont ("DejaVuSans", 10, true, "/fonts/dejavu/DejaVuSans.ttf");
   }
 
   // Load layout and set as root
@@ -514,7 +514,7 @@ void DeferredDemo::Frame ()
   else
     engine->SetRenderManager (rm_default);
 
-  view->Draw ();
+  engine->GetRenderManager ()->RenderView (view);
 
   cegui->Render ();
 

@@ -820,8 +820,6 @@ bool HairTest::OnInitialize (int argc, char* argv[])
   if (!saver) return ReportError("Failed to locate Saver!");
 
   // Check if physical effects are enabled
-  csRef<iCommandLineParser> clp =
-    csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
   physicsEnabled = true;
 
   while (physicsEnabled)
@@ -946,7 +944,7 @@ bool HairTest::Application ()
   cegui->GetSystemPtr ()->setDefaultMouseCursor("ice", "MouseArrow");
 
   cegui->GetFontManagerPtr ()->
-    createFreeTypeFont("DejaVuSans", 10, true, "/fonts/ttf/DejaVuSans.ttf");
+    createFreeTypeFont("DejaVuSans", 10, true, "/fonts/dejavu/DejaVuSans.ttf");
 
   CEGUI::WindowManager* winMgr = cegui->GetWindowManagerPtr ();
 

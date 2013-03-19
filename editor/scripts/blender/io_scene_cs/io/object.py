@@ -11,6 +11,7 @@ from io_scene_cs.utilities import B2CS
 
 class Hierarchy:
   OBJECTS = {}
+  exportedFactories = []
   def __init__(self, anObject, anEmpty):
     self.object = anObject
     self.empty = anEmpty
@@ -33,8 +34,8 @@ class Hierarchy:
     return "hier" + str(self.id)
 
   def AsCSRef(self, func, depth=0, dirName='factories/'):
-    if self.object.parent_type != 'BONE':
-      func(' '*depth +'<library>%s%s</library>'%(dirName,self.object.name))
+    if self.object.parent_type != 'BONE' and self.object.data.name not in Hierarchy.exportedFactories:
+      func(' '*depth +'<library>%s%s</library>'%(dirName,self.object.data.name))
 
   def GetDependencies(self):
     dependencies = EmptyDependencies()
@@ -124,16 +125,21 @@ class Hierarchy:
         fi.write(data+'\n')
       return write
 
+    if self.object.data.name in Hierarchy.exportedFactories:
+      print('Skipping "%s" factory export, already done' % (self.object.data.name))
+      return
     # Export mesh
-    fa = open(Join(path, 'factories/', self.object.name), 'w')
+    fa = open(Join(path, 'factories/', self.object.data.name), 'w')
     self.WriteCSLibHeader(Write(fa), animesh)
-    objectDeps = self.object.GetDependencies()
-    use_imposter = not animesh and self.object.data.use_imposter
-    ExportMaterials(Write(fa), 2, path, objectDeps, use_imposter)
+    if not B2CS.properties.sharedMaterial:
+      objectDeps = self.object.GetDependencies()
+      use_imposter = not animesh and self.object.data.use_imposter
+      ExportMaterials(Write(fa), 2, objectDeps, use_imposter)
     if animesh:
       self.WriteCSAnimeshHeader(Write(fa), 2)
     self.WriteCSMeshBuffers(Write(fa), 2, path, animesh, dontClose=False)
     fa.close()
+    Hierarchy.exportedFactories.append(self.object.data.name)
 
     # Export skeleton and animations
     if self.object.type == 'ARMATURE' and self.object.data.bones:
@@ -331,7 +337,7 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
   """
 
   # Write genmesh header
-  func(' '*depth + '<meshfact name=\"%s\">'%(self.name))
+  func(' '*depth + '<meshfact name=\"%s\">'%(self.data.name))
   func(' '*depth + '  <plugin>crystalspace.mesh.loader.factory.genmesh</plugin>')
   if self.data.use_imposter:
     func(' '*depth + '  <imposter range="100.0" tolerance="0.4" camera_tolerance="0.4" shader="lighting_imposter"/>')
@@ -346,6 +352,12 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
     func(' '*depth + '  <noshadowcast />')
   if self.data.limited_shadow_cast:
     func(' '*depth + '  <limitedshadowcast />')
+  if self.data.lighter2_vertexlight:
+    func(' '*depth + '  <key name="lighter2" editoronly="yes" vertexlight="yes" />')
+  if not self.data.lighter2_selfshadow:
+    func(' '*depth + '  <key name="lighter2" editoronly="yes" noselfshadow="yes" />')
+  if self.data.lighter2_lmscale > 0.0:
+    func(' '*depth + '  <key name="lighter2" editoronly="yes" lmscale="%f" />'%(self.data.lighter2_lmscale))
   func(' '*depth + '  <params>')
 
   # Recover submeshes from kwargs
@@ -415,7 +427,7 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
       else:
         func(' '*depth +'  <plugin>crystalspace.mesh.loader.genmesh</plugin>')
       func(' '*depth +'  <params>')
-      func(' '*depth +'    <factory>%s</factory>'%(self.name))
+      func(' '*depth +'    <factory>%s</factory>'%(self.data.name))
       func(' '*depth +'  </params>')
 
       if self.parent and self.parent_type == 'BONE':
@@ -455,7 +467,7 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
     # Flip Y and Z axis.
     func(' '*depth +'  <center x="%f" z="%f" y="%f" />'% tuple(self.relative_matrix.to_translation()))
     func(' '*depth +'  <color red="%f" green="%f" blue="%f" />'% tuple(self.data.color))
-    func(' '*depth +'  <radius brightness="%f">%f</radius>'%(self.data.energy, self.data.distance))
+    func(' '*depth +'  <radius>%f</radius>'%(self.data.distance))
     func(' '*depth +'  <attenuation>linear</attenuation>')
     if self.data.no_shadows:
       func(' '*depth +'  <noshadows />')
@@ -469,6 +481,10 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
         for ob in self.dupli_group.objects:
           if not ob.parent:
             ob.AsCS(func, depth, transform=self.relative_matrix, name=self.uname)
+    else:
+      func(' '*depth +'<node name="%s">'%(name))
+      func(' '*depth +'  <position x="%f" z="%f" y="%f" />'% tuple(self.relative_matrix.to_translation()))
+      func(' '*depth +'</node>')
 
     #Handle children: translate to top level.
     for obj in self.children:
@@ -520,7 +536,7 @@ def IsExportable(self):
       return True
     return False      
 
-  # The export of Empty objects depends of their componants
+  # The export of Empty objects depends of their components
   if self.type == 'EMPTY':
     # Groups of objects are exported if the group itself and 
     # all its composing elements are visible
@@ -540,9 +556,9 @@ def IsExportable(self):
             if not gr.dupli_group.CheckVisibility():
               return False
     else:
-      # Empty objects which are not groups are not exported
-      # (notice that each of their componants can be individually exported)
-      return False
+      # Empty objects which are not groups are exported as map nodes
+      # (notice that each of their components can be individually exported)
+      return True
 
   # All other types of objects are always exportable (if they are visible)
   return True

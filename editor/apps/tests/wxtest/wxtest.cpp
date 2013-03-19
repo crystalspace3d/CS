@@ -36,6 +36,7 @@
 #include "cstool/initapp.h"
 #include "cstool/genmeshbuilder.h"
 #include "cstool/simplestaticlighter.h"
+#include "cstool/wxappargconvert.h"
 #include "wxtest.h"
 #include "iutil/eventq.h"
 #include "iutil/event.h"
@@ -50,6 +51,7 @@
 #include "iengine/mesh.h"
 #include "iengine/movable.h"
 #include "iengine/material.h"
+#include "iengine/rendermanager.h"
 #include "imesh/object.h"
 #include "ivideo/graph3d.h"
 #include "ivideo/graph2d.h"
@@ -114,6 +116,9 @@ Simple::Simple (iObjectRegistry* object_reg)
 
 Simple::~Simple ()
 {
+  /* Event handles may look at 'simple' even after the app is destroyed,
+   * so invalidate the pointer */
+  simple = nullptr;
 }
 
 void Simple::SetupFrame ()
@@ -171,12 +176,8 @@ void Simple::SetupFrame ()
   csOrthoTransform ot (rot, c->GetTransform().GetOrigin ());
   c->SetTransform (ot);
 
-  // Tell 3D driver we're going to display 3D things.
-  if (!g3d->BeginDraw (CSDRAW_3DGRAPHICS))
-    return;
-
-  // Tell the camera to render into the frame buffer.
-  view->Draw ();
+  // Render the 3D view
+  engine->GetRenderManager ()->RenderView (view);
 }
 
 bool Simple::HandleEvent (iEvent& ev)
@@ -576,17 +577,8 @@ IMPLEMENT_APP(MyApp)
 {
   wxInitAllImageHandlers ();
 
-#if defined(wxUSE_UNICODE) && wxUSE_UNICODE
-  char** csargv;
-  csargv = (char**)cs_malloc(sizeof(char*) * argc);
-  for(int i = 0; i < argc; i++) 
-  {
-    csargv[i] = strdup (wxString(argv[i]).mb_str().data());
-  }
-  object_reg = csInitializer::CreateEnvironment (argc, csargv);
-#else
-  object_reg = csInitializer::CreateEnvironment (argc, argv);
-#endif
+  CS::WX::AppArgConvert args (argc, argv);
+  object_reg = csInitializer::CreateEnvironment (args.csArgc(), args.csArgv());
 
   simple = new Simple (object_reg);
   simple->Initialize ();

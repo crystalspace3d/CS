@@ -1640,6 +1640,9 @@
 				RelativePath="..\..\libs\csgfx\textureformatstrings.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csgfx\universalimageconv.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csgfx\xorpat.cpp">
 			</File>
 			<File
@@ -1761,6 +1764,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\collider.cpp">
+			</File>
+			<File
+				RelativePath="..\..\libs\cstool\collisionhelper.cpp">
 			</File>
 			<File
 				RelativePath="..\..\libs\cstool\csanim2d.cpp">
@@ -2228,6 +2234,9 @@
 				RelativePath="..\..\libs\csutil\sparse3d.cpp">
 			</File>
 			<File
+				RelativePath="..\..\libs\csutil\stat_common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\libs\csutil\staticvarcleanup.cpp">
 			</File>
 			<File
@@ -2583,6 +2592,9 @@
 				RelativePath="..\..\libs\..\include\csgfx\trianglestream.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\csgfx\universalimageconv.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\csgfx\vertexlight.h">
 			</File>
 			<File
@@ -2755,6 +2767,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\collider.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\collisionhelper.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\csanim2d.h">
@@ -2952,6 +2967,9 @@
 				RelativePath="..\..\libs\..\include\cstool\numberedfilenamehelper.h">
 			</File>
 			<File
+				RelativePath="..\..\libs\..\include\cstool\objectcomment.h">
+			</File>
+			<File
 				RelativePath="..\..\libs\..\include\cstool\objmodel.h">
 			</File>
 			<File
@@ -3010,6 +3028,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\cstool\vfsdirchange.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\cstool\wxappargconvert.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\algorithms.h">
@@ -3232,6 +3253,9 @@
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\inputdef.h">
+			</File>
+			<File
+				RelativePath="..\..\libs\..\include\csutil\invasivelist.h">
 			</File>
 			<File
 				RelativePath="..\..\libs\..\include\csutil\leakguard.h">

@@ -151,11 +151,27 @@ namespace lighter
       for (size_t s = 0; s < genFact->GetSubMeshCount(); s++)
       {
         iGeneralMeshSubMesh* subMesh = genFact->GetSubMesh (s);
+        csRef<iGeneralFactorySubMesh> subMeshFact (
+          scfQueryInterface<iGeneralFactorySubMesh> (subMesh));
         iRenderBuffer* indices = subMesh->GetIndices();
 
-        CS::TriangleIndicesStream<size_t> tris (indices, 
-          CS_MESHTYPE_TRIANGLES);
+        size_t firstIndex, lastIndex;
+        if (subMeshFact && (subMeshFact->GetSlidingWindowSize() != 0))
+        {
+          // If sliding LOD windows are present, only consider LOD 0 for lighting.
+          int start_i, end_i;
+          subMeshFact->GetSlidingWindow (0, start_i, end_i);
+          firstIndex = start_i; lastIndex = end_i;
+        }
+        else
+        {
+          // No sliding LOD: can use everything
+          firstIndex = 0;
+          lastIndex = indices->GetElementCount() - 1;
+        }
 
+        CS::TriangleIndicesStream<size_t> tris (indices,
+          CS_MESHTYPE_TRIANGLES, firstIndex, lastIndex);
         while (tris.HasNext())
         {
           CS::TriangleT<size_t> tri (tris.Next ());
@@ -468,6 +484,10 @@ namespace lighter
         srcSubmesh->sourceSubmesh->GetMaterial() : srcSubmesh->material;
       iGeneralMeshSubMesh* new_submesh = genFact->AddSubMesh (indices, material,
         allocatedSubmeshes[i].name);
+      new_submesh->SetZMode (srcSubmesh->sourceSubmesh->GetZMode());
+      new_submesh->SetRenderPriority (srcSubmesh->sourceSubmesh->GetRenderPriority());
+      new_submesh->SetMixmode (srcSubmesh->sourceSubmesh->GetMixmode());
+      new_submesh->SetBack2Front (srcSubmesh->sourceSubmesh->GetBack2Front());
 
       csRef<iShaderVariableContext> src_svc =
         scfQueryInterface<iShaderVariableContext> (srcSubmesh->sourceSubmesh);

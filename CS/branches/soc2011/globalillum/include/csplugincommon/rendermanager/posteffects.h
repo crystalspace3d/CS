@@ -57,27 +57,34 @@ namespace RenderManager
   {
     /// Generate mipmaps for this layer
     bool mipmap;
+
     /// Highest mipmap level to generate
     int maxMipmap;
+
     /**
       * Reduce output size. Each downsample step reduces the output by half 
       * in each dimensions.
       */
     int downsample;
+
     /// Prevent texture reuse. Useful for readback or feedback effects.
     bool noTextureReuse;
+
     /**
       * Manually provide a texture to render on.
       * Means mipmap, maxMipmap, downsample and noTextureReuse are ignored.
       */
     csRef<iTextureHandle> manualTarget;
+
     /// If not empty render to this rectangle of the target texture
     csRect targetRect;
+
     /**
       * If given renders onto the specified layer as well.
       * This means all other options except targetRect are ignored.
       */
     iPostEffectLayer* renderOn;
+
     /**
       * This layer will later be read back. Sets the #CSDRAW_READBACK draw
       * flag.
@@ -108,20 +115,25 @@ namespace RenderManager
       * Takes precedence over inputLayer and textureName if given.
       */
     csRef<csShaderVariable> manualInput;
+
     /// Input layer
     iPostEffectLayer* inputLayer;
+
     /// Name of the shader variable to provide the input layer texture in
     csString textureName;
+
     /**
       * Name of the shader variable to provide the texture coordinates for the
       * input layer texture in
       */
     csString texcoordName;
+
     /**
       * If not empty the SV with that name receives the 'pixel size'
       * (values to add to X/Y to get next input pixel) for this input.
       */
     csString inputPixelSizeName;
+
     /**
       * If not empty specifies the rectangle of the input texture, in pixels,
       * the be used as input for the layer.
@@ -139,20 +151,24 @@ namespace RenderManager
   {
     SCF_INTERFACE (iPostEffectLayer, 1, 0, 0);
 
-    /// Get the shader variables for this layer.
+    /// Get the shader variable context of this layer.
     virtual iShaderVariableContext* GetSVContext () const = 0;
-    /// Get inputs to this layer
+
+    /// Get the inputs to this layer
     virtual const csArray<PostEffectLayerInputMap>& GetInputs () const = 0;
       
-    /// Get layer options
+    /// Get the layer options
     virtual const PostEffectLayerOptions& GetOptions () const = 0;
-    /// Set layer options
+
+    /// Set the layer options
     virtual void SetOptions (const PostEffectLayerOptions& opt) = 0;
 
-    /// Get layer shader
+    /// Get the shader of this layer
     virtual void SetShader (iShader* shader) = 0;
-    /// Set layer shader
+
+    /// Set the shader of this layer
     virtual iShader* GetShader () const = 0;
+
     /// @@@ Document me?
     virtual int GetOutTextureNum () const = 0;
   };
@@ -254,14 +270,17 @@ namespace RenderManager
     virtual iPostEffectLayer* AddLayer (iShader* shader, const PostEffectLayerOptions& opt) = 0;
     //@}
     //@{
+
     /// Add an effect pass with custom input mappings.
     virtual iPostEffectLayer* AddLayer (iShader* shader, size_t numMaps, 
       const PostEffectLayerInputMap* maps) = 0;
     virtual iPostEffectLayer* AddLayer (iShader* shader, const PostEffectLayerOptions& opt,
       size_t numMaps, const PostEffectLayerInputMap* maps) = 0;
     //@}
+
     /// Remove a layer
     virtual bool RemoveLayer (iPostEffectLayer* layer) = 0;
+
     /// Remove all layers
     virtual void ClearLayers () = 0;
     
@@ -325,9 +344,9 @@ namespace RenderManager
     bool ParseLayer (iDocumentNode* node, iPostEffect* effect,
                      ParsedLayers& layers, ShadersLayers& shaders) const;
   public:
-    /// Create.
+    /// Constructor
     PostEffectLayersParser (iObjectRegistry* objReg);
-    ~PostEffectLayersParser();
+    ~PostEffectLayersParser ();
   
     /**
      * Parse the post-effect layers from the given document node, and add them to

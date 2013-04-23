@@ -112,6 +112,7 @@ float4 main(vertex2fragment IN) : COLOR
   float3 normal = normalDepth.rgb * 2.0 - 1.0;
     
   float invDepth = 1.0 / depth;
+  if (depth < 0.00001) invDepth = 1.0f;
   float3 scale[2];
   scale[0] = float3 (sampleRadius * invDepth, sampleRadius * invDepth, sampleRadius / farClipDistance);
 ]]>

@@ -425,6 +425,7 @@ bool RMDeferred::RenderView (iView *view, bool recursePortals)
     1.0f / graphics2D->GetWidth (), 1.0f / graphics2D->GetHeight ()));
     
   // Add global shader variable with distance from near to far clip plane
+  // TODO: move that into the SSDO plugin?
   csShaderVariable *farPlaneSV = shaderManager->GetVariableAdd (svStringSet->Request ("far clip distance"));
   csRef<iCamera> cameraBase = scfQueryInterface<iCamera> (camera);
   csPlane3 *farPlane = cameraBase->GetFarPlane ();

@@ -67,7 +67,7 @@
 /// Minor version (even are stable versions, odd are development versions)
 #define CS_VERSION_NUM_MINOR  	0
 /// Maintenance release
-#define CS_VERSION_NUM_RELEASE	0
+#define CS_VERSION_NUM_RELEASE	1
 /**
  * Build number.
  * (Actually, a version number dependent on the SVN revision this version was

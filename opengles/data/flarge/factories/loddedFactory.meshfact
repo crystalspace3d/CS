@@ -1,0 +1,62 @@
+<library>
+    <textures>
+        <texture name="bricks.gif">
+            <file>/lib/stdtex/bricks.jpg</file>
+        </texture>
+        <texture name="white.gif">
+            <file>/lib/std/white.gif</file>
+        </texture>
+        <texture name="spark">
+            <file>/lib/std/spark.png</file>
+        </texture>
+    </textures>
+    <materials>
+        <material name="bricks">
+            <texture>bricks.gif</texture>
+            <shader type="standard">std_lighting_detail_alpha_scroll</shader>
+            <shadervar name="tex detail" type="texture">spark</shadervar>
+            <shadervar name="tex detail scale" type="vector2">10,10</shadervar>
+            <shadervar name="tex detail color" type="vector4">1,1,1,0.25</shadervar>
+        </material>
+        <material name="white">
+            <texture>white.gif</texture>
+        </material>
+    </materials>
+    <meshfact name="loddedFactory_1">
+        <plugin>meshFact</plugin>
+        <params>
+            <box>
+                <min x="-0.1" y="-0.1" z="-0.1" />
+                <max x="0.1" y="0.1" z="0.1" />
+            </box>
+            <material>white</material>
+            <autonormals />
+        </params>
+    </meshfact>
+    <meshfact name="loddedFactory">
+        <staticlod>
+            <distance d0="2" d1="6" />
+        </staticlod>
+        <plugin>meshFact</plugin>
+        <params>
+            <box>
+                <min x="-0.1" y="-0.1" z="-0.1" />
+                <max x="0.1" y="0.1" z="0.1" />
+            </box>
+            <material>bricks</material>
+            <autonormals />
+        </params>
+        <!--<meshfact name="loddedFactory_1" />-->
+        <meshfact name="lod_1">
+            <plugin>meshFact</plugin>
+            <params>
+                <box>
+                    <min x="-0.1" y="-0.1" z="-0.1" />
+                    <max x="0.1" y="0.1" z="0.1" />
+                </box>
+                <material>white</material>
+                <autonormals />
+            </params>
+        </meshfact>
+    </meshfact>
+</library>

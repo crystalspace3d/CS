@@ -1877,6 +1877,9 @@
 				RelativePath="..\..\mk\msvc\libvfs_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libvideorecorder_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libvisualdebug_staticreg.cpp">
 			</File>
 			<File
@@ -2892,6 +2895,12 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\utilities\profiler\profiler.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\videorecorder\video-encoder.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\videorecorder\video-recorder.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\utilities\visualdebug\visualdebug.cpp">
@@ -5812,6 +5821,12 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\utilities\profiler\profiler.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\videorecorder\video-encoder.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\utilities\videorecorder\video-recorder.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\utilities\visualdebug\visualdebug.h">

@@ -602,6 +602,9 @@ CONFIG_3DS
 CONFIG_SPEEX
 CONFIG_LIBTHEORADEC
 CONFIG_THEORADEC
+CONFIG_AVUTIL
+CONFIG_AVFORMAT
+CONFIG_AVCODEC
 CONFIG_VORBISFILE
 CONFIG_VORBIS
 CONFIG_OGG
@@ -791,6 +794,9 @@ with_vgvm
 with_ogg
 with_vorbis
 with_vorbisfile
+with_avcodec
+with_avformat
+with_avutil
 with_theoradec
 with_speex
 with_3ds
@@ -1600,6 +1606,15 @@ Optional Packages:
                           include dir/include, dir/lib, and dir
   --with-vorbisfile=dir   specify additional location to search libvorbisfile
                           if not detected automatically; directories searched
+                          include dir/include, dir/lib, and dir
+  --with-avcodec=dir      specify additional location to search libavcodec if
+                          not detected automatically; directories searched
+                          include dir/include, dir/lib, and dir
+  --with-avformat=dir     specify additional location to search libavformat if
+                          not detected automatically; directories searched
+                          include dir/include, dir/lib, and dir
+  --with-avutil=dir       specify additional location to search libavutil if
+                          not detected automatically; directories searched
                           include dir/include, dir/lib, and dir
   --with-theoradec=dir    specify additional location to search libtheoradec
                           if not detected automatically; directories searched
@@ -46408,6 +46423,2165 @@ fi
 fi
 fi
 fi
+
+
+
+#------------------------------------------------------------------------------
+# Check for libavcodec, libavformat & libavtutil.
+#------------------------------------------------------------------------------
+
+# Check whether --with-avcodec was given.
+if test "${with_avcodec+set}" = set; then :
+  withval=$with_avcodec;
+fi
+
+
+    # Backward compatibility: Recognize --with-libavcodec as alias for --with-avcodec.
+    if test -n "$with_libavcodec" &&
+           test -z "$with_avcodec"; then :
+  with_avcodec="$with_libavcodec"
+fi
+
+    if test -z "$with_avcodec"; then :
+  with_avcodec=yes
+fi
+    if test "$with_avcodec" != no; then :
+
+	# If --with-avcodec value is same as cached value, then assume other
+	 # cached values are also valid; otherwise, ignore all cached values.
+	if test "$with_avcodec" != "$cs_cv_with_avcodec"; then :
+  cs_ignore_cache=yes
+else
+  cs_ignore_cache=no
+fi
+
+	# Put relevant subdirs of the library directory into PATH and PKGCONFIG
+	PATH_SAVE="$PATH"
+	if test $with_avcodec != yes; then :
+  PATH="$with_avcodec/bin$PATH_SEPARATOR$PATH"
+	    PKG_CONFIG_PATH_SAVE_1="$PKG_CONFIG_PATH"
+    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig$PATH_SEPARATOR/sw/lib/pkgconfig$PATH_SEPARATOR/opt/local/lib/pkgconfig$PATH_SEPARATOR/opt/lib/pkgconfig$PATH_SEPARATOR$PKG_CONFIG_PATH"
+    PKG_CONFIG_PATH="$with_avcodec$PATH_SEPARATOR$with_avcodec/lib/pkgconfig$PATH_SEPARATOR$PKG_CONFIG_PATH"
+    export PKG_CONFIG_PATH
+fi
+
+	cs_check_lib_flags=''
+	if test "$cs_prog_pkg_config_checked" != yes; then :
+
+    if test "$cs_prog_path_prepared" != yes; then :
+  cs_prog_path_prepared=yes
+	PATH="$PATH$PATH_SEPARATOR/usr/local/bin$PATH_SEPARATOR/sw/bin$PATH_SEPARATOR${srcdir}/bin"
+	export PATH
+fi
+    if test -n "$ac_tool_prefix"; then
+  for ac_prog in pkg-config
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PKG_CONFIG"; then
+  ac_cv_prog_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PKG_CONFIG="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PKG_CONFIG=$ac_cv_prog_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$PKG_CONFIG" && break
+  done
+fi
+if test -z "$PKG_CONFIG"; then
+  ac_ct_PKG_CONFIG=$PKG_CONFIG
+  for ac_prog in pkg-config
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_PKG_CONFIG"; then
+  ac_cv_prog_ac_ct_PKG_CONFIG="$ac_ct_PKG_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_PKG_CONFIG="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_PKG_CONFIG=$ac_cv_prog_ac_ct_PKG_CONFIG
+if test -n "$ac_ct_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_PKG_CONFIG" >&5
+$as_echo "$ac_ct_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_PKG_CONFIG" && break
+done
+
+  if test "x$ac_ct_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_ct_PKG_CONFIG
+  fi
+fi
+
+	cs_prog_pkg_config_checked=yes
+fi
+    if test -z "$cs_cv_prog_pkg_config_ok"; then :
+  if test -n "$PKG_CONFIG"; then :
+  if $PKG_CONFIG --atleast-pkgconfig-version=0.9.0; then :
+  cs_cv_prog_pkg_config_ok=yes
+else
+  cs_cv_prog_pkg_config_ok=no
+fi
+else
+  cs_cv_prog_pkg_config_ok=no
+fi
+fi
+    if test $cs_cv_prog_pkg_config_ok = yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if $PKG_CONFIG recognizes avcodec" >&5
+$as_echo_n "checking if $PKG_CONFIG recognizes avcodec... " >&6; }
+if ${cs_cv_prog_pkg_config_avcodec+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if $PKG_CONFIG --exists avcodec; then :
+  cs_cv_prog_pkg_config_avcodec=yes
+else
+  cs_cv_prog_pkg_config_avcodec=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_prog_pkg_config_avcodec" >&5
+$as_echo "$cs_cv_prog_pkg_config_avcodec" >&6; }
+	if test $cs_cv_prog_pkg_config_avcodec = yes; then :
+  if test -z "$cs_cv_prog_pkg_config_avcodec_flags"; then :
+  cs_check_lib_cflag=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --cflags avcodec"; } >&5
+  ($PKG_CONFIG --cflags avcodec) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_check_lib_lflag=''
+	cs_check_lib_libs=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --libs avcodec"; } >&5
+  ($PKG_CONFIG --libs avcodec) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_cv_prog_pkg_config_avcodec_flags=`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`
+fi
+    cs_check_lib_flags="$cs_check_lib_flags $cs_cv_prog_pkg_config_avcodec_flags"
+fi
+fi
+
+    if test "$cs_prog_path_prepared" != yes; then :
+  cs_prog_path_prepared=yes
+	PATH="$PATH$PATH_SEPARATOR/usr/local/bin$PATH_SEPARATOR/sw/bin$PATH_SEPARATOR${srcdir}/bin"
+	export PATH
+fi
+    if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}avcodec-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}avcodec-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CONFIG_AVCODEC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CONFIG_AVCODEC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CONFIG_AVCODEC="$CONFIG_AVCODEC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CONFIG_AVCODEC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CONFIG_AVCODEC=$ac_cv_path_CONFIG_AVCODEC
+if test -n "$CONFIG_AVCODEC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CONFIG_AVCODEC" >&5
+$as_echo "$CONFIG_AVCODEC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_CONFIG_AVCODEC"; then
+  ac_pt_CONFIG_AVCODEC=$CONFIG_AVCODEC
+  # Extract the first word of "avcodec-config", so it can be a program name with args.
+set dummy avcodec-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_CONFIG_AVCODEC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_CONFIG_AVCODEC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_CONFIG_AVCODEC="$ac_pt_CONFIG_AVCODEC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_CONFIG_AVCODEC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_CONFIG_AVCODEC=$ac_cv_path_ac_pt_CONFIG_AVCODEC
+if test -n "$ac_pt_CONFIG_AVCODEC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_CONFIG_AVCODEC" >&5
+$as_echo "$ac_pt_CONFIG_AVCODEC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_CONFIG_AVCODEC" = x; then
+    CONFIG_AVCODEC=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    CONFIG_AVCODEC=$ac_pt_CONFIG_AVCODEC
+  fi
+else
+  CONFIG_AVCODEC="$ac_cv_path_CONFIG_AVCODEC"
+fi
+
+    if test -n "$CONFIG_AVCODEC"; then :
+  if test -z "$cs_cv_prog_config_avcodec_ok"; then :
+  if $CONFIG_AVCODEC --cflags --libs >/dev/null 2>&1; then :
+  cs_cv_prog_config_avcodec_ok=yes
+else
+  cs_cv_prog_config_avcodec_ok=no
+fi
+fi
+	if test $cs_cv_prog_config_avcodec_ok = yes; then :
+  if test -z "$cs_cv_prog_config_avcodec_flags"; then :
+  cs_check_lib_cflag=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$CONFIG_AVCODEC --cflags "; } >&5
+  ($CONFIG_AVCODEC --cflags ) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_check_lib_lflag=''
+	cs_check_lib_libs=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$CONFIG_AVCODEC --libs "; } >&5
+  ($CONFIG_AVCODEC --libs ) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_cv_prog_config_avcodec_flags=`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`
+fi
+    cs_check_lib_flags="$cs_check_lib_flags $cs_cv_prog_config_avcodec_flags"
+fi
+fi
+
+
+	if test $with_avcodec != yes; then :
+  cs_check_lib_paths=$with_avcodec
+else
+  cs_check_lib_paths="| /usr/local/include|/usr/local/lib \
+    /sw/include|/sw/lib \
+    /opt/local/include|/opt/local/lib \
+    /opt/include|/opt/lib "
+fi
+	for cs_lib_item in $cs_check_lib_paths
+    do
+	case $cs_lib_item in
+	    *\|*)
+    set filler `echo "$cs_lib_item" | awk 'BEGIN { FS="|" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_check_incdir=''
+else
+  if test "$1" = filler; then :
+  cs_check_incdir=''
+else
+  cs_check_incdir=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_check_libdir=''
+else
+  if test "$1" = filler; then :
+  cs_check_libdir=''
+else
+  cs_check_libdir=$1
+fi
+	shift
+fi
+
+		if test -n "$cs_check_incdir"; then :
+  cs_check_lib_cflag="-I$cs_check_incdir"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_check_libdir"; then :
+  cs_check_lib_lflag="-L$cs_check_libdir"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avcodec"; then :
+  cs_check_lib_libs="-lavcodec"
+	cs_check_lib_framework="-framework avcodec"
+	cs_check_lib_framework_define="-DCS_AVCODEC_PATH=avcodec"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		;;
+	    *)  if test -n "$cs_lib_item/include"; then :
+  cs_check_lib_cflag="-I$cs_lib_item/include"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_lib_item/lib"; then :
+  cs_check_lib_lflag="-L$cs_lib_item/lib"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avcodec"; then :
+  cs_check_lib_libs="-lavcodec"
+	cs_check_lib_framework="-framework avcodec"
+	cs_check_lib_framework_define="-DCS_AVCODEC_PATH=avcodec"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		if test -n "$cs_lib_item"; then :
+  cs_check_lib_cflag="-I$cs_lib_item"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_lib_item"; then :
+  cs_check_lib_lflag="-L$cs_lib_item"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avcodec"; then :
+  cs_check_lib_libs="-lavcodec"
+	cs_check_lib_framework="-framework avcodec"
+	cs_check_lib_framework_define="-DCS_AVCODEC_PATH=avcodec"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		;;
+	esac
+    done
+
+
+	if test "$cs_ignore_cache" != yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavcodec" >&5
+$as_echo_n "checking for libavcodec... " >&6; }
+if ${cs_cv_libavcodec+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    cs_cflags_save="$CFLAGS"
+    cs_lflags_save="$LDFLAGS"
+    cs_libs_save="$LIBS"
+    cs_build_ok=no
+
+
+    for cs_build_item in $cs_check_lib_flags
+    do
+
+    set filler `echo "$cs_build_item" | awk 'BEGIN { FS="@" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_dummy=''
+else
+  if test "$1" = filler; then :
+  cs_dummy=''
+else
+  cs_dummy=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_cflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_cflags_test=''
+else
+  cs_cflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_lflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_lflags_test=''
+else
+  cs_lflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_libs_test=''
+else
+  if test "$1" = filler; then :
+  cs_libs_test=''
+else
+  cs_libs_test=$1
+fi
+	shift
+fi
+
+    cs_cflags_test=`echo $cs_cflags_test | sed 'y%#% %'`
+    cs_lflags_test=`echo $cs_lflags_test | sed 'y%#% %'`
+    cs_libs_test=`echo $cs_libs_test | sed 'y%#% %'`
+
+	CFLAGS="$cs_cflags_save $cs_cflags_test "
+	LDFLAGS="$cs_lflags_test  $cs_lflags_save"
+	LIBS="$cs_libs_test  $cs_libs_save"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libavcodec/avcodec.h>
+int
+main ()
+{
+avcodec_register_all();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  cs_build_ok=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	if test $cs_build_ok = yes; then :
+  break
+fi
+    done
+
+
+    CFLAGS=$cs_cflags_save
+    LDFLAGS=$cs_lflags_save
+    LIBS=$cs_libs_save
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    if test $cs_build_ok = yes; then :
+  cs_build_cflags=`echo x$cs_cflags_test  | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_lflags=`echo x$cs_lflags_test  | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_libs=`echo x$cs_libs_test  | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_cv_libavcodec=yes
+		cs_cv_libavcodec_cflags=$cs_build_cflags
+		cs_cv_libavcodec_lflags=$cs_build_lflags
+		cs_cv_libavcodec_libs=$cs_build_libs
+else
+  cs_cv_libavcodec=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_libavcodec" >&5
+$as_echo "$cs_cv_libavcodec" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavcodec" >&5
+$as_echo_n "checking for libavcodec... " >&6; }
+	    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    cs_cflags_save="$CFLAGS"
+    cs_lflags_save="$LDFLAGS"
+    cs_libs_save="$LIBS"
+    cs_build_ok=no
+
+
+    for cs_build_item in $cs_check_lib_flags
+    do
+
+    set filler `echo "$cs_build_item" | awk 'BEGIN { FS="@" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_dummy=''
+else
+  if test "$1" = filler; then :
+  cs_dummy=''
+else
+  cs_dummy=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_cflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_cflags_test=''
+else
+  cs_cflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_lflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_lflags_test=''
+else
+  cs_lflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_libs_test=''
+else
+  if test "$1" = filler; then :
+  cs_libs_test=''
+else
+  cs_libs_test=$1
+fi
+	shift
+fi
+
+    cs_cflags_test=`echo $cs_cflags_test | sed 'y%#% %'`
+    cs_lflags_test=`echo $cs_lflags_test | sed 'y%#% %'`
+    cs_libs_test=`echo $cs_libs_test | sed 'y%#% %'`
+
+	CFLAGS="$cs_cflags_save $cs_cflags_test "
+	LDFLAGS="$cs_lflags_test  $cs_lflags_save"
+	LIBS="$cs_libs_test  $cs_libs_save"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libavcodec/avcodec.h>
+int
+main ()
+{
+avcodec_register_all();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  cs_build_ok=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	if test $cs_build_ok = yes; then :
+  break
+fi
+    done
+
+
+    CFLAGS=$cs_cflags_save
+    LDFLAGS=$cs_lflags_save
+    LIBS=$cs_libs_save
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    if test $cs_build_ok = yes; then :
+  cs_build_cflags=`echo x$cs_cflags_test  | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_lflags=`echo x$cs_lflags_test  | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_libs=`echo x$cs_libs_test  | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_cv_libavcodec=yes
+		cs_cv_libavcodec_cflags=$cs_build_cflags
+		cs_cv_libavcodec_lflags=$cs_build_lflags
+		cs_cv_libavcodec_libs=$cs_build_libs
+else
+  cs_cv_libavcodec=no
+fi
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_libavcodec" >&5
+$as_echo "$cs_cv_libavcodec" >&6; }
+fi
+    if test $cs_cv_libavcodec = yes; then :
+
+else
+  cs_cv_libavcodec_cflags=''
+	cs_cv_libavcodec_lflags=''
+	cs_cv_libavcodec_libs=''
+
+fi
+
+	PATH="$PATH_SAVE"
+	if test $with_avcodec != yes; then :
+  PKG_CONFIG_PATH="$PKG_CONFIG_PATH_SAVE_1"
+    export PKG_CONFIG_PATH
+fi
+
+else
+  cs_cv_libavcodec=no
+fi
+
+    cs_cv_with_avcodec="$with_avcodec"
+    if test "$cs_cv_libavcodec" = yes; then :
+  if test "$cs_cv_libavcodec" = yes; then :
+  cs_build_prop_val="yes"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}AVCODEC.AVAILABLE ?= $cs_build_prop_val ;
+"
+fi
+	cs_build_prop_val="$cs_cv_libavcodec_cflags"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}AVCODEC.CFLAGS ?= $cs_build_prop_val ;
+"
+fi
+	cs_build_prop_val="$cs_cv_libavcodec_lflags $cs_cv_libavcodec_libs"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}AVCODEC.LFLAGS ?= $cs_build_prop_val ;
+"
+fi
+fi
+fi
+    if test -n "$cs_cv_libavcodec" && test "no" != "$cs_cv_libavcodec"; then :
+  _cs_sum_ok=yes
+else
+  _cs_sum_ok=no
+fi
+    _cs_summary="$_cs_summary
+avcodec|other|$_cs_sum_ok|*"
+
+
+if test "$cs_cv_libavcodec" = yes; then :
+
+# Check whether --with-avformat was given.
+if test "${with_avformat+set}" = set; then :
+  withval=$with_avformat;
+fi
+
+
+    # Backward compatibility: Recognize --with-libavformat as alias for --with-avformat.
+    if test -n "$with_libavformat" &&
+           test -z "$with_avformat"; then :
+  with_avformat="$with_libavformat"
+fi
+
+    if test -z "$with_avformat"; then :
+  with_avformat=yes
+fi
+    if test "$with_avformat" != no; then :
+
+	# If --with-avformat value is same as cached value, then assume other
+	 # cached values are also valid; otherwise, ignore all cached values.
+	if test "$with_avformat" != "$cs_cv_with_avformat"; then :
+  cs_ignore_cache=yes
+else
+  cs_ignore_cache=no
+fi
+
+	# Put relevant subdirs of the library directory into PATH and PKGCONFIG
+	PATH_SAVE="$PATH"
+	if test $with_avformat != yes; then :
+  PATH="$with_avformat/bin$PATH_SEPARATOR$PATH"
+	    PKG_CONFIG_PATH_SAVE_1="$PKG_CONFIG_PATH"
+    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig$PATH_SEPARATOR/sw/lib/pkgconfig$PATH_SEPARATOR/opt/local/lib/pkgconfig$PATH_SEPARATOR/opt/lib/pkgconfig$PATH_SEPARATOR$PKG_CONFIG_PATH"
+    PKG_CONFIG_PATH="$with_avformat$PATH_SEPARATOR$with_avformat/lib/pkgconfig$PATH_SEPARATOR$PKG_CONFIG_PATH"
+    export PKG_CONFIG_PATH
+fi
+
+	cs_check_lib_flags=''
+	if test "$cs_prog_pkg_config_checked" != yes; then :
+
+    if test "$cs_prog_path_prepared" != yes; then :
+  cs_prog_path_prepared=yes
+	PATH="$PATH$PATH_SEPARATOR/usr/local/bin$PATH_SEPARATOR/sw/bin$PATH_SEPARATOR${srcdir}/bin"
+	export PATH
+fi
+    if test -n "$ac_tool_prefix"; then
+  for ac_prog in pkg-config
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PKG_CONFIG"; then
+  ac_cv_prog_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PKG_CONFIG="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PKG_CONFIG=$ac_cv_prog_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$PKG_CONFIG" && break
+  done
+fi
+if test -z "$PKG_CONFIG"; then
+  ac_ct_PKG_CONFIG=$PKG_CONFIG
+  for ac_prog in pkg-config
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_PKG_CONFIG"; then
+  ac_cv_prog_ac_ct_PKG_CONFIG="$ac_ct_PKG_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_PKG_CONFIG="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_PKG_CONFIG=$ac_cv_prog_ac_ct_PKG_CONFIG
+if test -n "$ac_ct_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_PKG_CONFIG" >&5
+$as_echo "$ac_ct_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_PKG_CONFIG" && break
+done
+
+  if test "x$ac_ct_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_ct_PKG_CONFIG
+  fi
+fi
+
+	cs_prog_pkg_config_checked=yes
+fi
+    if test -z "$cs_cv_prog_pkg_config_ok"; then :
+  if test -n "$PKG_CONFIG"; then :
+  if $PKG_CONFIG --atleast-pkgconfig-version=0.9.0; then :
+  cs_cv_prog_pkg_config_ok=yes
+else
+  cs_cv_prog_pkg_config_ok=no
+fi
+else
+  cs_cv_prog_pkg_config_ok=no
+fi
+fi
+    if test $cs_cv_prog_pkg_config_ok = yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if $PKG_CONFIG recognizes avformat" >&5
+$as_echo_n "checking if $PKG_CONFIG recognizes avformat... " >&6; }
+if ${cs_cv_prog_pkg_config_avformat+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if $PKG_CONFIG --exists avformat; then :
+  cs_cv_prog_pkg_config_avformat=yes
+else
+  cs_cv_prog_pkg_config_avformat=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_prog_pkg_config_avformat" >&5
+$as_echo "$cs_cv_prog_pkg_config_avformat" >&6; }
+	if test $cs_cv_prog_pkg_config_avformat = yes; then :
+  if test -z "$cs_cv_prog_pkg_config_avformat_flags"; then :
+  cs_check_lib_cflag=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --cflags avformat"; } >&5
+  ($PKG_CONFIG --cflags avformat) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_check_lib_lflag=''
+	cs_check_lib_libs=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --libs avformat"; } >&5
+  ($PKG_CONFIG --libs avformat) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_cv_prog_pkg_config_avformat_flags=`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`
+fi
+    cs_check_lib_flags="$cs_check_lib_flags $cs_cv_prog_pkg_config_avformat_flags"
+fi
+fi
+
+    if test "$cs_prog_path_prepared" != yes; then :
+  cs_prog_path_prepared=yes
+	PATH="$PATH$PATH_SEPARATOR/usr/local/bin$PATH_SEPARATOR/sw/bin$PATH_SEPARATOR${srcdir}/bin"
+	export PATH
+fi
+    if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}avformat-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}avformat-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CONFIG_AVFORMAT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CONFIG_AVFORMAT in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CONFIG_AVFORMAT="$CONFIG_AVFORMAT" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CONFIG_AVFORMAT="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CONFIG_AVFORMAT=$ac_cv_path_CONFIG_AVFORMAT
+if test -n "$CONFIG_AVFORMAT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CONFIG_AVFORMAT" >&5
+$as_echo "$CONFIG_AVFORMAT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_CONFIG_AVFORMAT"; then
+  ac_pt_CONFIG_AVFORMAT=$CONFIG_AVFORMAT
+  # Extract the first word of "avformat-config", so it can be a program name with args.
+set dummy avformat-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_CONFIG_AVFORMAT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_CONFIG_AVFORMAT in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_CONFIG_AVFORMAT="$ac_pt_CONFIG_AVFORMAT" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_CONFIG_AVFORMAT="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_CONFIG_AVFORMAT=$ac_cv_path_ac_pt_CONFIG_AVFORMAT
+if test -n "$ac_pt_CONFIG_AVFORMAT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_CONFIG_AVFORMAT" >&5
+$as_echo "$ac_pt_CONFIG_AVFORMAT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_CONFIG_AVFORMAT" = x; then
+    CONFIG_AVFORMAT=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    CONFIG_AVFORMAT=$ac_pt_CONFIG_AVFORMAT
+  fi
+else
+  CONFIG_AVFORMAT="$ac_cv_path_CONFIG_AVFORMAT"
+fi
+
+    if test -n "$CONFIG_AVFORMAT"; then :
+  if test -z "$cs_cv_prog_config_avformat_ok"; then :
+  if $CONFIG_AVFORMAT --cflags --libs >/dev/null 2>&1; then :
+  cs_cv_prog_config_avformat_ok=yes
+else
+  cs_cv_prog_config_avformat_ok=no
+fi
+fi
+	if test $cs_cv_prog_config_avformat_ok = yes; then :
+  if test -z "$cs_cv_prog_config_avformat_flags"; then :
+  cs_check_lib_cflag=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$CONFIG_AVFORMAT --cflags "; } >&5
+  ($CONFIG_AVFORMAT --cflags ) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_check_lib_lflag=''
+	cs_check_lib_libs=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$CONFIG_AVFORMAT --libs "; } >&5
+  ($CONFIG_AVFORMAT --libs ) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_cv_prog_config_avformat_flags=`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`
+fi
+    cs_check_lib_flags="$cs_check_lib_flags $cs_cv_prog_config_avformat_flags"
+fi
+fi
+
+
+	if test $with_avformat != yes; then :
+  cs_check_lib_paths=$with_avformat
+else
+  cs_check_lib_paths="| /usr/local/include|/usr/local/lib \
+    /sw/include|/sw/lib \
+    /opt/local/include|/opt/local/lib \
+    /opt/include|/opt/lib "
+fi
+	for cs_lib_item in $cs_check_lib_paths
+    do
+	case $cs_lib_item in
+	    *\|*)
+    set filler `echo "$cs_lib_item" | awk 'BEGIN { FS="|" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_check_incdir=''
+else
+  if test "$1" = filler; then :
+  cs_check_incdir=''
+else
+  cs_check_incdir=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_check_libdir=''
+else
+  if test "$1" = filler; then :
+  cs_check_libdir=''
+else
+  cs_check_libdir=$1
+fi
+	shift
+fi
+
+		if test -n "$cs_check_incdir"; then :
+  cs_check_lib_cflag="-I$cs_check_incdir"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_check_libdir"; then :
+  cs_check_lib_lflag="-L$cs_check_libdir"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avformat"; then :
+  cs_check_lib_libs="-lavformat"
+	cs_check_lib_framework="-framework avformat"
+	cs_check_lib_framework_define="-DCS_AVFORMAT_PATH=avformat"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		;;
+	    *)  if test -n "$cs_lib_item/include"; then :
+  cs_check_lib_cflag="-I$cs_lib_item/include"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_lib_item/lib"; then :
+  cs_check_lib_lflag="-L$cs_lib_item/lib"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avformat"; then :
+  cs_check_lib_libs="-lavformat"
+	cs_check_lib_framework="-framework avformat"
+	cs_check_lib_framework_define="-DCS_AVFORMAT_PATH=avformat"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		if test -n "$cs_lib_item"; then :
+  cs_check_lib_cflag="-I$cs_lib_item"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_lib_item"; then :
+  cs_check_lib_lflag="-L$cs_lib_item"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avformat"; then :
+  cs_check_lib_libs="-lavformat"
+	cs_check_lib_framework="-framework avformat"
+	cs_check_lib_framework_define="-DCS_AVFORMAT_PATH=avformat"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		;;
+	esac
+    done
+
+
+	if test "$cs_ignore_cache" != yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavformat" >&5
+$as_echo_n "checking for libavformat... " >&6; }
+if ${cs_cv_libavformat+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    cs_cflags_save="$CFLAGS"
+    cs_lflags_save="$LDFLAGS"
+    cs_libs_save="$LIBS"
+    cs_build_ok=no
+
+
+    for cs_build_item in $cs_check_lib_flags
+    do
+
+    set filler `echo "$cs_build_item" | awk 'BEGIN { FS="@" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_dummy=''
+else
+  if test "$1" = filler; then :
+  cs_dummy=''
+else
+  cs_dummy=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_cflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_cflags_test=''
+else
+  cs_cflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_lflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_lflags_test=''
+else
+  cs_lflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_libs_test=''
+else
+  if test "$1" = filler; then :
+  cs_libs_test=''
+else
+  cs_libs_test=$1
+fi
+	shift
+fi
+
+    cs_cflags_test=`echo $cs_cflags_test | sed 'y%#% %'`
+    cs_lflags_test=`echo $cs_lflags_test | sed 'y%#% %'`
+    cs_libs_test=`echo $cs_libs_test | sed 'y%#% %'`
+
+	CFLAGS="$cs_cflags_save $cs_cflags_test $cs_cv_libavcodec_cflags"
+	LDFLAGS="$cs_lflags_test $cs_cv_libavcodec_lflags $cs_lflags_save"
+	LIBS="$cs_libs_test $cs_cv_libavcodec_libs $cs_libs_save"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libavformat/avformat.h>
+int
+main ()
+{
+av_register_all();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  cs_build_ok=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	if test $cs_build_ok = yes; then :
+  break
+fi
+    done
+
+
+    CFLAGS=$cs_cflags_save
+    LDFLAGS=$cs_lflags_save
+    LIBS=$cs_libs_save
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    if test $cs_build_ok = yes; then :
+  cs_build_cflags=`echo x$cs_cflags_test $cs_cv_libavcodec_cflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_lflags=`echo x$cs_lflags_test $cs_cv_libavcodec_lflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_libs=`echo x$cs_libs_test $cs_cv_libavcodec_libs | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_cv_libavformat=yes
+		cs_cv_libavformat_cflags=$cs_build_cflags
+		cs_cv_libavformat_lflags=$cs_build_lflags
+		cs_cv_libavformat_libs=$cs_build_libs
+else
+  cs_cv_libavformat=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_libavformat" >&5
+$as_echo "$cs_cv_libavformat" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavformat" >&5
+$as_echo_n "checking for libavformat... " >&6; }
+	    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    cs_cflags_save="$CFLAGS"
+    cs_lflags_save="$LDFLAGS"
+    cs_libs_save="$LIBS"
+    cs_build_ok=no
+
+
+    for cs_build_item in $cs_check_lib_flags
+    do
+
+    set filler `echo "$cs_build_item" | awk 'BEGIN { FS="@" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_dummy=''
+else
+  if test "$1" = filler; then :
+  cs_dummy=''
+else
+  cs_dummy=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_cflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_cflags_test=''
+else
+  cs_cflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_lflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_lflags_test=''
+else
+  cs_lflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_libs_test=''
+else
+  if test "$1" = filler; then :
+  cs_libs_test=''
+else
+  cs_libs_test=$1
+fi
+	shift
+fi
+
+    cs_cflags_test=`echo $cs_cflags_test | sed 'y%#% %'`
+    cs_lflags_test=`echo $cs_lflags_test | sed 'y%#% %'`
+    cs_libs_test=`echo $cs_libs_test | sed 'y%#% %'`
+
+	CFLAGS="$cs_cflags_save $cs_cflags_test $cs_cv_libavcodec_cflags"
+	LDFLAGS="$cs_lflags_test $cs_cv_libavcodec_lflags $cs_lflags_save"
+	LIBS="$cs_libs_test $cs_cv_libavcodec_libs $cs_libs_save"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libavformat/avformat.h>
+int
+main ()
+{
+av_register_all();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  cs_build_ok=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	if test $cs_build_ok = yes; then :
+  break
+fi
+    done
+
+
+    CFLAGS=$cs_cflags_save
+    LDFLAGS=$cs_lflags_save
+    LIBS=$cs_libs_save
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    if test $cs_build_ok = yes; then :
+  cs_build_cflags=`echo x$cs_cflags_test $cs_cv_libavcodec_cflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_lflags=`echo x$cs_lflags_test $cs_cv_libavcodec_lflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_libs=`echo x$cs_libs_test $cs_cv_libavcodec_libs | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_cv_libavformat=yes
+		cs_cv_libavformat_cflags=$cs_build_cflags
+		cs_cv_libavformat_lflags=$cs_build_lflags
+		cs_cv_libavformat_libs=$cs_build_libs
+else
+  cs_cv_libavformat=no
+fi
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_libavformat" >&5
+$as_echo "$cs_cv_libavformat" >&6; }
+fi
+    if test $cs_cv_libavformat = yes; then :
+
+else
+  cs_cv_libavformat_cflags=''
+	cs_cv_libavformat_lflags=''
+	cs_cv_libavformat_libs=''
+
+fi
+
+	PATH="$PATH_SAVE"
+	if test $with_avformat != yes; then :
+  PKG_CONFIG_PATH="$PKG_CONFIG_PATH_SAVE_1"
+    export PKG_CONFIG_PATH
+fi
+
+else
+  cs_cv_libavformat=no
+fi
+
+    cs_cv_with_avformat="$with_avformat"
+    if test "$cs_cv_libavformat" = yes; then :
+  if test "$cs_cv_libavformat" = yes; then :
+  cs_build_prop_val="yes"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}AVFORMAT.AVAILABLE ?= $cs_build_prop_val ;
+"
+fi
+	cs_build_prop_val="$cs_cv_libavformat_cflags"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}AVFORMAT.CFLAGS ?= $cs_build_prop_val ;
+"
+fi
+	cs_build_prop_val="$cs_cv_libavformat_lflags $cs_cv_libavformat_libs"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}AVFORMAT.LFLAGS ?= $cs_build_prop_val ;
+"
+fi
+fi
+fi
+fi
+    if test -n "$cs_cv_libavformat" && test "no" != "$cs_cv_libavformat"; then :
+  _cs_sum_ok=yes
+else
+  _cs_sum_ok=no
+fi
+    _cs_summary="$_cs_summary
+avformat|other|$_cs_sum_ok|*"
+
+
+if test "$cs_cv_libavformat" = yes; then :
+
+# Check whether --with-avutil was given.
+if test "${with_avutil+set}" = set; then :
+  withval=$with_avutil;
+fi
+
+
+    # Backward compatibility: Recognize --with-libavutil as alias for --with-avutil.
+    if test -n "$with_libavutil" &&
+           test -z "$with_avutil"; then :
+  with_avutil="$with_libavutil"
+fi
+
+    if test -z "$with_avutil"; then :
+  with_avutil=yes
+fi
+    if test "$with_avutil" != no; then :
+
+	# If --with-avutil value is same as cached value, then assume other
+	 # cached values are also valid; otherwise, ignore all cached values.
+	if test "$with_avutil" != "$cs_cv_with_avutil"; then :
+  cs_ignore_cache=yes
+else
+  cs_ignore_cache=no
+fi
+
+	# Put relevant subdirs of the library directory into PATH and PKGCONFIG
+	PATH_SAVE="$PATH"
+	if test $with_avutil != yes; then :
+  PATH="$with_avutil/bin$PATH_SEPARATOR$PATH"
+	    PKG_CONFIG_PATH_SAVE_1="$PKG_CONFIG_PATH"
+    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig$PATH_SEPARATOR/sw/lib/pkgconfig$PATH_SEPARATOR/opt/local/lib/pkgconfig$PATH_SEPARATOR/opt/lib/pkgconfig$PATH_SEPARATOR$PKG_CONFIG_PATH"
+    PKG_CONFIG_PATH="$with_avutil$PATH_SEPARATOR$with_avutil/lib/pkgconfig$PATH_SEPARATOR$PKG_CONFIG_PATH"
+    export PKG_CONFIG_PATH
+fi
+
+	cs_check_lib_flags=''
+	if test "$cs_prog_pkg_config_checked" != yes; then :
+
+    if test "$cs_prog_path_prepared" != yes; then :
+  cs_prog_path_prepared=yes
+	PATH="$PATH$PATH_SEPARATOR/usr/local/bin$PATH_SEPARATOR/sw/bin$PATH_SEPARATOR${srcdir}/bin"
+	export PATH
+fi
+    if test -n "$ac_tool_prefix"; then
+  for ac_prog in pkg-config
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PKG_CONFIG"; then
+  ac_cv_prog_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PKG_CONFIG="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PKG_CONFIG=$ac_cv_prog_PKG_CONFIG
+if test -n "$PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PKG_CONFIG" >&5
+$as_echo "$PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$PKG_CONFIG" && break
+  done
+fi
+if test -z "$PKG_CONFIG"; then
+  ac_ct_PKG_CONFIG=$PKG_CONFIG
+  for ac_prog in pkg-config
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_PKG_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_PKG_CONFIG"; then
+  ac_cv_prog_ac_ct_PKG_CONFIG="$ac_ct_PKG_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_PKG_CONFIG="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_PKG_CONFIG=$ac_cv_prog_ac_ct_PKG_CONFIG
+if test -n "$ac_ct_PKG_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_PKG_CONFIG" >&5
+$as_echo "$ac_ct_PKG_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_PKG_CONFIG" && break
+done
+
+  if test "x$ac_ct_PKG_CONFIG" = x; then
+    PKG_CONFIG=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    PKG_CONFIG=$ac_ct_PKG_CONFIG
+  fi
+fi
+
+	cs_prog_pkg_config_checked=yes
+fi
+    if test -z "$cs_cv_prog_pkg_config_ok"; then :
+  if test -n "$PKG_CONFIG"; then :
+  if $PKG_CONFIG --atleast-pkgconfig-version=0.9.0; then :
+  cs_cv_prog_pkg_config_ok=yes
+else
+  cs_cv_prog_pkg_config_ok=no
+fi
+else
+  cs_cv_prog_pkg_config_ok=no
+fi
+fi
+    if test $cs_cv_prog_pkg_config_ok = yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if $PKG_CONFIG recognizes avutil" >&5
+$as_echo_n "checking if $PKG_CONFIG recognizes avutil... " >&6; }
+if ${cs_cv_prog_pkg_config_avutil+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if $PKG_CONFIG --exists avutil; then :
+  cs_cv_prog_pkg_config_avutil=yes
+else
+  cs_cv_prog_pkg_config_avutil=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_prog_pkg_config_avutil" >&5
+$as_echo "$cs_cv_prog_pkg_config_avutil" >&6; }
+	if test $cs_cv_prog_pkg_config_avutil = yes; then :
+  if test -z "$cs_cv_prog_pkg_config_avutil_flags"; then :
+  cs_check_lib_cflag=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --cflags avutil"; } >&5
+  ($PKG_CONFIG --cflags avutil) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_check_lib_lflag=''
+	cs_check_lib_libs=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --libs avutil"; } >&5
+  ($PKG_CONFIG --libs avutil) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_cv_prog_pkg_config_avutil_flags=`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`
+fi
+    cs_check_lib_flags="$cs_check_lib_flags $cs_cv_prog_pkg_config_avutil_flags"
+fi
+fi
+
+    if test "$cs_prog_path_prepared" != yes; then :
+  cs_prog_path_prepared=yes
+	PATH="$PATH$PATH_SEPARATOR/usr/local/bin$PATH_SEPARATOR/sw/bin$PATH_SEPARATOR${srcdir}/bin"
+	export PATH
+fi
+    if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}avutil-config", so it can be a program name with args.
+set dummy ${ac_tool_prefix}avutil-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CONFIG_AVUTIL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CONFIG_AVUTIL in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CONFIG_AVUTIL="$CONFIG_AVUTIL" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CONFIG_AVUTIL="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CONFIG_AVUTIL=$ac_cv_path_CONFIG_AVUTIL
+if test -n "$CONFIG_AVUTIL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CONFIG_AVUTIL" >&5
+$as_echo "$CONFIG_AVUTIL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_path_CONFIG_AVUTIL"; then
+  ac_pt_CONFIG_AVUTIL=$CONFIG_AVUTIL
+  # Extract the first word of "avutil-config", so it can be a program name with args.
+set dummy avutil-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_ac_pt_CONFIG_AVUTIL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $ac_pt_CONFIG_AVUTIL in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_ac_pt_CONFIG_AVUTIL="$ac_pt_CONFIG_AVUTIL" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_ac_pt_CONFIG_AVUTIL="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+ac_pt_CONFIG_AVUTIL=$ac_cv_path_ac_pt_CONFIG_AVUTIL
+if test -n "$ac_pt_CONFIG_AVUTIL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_pt_CONFIG_AVUTIL" >&5
+$as_echo "$ac_pt_CONFIG_AVUTIL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_pt_CONFIG_AVUTIL" = x; then
+    CONFIG_AVUTIL=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    CONFIG_AVUTIL=$ac_pt_CONFIG_AVUTIL
+  fi
+else
+  CONFIG_AVUTIL="$ac_cv_path_CONFIG_AVUTIL"
+fi
+
+    if test -n "$CONFIG_AVUTIL"; then :
+  if test -z "$cs_cv_prog_config_avutil_ok"; then :
+  if $CONFIG_AVUTIL --cflags --libs >/dev/null 2>&1; then :
+  cs_cv_prog_config_avutil_ok=yes
+else
+  cs_cv_prog_config_avutil_ok=no
+fi
+fi
+	if test $cs_cv_prog_config_avutil_ok = yes; then :
+  if test -z "$cs_cv_prog_config_avutil_flags"; then :
+  cs_check_lib_cflag=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$CONFIG_AVUTIL --cflags "; } >&5
+  ($CONFIG_AVUTIL --cflags ) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_check_lib_lflag=''
+	cs_check_lib_libs=`{ { $as_echo "$as_me:${as_lineno-$LINENO}: \$CONFIG_AVUTIL --libs "; } >&5
+  ($CONFIG_AVUTIL --libs ) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } | tr '\\\\' '/' | sed 's/   */ /g;s/^ //;s/ $//'`
+	cs_cv_prog_config_avutil_flags=`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`
+fi
+    cs_check_lib_flags="$cs_check_lib_flags $cs_cv_prog_config_avutil_flags"
+fi
+fi
+
+
+	if test $with_avutil != yes; then :
+  cs_check_lib_paths=$with_avutil
+else
+  cs_check_lib_paths="| /usr/local/include|/usr/local/lib \
+    /sw/include|/sw/lib \
+    /opt/local/include|/opt/local/lib \
+    /opt/include|/opt/lib "
+fi
+	for cs_lib_item in $cs_check_lib_paths
+    do
+	case $cs_lib_item in
+	    *\|*)
+    set filler `echo "$cs_lib_item" | awk 'BEGIN { FS="|" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_check_incdir=''
+else
+  if test "$1" = filler; then :
+  cs_check_incdir=''
+else
+  cs_check_incdir=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_check_libdir=''
+else
+  if test "$1" = filler; then :
+  cs_check_libdir=''
+else
+  cs_check_libdir=$1
+fi
+	shift
+fi
+
+		if test -n "$cs_check_incdir"; then :
+  cs_check_lib_cflag="-I$cs_check_incdir"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_check_libdir"; then :
+  cs_check_lib_lflag="-L$cs_check_libdir"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avutil"; then :
+  cs_check_lib_libs="-lavutil"
+	cs_check_lib_framework="-framework avutil"
+	cs_check_lib_framework_define="-DCS_AVUTIL_PATH=avutil"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		;;
+	    *)  if test -n "$cs_lib_item/include"; then :
+  cs_check_lib_cflag="-I$cs_lib_item/include"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_lib_item/lib"; then :
+  cs_check_lib_lflag="-L$cs_lib_item/lib"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avutil"; then :
+  cs_check_lib_libs="-lavutil"
+	cs_check_lib_framework="-framework avutil"
+	cs_check_lib_framework_define="-DCS_AVUTIL_PATH=avutil"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		if test -n "$cs_lib_item"; then :
+  cs_check_lib_cflag="-I$cs_lib_item"
+else
+  cs_check_lib_cflag=''
+fi
+    if test -n "$cs_lib_item"; then :
+  cs_check_lib_lflag="-L$cs_lib_item"
+else
+  cs_check_lib_lflag=''
+fi
+    if test -n "avutil"; then :
+  cs_check_lib_libs="-lavutil"
+	cs_check_lib_framework="-framework avutil"
+	cs_check_lib_framework_define="-DCS_AVUTIL_PATH=avutil"
+else
+  cs_check_lib_libs=''
+	cs_check_lib_framework=''
+	cs_check_lib_framework_define=''
+fi
+    cs_check_lib_flags="$cs_check_lib_flags
+	`echo @$cs_check_lib_cflag $cs_check_lib_framework_define@$cs_check_lib_lflag@$cs_check_lib_framework | sed 'y% %#%'`
+	`echo @$cs_check_lib_cflag@$cs_check_lib_lflag@$cs_check_lib_libs | sed 'y% %#%'`"
+		;;
+	esac
+    done
+
+
+	if test "$cs_ignore_cache" != yes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavutil" >&5
+$as_echo_n "checking for libavutil... " >&6; }
+if ${cs_cv_libavutil+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    cs_cflags_save="$CFLAGS"
+    cs_lflags_save="$LDFLAGS"
+    cs_libs_save="$LIBS"
+    cs_build_ok=no
+
+
+    for cs_build_item in $cs_check_lib_flags
+    do
+
+    set filler `echo "$cs_build_item" | awk 'BEGIN { FS="@" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_dummy=''
+else
+  if test "$1" = filler; then :
+  cs_dummy=''
+else
+  cs_dummy=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_cflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_cflags_test=''
+else
+  cs_cflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_lflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_lflags_test=''
+else
+  cs_lflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_libs_test=''
+else
+  if test "$1" = filler; then :
+  cs_libs_test=''
+else
+  cs_libs_test=$1
+fi
+	shift
+fi
+
+    cs_cflags_test=`echo $cs_cflags_test | sed 'y%#% %'`
+    cs_lflags_test=`echo $cs_lflags_test | sed 'y%#% %'`
+    cs_libs_test=`echo $cs_libs_test | sed 'y%#% %'`
+
+	CFLAGS="$cs_cflags_save $cs_cflags_test $cs_cv_libavcodec_cflags $cs_cv_libavformat_cflags"
+	LDFLAGS="$cs_lflags_test $cs_cv_libavcodec_lflags $cs_cv_libavformat_lflags $cs_lflags_save"
+	LIBS="$cs_libs_test $cs_cv_libavcodec_libs $cs_cv_libavformat_libs $cs_libs_save"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libavformat/avformat.h>
+	      #include <libavutil/avutil.h>
+int
+main ()
+{
+av_register_all();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  cs_build_ok=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	if test $cs_build_ok = yes; then :
+  break
+fi
+    done
+
+
+    CFLAGS=$cs_cflags_save
+    LDFLAGS=$cs_lflags_save
+    LIBS=$cs_libs_save
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    if test $cs_build_ok = yes; then :
+  cs_build_cflags=`echo x$cs_cflags_test $cs_cv_libavcodec_cflags $cs_cv_libavformat_cflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_lflags=`echo x$cs_lflags_test $cs_cv_libavcodec_lflags $cs_cv_libavformat_lflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_libs=`echo x$cs_libs_test $cs_cv_libavcodec_libs $cs_cv_libavformat_libs | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_cv_libavutil=yes
+		cs_cv_libavutil_cflags=$cs_build_cflags
+		cs_cv_libavutil_lflags=$cs_build_lflags
+		cs_cv_libavutil_libs=$cs_build_libs
+else
+  cs_cv_libavutil=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_libavutil" >&5
+$as_echo "$cs_cv_libavutil" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavutil" >&5
+$as_echo_n "checking for libavutil... " >&6; }
+	    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+    cs_cflags_save="$CFLAGS"
+    cs_lflags_save="$LDFLAGS"
+    cs_libs_save="$LIBS"
+    cs_build_ok=no
+
+
+    for cs_build_item in $cs_check_lib_flags
+    do
+
+    set filler `echo "$cs_build_item" | awk 'BEGIN { FS="@" }
+	{ for (i=1; i <= NF; ++i)
+	    { if ($i == "") print "filler"; else print $i } }'`
+    shift
+    if test $# -eq 0; then :
+  cs_dummy=''
+else
+  if test "$1" = filler; then :
+  cs_dummy=''
+else
+  cs_dummy=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_cflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_cflags_test=''
+else
+  cs_cflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_lflags_test=''
+else
+  if test "$1" = filler; then :
+  cs_lflags_test=''
+else
+  cs_lflags_test=$1
+fi
+	shift
+fi
+if test $# -eq 0; then :
+  cs_libs_test=''
+else
+  if test "$1" = filler; then :
+  cs_libs_test=''
+else
+  cs_libs_test=$1
+fi
+	shift
+fi
+
+    cs_cflags_test=`echo $cs_cflags_test | sed 'y%#% %'`
+    cs_lflags_test=`echo $cs_lflags_test | sed 'y%#% %'`
+    cs_libs_test=`echo $cs_libs_test | sed 'y%#% %'`
+
+	CFLAGS="$cs_cflags_save $cs_cflags_test $cs_cv_libavcodec_cflags $cs_cv_libavformat_cflags"
+	LDFLAGS="$cs_lflags_test $cs_cv_libavcodec_lflags $cs_cv_libavformat_lflags $cs_lflags_save"
+	LIBS="$cs_libs_test $cs_cv_libavcodec_libs $cs_cv_libavformat_libs $cs_libs_save"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libavformat/avformat.h>
+	      #include <libavutil/avutil.h>
+int
+main ()
+{
+av_register_all();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  cs_build_ok=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	if test $cs_build_ok = yes; then :
+  break
+fi
+    done
+
+
+    CFLAGS=$cs_cflags_save
+    LDFLAGS=$cs_lflags_save
+    LIBS=$cs_libs_save
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+    if test $cs_build_ok = yes; then :
+  cs_build_cflags=`echo x$cs_cflags_test $cs_cv_libavcodec_cflags $cs_cv_libavformat_cflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_lflags=`echo x$cs_lflags_test $cs_cv_libavcodec_lflags $cs_cv_libavformat_lflags | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_build_libs=`echo x$cs_libs_test $cs_cv_libavcodec_libs $cs_cv_libavformat_libs | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+	cs_cv_libavutil=yes
+		cs_cv_libavutil_cflags=$cs_build_cflags
+		cs_cv_libavutil_lflags=$cs_build_lflags
+		cs_cv_libavutil_libs=$cs_build_libs
+else
+  cs_cv_libavutil=no
+fi
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $cs_cv_libavutil" >&5
+$as_echo "$cs_cv_libavutil" >&6; }
+fi
+    if test $cs_cv_libavutil = yes; then :
+
+else
+  cs_cv_libavutil_cflags=''
+	cs_cv_libavutil_lflags=''
+	cs_cv_libavutil_libs=''
+
+fi
+
+	PATH="$PATH_SAVE"
+	if test $with_avutil != yes; then :
+  PKG_CONFIG_PATH="$PKG_CONFIG_PATH_SAVE_1"
+    export PKG_CONFIG_PATH
+fi
+
+else
+  cs_cv_libavutil=no
+fi
+
+    cs_cv_with_avutil="$with_avutil"
+    if test "$cs_cv_libavutil" = yes; then :
+  if test "$cs_cv_libavutil" = yes; then :
+  cs_build_prop_val="yes"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}FFMPEG.AVAILABLE ?= $cs_build_prop_val ;
+"
+fi
+	cs_build_prop_val="$cs_cv_libavutil_cflags"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}FFMPEG.CFLAGS ?= $cs_build_prop_val ;
+"
+fi
+	cs_build_prop_val="$cs_cv_libavutil_lflags $cs_cv_libavutil_libs"
+    cs_build_prop_val=`echo x$cs_build_prop_val | sed 's/^x//;s/   */ /g;s/^ //;s/ $//'`
+    	        if test -n "$cs_build_prop_val"; then :
+  cs_jamconfig_text="${cs_jamconfig_text}FFMPEG.LFLAGS ?= $cs_build_prop_val ;
+"
+fi
+fi
+fi
+fi
+    if test -n "$cs_cv_libavutil" && test "no" != "$cs_cv_libavutil"; then :
+  _cs_sum_ok=yes
+else
+  _cs_sum_ok=no
+fi
+    _cs_summary="$_cs_summary
+avutil|other|$_cs_sum_ok|*"
+
 
 
 

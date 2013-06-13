@@ -203,7 +203,7 @@ bool VideoEncoder::TryStart()
     file = VFS->Open (filename, VFS_FILE_WRITE | VFS_FILE_UNCOMPRESSED);
     if (!file)
     {
-      SetError("Couldn't open file for recording - %s", filename);
+      SetError("Couldn't open file for recording - %s", filename.GetData());
       return false;
     }
 	avContainer->pb = avio_alloc_context(writeBuffer, WRITE_BUFFER_SIZE,
@@ -329,7 +329,7 @@ void VideoEncoder::Run()
 	  if (!recording)
 		  break;
 
-	  csPrintf("queue %3i  %3i\n", queueWritten, queueRead);
+	  //csPrintf("queue %3i  %3i\n", queueWritten, queueRead);
 		 
       // Get image
       screenshot = queue[queueRead % queueLength];

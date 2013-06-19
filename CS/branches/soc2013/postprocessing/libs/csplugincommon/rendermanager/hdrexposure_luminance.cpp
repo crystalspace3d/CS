@@ -19,6 +19,7 @@
 #include "cssysdef.h"
 
 #include "csplugincommon/rendermanager/hdrexposure_luminance.h"
+#include "iengine/rendermanager.h"
 
 #include "iutil/string.h"
 #include "ivaria/profile.h"
@@ -43,7 +44,7 @@ namespace CS
 	{
 	  this->hdr = &hdr;
 	  measureLayer = hdr.GetMeasureLayer();
-	  PostEffectManager::LayerOptions measureOpts = measureLayer->GetOptions();
+	  PostEffectLayerOptions measureOpts = measureLayer->GetOptions();
 	  measureOpts.noTextureReuse = true;
 	  measureLayer->SetOptions (measureOpts);
 	  
@@ -58,9 +59,13 @@ namespace CS
 	  
 	  shaderManager = csQueryRegistry<iShaderManager> (objReg);
 	  CS_ASSERT (shaderManager);
-	      
-	  computeFX.Initialize (objReg);
-	  computeFX.SetIntermediateTargetFormat (intermediateTextureFormat);
+	   
+	  iRenderManagerPostEffects* postEffectManager = hdr.GetPostEffectManager ();
+	  if (!postEffectManager) return;
+	  computeFX = postEffectManager->CreatePostEffect ("hdr_luminance");
+	  if (!computeFX) return;
+
+	  computeFX->SetIntermediateTargetFormat (intermediateTextureFormat);
 	
 	  computeShader1 =
 	    loader->LoadShader (firstShader);
@@ -78,7 +83,7 @@ namespace CS
 	  CS_PROFILER_ZONE(HDRLuminance_GetResultData);
 	  
 	  iTextureHandle* measureTex =
-	    hdr->GetHDRPostEffects().GetLayerOutput (measureLayer);
+	    hdr->GetHDRPostEffects()->GetLayerOutput (measureLayer);
 
 	  // (Re-)create computeTarget if not created/view dimensions changed
 	  if ((computeStages.GetSize() == 0)
@@ -95,7 +100,7 @@ namespace CS
 	  measureTex = computeStages[computeStages.GetSize()-1].target;
 	  {
 	    CS_PROFILER_ZONE(HDRLuminance_GetResultData_DrawFX);
-	    computeFX.DrawPostEffects (renderTree);
+	    computeFX->DrawPostEffect (renderTree);
 	  }
 	  
 	  int newW, newH;
@@ -202,16 +207,16 @@ namespace CS
 	  csShaderVariableStack svstack;
     
 	  {
-	    PostEffectManager::Layer* tempLayer;
-	    PostEffectManager::LayerInputMap inputMap;
+	    iPostEffectLayer* tempLayer;
+	    PostEffectLayerInputMap inputMap;
 	    inputMap.manualInput = stage.svInput;
-	    tempLayer = computeFX.AddLayer (computeShader, 1, &inputMap);
+	    tempLayer = computeFX->AddLayer (computeShader, 1, &inputMap);
 	    
 	    // Determine 'priority ticket' for stage
 	    svstack.Setup (shaderManager->GetSVNameStringset ()->GetSize ());
-	    computeFX.GetLayerRenderSVs (tempLayer, svstack);
+	    computeFX->GetLayerRenderSVs (tempLayer, svstack);
 	    pticket = computeShader->GetPrioritiesTicket (modes, svstack);
-	    computeFX.RemoveLayer (tempLayer);
+	    computeFX->RemoveLayer (tempLayer);
 	  }
 	  
 	  int maxBlockSizeX = 16;
@@ -313,7 +318,7 @@ namespace CS
 	  if (lastStage)
 	    stageFormat = readbackFmt.GetCanonical();
 	  else
-	    stageFormat = computeFX.GetIntermediateTargetFormat();
+	    stageFormat = computeFX->GetIntermediateTargetFormat();
 	  stage.target = graphics3D->GetTextureManager ()->CreateTexture (stage.targetW,
 	    stage.targetH, csimg2D, stageFormat, texFlags);
 	  
@@ -328,15 +333,15 @@ namespace CS
 	  // Set measureTex as input to first layer of computeFX
 	  stage.svInput->SetValue (inputTex);
 	  
-	  PostEffectManager::Layer* outputLayer = 0;
+	  iPostEffectLayer* outputLayer = 0;
 	  for (size_t l = 0; l < finalParts.GetSize(); l++)
 	  {
-	    PostEffectManager::Layer* layer;
-	    PostEffectManager::LayerInputMap inputMap;
+	    iPostEffectLayer* layer;
+	    PostEffectLayerInputMap inputMap;
 	    inputMap.manualInput = stage.svInput;
 	    inputMap.sourceRect = finalParts[l].sourceRect;
 	    inputMap.inputPixelSizeName = "input pixel size";
-	    PostEffectManager::LayerOptions options;
+	    PostEffectLayerOptions options;
 	    options.targetRect = finalParts[l].destRect;
 	    if (outputLayer == 0)
 	    {
@@ -346,7 +351,7 @@ namespace CS
 	    else
 	      options.renderOn = outputLayer;
 	    //inputMap.manualTexcoords = computeTexcoordBuf;
-	    layer = computeFX.AddLayer (finalParts[l].shader, options, 1, &inputMap);
+	    layer = computeFX->AddLayer (finalParts[l].shader, options, 1, &inputMap);
 	    
 	    layer->GetSVContext()->AddVariable (stage.svInput);
 	    layer->GetSVContext()->AddVariable (stage.svWeightCoeff);
@@ -360,7 +365,7 @@ namespace CS
 					    iTextureHandle* measureTex)
 	{
 	  computeStages.Empty();
-	  computeFX.ClearLayers();
+	  computeFX->ClearLayers();
 
 	  int currentW = targetW;
 	  int currentH = targetH;
@@ -385,10 +390,9 @@ namespace CS
 	  }
 	  while (iterateStage);
 	  
-	  computeFX.SetEffectsOutputTarget (computeStages[0].target);
+	  computeFX->SetOutputTarget (computeStages[0].target);
 	  CS::Math::Matrix4 perspectiveFixup;
-	  computeFX.SetupView (computeStages[0].targetW, computeStages[0].targetH,
-	    perspectiveFixup);
+	  computeFX->SetupView (computeStages[0].targetW, computeStages[0].targetH);
 	}
 	
 	//-------------------------------------------------------------------

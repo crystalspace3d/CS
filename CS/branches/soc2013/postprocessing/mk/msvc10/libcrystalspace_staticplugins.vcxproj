@@ -1219,6 +1219,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\libpathloader_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libphysldr2_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libphysldr_staticreg.cpp" />
+    <ClCompile Include="..\..\mk\msvc\libposteffect_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libprofiler_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libprotomesh_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libprotomeshldr_staticreg.cpp" />
@@ -1574,6 +1575,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\rendermanager\deferred\deferred.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\null\null.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\osm\osm.cpp" />
+    <ClCompile Include="..\..\plugins\rendermanager\posteffect\posteffect.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\rlcompat\rm_compat.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\unshadowed\unshadowed.cpp" />
@@ -2085,6 +2087,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\null\null.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\osm.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\shadow_osm.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\posteffect\posteffect.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />

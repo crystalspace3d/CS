@@ -33,7 +33,7 @@
 #include "iutil/dbghelp.h"
 
 /**\file
- * Bounding Interface Hierachy implementation.
+ * Bounding Intervall Hierachy implementation.
  */
 /**\addtogroup geom_utils
  * @{ */
@@ -108,7 +108,7 @@ namespace Geometry
 {
 
 /**
- * A Bounding Interface Hierachy (BIH).
+ * A Bounding Intervall Hierachy (BIH).
  * A BIH is a binary tree that organizes 3D space.
  * This implementation is dynamic. It allows moving, adding, and
  * removing of objects which will alter the tree dynamically.
@@ -1112,5 +1112,5 @@ typedef CS::Geometry::BIH<csBIHChild> csBIH;
 
 /** @} */
 
-#endif // __CS_KDTREE_H__
+#endif // __CS_BIH_H__
 

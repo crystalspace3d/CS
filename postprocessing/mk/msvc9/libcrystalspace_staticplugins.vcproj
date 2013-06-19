@@ -1700,6 +1700,9 @@
 				RelativePath="..\..\mk\msvc\libphysldr_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libposteffect_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libprofiler_staticreg.cpp">
 			</File>
 			<File
@@ -2763,6 +2766,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\osm\osm.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\posteffect\posteffect.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\rm_compat.cpp">
@@ -5581,6 +5587,9 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\osm\shadow_osm.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\rendermanager\posteffect\posteffect.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h">

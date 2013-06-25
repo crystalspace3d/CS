@@ -1,0 +1,257 @@
+<!--
+  Copyright (C) 2007 by Frank Richter
+	    (C) 2007 by Jorrit Tyberghein
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public
+  License along with this library; if not, write to the Free
+  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-->
+<snippet>
+  <technique priority="100">
+    <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+    
+    
+    <input name="Hposition" type="position4_object" default="complex">
+      <block location="cg:vertexIn">
+	<varying type="position4" name="Hposition" binding="POSITION" />
+      </block>
+      
+      <block location="cg:vertexMain">
+	Hposition = vertexIn.Hposition;
+      </block>
+
+   
+    </input>
+    
+    <!-- Slightly dirty: float4x4 is no weaver type, so gets written out 
+	 verbatim -->
+    <input file="/shader-snippets/ModelViewProj.inp" private="yes" />
+    <input file="/shader-snippets/ModelView.inp" private="yes" />
+
+    <input name="objectToWorld" type="float4x4" default="complex" private="yes">
+	
+	<block location="cg:variablemap">
+		
+        <variablemap variable="object2world transform" destination="vertexIn.objectToWorld" />
+   
+      </block>
+	
+      <block location="cg:vertexIn">
+	<uniform type="float4x4" name="objectToWorld" />
+      </block>
+	  
+      <block location="cg:vertexMain">
+	objectToWorld = vertexIn.objectToWorld;
+      </block>
+   
+    </input>
+	
+	<input name="time" type="float" default="complex">
+      
+      
+    <block location="cg:variablemap">
+	
+        <variablemap variable="standard time" destination="vertexIn.time" />
+      </block>
+      
+      <block location="cg:vertexIn">
+	  <uniform type="float" name="time" />
+      </block>
+      
+      <block location="cg:vertexMain">
+			time = vertexIn.time;
+      </block>
+    </input>
+
+	
+	<!--<input name="kxs" type="float3" default="complex">
+	<block location="cg:variablemap">
+		
+        <variablemap variable="kxs" destination="vertexIn.kxs" />
+
+   
+      </block>
+      
+      <block location="cg:vertexIn">
+	  <uniform type="float3" name="kxs" />
+	  </block>
+      
+      <block location="cg:vertexMain">
+	
+	kxs = vertexIn.kxs;
+	
+      </block>
+    </input>
+
+	
+	<input name="kys" type="float3" default="complex">
+	<block location="cg:variablemap">
+		
+        <variablemap variable="kys" destination="vertexIn.kys" />
+
+   
+      </block>
+      
+      <block location="cg:vertexIn">
+	  <uniform type="float3" name="kys" />
+	  </block>
+      
+      <block location="cg:vertexMain">
+	
+	kys = vertexIn.kys;
+	
+      </block>
+    </input>
+	
+		<input name="freqs" type="float3" default="complex">
+	<block location="cg:variablemap">
+		
+        <variablemap variable="freqs" destination="vertexIn.freqs" />
+
+   
+      </block>
+      
+      <block location="cg:vertexIn">
+	  <uniform type="float3" name="freqs" />
+	  </block>
+      
+      <block location="cg:vertexMain">
+	
+	freqs = vertexIn.freqs;
+	
+      </block>
+    </input>
+	
+	<input name="amps" type="float3" default="complex">
+	<block location="cg:variablemap">
+		
+        <variablemap variable="amps" destination="vertexIn.amps" />
+
+   
+      </block>
+      
+      <block location="cg:vertexIn">
+	  <uniform type="float3" name="amps" />
+	  </block>
+      
+      <block location="cg:vertexMain">
+	
+	amps = vertexIn.amps;
+	
+      </block>
+    </input>
+
+	
+	<input name="phases" type="float3" default="complex">
+	<block location="cg:variablemap">
+		
+        <variablemap variable="phases" destination="vertexIn.phases" />
+
+   
+      </block>
+      
+      <block location="cg:vertexIn">
+	  <uniform type="float3" name="phases" />
+	  </block>
+      
+      <block location="cg:vertexMain">
+	
+	phases = vertexIn.phases;
+	
+      </block>
+    </input>-->
+
+    <block location="cg:vertexToFragment">
+      <varying type="position4" name="position" binding="POSITION" />
+      <!-- This is needed since POSITION semantics can't be used for input in an FP -->
+      <varying type="position4" name="position_screen" />
+      <varying type="position4" name="position_object"/>
+      <varying type="position4" name="position_world"/>
+      <varying type="position4" name="position_camera"/>
+    </block>
+    
+    
+    <block location="cg:clips">
+      <!-- Clip for reflection/refraction rendering -->
+      <clip space="object">
+	<plane type="shadervar">clip plane reflection</plane>
+      </clip>
+    </block>
+    
+    <block location="cg:vertexCompilerArgs">
+      -posinv
+    </block>
+    
+    <block location="cg:definitions">
+      <?Include /shader-snippets/cg-global_objectToWorld.cginc?>
+    </block>
+    
+	
+    <block location="cg:vertexMain">
+      position_object = Hposition;
+	  
+	  
+	  float3 amps = float3(0.05,0.05,0.05);
+	float3 kxs = float3(1.4,-1.1,0.5);
+	float3 kys = float3(1.6,0.7,-2.5);
+	float3 freqs = float3(2.0,1.7,1.6);
+	float3 phases = float3(0.0,1.0,1.41);
+	  
+	  //Grab xz position
+	float2 xzpos = mul(objectToWorld, position_object).xz;
+
+	//Displace once
+	float2 k = float2(kxs.x, kys.x);
+	float2 normk = normalize(k);
+	float2 wdxz1 = normk * amps.x * sin(dot(k, xzpos) - (freqs.x * time) + phases.x);
+	float wdy1 = amps.x * cos(dot(k, xzpos) - (freqs.x * time) + phases.x);
+	
+	//Displace twice
+	k = float2(kxs.y, kys.y);
+	normk = normalize(k);
+	float2 wdxz2 = normk * amps.y * sin(dot(k, xzpos) - (freqs.y * time) + phases.y);
+	float wdy2 = amps.y * cos(dot(k, xzpos) - (freqs.y * time) + phases.y);
+	
+	//Displace thrice, three times displacement!
+	k = float2(kxs.z, kys.z);
+	normk = normalize(k);
+	float2 wdxz3 = normk * amps.z * sin(dot(k, xzpos) - (freqs.z * time) + phases.z);
+	float wdy3 = amps.z * cos(dot(k, xzpos) - (freqs.z * time) + phases.z);
+
+	//Add all the displacements
+	position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
+	position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
+	position_object.y = wdy1 + wdy2 + wdy3; 
+	  
+	  
+      position_screen = position = mul (ModelViewProj, position_object);
+      position_camera = mul (ModelView, position_object);
+      position_world = mul (objectToWorld, position_object);
+      
+      APPLY_CLIPPING_VP_POSINV(position_camera, position_world, position_object);
+
+      /* The objectToWorld transform is needed in other places, so there is a 
+	 global variable for it. Set that */
+      SetGlobalObjectToWorld (objectToWorld);
+    </block>
+    
+
+    
+    <output name="position" type="position4_screen" />
+    <!-- @@@ FIXME: Other blocks may need the world space input as well... 
+         Pass through. But is there a better (ie automatic) way? -->
+    <output name="position_world" type="position4_world" />
+    <output name="position_object" type="position4_object" />
+    <output name="position_camera" type="position4_camera" />
+  </technique>
+</snippet>

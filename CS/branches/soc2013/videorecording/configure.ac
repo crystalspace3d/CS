@@ -1316,9 +1316,8 @@ CS_NOTABLE([avutil], [], [], [$cs_cv_libavutil],
     [AS_IF([test "$cs_cv_libavformat" = yes],
 	[CS_CHECK_LIB_WITH([avutil],
 	    [AC_LANG_PROGRAM(
-	      [[#include <libavformat/avformat.h>
-	      #include <libavutil/avutil.h>]],
-	      [av_register_all();])],
+	      [[#include <libavutil/avutil.h>]],
+	      [avutil_version();])],
 	    [], [],
 	    [CS_EMIT_BUILD_RESULT([cs_cv_libavutil], [FFMPEG])], [],
 	    [$cs_cv_libavcodec_cflags $cs_cv_libavformat_cflags],

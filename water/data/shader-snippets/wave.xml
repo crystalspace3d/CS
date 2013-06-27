@@ -1,21 +1,3 @@
-<!--
-  Copyright (C) 2007 by Frank Richter
-	    (C) 2007 by Jorrit Tyberghein
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License as published by the Free Software Foundation; either
-  version 2 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  Library General Public License for more details.
-
-  You should have received a copy of the GNU Library General Public
-  License along with this library; if not, write to the Free
-  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
--->
 <snippet>
   <technique priority="100">
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
@@ -55,122 +37,17 @@
       </block>
    
     </input>
-	
-	<input name="time" type="float" default="complex">
-      
-      
-    <block location="cg:variablemap">
-	
-        <variablemap variable="standard time" destination="vertexIn.time" />
-      </block>
-      
-      <block location="cg:vertexIn">
-	  <uniform type="float" name="time" />
-      </block>
-      
-      <block location="cg:vertexMain">
-			time = vertexIn.time;
-      </block>
-    </input>
 
-	
-	<!--<input name="kxs" type="float3" default="complex">
 	<block location="cg:variablemap">
-		
-        <variablemap variable="kxs" destination="vertexIn.kxs" />
-
-   
-      </block>
-      
-      <block location="cg:vertexIn">
-	  <uniform type="float3" name="kxs" />
-	  </block>
-      
-      <block location="cg:vertexMain">
+      <variablemap variable="phases" destination="waveInput.phases" />
+      <variablemap variable="amps" destination="waveInput.amps" />
+      <variablemap variable="freqs" destination="waveInput.freqs" />
+      <variablemap variable="kys" destination="waveInput.kys" />
+      <variablemap variable="kxs" destination="waveInput.kxs" />
+	  <variablemap variable="standard time" destination="waveInput.time" />
+    </block>
 	
-	kxs = vertexIn.kxs;
 	
-      </block>
-    </input>
-
-	
-	<input name="kys" type="float3" default="complex">
-	<block location="cg:variablemap">
-		
-        <variablemap variable="kys" destination="vertexIn.kys" />
-
-   
-      </block>
-      
-      <block location="cg:vertexIn">
-	  <uniform type="float3" name="kys" />
-	  </block>
-      
-      <block location="cg:vertexMain">
-	
-	kys = vertexIn.kys;
-	
-      </block>
-    </input>
-	
-		<input name="freqs" type="float3" default="complex">
-	<block location="cg:variablemap">
-		
-        <variablemap variable="freqs" destination="vertexIn.freqs" />
-
-   
-      </block>
-      
-      <block location="cg:vertexIn">
-	  <uniform type="float3" name="freqs" />
-	  </block>
-      
-      <block location="cg:vertexMain">
-	
-	freqs = vertexIn.freqs;
-	
-      </block>
-    </input>
-	
-	<input name="amps" type="float3" default="complex">
-	<block location="cg:variablemap">
-		
-        <variablemap variable="amps" destination="vertexIn.amps" />
-
-   
-      </block>
-      
-      <block location="cg:vertexIn">
-	  <uniform type="float3" name="amps" />
-	  </block>
-      
-      <block location="cg:vertexMain">
-	
-	amps = vertexIn.amps;
-	
-      </block>
-    </input>
-
-	
-	<input name="phases" type="float3" default="complex">
-	<block location="cg:variablemap">
-		
-        <variablemap variable="phases" destination="vertexIn.phases" />
-
-   
-      </block>
-      
-      <block location="cg:vertexIn">
-	  <uniform type="float3" name="phases" />
-	  </block>
-      
-      <block location="cg:vertexMain">
-	
-	phases = vertexIn.phases;
-	
-      </block>
-    </input>-->
-
     <block location="cg:vertexToFragment">
       <varying type="position4" name="position" binding="POSITION" />
       <!-- This is needed since POSITION semantics can't be used for input in an FP -->
@@ -194,6 +71,31 @@
     
     <block location="cg:definitions">
       <?Include /shader-snippets/cg-global_objectToWorld.cginc?>
+	  
+	  struct WaveIn
+	  {
+		float3 amps; 
+		float3 kxs; 
+		float3 kys;  
+		float3 freqs; 
+		float3 phases;
+		float time;
+	  };
+	  uniform WaveIn waveInput;
+	  
+	  
+	  //Wave displacement x-z
+	float2 WaveDisp(float2 k, float amp, float2 pos, float freq, float phase, float time) 
+	{ 
+		float2 normk = normalize(k);
+		return normk * amp * sin(dot(k, pos) - (freq * time) + phase);
+	}
+
+	//Wave displacement y
+	float WaveDispVert(float2 k, float amp, float2 pos, float freq, float phase, float time)
+	{
+		return amp * cos(dot(k, pos) - (freq * time) + phase);
+	}	
     </block>
     
 	
@@ -201,32 +103,29 @@
       position_object = Hposition;
 	  
 	  
-	  float3 amps = float3(0.05,0.05,0.05);
+    /*float3 amps = float3(0.05,0.05,0.05);
 	float3 kxs = float3(1.4,-1.1,0.5);
 	float3 kys = float3(1.6,0.7,-2.5);
 	float3 freqs = float3(2.0,1.7,1.6);
-	float3 phases = float3(0.0,1.0,1.41);
+	float3 phases = float3(0.0,1.0,1.41);*/
 	  
 	  //Grab xz position
 	float2 xzpos = mul(objectToWorld, position_object).xz;
 
 	//Displace once
-	float2 k = float2(kxs.x, kys.x);
-	float2 normk = normalize(k);
-	float2 wdxz1 = normk * amps.x * sin(dot(k, xzpos) - (freqs.x * time) + phases.x);
-	float wdy1 = amps.x * cos(dot(k, xzpos) - (freqs.x * time) + phases.x);
+	float2 k = float2(waveInput.kxs.x, waveInput.kys.x);
+	float2 wdxz1 = WaveDisp(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
+	float wdy1 = WaveDispVert(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
 	
 	//Displace twice
-	k = float2(kxs.y, kys.y);
-	normk = normalize(k);
-	float2 wdxz2 = normk * amps.y * sin(dot(k, xzpos) - (freqs.y * time) + phases.y);
-	float wdy2 = amps.y * cos(dot(k, xzpos) - (freqs.y * time) + phases.y);
+	k = float2(waveInput.kxs.y, waveInput.kys.y);
+	float2 wdxz2 = WaveDisp(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
+	float wdy2 = WaveDispVert(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
 	
 	//Displace thrice, three times displacement!
-	k = float2(kxs.z, kys.z);
-	normk = normalize(k);
-	float2 wdxz3 = normk * amps.z * sin(dot(k, xzpos) - (freqs.z * time) + phases.z);
-	float wdy3 = amps.z * cos(dot(k, xzpos) - (freqs.z * time) + phases.z);
+	k = float2(waveInput.kxs.z, waveInput.kys.z);
+	float2 wdxz3 = WaveDisp(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
+	float wdy3 = WaveDispVert(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
 
 	//Add all the displacements
 	position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;

@@ -4,10 +4,12 @@
 
 #include "iutil/comp.h"
 #include "iutil/eventh.h"
+#include "iutil/virtclk.h"
 #include "ivaria/movierecorder.h"
 #include "ivaria/reporter.h"
 #include "ivideo/graph2d.h"
 #include "csutil/eventhandlers.h"
+#include "csutil/weakref.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/cfgacc.h"
 #include "csutil/threading/thread.h"
@@ -26,9 +28,16 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   CS_DECLARE_EVENT_SHORTCUTS;
   
   enum Mode
-  {
+  { 
+	/// Variable framerate. Engine runs at normal speed. Video recorder tries to record
+    /// as many frames as possible but framerate will not exceed maximum framerate.
 	MODE_VFR,
+	
+	/// Constant framerate. Engine runs at normal speed. Video recorder will
+	/// drop (duplicate) frames if it can't record as many frames as necessary.
 	MODE_CFR_DROP,
+	
+	/// Constant framerate, engine will be speeded up or slowed down as necessary.
 	MODE_FORCED_CFR,
   };
 
@@ -37,11 +46,16 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   csRef<iReporter> reporter;
   csRef<iGraphics2D> g2d;
   csRef<iVFS> VFS;
+  csRef<iVirtualClock> realClock;
 
   bool initialized;
   bool paused;
   bool recording;
   Mode mode;
+
+  // pseudo time used with forced-cfr mode
+  csMicroTicks currentMicroTicks;
+  csMicroTicks elapsedMicroTicks;
   
   VideoEncoder* encoder;
   
@@ -61,6 +75,7 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   csString audioCodecName;
 
   int queueLength;
+  /// Priority for encoding thread
   Threading::ThreadPriority priority;
 
   csMicroTicks startTick;
@@ -91,6 +106,9 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   
   /// Report message
   void Report (int severity, const char* msg, ...);
+  
+  /// Called from our replacement of iVirtualClock
+  void AdvanceClock();
   
   iObjectRegistry* GetObjectRegistry() const
   { return object_reg; }
@@ -128,11 +146,63 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
     {
       if (event.Name == parent->Frame)
         parent->OnFrameEnd();
-      return false;
+      return false; // we are just observing, we don't handle anything, so return false
     }
     CS_EVENTHANDLER_PHASE_FRAME("crystalspace.videorecorder.frame")
   };
   FrameEventHandler frameEventHandler;
+
+   /**
+   * Embedded iVirtualClock. Real clock will be replaced with this.
+   * In forced cfr mode this allows us to alter time.
+   */
+  class FakeClock : public scfImplementation1<FakeClock, iVirtualClock>
+  {
+    csWeakRef<csVideoRecorder> parent;
+
+  public:
+    FakeClock (csVideoRecorder* parent) :
+	  scfImplementationType (this),
+      parent (parent)
+	{}
+
+    virtual ~FakeClock() {}
+
+    virtual void Advance ()
+    {
+      if (parent) parent->AdvanceClock();
+    }
+    virtual void Suspend ()
+    {
+      if (parent) parent->realClock->Suspend();
+    }
+    virtual void Resume ()
+    {
+      if (parent) parent->realClock->Resume();
+    }
+
+    virtual csMicroTicks GetCurrentMicroTicks () const
+    {
+      return parent? parent->currentMicroTicks : 0;
+    }
+    virtual csTicks GetCurrentTicks () const
+    {
+      return parent? parent->currentMicroTicks/1000 : 0;
+    }
+    virtual csMicroTicks GetElapsedMicroTicks () const
+    {
+      return parent? parent->elapsedMicroTicks : 0;
+    }
+    virtual csTicks GetElapsedTicks () const
+    {
+      return parent? parent->elapsedMicroTicks/1000 : 0;
+    }
+    virtual float GetElapsedSeconds ()
+    {
+      return parent? parent->elapsedMicroTicks*0.000001f : 0.0f;
+    }
+  };
+  csRef<FakeClock> fakeClock;
 
 public:
   csVideoRecorder (iBase* parent);

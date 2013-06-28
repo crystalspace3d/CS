@@ -26,6 +26,7 @@ csVideoRecorder::csVideoRecorder (iBase* parent) :
   recording = false;
   
   encoder = NULL;
+  fakeClock = NULL;
 }
 
 bool csVideoRecorder::Initialize (iObjectRegistry* object_reg)
@@ -43,6 +44,12 @@ bool csVideoRecorder::Initialize (iObjectRegistry* object_reg)
     csEventID events2[2] = { Frame, CS_EVENTLIST_END };
     q->RegisterListener (&frameEventHandler, events2);
   }
+  
+  // Replace clock with our own
+  fakeClock.AttachNew (new FakeClock (this));
+  realClock = csQueryRegistry<iVirtualClock> (object_reg);
+  object_reg->Unregister(realClock, "iVirtualClock");
+  object_reg->Register(fakeClock, "iVirtualClock");
 
   return true;
 }
@@ -57,6 +64,10 @@ csVideoRecorder::~csVideoRecorder ()
     q->RemoveListener (&keyEventHandler);
     q->RemoveListener (&frameEventHandler);
   }
+
+  // Restore original clock
+  object_reg->Unregister(fakeClock, "iVirtualClock");
+  object_reg->Register(realClock, "iVirtualClock");
 }
 
 void csVideoRecorder::Report (int severity, const char* msg, ...)
@@ -192,7 +203,7 @@ void csVideoRecorder::Pause ()
   if (!recording)
     return;
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Video recording paused");
-  pauseTick = csGetMicroTicks();
+  pauseTick = currentMicroTicks;
   paused = true;
 }
 
@@ -201,7 +212,7 @@ void csVideoRecorder::UnPause()
   if (!recording)
     return;
   Report (CS_REPORTER_SEVERITY_NOTIFY, "Video recording resumed");
-  startTick += csGetMicroTicks() - pauseTick;
+  startTick += currentMicroTicks - pauseTick;
   paused = false;
 }
 
@@ -243,7 +254,7 @@ void csVideoRecorder::Start()
 
   // Create encoder. It is asynchronous and we will not wait for it to perform full initialization.
   // We will handle any initialization errors later (in OnFrameEnd()).
-  encoder = new VideoEncoder(VFS, priority, width, height, framerate, mode == MODE_VFR, &config, filename, videoCodecName, audioCodecName, queueLength);
+  encoder = new VideoEncoder(VFS, priority, width, height, (mode == MODE_VFR)? 1000 : framerate, &config, filename, videoCodecName, audioCodecName, queueLength);
   recording = true;
   startTick = 0;
 
@@ -277,7 +288,7 @@ void csVideoRecorder::OnFrameEnd()
 	return;
   }
 
-  csMicroTicks time = csGetMicroTicks();
+  csMicroTicks time = currentMicroTicks;
   if (startTick == 0) // this is first frame
   {
 	startTick = time;
@@ -287,16 +298,21 @@ void csVideoRecorder::OnFrameEnd()
   {
 	time -= startTick;
 
+	int prevFrame = prevTick*framerate/1000000;
+	int currentFrame = time*framerate/1000000;
+
 	// we don't need so much frames
-	if (mode == MODE_VFR && time - prevTick < 1000000/framerate)
+	if (currentFrame == prevFrame)
 	  return;
   }
   prevTick = time;
 
-  // encoder is to slow, ignore this frame
-  if (!encoder->NeedFrame())
+  if (mode == MODE_FORCED_CFR)
+	  encoder->Wait();
+  else if(!encoder->NeedFrame()) // encoder is to slow, ignore this frame
   {
-      Report (CS_REPORTER_SEVERITY_NOTIFY, "Drop frame");
+	  if (mode == MODE_CFR_DROP)
+         Report (CS_REPORTER_SEVERITY_NOTIFY, "Drop frame");
 	  return;
   }
  
@@ -310,8 +326,19 @@ void csVideoRecorder::OnFrameEnd()
       Stop();
       return;
   }
-  
+
   encoder->AddFrame(time, screenshot);
+}
+
+void csVideoRecorder::AdvanceClock()
+{
+	realClock->Advance();
+
+	if (mode == MODE_FORCED_CFR && IsRecording() && !IsPaused())
+		elapsedMicroTicks = 1000000/framerate; // FIXME: this is imprecise
+	else
+		elapsedMicroTicks = realClock->GetElapsedMicroTicks();
+	currentMicroTicks += elapsedMicroTicks;
 }
 
 /// Parse keyname and return key code + modifier status (from bugplug).

@@ -26,7 +26,6 @@ class VideoEncoder : public Runnable
 
   int width, height;
   int framerate;
-  bool vfr;
   csString filename;
   csString videoCodecName;
   csString audioCodecName;
@@ -65,7 +64,8 @@ class VideoEncoder : public Runnable
   csMicroTicks* queueTicks;
   int queueWritten, queueRead;
   Mutex mutex; // mutex for queue, queueTicks, queueRead, queueWritten and recording
-  Condition event;
+  Condition eventAdd; // this event is dispatched when new frame was putted into queue
+  Condition eventReady; // this event is dispatched when encoding thread is ready for new frames
  // csRef<iThreadReturn> thread;
    
   csRef<Thread> thread;
@@ -89,7 +89,6 @@ public:
   VideoEncoder(csRef<iVFS> VFS,
 	           ThreadPriority priority,
 		       int width, int height, int framerate,
-			   bool vfr,
 			   csConfigAccess* config,
 		       const csString& filename,
 		       const csString& videoCodecName,
@@ -99,6 +98,9 @@ public:
   
   /// check if queue is not full
   bool NeedFrame();
+  
+  /// wait until thread is ready for encoding
+  void Wait();
 
   void AddFrame(csMicroTicks Time, csRef<csImageMemory> Frame);
   void Stop();

@@ -49,7 +49,6 @@ void VideoEncoder::SetError(const char* fmt, ...)
 VideoEncoder::VideoEncoder(csRef<iVFS> VFS,
 	                       ThreadPriority priority,
 	                       int width, int height, int framerate,
-						   bool vfr,
 			               csConfigAccess* config,
 		                   const csString& filename,
 		                   const csString& videoCodecName,
@@ -59,7 +58,6 @@ VideoEncoder::VideoEncoder(csRef<iVFS> VFS,
   this->width = width;
   this->height = height;
   this->framerate = framerate;
-  this->vfr = vfr;
   this->filename = filename;
   this->videoCodecName = videoCodecName;
   this->audioCodecName = audioCodecName;
@@ -134,6 +132,14 @@ bool VideoEncoder::NeedFrame()
   return queueWritten - queueRead < queueLength;
 }
 
+void VideoEncoder::Wait()
+{
+  MutexScopedLock lock (mutex);
+  if (queueWritten - queueRead < queueLength)
+	return;
+  eventReady.Wait(mutex);
+}
+
 void VideoEncoder::AddFrame(csMicroTicks Time, csRef<csImageMemory> Frame)
 {
   {
@@ -145,7 +151,7 @@ void VideoEncoder::AddFrame(csMicroTicks Time, csRef<csImageMemory> Frame)
 	queueTicks[queueWritten % queueLength] = Time;
 	queueWritten++;
   }
-  event.NotifyOne();
+  eventAdd.NotifyOne();
 }
 
 void VideoEncoder::Stop()
@@ -154,7 +160,7 @@ void VideoEncoder::Stop()
     MutexScopedLock lock (mutex);
     recording = false;
   }
-  event.NotifyOne();
+  eventAdd.NotifyOne();
   thread->Wait(); // FIXME: we shouldn't wait
   thread.Invalidate();
 }
@@ -251,7 +257,7 @@ bool VideoEncoder::InitVideoStream()
      of which frame timestamps are represented. for fixed-fps content,
      timebase should be 1/framerate and timestamp increments should be
      identically 1. */
-  video->time_base.den = vfr? 1000 : framerate;
+  video->time_base.den = framerate;
   video->time_base.num = 1;
   video->pix_fmt = PIX_FMT_YUV420P;
 
@@ -316,15 +322,17 @@ void VideoEncoder::Run()
     csRef<iImage> screenshot;
     csMicroTicks time;
 
-    {
+	{
+      MutexScopedLock lock (mutex);
 	  queueRead++;
-
+	}
+	eventReady.NotifyAll();
+    {
       // Make sure we lock the queue before trying to access it
       MutexScopedLock lock (mutex);
-		
       // Wait until we have an image
       while (queueRead >= queueWritten && recording)
-        event.Wait (mutex);
+        eventAdd.Wait (mutex);
 
 	  if (!recording)
 		  break;
@@ -373,7 +381,7 @@ bool VideoEncoder::WriteFrame(AVFrame* frame, csMicroTicks time)
   Packet.data = NULL;
   Packet.size = 0;
  
-  videoFrame->pts = vfr? time/1000 : time; // convert microseconds to milliseconds
+  videoFrame->pts = time*framerate/1000000;
 
   if (avFormat->flags & AVFMT_RAWPICTURE)
   {

@@ -40,6 +40,8 @@
 #include "csplugincommon/rendermanager/rendertree.h"
 #include "posteffect.h"
 
+#include "csutil/list.h"
+
 #include <stdarg.h>
 
 using namespace CS::RenderManager;
@@ -51,213 +53,290 @@ CS_LEAKGUARD_IMPLEMENT (PostEffect);
 
 PostEffect::PostEffect (PostEffectManager* manager, const char* name)
   : scfImplementationType (this), manager (manager), name (name),
-    frameNum (0), dbgIntermediateTextures (~0),
-    dimCache (CS::Utility::ResourceCache::ReuseConditionFlagged (),
-      CS::Utility::ResourceCache::PurgeConditionAfterTime<uint> (0)),
-    currentDimData (0), currentWidth (0), currentHeight (0),
-    textureFmt ("argb8"), lastLayer (0), layersDirty (true)
+     dbgIntermediateTextures (~0)
 {
-  AddLayer (0, 0, 0);
 }
 
 PostEffect::~PostEffect ()
 {
 }
 
-void PostEffect::SetIntermediateTargetFormat (const char* textureFmt)
-{
-  this->textureFmt = textureFmt;
-}
-
-const char* PostEffect::GetIntermediateTargetFormat ()
-{
-  return textureFmt;
-}
 
 bool PostEffect::SetupView (uint width, uint height)
 {
-  if (!indices.IsValid ())
-  {
-    indices = csRenderBuffer::CreateIndexRenderBuffer (4,
-      CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_SHORT, 0, 3);
-    {
-      csRenderBufferLock<unsigned short> indexLock (indices);
-      for (uint i = 0; i < 4; i++)
-	indexLock[(size_t)i] = i;
-    }
-  }
-  
-  bool result = false;
-  if (width != currentWidth || height != currentHeight
-      || layersDirty)
-  {
-    if (currentDimData != 0)
-      dimCache.GetReuseAuxiliary (currentDimData)->reusable = true;
-    
-    currentWidth = width;
-    currentHeight = height;
-
-    UpdateLayers ();
-    
-    Dimensions key;
-    key.x = currentWidth; key.y = currentHeight;
-    currentDimData = dimCache.Query (key, true);
-    if (currentDimData != 0) return true;
-    
-    DimensionData newData;
-    newData.dim = key;
-    currentDimData = dimCache.AddActive (newData);
-    currentDimData->buckets.SetSize (buckets.GetSize ());
-    if (!currentDimData->AllocatePingpongTextures (*this))
-    {
-      // @@@ Allocating pingpong textures failed.
-      return false;
-    }
-    currentDimData->SetupRenderInfo (*this);
-    currentDimData->UpdateSVContexts (*this);
-    
-    /* The textures used here can take up a lot of resources, so free up
-       cache aggressively.
-       Ideally, only the dimensions that are used in one frame should
-       be kept.
-     */
-    dimCache.agedPurgeInterval = 0;
-
-    result = true;
-  } 
-
-  return result;
+  bool dirty = layersDirty;
+  Construct (false);
+  return dirty;
 }
 
-void PostEffect::ClearIntermediates ()
-{
-  currentWidth = 0; currentHeight = 0;
-  currentDimData = 0;
-  dimCache.Clear (true);
-}
 
 iTextureHandle* PostEffect::GetScreenTarget ()
 {
-  if (postLayers.GetSize () > 1)
+  if (postLayers.GetSize ())
+    return postLayers[postLayers.GetSize () - 1]->GetOptions ()[0].renderTarget;
+  return nullptr;
+}
+bool PostEffect::AllocateTextures ()
+{
+  DependencySolver ds;
+	
+  csArray<DependencySolver::LayerTextureInfo> result;
+  if (!ds.Solve (postLayers, result)) return false;
+
+  TextureAllocationInfo info;
+  int start = 0;
+  //try reuse target texture
+  if (result[0].info == info && target.IsValid ())
   {
-    size_t bucket = GetBucketIndex (postLayers[0]->options);
-    return currentDimData->buckets[bucket].textures[postLayers[0]->outTextureNum];
+    textures.Push(target); ++start;
+  }
+  //Alloc textures
+  for (uint i = start; i < result.GetSize (); ++i)
+  {
+    csRef<iTextureHandle> tex = manager->RequestTexture (result[i].info, result[i].num);
+    textures.Push (tex);
   }
 
-  return target;
+  //check if all outpust are valid
+  for (uint i = 0; i < postLayers.GetSize (); ++i)
+  {
+    for (uint j = 0; j < postLayers[i]->outputTextures.GetSize (); ++j)
+    {
+      if (postLayers[i]->outputTextures[j] < 0 && 
+          !postLayers[i]->desc.outputs[j].renderTarget.IsValid ())
+        return false;
+    }
+  }
+  return true;
 }
 
-void PostEffect::DrawPostEffect (RenderTreeBase& renderTree)
-{ 
-  manager->graphics3D->FinishDraw ();
-  
-  if (dbgIntermediateTextures == (uint)~0)
-    dbgIntermediateTextures = renderTree.RegisterDebugFlag ("textures.postprocess");
+bool PostEffect::LinkLayers ()
+{
+  DependencySolver ds;
 
-  UpdateLayers ();
-
-  size_t lastLayerToTarget = postLayers.GetSize () - 1;
-  while (postLayers[lastLayerToTarget]->options.renderOn != 0)
+  for (uint i = 0; i < postLayers.GetSize (); ++i)
   {
-    lastLayerToTarget--;
-  }
-  for (size_t layer = 1; layer < postLayers.GetSize (); ++layer)
-  {
-    // Draw and ping-pong   
-    iTextureHandle* targetTex;
-    const iPostEffectLayer* outputLayer = GetRealOutputLayer (postLayers[layer]);
-    if (outputLayer->GetOptions ().manualTarget.IsValid ())
+    //link inputs
+    for (uint j = 0; j < postLayers[i]->desc.inputs.GetSize (); ++j)
     {
-      targetTex = outputLayer->GetOptions ().manualTarget;
+      switch(postLayers[i]->desc.inputs[j].type)
+      {
+      case AUTO:
+        if (i > 0)
+        {
+          int l, o;
+          if (!ds.GetOutput (postLayers, i, j, l, o)) return false;
+          if (postLayers[l]->outputTextures[o] == -1) return false;
+          postLayers[i]->desc.inputs[j].inputTexture = 
+                      textures[postLayers[l]->outputTextures[o]];
+        }
+        else
+        {
+          if (strcmp(postLayers[i]->desc.inputs[j].svTextureName.GetData(), "tex diffuse") == 0)
+            postLayers[i]->desc.inputs[j].inputTexture = input;
+        }
+        break;
+      case STATIC:
+        //load texture
+        if (!postLayers[i]->desc.inputs[j].inputTexture.IsValid ())
+        {
+          postLayers[i]->desc.inputs[j].inputTexture =  
+                      manager->loader->LoadTexture (postLayers[i]->GetLayerDesc ().inputs[j].sourceName);
+        }
+        break;
+      case MANUAL:
+        //check if the provided texture is valid
+        if (!postLayers[i]->desc.inputs[j].inputTexture.IsValid ()) return false;
+        break;
+      default:
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+bool PostEffect::CreateRenderInfo()
+{
+  indices = csRenderBuffer::CreateIndexRenderBuffer (4,
+              CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_SHORT, 0, 3);
+  {
+    csRenderBufferLock<unsigned short> indexLock (indices);
+    for (uint i = 0; i < 4; i++)
+      indexLock[(size_t)i] = i;
+  }
+  for (uint i = 0; i < postLayers.GetSize (); ++i)
+  {
+    Layer& layer = *(postLayers[i]);
+
+    LayerRenderInfo& renderInfo = layer.rInfo;
+    renderInfo.buffers.AttachNew (new csRenderBufferHolder);
+
+    renderInfo.fullscreenQuad.meshtype = CS_MESHTYPE_QUADS;
+    renderInfo.fullscreenQuad.vertexCount = 4;
+    renderInfo.fullscreenQuad.mixmode = CS_MIXMODE_BLEND (ONE, ZERO);
+    renderInfo.fullscreenQuad.shader = layer.desc.layerShader;
+    renderInfo.fullscreenQuad.renderBuffers = renderInfo.buffers;
+    renderInfo.buffers->SetRenderBuffer (CS_BUFFER_INDEX, indices);
+
+    renderInfo.vertBuf = csRenderBuffer::CreateRenderBuffer (4, CS_BUF_STATIC, 
+                CS_BUFCOMP_FLOAT, 3);
+    renderInfo.buffers->SetRenderBuffer (CS_BUFFER_POSITION, renderInfo.vertBuf);
+
+    csRenderBufferLock<csVector3> screenQuadVerts (renderInfo.vertBuf);
+
+    csRect targetRect (layer.desc.outputs[0].targetRect);
+    int targetW, targetH;
+    int tex_idx = layer.outputTextures[0];
+    if (tex_idx == -1) return false;
+    textures[tex_idx]->GetRendererDimensions (targetW, targetH);
+    if (targetRect.IsEmpty ())
+    {
+      targetRect.Set (0, 0, targetW, targetH);
+    }
+
+    // Setup the vertices & texcoords
+    screenQuadVerts[(size_t)0].Set (targetRect.xmin, targetRect.ymin, 0);
+    screenQuadVerts[(size_t)1].Set (targetRect.xmax, targetRect.ymin, 0);
+    screenQuadVerts[(size_t)2].Set (targetRect.xmax, targetRect.ymax, 0);
+    screenQuadVerts[(size_t)3].Set (targetRect.xmin, targetRect.ymax, 0);
+
+    float tcMulX, tcMulY;
+    if (textures[tex_idx]->GetTextureType () == iTextureHandle::texTypeRect)
+    {
+      // Handle a rect texture
+      // Rect texture use non-normalized texture coordinates
+      tcMulX = 1;
+      tcMulY = 1;
     }
     else
     {
-      if (layer < lastLayerToTarget)
-      {
-	      size_t bucket = GetBucketIndex (outputLayer->GetOptions ());
-	      targetTex =
-	        currentDimData->buckets[bucket].textures[outputLayer->GetOutTextureNum ()];
-      }
-      else
-      {
-	      targetTex = target;
-      }
+      // 2D texture, coordinates are 0-1,0-1
+      tcMulX = 1.0f/targetW;
+      tcMulY = 1.0f/targetH;
     }
-    manager->graphics3D->SetRenderTarget (targetTex);
 
-    int drawflags = CSDRAW_CLEARZBUFFER | CSDRAW_3DGRAPHICS;
-    if (outputLayer->GetOptions ().readback
-        && ((layer == postLayers.GetSize () - 1)
-          || GetRealOutputLayer (postLayers[layer+1]) != outputLayer))
+    renderInfo.texcoordBuf = csRenderBuffer::CreateRenderBuffer (4, CS_BUF_STATIC,
+                CS_BUFCOMP_FLOAT, 2);
+
+    csRenderBufferLock<csVector2> screenQuadTex (renderInfo.texcoordBuf);
+
+    // Setup the texcoords
+    screenQuadTex[(size_t)0].Set (targetRect.xmin*tcMulX, targetRect.ymin*tcMulY);
+    screenQuadTex[(size_t)1].Set (targetRect.xmax*tcMulX, targetRect.ymin*tcMulY);
+    screenQuadTex[(size_t)2].Set (targetRect.xmax*tcMulX, targetRect.ymax*tcMulY);
+    screenQuadTex[(size_t)3].Set (targetRect.xmin*tcMulX, targetRect.ymax*tcMulY);
+
+    renderInfo.buffers->SetRenderBuffer (CS_BUFFER_TEXCOORD0, renderInfo.texcoordBuf);
+  }
+  return true;
+}
+
+bool PostEffect::SetupShaderVars ()
+{
+  for (uint i =0; i < postLayers.GetSize (); ++i)
+  {
+    csRef<iShaderVariableContext> svContext;
+    PriorityShaderVariableContext* pContext = new PriorityShaderVariableContext ();
+
+    svContext.AttachNew (pContext);
+
+
+    Layer& layer = *(postLayers[i]);
+    layer.rInfo.layerSVs = svContext;
+
+    pContext->AddContext(layer.svDefaultContext, 1);
+    pContext->AddContext(layer.svUserContext, 2);
+
+    for (uint j = 0; j < layer.GetLayerDesc ().inputs.GetSize (); ++j)
     {
-      drawflags |= CSDRAW_READBACK;
+      PostEffectLayerInputMap& inp = layer.GetLayerDesc ().inputs[j];
+      csRef<csShaderVariable> sv;
+      if (!inp.inputTexture.IsValid ()) return false;
+
+      CS::ShaderVarStringID strID = manager->svStrings->Request (inp.svTextureName);
+      sv.AttachNew (new csShaderVariable (strID));
+      sv->SetValue (inp.inputTexture);
+
+      svContext->AddVariable (sv);
+
+      csRenderBufferName bufferName =
+                  csRenderBuffer::GetBufferNameFromDescr (inp.svTexcoordName);
+      if (bufferName == CS_BUFFER_NONE)
+      {
+        CS::StringIDValue svName = manager->svStrings->Request (inp.svTexcoordName);
+        sv.AttachNew (new csShaderVariable (svName));
+        sv->SetValue (layer.rInfo.texcoordBuf);
+        svContext->AddVariable (sv);
+      }
     }
+    layer.rInfo.fullscreenQuad.dynDomain = layer.rInfo.layerSVs;
+  }
+  return true;
+}
+
+bool PostEffect::Construct (bool forced)
+{
+  bool ret = true;
+  for (uint i = 0; i < postLayers.GetSize(); ++i)
+  {
+    forced |= postLayers[i]->dirty;
+    postLayers[i]->dirty = false;
+  }
+  if (layersDirty || forced)
+  {
+    ret = false;
+    if (AllocateTextures () && LinkLayers ())
+    {
+      ret = CreateRenderInfo () && SetupShaderVars ();
+    }
+  }
+  layersDirty = false;
+  return ret;
+}
+
+void PostEffect::DrawPostEffect (RenderTreeBase& renderTree, PostEffectDrawTarget flag)
+{ 
+  manager->graphics3D->FinishDraw ();
+
+  int n = postLayers.GetSize () - 1;
+  for (int i = 0; i <= n; ++i)
+  {
+    for (uint j = 0; j < postLayers[i]->outputTextures.GetSize (); ++j)
+    {
+      iTextureHandle *tex;
+      if (postLayers[i]->outputTextures[j] < 0)
+        tex = postLayers[i]->desc.outputs[j].renderTarget;
+      else
+        tex = textures[postLayers[i]->outputTextures[j]];
+      //is last layer
+      if (i == n)
+	  {
+        tex = flag == TARGET ? target : (flag == SCREEN ? nullptr : tex); 
+	  }
+
+      manager->graphics3D->SetRenderTarget (tex, false, 0,
+                  (csRenderTargetAttachment)(rtaColor0 + j));
+    }
+    int drawflags = CSDRAW_CLEARZBUFFER | CSDRAW_3DGRAPHICS;
 
     manager->graphics3D->BeginDraw (drawflags);
-    manager->graphics3D->DrawSimpleMesh (currentDimData->layerRenderInfos[layer].fullscreenQuad,
-      csSimpleMeshScreenspace);
+    manager->graphics3D->DrawSimpleMesh (postLayers[i]->rInfo.fullscreenQuad,
+                csSimpleMeshScreenspace);
     manager->graphics3D->FinishDraw ();
   }
-  
-  if (renderTree.IsDebugFlagEnabled (dbgIntermediateTextures))
+}
+
+iPostEffectLayer* PostEffect::AddLayer (LayerDesc &desc)
+{
+  if (desc.outputs.GetSize() > 0 && desc.layerShader.IsValid())
   {
-    for (size_t layer = 0; layer < postLayers.GetSize ()-1; ++layer)
-    {
-      
-      if (postLayers[layer]->options.renderOn != 0)
-	      // If rendering onto another layer the bucket of that layer will be displayed.
-	      continue;
-      if (postLayers[layer]->options.manualTarget.IsValid ())
-	      // If a manual target is given we don't display the texture here
-	      continue;
-
-      // Actual intermediate layers
-      size_t bucket = GetBucketIndex (postLayers[layer]->options);
-      renderTree.AddDebugTexture (
-	      currentDimData->buckets[bucket].textures[postLayers[layer]->outTextureNum],
-	      float (currentWidth)/float (currentHeight));
-    }
+    Layer* newLayer = new Layer (desc);
+    postLayers.Push (newLayer);
+    layersDirty = true;
+    return newLayer;
   }
-  
-  dimCache.AdvanceTime (++frameNum);
-  // Reset to avoid purging every frame
-  dimCache.agedPurgeInterval = 60;
-}
-    
-iPostEffectLayer* PostEffect::AddLayer (iShader* shader)
-{
-  PostEffectLayerOptions opt;
-  return AddLayer (shader, opt);
-}
-
-iPostEffectLayer* PostEffect::AddLayer (iShader* shader, const PostEffectLayerOptions& opt)
-{
-  PostEffectLayerInputMap map;
-  map.inputLayer = lastLayer;
-  return AddLayer (shader, opt, 1, &map);
-}
-
-iPostEffectLayer* PostEffect::AddLayer (iShader* shader, size_t numMaps, 
-                                        const PostEffectLayerInputMap* maps)
-{
-  PostEffectLayerOptions opt;
-  return AddLayer (shader, opt, numMaps, maps);
-}
-
-iPostEffectLayer* PostEffect::AddLayer (iShader* shader, const PostEffectLayerOptions& opt,
-                                        size_t numMaps, const PostEffectLayerInputMap* maps)
-{
-  Layer* newLayer = new Layer ();
-  newLayer->effectShader = shader;
-  for (size_t n = 0; n < numMaps; n++)
-    newLayer->inputs.Push (maps[n]);
-
-  newLayer->options = opt;
-  postLayers.Push (newLayer);
-  textureDistributionDirty = true;
-  lastLayer = newLayer;
-  layersDirty = true;
-  return newLayer;
+  return nullptr;
 }
 
 bool PostEffect::RemoveLayer (iPostEffectLayer* layer)
@@ -268,445 +347,40 @@ bool PostEffect::RemoveLayer (iPostEffectLayer* layer)
     if (postLayers[layerIndex] == layer) break;
   }
   if (layerIndex >= postLayers.GetSize ()) return false;
-  // If this layer was input to some other, replace these
-  const PostEffectLayerInputMap& input = layer->GetInputs ()[0];
-  for (size_t l = layerIndex+1; l < postLayers.GetSize (); l++)
-  {
-    Layer* fixupLayer = postLayers[l];
-    for (size_t i = 0; i < fixupLayer->inputs.GetSize (); i++)
-    {
-      PostEffectLayerInputMap& inputFixup = fixupLayer->inputs[i];
-      if (inputFixup.inputLayer == layer)
-        inputFixup.inputLayer = input.inputLayer;
-    }
-  }
-  
-  if (layer == lastLayer)
-    lastLayer = postLayers[layerIndex-1];
-  
+
   postLayers.DeleteIndex (layerIndex);
-  textureDistributionDirty = true;
   layersDirty = true;
+
   return true;
 }
     
 void PostEffect::ClearLayers ()
 {
   postLayers.DeleteAll ();
-  currentWidth = 0; currentHeight = 0;
-  lastLayer = 0;
-  
-  AddLayer (0, 0, 0);
 }
 
 iTextureHandle* PostEffect::GetLayerOutput (const iPostEffectLayer* layer)
 {
-  size_t bucket = GetBucketIndex (layer->GetOptions ());
-  return currentDimData->buckets[bucket].textures[layer->GetOutTextureNum ()];
-}
-    
-void PostEffect::GetLayerRenderSVs (const iPostEffectLayer* layer,
-					   csShaderVariableStack& svStack) const
-{
-  layer->GetSVContext ()->PushVariables (svStack);
-  
-  // Add dummy SVs for other layer stuff
-  for (size_t i = 0; i < layer->GetInputs ().GetSize (); i++)
+  Layer * l = dynamic_cast<Layer*> ((iPostEffectLayer*)layer);
+  if (l)
   {
-    const PostEffectLayerInputMap& input = layer->GetInputs ()[i];
-    
-    csRef<csShaderVariable> sv;
-    if (input.manualInput.IsValid ())
-    {
-      svStack[input.manualInput->GetName ()] = input.manualInput;
-    }
+    if (l->outputTextures[0] < 0)
+      return l->desc.outputs[0].renderTarget;
     else
-    {
-      CS::StringIDValue svName = manager->svStrings->Request (input.textureName);
-      if (svName < svStack.GetSize ())
-      {
-        sv.AttachNew (new csShaderVariable (svName));
-        sv->SetType (csShaderVariable::TEXTURE);
-        svStack[svName] = sv;
-      }
-    }
-    
-    csRenderBufferName bufferName =
-      csRenderBuffer::GetBufferNameFromDescr (input.texcoordName);
-    if (bufferName == CS_BUFFER_NONE)
-    {
-      CS::StringIDValue svName = manager->svStrings->Request (input.texcoordName);
-      if (svName < svStack.GetSize ())
-      {
-        sv.AttachNew (new csShaderVariable (svName));
-        sv->SetType (csShaderVariable::RENDERBUFFER);
-        svStack[svName] = sv;
-      }
-    }
+      return textures[l->outputTextures[0]];
   }
+  return nullptr;
 }
 
-bool PostEffect::DimensionData::AllocatePingpongTextures (PostEffect& pfx)
+void PostEffect::GetLayerRenderSVs (iPostEffectLayer* layer, csShaderVariableStack& svStack)
 {
-  size_t layer0bucket = pfx.GetBucketIndex (pfx.postLayers[0]->options);
-  for (size_t b = 0; b < buckets.GetSize (); b++)
+  Layer * l = dynamic_cast<Layer*> ((iPostEffectLayer*)layer);
+  if (l)
   {
-    uint texFlags =
-      CS_TEXTURE_3D | CS_TEXTURE_NPOTS | CS_TEXTURE_CLAMP | CS_TEXTURE_SCALE_UP;
-    if (!pfx.buckets[b].options.mipmap)
-      texFlags |= CS_TEXTURE_NOMIPMAPS;
-    // Always clear the texture that is used as the screen target
-    if (layer0bucket == b)
-      texFlags |= CS_TEXTURE_CREATE_CLEAR;
-    csRef<iTextureHandle> t;
-    int texW = dim.x >> pfx.buckets[b].options.downsample;
-    int texH = dim.y >> pfx.buckets[b].options.downsample;
-    t = pfx.manager->graphics3D->GetTextureManager ()->CreateTexture (texW, texH, 
-      csimg2D, pfx.textureFmt, texFlags);
-    if (!t)
-    {
-      printf ("Error creating texture for post effects! The application will soon crash!"
-	      "\nTODO: Proper reporting...\n");
-      fflush (stdout);
-      return false;
-    }
-    if (pfx.buckets[b].options.maxMipmap >= 0)
-      t->SetMipmapLimits (pfx.buckets[b].options.maxMipmap);
-    buckets[b].textures.SetSize (pfx.buckets[b].textureNum);
-    buckets[b].textures.Put (0, t);
-  
-    // Check if we actually got NPOTs textures
-    int resultFlags = buckets[b].textures[0]->GetFlags ();
-    if (!(resultFlags & CS_TEXTURE_NPOTS))
-    {
-      // Handle that we didn't get a power of 2 texture
-      // Means the texture is bigger and we need to use <1 for texture coordinate
-      int tw, th, td;
-      buckets[b].textures[0]->GetRendererDimensions (tw, th, td);
-  
-      buckets[b].texMaxX = texW / (float)tw;
-      buckets[b].texMaxY = texH / (float)th;
-    }
-    else if (buckets[b].textures[0]->GetTextureType () == iTextureHandle::texTypeRect)
-    {
-      // Handle a rect texture
-      // Rect texture use non-normalized texture coordinates
-      buckets[b].texMaxX = texW;
-      buckets[b].texMaxY = texH;
-    }
-    else
-    {
-      // NPOT texture, coordinates are 0-1,0-1
-      buckets[b].texMaxX = 1;
-      buckets[b].texMaxY = 1;
-    }  
-  
-    for (size_t i = 1; i < buckets[b].textures.GetSize (); i++)
-    {
-      t = pfx.manager->graphics3D->GetTextureManager ()->CreateTexture (texW, texH, 
-	      csimg2D, pfx.textureFmt, resultFlags);
-      buckets[b].textures.Put (i, t);
-    }
+    Construct(false);
+	l->rInfo.layerSVs->PushVariables(svStack);
   }
 
-  return true;
-}
-
-void PostEffect::DimensionData::SetupRenderInfo (PostEffect& pfx)
-{
-  layerRenderInfos.DeleteAll ();
-  layerRenderInfos.SetCapacity (pfx.postLayers.GetSize ());
-
-  for (size_t l = 0; l < pfx.postLayers.GetSize (); l++)
-  {
-    const Layer& layer = *(pfx.postLayers[l]);
-
-    LayerRenderInfo& renderInfo = layerRenderInfos.GetExtend (l);
-    renderInfo.buffers.AttachNew (new csRenderBufferHolder);
-  
-    renderInfo.fullscreenQuad.meshtype = CS_MESHTYPE_QUADS;
-    renderInfo.fullscreenQuad.vertexCount = 4;
-    renderInfo.fullscreenQuad.mixmode = CS_MIXMODE_BLEND (ONE, ZERO);
-    renderInfo.fullscreenQuad.shader = pfx.postLayers[l]->effectShader;
-    renderInfo.fullscreenQuad.renderBuffers = renderInfo.buffers;
-    renderInfo.buffers->SetRenderBuffer (CS_BUFFER_INDEX, pfx.indices);
-    
-    csRef<iRenderBuffer> vertBuf =
-      csRenderBuffer::CreateRenderBuffer (4, CS_BUF_STATIC, 
-        CS_BUFCOMP_FLOAT, 3);
-    renderInfo.buffers->SetRenderBuffer (CS_BUFFER_POSITION, vertBuf);
-        
-    csRenderBufferLock<csVector3> screenQuadVerts (vertBuf);
-  
-    csRect targetRect (layer.options.targetRect);
-    if (targetRect.IsEmpty ())
-    {
-      const iPostEffectLayer* outputLayer = pfx.GetRealOutputLayer (&layer);
-      if (outputLayer->GetOptions ().manualTarget.IsValid ())
-      {
-        int targetW, targetH;
-        outputLayer->GetOptions ().manualTarget->GetRendererDimensions (targetW, targetH);
-	      targetRect.Set (0, 0, targetW, targetH);
-      }
-      else
-      {
-	      targetRect.Set (0, 0,
-	        dim.x >> outputLayer->GetOptions ().downsample,
-	        dim.y >> outputLayer->GetOptions ().downsample);
-      }
-    }
-    
-    // Setup the vertices & texcoords
-    screenQuadVerts[(size_t)0].Set (targetRect.xmin, targetRect.ymin, 0);
-    screenQuadVerts[(size_t)1].Set (targetRect.xmax, targetRect.ymin, 0);
-    screenQuadVerts[(size_t)2].Set (targetRect.xmax, targetRect.ymax, 0);
-    screenQuadVerts[(size_t)3].Set (targetRect.xmin, targetRect.ymax, 0);
-  }
-}
-
-csPtr<iRenderBuffer> PostEffect::DimensionData::ComputeTexCoords (
-  iTextureHandle* tex, const csRect& rect, const csRect& targetRect,
-  float& pixSizeX, float& pixSizeY)
-{
-  csRect tcRect (rect);
-  if (tcRect.IsEmpty ()) tcRect = targetRect;
-
-  int tw, th, td;
-  tex->GetRendererDimensions (tw, th, td);
-  
-  float tcMulX, tcMulY, tcOffsY;
-  // Check if we actually got NPOTs textures
-  //int resultFlags = tex->GetFlags ();
-  if (tex->GetTextureType () == iTextureHandle::texTypeRect)
-  {
-    // Handle a rect texture
-    // Rect texture use non-normalized texture coordinates
-    tcMulX = 1;
-    tcMulY = 1;
-  }
-  else
-  {
-    // 2D texture, coordinates are 0-1,0-1
-    tcMulX = 1.0f/tw;
-    tcMulY = 1.0f/th;
-  }
-  tcOffsY = (th-targetRect.ymax+0.5f)*tcMulY;
-  
-  csRef<iRenderBuffer> texcoordBuf =
-    csRenderBuffer::CreateRenderBuffer (4, CS_BUF_STATIC,
-      CS_BUFCOMP_FLOAT, 2);
-      
-  csRenderBufferLock<csVector2> screenQuadTex (texcoordBuf);
-
-  // Setup the texcoords
-  screenQuadTex[(size_t)0].Set ((tcRect.xmin+0.5f)*tcMulX, tcOffsY+tcRect.ymin*tcMulY);
-  screenQuadTex[(size_t)1].Set ((tcRect.xmax+0.5f)*tcMulX, tcOffsY+tcRect.ymin*tcMulY);
-  screenQuadTex[(size_t)2].Set ((tcRect.xmax+0.5f)*tcMulX, tcOffsY+tcRect.ymax*tcMulY);
-  screenQuadTex[(size_t)3].Set ((tcRect.xmin+0.5f)*tcMulX, tcOffsY+tcRect.ymax*tcMulY);
-  
-  pixSizeX = tcMulX;
-  pixSizeY = tcMulY;
-  
-  return csPtr<iRenderBuffer> (texcoordBuf);
-}
-
-class OverlaySVC :
-  public scfImplementation1<OverlaySVC,
-                            scfFakeInterface<iShaderVariableContext> >,
-  public CS::Graphics::OverlayShaderVariableContextImpl
-{
-public:
-  OverlaySVC (iShaderVariableContext* parent) : scfImplementationType (this)
-  {
-    SetParentContext (parent);
-  }
-};
-
-void PostEffect::DimensionData::UpdateSVContexts (PostEffect& pfx)
-{
-  for (size_t l = 0; l < pfx.postLayers.GetSize (); l++)
-  {
-    const Layer& layer = *(pfx.postLayers[l]);
-    LayerRenderInfo& renderInfo = layerRenderInfos[l];
-    
-    csRef<iShaderVariableContext> newSVs;
-    newSVs.AttachNew (new OverlaySVC (layer.GetSVContext ()));
-    renderInfo.layerSVs = newSVs;
-    for (size_t i = 0; i < layer.GetInputs ().GetSize (); i++)
-    {
-      const PostEffectLayerInputMap& input = layer.GetInputs ()[i];
-      
-      csRef<csShaderVariable> sv;
-      iTextureHandle* inputTex;
-      int texW, texH;
-      if (input.manualInput.IsValid ())
-      {
-        // User specified input texture
-        newSVs->AddVariable (input.manualInput);
-        input.manualInput->GetValue (inputTex);
-        
-        inputTex->GetRendererDimensions (texW, texH);
-      }
-      else
-      {
-        // PFX manager manages texture
-        size_t inBucket = pfx.GetBucketIndex (input.inputLayer->GetOptions ());
-	      sv.AttachNew (new csShaderVariable (pfx.manager->svStrings->Request (
-	        input.textureName)));
-	      inputTex =
-	        buckets[inBucket].textures[input.inputLayer->GetOutTextureNum ()];
-	      sv->SetValue (inputTex);
-	      newSVs->AddVariable (sv);
-	
-        texW = dim.x >> input.inputLayer->GetOptions ().downsample;
-        texH = dim.y >> input.inputLayer->GetOptions ().downsample;
-      }
-    
-      csRect fullRect (0, 0, texW, texH);
-    
-      float pixSizeX, pixSizeY;
-      csRenderBufferName bufferName =
-        csRenderBuffer::GetBufferNameFromDescr (input.texcoordName);
-      csRef<iRenderBuffer> texcoordBuf = ComputeTexCoords (inputTex,
-        input.sourceRect, fullRect, pixSizeX, pixSizeY);
-      if (bufferName != CS_BUFFER_NONE)
-      {
-        renderInfo.buffers->SetRenderBuffer (bufferName, texcoordBuf);
-      }
-      else
-      {
-        sv.AttachNew (new csShaderVariable (pfx.manager->svStrings->Request (
-          input.texcoordName)));
-        newSVs->AddVariable (sv);
-      }
-      
-      if (!input.inputPixelSizeName.IsEmpty ())
-      {
-        csRef<csShaderVariable> svInPixSize;
-	      svInPixSize.AttachNew (new csShaderVariable (
-	        pfx.manager->svStrings->Request (input.inputPixelSizeName)));
-	      svInPixSize->SetValue (csVector2 (pixSizeX, pixSizeY));
-	      newSVs->AddVariable (svInPixSize);
-      }
-    }
-    
-    renderInfo.svPixelSize.AttachNew (new csShaderVariable (
-      pfx.manager->svStrings->Request ("pixel size")));
-
-    const iPostEffectLayer* outputLayer = pfx.GetRealOutputLayer (&layer);
-    if (!outputLayer->GetOptions ().manualTarget.IsValid ())
-    {
-      size_t b = pfx.GetBucketIndex (outputLayer->GetOptions ());
-      
-      int texW = dim.x >> layer.options.downsample;
-      int texH = dim.y >> layer.options.downsample;
-      renderInfo.svPixelSize->SetValue (
-	      csVector2 (buckets[b].texMaxX/float (texW), 
-	      buckets[b].texMaxY/float (texH)));
-    }
-    else
-    {
-      // Don't really know pixel size...
-      renderInfo.svPixelSize->SetValue (csVector2 (0, 0));
-    }   
-    renderInfo.fullscreenQuad.dynDomain = renderInfo.layerSVs;
-  }
-}
-
-void PostEffect::UpdateTextureDistribution ()
-{
-  for (size_t l = 0; l < postLayers.GetSize (); l++)
-  {
-    if (postLayers[l]->options.renderOn != 0)
-      // If rendering onto another layer the bucket of that layer will be used.
-      continue;
-    if (postLayers[l]->options.manualTarget.IsValid ())
-      // If a manual target is given we don't allocate a texture here
-      continue;
-    GetBucket (postLayers[l]->options);
-  }
-
-  csArray<csArray<csBitArray> > allUsedTextureBits;
-  allUsedTextureBits.SetSize (buckets.GetSize ());
-  for (size_t b = 0; b < buckets.GetSize (); b++)
-  {
-    allUsedTextureBits[b].SetSize (postLayers.GetSize ());
-  }
-  
-  for (size_t l = 0; l < postLayers.GetSize () - 1; l++)
-  {
-    if (postLayers[l]->options.renderOn != 0)
-      // If rendering onto another layer the bucket of that layer will be used.
-      continue;
-    if (postLayers[l]->options.manualTarget.IsValid ())
-      // If a manual target is given we don't allocate a texture here
-      continue;
-    
-    size_t bucket = GetBucketIndex (postLayers[l]->options);
-    csArray<csBitArray>& usedTextureBits = allUsedTextureBits[bucket];
-    
-    // Look for an unused texture
-    size_t freeTexture;
-    if (manager->keepAllIntermediates || buckets[bucket].options.noTextureReuse || (l == 0))
-      freeTexture = csArrayItemNotFound;
-    else
-      freeTexture = usedTextureBits[l].GetFirstBitUnset ();
-
-    if (freeTexture == csArrayItemNotFound)
-    {
-      // Add a new texture
-      freeTexture = usedTextureBits[l].GetSize ();
-      for (size_t b = l; b < postLayers.GetSize (); b++)
-        usedTextureBits[b].SetSize (freeTexture+1);
-    }
-    
-    postLayers[l]->outTextureNum = (int) freeTexture;
-    
-    size_t lastLayer = l;
-    // Look for last layer which has current layer as an input
-    for (size_t l2 = postLayers.GetSize (); l2-- > l; )
-    {
-      if (postLayers[l2]->IsInput (postLayers[l]))
-      {
-        lastLayer = l2;
-        break;
-      }
-    }
-    // Mark texture as used
-    for (size_t l2 = l; l2 <= lastLayer; l2++)
-    {
-      usedTextureBits[l2].SetBit (freeTexture);
-    }
-  }
-  
-  for (size_t b = 0; b < buckets.GetSize (); b++)
-  {
-    csArray<csBitArray>& usedTextureBits = allUsedTextureBits[b];
-    //buckets[b].textures.SetSize (usedTextureBits[postLayers.GetSize ()-1].GetSize ());
-    buckets[b].textureNum = usedTextureBits[postLayers.GetSize ()-1].GetSize ();
-  }
-}
-
-void PostEffect::UpdateLayers ()
-{
-  if (!layersDirty) return;
-  
-  dimCache.Clear (true);
-  UpdateTextureDistribution ();
-  
-  layersDirty = false;
-}
-
-size_t PostEffect::GetBucketIndex (const PostEffectLayerOptions& options)
-{
-  for (size_t i = 0; i < buckets.GetSize (); i++)
-  {
-    if (buckets[i].options == options) return i;
-  }
-  size_t index = buckets.GetSize ();
-  buckets.SetSize (index+1);
-  buckets[index].options = options;
-  return index;
 }
     
 bool PostEffect::ScreenSpaceYFlipped ()
@@ -714,24 +388,28 @@ bool PostEffect::ScreenSpaceYFlipped ()
   return (postLayers.GetSize () > 1);
 }
 
+bool PostEffect::LoadFromFile (const char * fileName)
+{
+  return manager->postEffectParser->AddLayersFromFile(fileName, this);
+}
+
 //--------Layer--------------------------------------------------------------
 
 CS_LEAKGUARD_IMPLEMENT (Layer);
 
-Layer::Layer ()
-  : scfImplementationType (this)
+Layer::Layer (LayerDesc &desc)
+  : scfImplementationType (this), dirty(true)
 {
-  svContext.AttachNew (new csShaderVariableContext);
+  this->desc = desc;
+  svUserContext.AttachNew (new csShaderVariableContext);
+  svDefaultContext.AttachNew (new csShaderVariableContext);
 }
 
-bool Layer::IsInput (const Layer* layer) const
+void Layer::AddDefaultVar(csShaderVariable *var)
 {
-  for (size_t i = 0; i < inputs.GetSize (); i++)
-  {
-    if (inputs[i].inputLayer == layer) return true;
-  }
-  return false;
+  svDefaultContext->AddVariable(var);
 }
+
 
 //-------PostEffectManager---------------------------------------------------
 
@@ -740,9 +418,13 @@ SCF_IMPLEMENT_FACTORY (PostEffectManager);
 CS_LEAKGUARD_IMPLEMENT (PostEffectManager);
 
 PostEffectManager::PostEffectManager (iBase* parent)
-  : scfImplementationType (this, parent)
+  : scfImplementationType (this, parent), postEffectParser (nullptr)
 {
-}    
+}
+PostEffectManager::~PostEffectManager ()
+{
+  delete postEffectParser;
+}
 
 bool PostEffectManager::Initialize (iObjectRegistry* objectReg)
 {
@@ -754,18 +436,225 @@ bool PostEffectManager::Initialize (iObjectRegistry* objectReg)
   keepAllIntermediates =
     cfg->GetBool ("PostEffectManager.KeepAllIntermediates", false);
 
+  curWidth = curHeight = 0;
+  loader = csQueryRegistry<iLoader> (objectReg);
+  postEffectParser = new PostEffectLayersParser (objectReg);
+
   return true;
 }
 
 csPtr<iPostEffect> PostEffectManager::CreatePostEffect (const char* name)
 {
-  printf ("PostEffectManager::CreatePostEffect %s\n", name);
   CS_ASSERT (!postEffectsHash.Contains (name));    
 
   csRef<iPostEffect> effect;
   effect.AttachNew (new PostEffect (this, name));
 
   return csPtr<iPostEffect> (effect);
+}
+
+csPtr<iTextureHandle> PostEffectManager::RequestTexture (TextureAllocationInfo& info, int num)
+{
+  csRef<iTextureHandle> t;
+  char key[50];
+  //format,downsample,mipmap,id
+  if (num >= 0)
+  {
+    sprintf (key, "%s%d%d%d%d", info.format.GetData(), info.downsample, info.mipmap, info.maxMipmap, num);
+    t = renderTargets.Get (key, t);
+  }
+
+  if (!t.IsValid ())
+  {
+    uint texFlags =
+      CS_TEXTURE_3D | CS_TEXTURE_NPOTS | CS_TEXTURE_CLAMP | CS_TEXTURE_SCALE_UP;
+    if (!info.mipmap)
+      texFlags |= CS_TEXTURE_NOMIPMAPS;
+    texFlags |= CS_TEXTURE_CREATE_CLEAR;
+    
+    int texW = graphics3D->GetWidth () >> info.downsample;
+    int texH = graphics3D->GetHeight () >> info.downsample;
+    t = graphics3D->GetTextureManager ()->CreateTexture (texW, texH, 
+    csimg2D, info.format, texFlags);
+    if (info.maxMipmap > 0)
+      t->SetMipmapLimits (info.maxMipmap);
+
+    if (num >= 0)
+	  renderTargets.PutUnique (key, t);
+  }
+
+  return csPtr<iTextureHandle> (t);
+}
+
+bool PostEffectManager::SetupView (uint width, uint height)
+{
+  if ((curWidth != width) && (curHeight != height))
+  {
+    curWidth = width;
+    curHeight = height;
+    renderTargets.DeleteAll ();
+	return true;
+  }
+  return false;
+}
+
+void PostEffectManager::RemoveUnusedTextures ()
+{
+}
+
+bool PostEffect::DependencySolver::Solve (csPDelArray<Layer>& layers, csArray<PostEffect::DependencySolver::LayerTextureInfo>& result)
+{
+  int n = layers.GetSize ()-1;
+  for (uint i = 0; i < layers.GetSize (); ++i)
+  {
+    layers[i]->outputTextures.DeleteAll ();
+    layers[i]->outputTextures.SetSize (layers[i]->desc.outputs.GetSize (), -1);
+  }
+
+  if (n >= 0)
+  {
+    Layer& layer = *(layers[n]);
+
+    LayerTextureInfo info;
+    //for each output add it to used textures list
+    for (uint i = 0; i < layer.desc.outputs.GetSize (); ++i)
+    {
+      info = GetAvailableRT (layer.desc.outputs[i], n, result);
+      //asign id to layer output
+      layer.outputTextures[i] = info.idx;
+    }
+  }
+  //for each layer
+  for (int i = layers.GetSize ()-1; i > 0; --i)
+  {
+    UpdateUsedRT(i);
+    //for each input
+    for (uint j = 0; j < layers[i]->desc.inputs.GetSize (); ++j)
+    {
+      if (layers[i]->desc.inputs[j].type != AUTO) continue;
+      //check if format is valid
+      if (!IsValid (layers[i]->desc.inputs[j])) continue;
+
+      int l, o;
+      //maps an input to a layer output
+      if (!GetOutput (layers, i, j, l, o)) return false;
+      // layer i uses layer i + n, n>=0 as input
+      if (i <= l) return false;
+
+      if (layers[l]->outputTextures[o] == -1)
+      {
+        LayerTextureInfo info = GetAvailableRT (layers[l]->desc.outputs[o], l, result);
+        layers[l]->outputTextures[o] = info.idx;
+      }
+    }
+  }
+  return true;
+}
+
+PostEffect::DependencySolver::LayerTextureInfo PostEffect::DependencySolver::GetAvailableRT (PostEffectLayerOptions &opt, int layer, csArray<LayerTextureInfo>& result)
+{
+  LayerTextureInfo ret;
+  std::list<LayerTextureInfo>::iterator itor;
+
+  if (!opt.info.reusable)
+  {
+    ret.info = opt.info;
+    ret.num = -1;
+    ret.layer = layer;
+    ret.idx = result.GetSize ();
+    result.Push (ret);
+    return ret;
+  }
+
+  itor = avaliable.begin ();
+  //try find it on avaliable list
+  while (itor != avaliable.end ())
+  {
+    if ((*itor).info == opt.info)
+    {
+      ret = *itor;
+      avaliable.erase (itor);
+      used.push_back (ret);
+      return ret;
+    }
+    itor++;
+  }
+
+  itor = used.begin ();
+  int num = 0;
+  while (itor != used.end ())
+  {
+    if ((*itor).info == opt.info)
+    {
+      ++num;
+    }
+    itor++;
+  }
+  ret.info = opt.info;
+  ret.num = num;
+  ret.layer = layer;
+  ret.idx = result.GetSize ();
+  result.Push (ret);
+  used.push_back (ret);
+  return ret;
+}
+
+bool PostEffect::DependencySolver::IsValid (PostEffectLayerInputMap& inp)
+{
+  return true;
+}
+
+bool PostEffect::DependencySolver::GetOutput (csPDelArray<Layer>& layers, int inLayer, int inInput, int& outLayerNum, int& outNum)
+{
+  csString name = layers[inLayer]->GetLayerDesc ().inputs[inInput].sourceName;
+  if (name.Compare (""))
+  {
+    outLayerNum = --inLayer;
+    outNum = 0;
+    return true;
+  }
+  size_t pos = name.Find (".");
+  csString layerName, outName;
+  name.SubString (layerName, 0, pos);
+  if (pos != -1)
+    name.SubString (outName, pos+1);
+  for (uint i = 0; i < layers.GetSize (); ++i)
+  {
+    if (layerName.Compare (layers[i]->GetName()))
+    {
+      outLayerNum = i;
+      if (outName.Compare (""))
+      {
+        outNum = 0;
+        return true;
+      }
+      for (uint j = 0; j < layers[i]->GetLayerDesc ().outputs.GetSize (); ++j)
+      {
+        if (layers[i]->GetLayerDesc ().outputs[j].name.Compare (outName))
+        {
+          outNum = j;
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+void PostEffect::DependencySolver::UpdateUsedRT (int l)
+{
+  std::list<LayerTextureInfo>::iterator itor;
+  itor = used.begin ();
+  while (itor != used.end ())
+  {
+    if ((*itor).layer > l)
+    {
+      avaliable.push_back (*itor);
+      itor = used.erase (itor);
+    }
+    else
+      itor++;
+  }
 }
 
 }

@@ -96,11 +96,10 @@ bool PostEffectLayersParser::ParseInputs (iDocumentNode* node,
     }
     
     PostEffectLayerInputMap inp;
-    inp.inputLayer = inpLayer;
     if (child->GetAttribute ("texname").IsValid())
-      inp.textureName = child->GetAttributeValue ("texname");
+      inp.svTextureName = child->GetAttributeValue ("texname");
     if (child->GetAttribute ("texcoord").IsValid())
-      inp.texcoordName = child->GetAttributeValue ("texcoord");
+      inp.svTexcoordName = child->GetAttributeValue ("texcoord");
     inputs.Push (inp);
   }
   return true;
@@ -113,10 +112,10 @@ bool PostEffectLayersParser::ParseLayer (iDocumentNode* node,
 {
   const char* layerID = node->GetAttributeValue ("name");
   PostEffectLayerOptions layerOpts;
-  layerOpts.mipmap = node->GetAttributeValueAsBool ("mipmap", false);
-  layerOpts.downsample = node->GetAttributeValueAsInt ("downsample");
+  layerOpts.info.mipmap = node->GetAttributeValueAsBool ("mipmap", false);
+  layerOpts.info.downsample = node->GetAttributeValueAsInt ("downsample");
   if (node->GetAttribute ("maxmipmap").IsValid())
-    layerOpts.maxMipmap = node->GetAttributeValueAsInt ("maxmipmap");
+    layerOpts.info.maxMipmap = node->GetAttributeValueAsInt ("maxmipmap");
     
   csRefArray<csShaderVariable> shaderVars;
   bool hasInputs = false;
@@ -169,15 +168,15 @@ bool PostEffectLayersParser::ParseLayer (iDocumentNode* node,
   }
   
   iPostEffectLayer* layer;
+  LayerDesc desc;
   if (hasInputs)
-  {
-    layer = effect->AddLayer (shaderObj, layerOpts, inputs.GetSize(),
-      inputs.GetArray());
-  }
+    desc = LayerDesc(shaderObj, inputs, layerOpts);
   else
-  {
-    layer = effect->AddLayer (shaderObj, layerOpts);
-  }
+    desc = LayerDesc(shaderObj, layerOpts);
+
+  desc.name = layerID;
+  layer = effect->AddLayer (desc);
+
   if (layerID && *layerID)
     layers.Put (layerID, layer);
     

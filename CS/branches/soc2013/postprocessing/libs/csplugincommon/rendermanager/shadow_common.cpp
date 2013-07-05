@@ -138,7 +138,8 @@ namespace CS
             {
               if (attachment == rtaColor0)
               {
-                postEffect->SetIntermediateTargetFormat (formatStr);
+				//TODO: fix HDR code to work with the changes made in postprocessing code
+                //postEffect->SetOutputFormat (formatStr);
               }
             }
               

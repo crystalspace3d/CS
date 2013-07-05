@@ -37,6 +37,8 @@
 #include "csutil/scf_implementation.h"
 #include "iengine/rendermanager.h"
 
+#include <list>
+
 struct iGraphics3D;
 struct iObjectRegistry;
 struct iRenderView;
@@ -49,45 +51,59 @@ using namespace CS::RenderManager;
 
 CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 {
+    struct LayerRenderInfo
+    {
+        /// 'Pixel size' (values to add to X/Y to get next input pixel)
+        csRef<csShaderVariable> svPixelSize;
+        /// Input vertices for layer
+        csRef<iRenderBuffer> vertBuf;
+		////Input texture coordinates
+		csRef<iRenderBuffer> texcoordBuf;
+        /// Shader vars
+        csRef<iShaderVariableContext> layerSVs;
+        /// Render buffers
+        csRef<csRenderBufferHolder> buffers;
+        /// Render mesh for layer
+        csSimpleRenderMesh fullscreenQuad;
+    };
+
   /// An effect layer.
   class Layer : 
     public scfImplementation1<Layer, iPostEffectLayer>
   {
   private:
     friend class PostEffect;
-    friend struct DimensionData;
       
-    csRef<iShader> effectShader;
-    int outTextureNum;
-    csArray<PostEffectLayerInputMap> inputs;
-    csRef<iShaderVariableContext> svContext;
-    PostEffectLayerOptions options;
-    
-    bool IsInput (const Layer* layer) const;
+    LayerDesc desc;
+	LayerRenderInfo rInfo;
+    csRef<iShaderVariableContext> svUserContext;
+	csRef<iShaderVariableContext> svDefaultContext;
+	csArray<int> outputTextures;
+    bool dirty;
 
   public:
     CS_LEAKGUARD_DECLARE (Layer);
 
-    Layer ();
+    Layer (LayerDesc& desc);
     virtual ~Layer () {}
 
     //-- iPostEffectLayer
     /// Get the shader variables for this layer.
-    iShaderVariableContext* GetSVContext () const { return svContext; }
+    iShaderVariableContext* GetSVContext () const { return svUserContext; }
     /// Get inputs to this layer
-    const csArray<PostEffectLayerInputMap>& GetInputs () const { return inputs; }
+    const csArray<PostEffectLayerInputMap>& GetInputs () const { return desc.inputs; }
       
     /// Get layer options
-    const PostEffectLayerOptions& GetOptions () const { return options; }
-    /// Set layer options
-    void SetOptions (const PostEffectLayerOptions& opt) { options = opt; }
+    const csArray<PostEffectLayerOptions>& GetOptions () const { return desc.outputs; }
 
-    /// Get layer shader
-    void SetShader (iShader* shader) { effectShader = shader; }
-    /// Set layer shader
-    iShader* GetShader () const { return effectShader; }
-    /// @@@ Document me?
-    int GetOutTextureNum () const { return outTextureNum; }
+	const char * GetName () const {return desc.name;}
+
+	void SetLayerDesc (LayerDesc &desc) {this->desc = desc; dirty = true;}
+
+	LayerDesc& GetLayerDesc () {return desc;}
+
+    void AddDefaultVar(csShaderVariable *var);
+
   };
 
   class PostEffectManager;
@@ -95,7 +111,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   class PostEffect :
     public scfImplementation1<PostEffect, iPostEffect>
   {
-    struct DimensionData;
 
   public:  
     CS_LEAKGUARD_DECLARE (PostEffect);
@@ -107,61 +122,32 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
     const char* GetName () { return name; }
 
-    /// Set the texture format for the intermediate textures used.
-    void SetIntermediateTargetFormat (const char* textureFmt);
-    /// Get the texture format for the intermediate textures used.
-    const char* GetIntermediateTargetFormat ();
-        
-    /**
-     * Set up post processing manager for a view.
-     * \returns Whether the manager has changed. If \c true some values,
-     *   such as the screen texture, must be reobtained from the manager.   
-     */    
+
     bool SetupView (uint width, uint height);
 
-    /**
-     * Discard (and thus cause recreation of) all intermediate textures.
-     */
-    void ClearIntermediates ();
 
     /// Get the texture to render a scene to for post processing.
     iTextureHandle* GetScreenTarget ();
 
-    /**
-     * Draw post processing effects after the scene was rendered to
-     * the handle returned by GetScreenTarget ().
-     */
-    void DrawPostEffect (RenderTreeBase& renderTree);
-    
-    //@{
-    /// Add an effect pass. Uses last added layer as the input
-    iPostEffectLayer* AddLayer (iShader* shader);
-    iPostEffectLayer* AddLayer (iShader* shader, const PostEffectLayerOptions& opt);
-    //@}
-    //@{
-    /// Add an effect pass with custom input mappings.
-    iPostEffectLayer* AddLayer (iShader* shader, size_t numMaps, const PostEffectLayerInputMap* maps);
-    iPostEffectLayer* AddLayer (iShader* shader, const PostEffectLayerOptions& opt, size_t numMaps,
-      const PostEffectLayerInputMap* maps);
-    //@}
+    /// Draw post processing effects
+    void DrawPostEffect (RenderTreeBase& renderTree, PostEffectDrawTarget flag);
+
+
+    /// Add an effect pass.
+    iPostEffectLayer* AddLayer (LayerDesc &desc);
+
     /// Remove a layer
     bool RemoveLayer (iPostEffectLayer* layer);
     /// Remove all layers
     void ClearLayers ();
     
     /// Get the layer representing the "screen" a scene is rendered to.
-    iPostEffectLayer* GetScreenLayer () { return postLayers[0]; }
+	iPostEffectLayer* GetScreenLayer () { return postLayers[postLayers.GetSize() -1]; }
     
-    /// Get the layer that was added last
-    iPostEffectLayer* GetLastLayer () { return lastLayer; }
-    
+    void GetLayerRenderSVs (iPostEffectLayer* layer, csShaderVariableStack& svStack);
+
     /// Get the output texture of a layer.
     iTextureHandle* GetLayerOutput (const iPostEffectLayer* layer);
-    
-    /**
-     * Get SV context used for rendering.
-     */
-    void GetLayerRenderSVs (const iPostEffectLayer* layer, csShaderVariableStack& svStack) const;
     
     /// Set the effect's output render target.
     void SetOutputTarget (iTextureHandle* tex) { target = tex; }
@@ -169,142 +155,72 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     /// Get the effect's output render target.
     iTextureHandle* GetOutputTarget () const { return target; }
 
+	/// Set the effect's input texture.
+    void SetInputTexture (iTextureHandle* tex) { input = tex; }
+  
+    /// Get the effect's input texture.
+    iTextureHandle* GetInputTexture () const { return input; }
+
     /**
      * Returns whether the screen space is flipped in Y direction. This usually
      * happens when rendering to a texture due post effects.
      */
-    bool ScreenSpaceYFlipped ();    
+    bool ScreenSpaceYFlipped ();
+
+
+	/// Loads post effect defined in the given file
+	bool LoadFromFile (const char * fileName);
+
+    /**
+     * Setup the effect, allocates and setup rendertargets,
+     * mesh data (fullscreen quad) and shaders variables.
+     */
+	bool Construct (bool forced);
 
   private:
+
+    bool AllocateTextures();
+    bool LinkLayers();
+    bool CreateRenderInfo();
+    bool SetupShaderVars();
+
     PostEffectManager* manager;
     csString name;
-    uint frameNum;
     csRef<iRenderBuffer> indices;
-    csRef<iTextureHandle> target;
-    uint dbgIntermediateTextures;    
-
-    void SetupScreenQuad ();
-
-    const iPostEffectLayer* GetRealOutputLayer (const iPostEffectLayer* layer) const
-    { 
-      return layer->GetOptions ().renderOn 
-        ? GetRealOutputLayer (layer->GetOptions ().renderOn) : layer;
-    }
-
-    struct Dimensions
-    {
-      uint x, y;
-    };
-
-    /// All the data needed for one target dimension
-    struct DimensionData
-    {
-      Dimensions dim;
-      /**
-       * Textures which have the same properties are managed
-       * in one "bucket"
-       */
-      struct TexturesBucket
-      {
-        /// Textures in this bucket
-	      csRefArray<iTextureHandle> textures;
-	      /**
-	       * Maximum X/Y coords (normalized for 2D textures, unnormalized for
-	       * RECT textures)
-	       */
-	      float texMaxX, texMaxY;
-	
-	      TexturesBucket () : texMaxX (1), texMaxY (1) { }
-      };
-      csArray<TexturesBucket> buckets;
-      
-      struct LayerRenderInfo
-      {
-        /// 'Pixel size' (values to add to X/Y to get next input pixel)
-	      csRef<csShaderVariable> svPixelSize;
-	      /// Input vertices for layer
-	      csRef<iRenderBuffer> vertBuf;
-	      /// Shader vars
-	      csRef<iShaderVariableContext> layerSVs;
-	      /// Render buffers
-	      csRef<csRenderBufferHolder> buffers;
-	      /// Render mesh for layer
-        csSimpleRenderMesh fullscreenQuad;
-      };
-      /// Render information for all layers
-      csArray<LayerRenderInfo> layerRenderInfos;
-
-      bool AllocatePingpongTextures (PostEffect& pfx);
-      void UpdateSVContexts (PostEffect& pfx);
-    
-      void SetupRenderInfo (PostEffect& pfx);
-
-    protected:
-      csPtr<iRenderBuffer> ComputeTexCoords (iTextureHandle* tex,
-        const csRect& rect, const csRect& targetRect,
-        float& pixSizeX, float& pixSizeY);
-    };
-    
-    struct DimensionCacheSorting
-    {
-      typedef Dimensions KeyType;
-
-      static bool IsLargerEqual (const DimensionData& b1, 
-                                 const DimensionData& b2)
-      {
-	return (b1.dim.x >= b2.dim.x) && (b1.dim.y >= b2.dim.y);
-      }
-    
-      static bool IsEqual (const DimensionData& b1, 
-                           const DimensionData& b2)
-      {
-	return (b1.dim.x == b2.dim.x) && (b1.dim.y == b2.dim.y);
-      }
-    
-      static bool IsLargerEqual (const DimensionData& b1, 
-                                 const Dimensions& b2)
-      {
-	return (b1.dim.x >= b2.x) && (b1.dim.y >= b2.y);
-      }
-    
-      static bool IsEqual (const DimensionData& b1, 
-                           const Dimensions& b2)
-      {
-	return (b1.dim.x == b2.x) && (b1.dim.y == b2.y);
-      }
-    
-      static bool IsLargerEqual (const Dimensions& b1, 
-                                 const DimensionData& b2)
-      {
-	return (b1.x >= b2.dim.x) && (b1.y >= b2.dim.y);
-      }
-    };
-
-    CS::Utility::GenericResourceCache<DimensionData,
-      uint, DimensionCacheSorting, 
-      CS::Utility::ResourceCache::ReuseConditionFlagged> dimCache;
-    DimensionData* currentDimData;
-      
-    uint currentWidth, currentHeight;
-
-    bool textureDistributionDirty;
-    void UpdateTextureDistribution ();
-      
-    csString textureFmt;
-    Layer* lastLayer;
+    csRef<iTextureHandle> input, target;
+    csRefArray<iTextureHandle> textures;
+    uint dbgIntermediateTextures;
     csPDelArray<Layer> postLayers;
     bool layersDirty;
-    void UpdateLayers ();
-    
-    struct BucketsCommon
+
+
+
+    class DependencySolver
     {
-      PostEffectLayerOptions options;
-      size_t textureNum;
+    public:
+
+      struct LayerTextureInfo
+      {
+        TextureAllocationInfo info;
+        int num;
+        int layer;
+        int idx;
+        LayerTextureInfo () : num(-1), layer(-1), idx(-1) {}
+      };
+
+      bool Solve (csPDelArray<Layer>& layers, csArray<LayerTextureInfo>& result);
+
+      bool IsValid (PostEffectLayerInputMap& inp);
+
+      bool GetOutput (csPDelArray<Layer>& layers, int inLayer, int inInput, int& outLayerNum, int& outNum);
+
+
+    private:
+      LayerTextureInfo GetAvailableRT (PostEffectLayerOptions &opt, int layer, csArray<LayerTextureInfo>& result);
+      void UpdateUsedRT (int l);
+      std::list<LayerTextureInfo> used;
+      std::list<LayerTextureInfo> avaliable;
     };
-    csArray<BucketsCommon> buckets;
-    size_t GetBucketIndex (const PostEffectLayerOptions& options);
-    BucketsCommon& GetBucket (const PostEffectLayerOptions& options)
-    { return buckets[GetBucketIndex (options)]; }
   };
 
   class PostEffectManager : 
@@ -314,21 +230,82 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
   protected:
     csHash<csRef<iPostEffect>, const char*> postEffectsHash;
+    csHash<csRef<iTextureHandle>, const char*> renderTargets;
     csRef<iGraphics3D> graphics3D;
     csRef<iShaderVarStringSet> svStrings;
+    csRef<iLoader> loader;
+    uint curWidth, curHeight;
+    PostEffectLayersParser* postEffectParser;
     bool keepAllIntermediates;
+
+    /**
+     * Removes all textures not referenced
+     * by PostEffect's
+     */
+    void RemoveUnusedTextures ();
 
   public:
     CS_LEAKGUARD_DECLARE (PostEffectManager);
 
     PostEffectManager (iBase* parent);
-    virtual ~PostEffectManager () {}
+    virtual ~PostEffectManager ();
 
     //-- iComponent
     virtual bool Initialize (iObjectRegistry* objectReg);
 
     //-- iPostEffectManager
     csPtr<iPostEffect> CreatePostEffect (const char* name);
+
+	/**
+     * Allocates a texture with the given TextureAllocationInfo and
+     * num, if num >= 0 it tries to reuse a previous allocated
+     * texture with same info and num;  
+     */ 
+	csPtr<iTextureHandle> RequestTexture (TextureAllocationInfo& info, int num);
+
+	/**
+     * Set up post processing manager for a view.
+     * \returns Whether the manager has changed. If \c true some values,
+     *   such as the screen texture, must be reobtained from the manager.   
+     */    
+    bool SetupView (uint width, uint height);
+
+  };
+
+  class PriorityShaderVariableContext :
+    public scfImplementation1<PriorityShaderVariableContext,
+                            scfFakeInterface<iShaderVariableContext> >,
+    public CS::Graphics::ShaderVariableContextImpl
+  {
+    struct psvc 
+	{
+      int priority;
+      csRef<iShaderVariableContext> svContext;
+	  psvc(iShaderVariableContext* svc, int p) : svContext(svc), priority(p) {}
+
+	  bool operator == (const psvc &other) const {return priority == other.priority;}
+	  bool operator < (const psvc &other) const {return priority < other.priority;}
+	  bool operator > (const psvc &other) const {return priority > other.priority;}
+	};
+    csArray<psvc> contexts;
+  public:
+    PriorityShaderVariableContext (iShaderVariableContext* parent = nullptr, int priority = 0) : scfImplementationType (this)
+    {
+      AddContext (parent, priority);
+    }
+
+    void AddContext (iShaderVariableContext* parent, int priority)
+    {
+      if (parent != nullptr)
+        contexts.InsertSorted (psvc(parent, priority));
+    }
+
+    void PushVariables (csShaderVariableStack& stacks) const
+    { 
+      for (uint i = 0; i < contexts.GetSize (); ++i)
+        contexts[i].svContext->PushVariables(stacks);
+      ShaderVariableContextImpl::PushVariables (stacks); 
+    }
   };
 
 }

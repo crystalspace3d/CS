@@ -457,7 +457,7 @@ bool RMShadowedPSSM::PrecacheView (iView* view)
 {
   if (!RenderView (view, false)) return false;
 
-  PostEffectsSupport::ClearIntermediates();
+  //PostEffectsSupport::ClearIntermediates();
 
   /* @@@ Other ideas for precache drawing:
     - No frame advancement?

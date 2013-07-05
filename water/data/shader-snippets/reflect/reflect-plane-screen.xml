@@ -25,7 +25,7 @@
     <!--input id="reflectXform" type="translateScale2" default="shadervar" defsv="reflection coord xform" /-->
     <!-- Factor applied to perturbance scaling.
 	 The closer the value to 0 is, the larger is the area at which perturbance is scaled. -->
-    <input id="perturbFadeScale" type="float" default="value" defval="1" />
+    <!--input id="perturbFadeScale" type="float" default="value" defval="1" /-->
     
     <!-- Put the computation of the reflection TC into a separate snippet
 	 so weaver only emits it once. -->
@@ -188,8 +188,8 @@
 	<input name="reflTC" type="texcoord4" />
 	<input name="reflTC2screen" type="translateScale2" />
 	
-	<input name="perturb" type="float2" default="value" defval="0,0" />
-	<input name="perturbFadeScale" type="float" />
+	<input name="perturb" type="float2" default="value" defval="0.3,0.3" />
+	<input name="perturbFadeScale" type="float" default="value" defval="0.9"/>
 	
 	<block location="cg:vertexMain">
 	  surfaceColor = float4 (0, 0, 0, 1);
@@ -266,6 +266,6 @@
     </snippet>
     
     <connection from="reflTC" to="actualReflect" />
-    <connection from="perturbFadeScale" to="actualReflect" />
+   
   </technique>
 </snippet>

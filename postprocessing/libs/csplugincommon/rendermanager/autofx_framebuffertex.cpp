@@ -64,12 +64,6 @@ namespace CS
 	  svTexFramebuffer[i] = strings->Request (svName);
 	}
 	svFramebufferCoordXform = strings->Request ("framebuffer coord xform");
-	
-	if (postEffectManager->GetPostEffectCount ())
-	{
-	  iPostEffect* effect = postEffectManager->GetPostEffect (0);
-	  texCacheColor.SetFormat (effect->GetIntermediateTargetFormat ());
-	}
 
 
 	csRef<iGraphics3D> g3d = csQueryRegistry<iGraphics3D> (objReg);

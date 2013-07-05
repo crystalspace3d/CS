@@ -28,13 +28,13 @@ namespace CS
 {
   namespace RenderManager
   {
-    PostEffectsSupport::PostEffectsSupport () : postEffectParser (nullptr)
+    PostEffectsSupport::PostEffectsSupport () 
     {
     }
     
     PostEffectsSupport::~PostEffectsSupport ()
     {
-      delete postEffectParser;
+      
     }
     
     void PostEffectsSupport::Initialize (iObjectRegistry* objectReg, const char* configKey)
@@ -45,7 +45,6 @@ namespace CS
       postEffectManager = csLoadPlugin<iPostEffectManager>
         (pluginManager, "crystalspace.rendermanager.posteffect");
 
-      postEffectParser = new PostEffectLayersParser (objectReg);
 
       // Check for a post-effect to be applied
       if (configKey)
@@ -58,32 +57,10 @@ namespace CS
         if (effectsFile)
         {
           csRef<iPostEffect> effect = CreatePostEffect (effectsFile);
-          if (postEffectParser->AddLayersFromFile (effectsFile, effect))
+		  if (effect->LoadFromFile (effectsFile))
             AddPostEffect (effect);
         }
       }
-    }
-    
-    void PostEffectsSupport::ClearLayers ()
-    {
-      if (postEffects.GetSize ())
-	    postEffects[0]->ClearLayers ();
-    }
-
-    bool PostEffectsSupport::AddLayersFromDocument (iDocumentNode* node)
-    {
-      if (postEffects.GetSize ())
-	    return postEffectParser->AddLayersFromDocument (node, postEffects[0]);
-
-      return false;
-    }
-    
-    bool PostEffectsSupport::AddLayersFromFile (const char* filename)
-    {
-      if (postEffects.GetSize ())
-        return postEffectParser->AddLayersFromFile (filename, postEffects[0]);
-
-      return false;
     }
     
     csPtr<iPostEffect> PostEffectsSupport::CreatePostEffect (const char* name) const
@@ -96,15 +73,8 @@ namespace CS
     void PostEffectsSupport::AddPostEffect (iPostEffect* effect)
     {
       if (!effect) return;
-
-      size_t pfxCount = postEffects.GetSize ();
-      if (pfxCount > 0)
-      {
-        iTextureHandle* target = postEffects.Get (pfxCount - 1)->GetOutputTarget ();
-        effect->SetOutputTarget (target);
-      }
-
-      postEffects.Push (effect);      
+      postEffects.Push (effect);
+      changed = true;
     }
     
     bool PostEffectsSupport::InsertPostEffect (iPostEffect* effect, size_t index)
@@ -112,13 +82,9 @@ namespace CS
       if (!effect) return false;
 
       size_t pfxCount = postEffects.GetSize ();
+	  if (index > pfxCount) return false;
       bool result = postEffects.Insert (index, effect);
-      
-      if (result && pfxCount > 1)
-      {
-        iTextureHandle* target = postEffects.Get (pfxCount - 1)->GetOutputTarget ();
-        effect->SetOutputTarget (target);
-      }
+      changed = true;
 
       return result;
     }
@@ -134,11 +100,13 @@ namespace CS
 
     bool PostEffectsSupport::RemovePostEffect (iPostEffect* effect)
     {
+      changed = true;
       return postEffects.Delete (effect);
     }
 
     bool PostEffectsSupport::RemovePostEffect (size_t index)
-    {      
+    {
+      changed = true;
       return postEffects.DeleteIndex (index);
     }
     
@@ -154,10 +122,9 @@ namespace CS
 
     iTextureHandle* PostEffectsSupport::GetScreenTarget () const
     {
-      if (postEffects.IsEmpty ())
+      if (postEffects.IsEmpty () || !enabled)
         return nullptr;
-      
-      return postEffects.Get (0)->GetScreenTarget ();
+      return pingPong[1];
     }
 
     void PostEffectsSupport::SetEffectsOutputTarget (iTextureHandle* tex)
@@ -174,17 +141,21 @@ namespace CS
 
       return postEffects.Get (postEffects.GetSize () - 1)->GetOutputTarget ();
     }
-
-    void PostEffectsSupport::ClearIntermediates ()
-    {
-      for (size_t i = 0; i < postEffects.GetSize (); i++)
-        postEffects.Get (i)->ClearIntermediates ();
-    }
     
     void PostEffectsSupport::DrawPostEffects (RenderTreeBase& renderTree)
     {
-      for (size_t i = 0; i < postEffects.GetSize (); i++)
+      if (!enabled) return;
+
+      size_t n = postEffects.GetSize ()-1;
+      for (size_t i = 0; i < n; i++)
         postEffects.Get (i)->DrawPostEffect (renderTree);
+      if (n>=0)
+        postEffects.Get (n)->DrawPostEffect (renderTree, SCREEN);
+      if (0)
+      {
+        renderTree.AddDebugTexture (pingPong[0]);
+        renderTree.AddDebugTexture (pingPong[1]);
+      }
     }
 
     bool PostEffectsSupport::SetupView (iView* view, CS::Math::Matrix4& perspectiveFixup)
@@ -202,20 +173,29 @@ namespace CS
       if (!pfxCount)
       {
         perspectiveFixup = CS::Math::Matrix4 ();
+        changed = false;
         return false;
       }
+	  TextureAllocationInfo info;
 
-      bool effectsDataChanged = false;
-      for (int i = pfxCount - 1; i >= 0; i--)
+      //resolution changed
+      if (postEffectManager->SetupView(width, height))
+      {
+        pingPong[0] = postEffectManager->RequestTexture (info, -1);
+        pingPong[1] = postEffectManager->RequestTexture (info, -1);
+        changed = true;
+      }
+
+      bool effectsDataChanged = changed;
+      for (int i = 0; i < pfxCount ; ++i)
       {
         iPostEffect* effect = postEffects.Get (i);
-        effectsDataChanged = effect->SetupView (width, height);
-
-        if (effectsDataChanged && i > 0)
+        if (changed)
         {
-          iPostEffect* prevEffect = postEffects.Get (i - 1);
-          prevEffect->SetOutputTarget (effect->GetScreenTarget ());
+          effect->SetInputTexture(pingPong[(i+1)%2]);
+          effect->SetOutputTarget(pingPong[i%2]);
         }
+        effectsDataChanged |= effect->SetupView (width, height);
       }
 
       // Set the perspective fixup with the last effect
@@ -238,6 +218,7 @@ namespace CS
         perspectiveFixup = CS::Math::Matrix4 ();
       }
 
+      changed = false;
       return effectsDataChanged;
     }
 
@@ -251,6 +232,11 @@ namespace CS
 
       return false;
     }
+
+    void PostEffectsSupport::SetPostEffectsEnabled(bool status)
+	{
+      enabled = status;
+	}
 
   } // namespace RenderManager
 } // namespace CS

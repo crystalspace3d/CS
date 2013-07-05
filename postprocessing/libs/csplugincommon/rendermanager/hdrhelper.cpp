@@ -59,7 +59,7 @@ namespace CS
 	case qualFloat32: textureFmt = "bgr32_f"; break;
 	default: return false;
       }
-      postEffect->SetIntermediateTargetFormat (textureFmt);
+      //postEffect->SetOutputFormat (textureFmt);
       this->quality = quality;
       
       csRef<iShaderManager> shaderManager =
@@ -83,20 +83,23 @@ namespace CS
       if (!loader) return false;
       csRef<iShader> map = loader->LoadShader ("/shader/postproc/hdr/default-map.xml");
       if (!map) return false;
-      measureLayer = postEffect->GetLastLayer();
-      mappingLayer = postEffect->AddLayer (map);
+	  //TODO: Fix hdr code to work with the new implementation of posteffects
+      //measureLayer = postEffect->GetLastLayer();
+      mappingLayer = postEffect->AddLayer (LayerDesc (map));
     
       return true;
     }
 
     void HDRHelper::SetMappingShader (iShader* shader)
     {
-      mappingLayer->SetShader (shader);
+      LayerDesc &desc = mappingLayer->GetLayerDesc();
+	  desc.layerShader = shader;
+	  mappingLayer->SetLayerDesc(desc);
     }
 
     iShader* HDRHelper::GetMappingShader ()
     {
-      return mappingLayer->GetShader();
+      return mappingLayer->GetLayerDesc().layerShader;
     }
 
     iShaderVariableContext* HDRHelper::GetMappingShaderVarContext()

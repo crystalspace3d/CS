@@ -43,10 +43,12 @@ namespace CS
 	  const char* firstShader, const char* stepShader)
 	{
 	  this->hdr = &hdr;
-	  measureLayer = hdr.GetMeasureLayer();
+
+	  //TODO: Fix hdr code to work with the new implementation of posteffects
+	  /*measureLayer = hdr.GetMeasureLayer();
 	  PostEffectLayerOptions measureOpts = measureLayer->GetOptions();
 	  measureOpts.noTextureReuse = true;
-	  measureLayer->SetOptions (measureOpts);
+	  measureLayer->SetOptions (measureOpts);*/
 	  
 	  graphics3D = csQueryRegistry<iGraphics3D> (objReg);
       
@@ -65,7 +67,7 @@ namespace CS
 	  computeFX = postEffectManager->CreatePostEffect ("hdr_luminance");
 	  if (!computeFX) return;
 
-	  computeFX->SetIntermediateTargetFormat (intermediateTextureFormat);
+	  //computeFX->SetOutputFormat (intermediateTextureFormat);
 	
 	  computeShader1 =
 	    loader->LoadShader (firstShader);
@@ -209,8 +211,9 @@ namespace CS
 	  {
 	    iPostEffectLayer* tempLayer;
 	    PostEffectLayerInputMap inputMap;
-	    inputMap.manualInput = stage.svInput;
-	    tempLayer = computeFX->AddLayer (computeShader, 1, &inputMap);
+		//TODO: Fix hdr to work with the new implementation of posteffects
+	    //inputMap.manualInput = stage.svInput;
+	    tempLayer = computeFX->AddLayer (LayerDesc (computeShader, inputMap));
 	    
 	    // Determine 'priority ticket' for stage
 	    svstack.Setup (shaderManager->GetSVNameStringset ()->GetSize ());
@@ -314,13 +317,15 @@ namespace CS
 	  bool lastStage = (stage.targetW <= minSize) && (stage.targetH <= minSize);
 	  uint texFlags =
 	    CS_TEXTURE_3D | CS_TEXTURE_NPOTS | CS_TEXTURE_CLAMP | CS_TEXTURE_SCALE_UP | CS_TEXTURE_NOMIPMAPS;
-	  csString stageFormat;
+
+	  //TODO: fix HDR code to work with the changes made in postprocessing code
+	  /*csString stageFormat;
 	  if (lastStage)
 	    stageFormat = readbackFmt.GetCanonical();
 	  else
-	    stageFormat = computeFX->GetIntermediateTargetFormat();
+	    stageFormat = computeFX->GetOutputFormat();
 	  stage.target = graphics3D->GetTextureManager ()->CreateTexture (stage.targetW,
-	    stage.targetH, csimg2D, stageFormat, texFlags);
+	    stage.targetH, csimg2D, stageFormat, texFlags);*/
 	  
 	  
 	  int targetPixels = stage.targetW * maxBlockSizeX 
@@ -338,6 +343,8 @@ namespace CS
 	  {
 	    iPostEffectLayer* layer;
 	    PostEffectLayerInputMap inputMap;
+		//TODO: Fix hdr to work with the new implementation of posteffects
+		/*
 	    inputMap.manualInput = stage.svInput;
 	    inputMap.sourceRect = finalParts[l].sourceRect;
 	    inputMap.inputPixelSizeName = "input pixel size";
@@ -350,13 +357,15 @@ namespace CS
 	    }
 	    else
 	      options.renderOn = outputLayer;
-	    //inputMap.manualTexcoords = computeTexcoordBuf;
+		  
+	    inputMap.manualTexcoords = computeTexcoordBuf;
 	    layer = computeFX->AddLayer (finalParts[l].shader, options, 1, &inputMap);
 	    
 	    layer->GetSVContext()->AddVariable (stage.svInput);
 	    layer->GetSVContext()->AddVariable (stage.svWeightCoeff);
 	    stage.layers.Push (layer);
 	    if (outputLayer == 0) outputLayer = layer;
+		*/
 	  }
 	  return !lastStage;
 	}

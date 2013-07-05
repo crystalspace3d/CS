@@ -569,7 +569,7 @@ bool RMDeferred::PrecacheView(iView *view)
 {
   return RenderView (view, false);
 
-  PostEffectsSupport::ClearIntermediates ();
+  //PostEffectsSupport::ClearIntermediates ();
 }
 
 //----------------------------------------------------------------------

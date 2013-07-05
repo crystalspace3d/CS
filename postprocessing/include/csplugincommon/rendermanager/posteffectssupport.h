@@ -43,9 +43,11 @@ namespace CS
     class CS_CRYSTALSPACE_EXPORT PostEffectsSupport : public virtual iRenderManagerPostEffects
     {
     protected:
-      PostEffectLayersParser* postEffectParser;
       csRef<iPostEffectManager> postEffectManager;
       csRefArray<iPostEffect> postEffects;
+	  csRef<iTextureHandle> pingPong[2];
+	  uint lastW, lastH;
+	  bool changed, enabled;
     
     public:
       PostEffectsSupport ();
@@ -60,9 +62,6 @@ namespace CS
     
       /**\name iRenderManagerPostEffects implementation
       * @{ */
-      void ClearLayers ();
-      bool AddLayersFromDocument (iDocumentNode* node);
-      bool AddLayersFromFile (const char* filename);
          
       csPtr<iPostEffect> CreatePostEffect (const char* name) const;
       void AddPostEffect (iPostEffect* effect);      
@@ -80,12 +79,13 @@ namespace CS
       void SetEffectsOutputTarget (iTextureHandle* tex);  
       iTextureHandle* GetEffectsOutputTarget () const;
 
-      void ClearIntermediates ();
       void DrawPostEffects (RenderTreeBase& renderTree);
 
       bool SetupView (iView* view, CS::Math::Matrix4& perspectiveFixup);
 
       bool ScreenSpaceYFlipped () const;
+
+      void SetPostEffectsEnabled(bool status);
       /** @} */
 
     private:

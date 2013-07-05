@@ -107,21 +107,6 @@ struct iRenderManagerPostEffects : public virtual iBase
 {
   SCF_INTERFACE(iRenderManagerPostEffects,1,0,0);
 
-  /// Clear all active post effect layers
-  virtual void ClearLayers() = 0;
-
-  /**
-   * Add the post effect layers defined in the given document node to the
-   * list of active layers
-   */
-  virtual bool AddLayersFromDocument (iDocumentNode* node) = 0;
-
-  /**
-   * Add the post effect layers defined in the given file to the list of
-   * active layers
-   */
-  virtual bool AddLayersFromFile (const char* filename) = 0;
-
   /**
    * Create a new post effect. You must still add it to the chain of effects
    * through AddPostEffect() or InsertPostEffect().
@@ -149,9 +134,6 @@ struct iRenderManagerPostEffects : public virtual iBase
   virtual size_t GetPostEffectCount () const = 0;
   /// Get the effect at the given position.
   virtual CS::RenderManager::iPostEffect* GetPostEffect (size_t index) = 0;
-
-  /// Discard (and thus cause recreation of) all intermediate textures.      
-  virtual void ClearIntermediates () = 0;
 
   /// Get the texture to render a scene to for post processing.
   virtual iTextureHandle* GetScreenTarget () const = 0;
@@ -181,6 +163,9 @@ struct iRenderManagerPostEffects : public virtual iBase
     * happens when rendering to a texture due post effects.
     */
   virtual bool ScreenSpaceYFlipped () const = 0;
+
+  /// Enables/Disables the post effects  
+  virtual void SetPostEffectsEnabled(bool status) = 0;
 };
 
 /**

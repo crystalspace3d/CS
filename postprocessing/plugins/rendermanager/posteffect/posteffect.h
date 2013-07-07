@@ -84,7 +84,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   public:
     CS_LEAKGUARD_DECLARE (Layer);
 
-    Layer (LayerDesc& desc);
+    Layer (const LayerDesc& desc);
     virtual ~Layer () {}
 
     //-- iPostEffectLayer
@@ -134,7 +134,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
 
     /// Add an effect pass.
-    iPostEffectLayer* AddLayer (LayerDesc &desc);
+    iPostEffectLayer* AddLayer (const LayerDesc &desc);
 
     /// Remove a layer
     bool RemoveLayer (iPostEffectLayer* layer);
@@ -279,8 +279,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   {
     struct psvc 
 	{
-      int priority;
       csRef<iShaderVariableContext> svContext;
+      int priority;
 	  psvc(iShaderVariableContext* svc, int p) : svContext(svc), priority(p) {}
 
 	  bool operator == (const psvc &other) const {return priority == other.priority;}

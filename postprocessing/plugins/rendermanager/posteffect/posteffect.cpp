@@ -312,7 +312,7 @@ void PostEffect::DrawPostEffect (RenderTreeBase& renderTree, PostEffectDrawTarge
       //is last layer
       if (i == n)
 	  {
-        tex = flag == TARGET ? target : (flag == SCREEN ? nullptr : tex); 
+        tex = flag == TARGET ? (iTextureHandle*)target : (flag == SCREEN ? nullptr : tex); 
 	  }
 
       manager->graphics3D->SetRenderTarget (tex, false, 0,
@@ -327,7 +327,7 @@ void PostEffect::DrawPostEffect (RenderTreeBase& renderTree, PostEffectDrawTarge
   }
 }
 
-iPostEffectLayer* PostEffect::AddLayer (LayerDesc &desc)
+iPostEffectLayer* PostEffect::AddLayer (const LayerDesc &desc)
 {
   if (desc.outputs.GetSize() > 0 && desc.layerShader.IsValid())
   {
@@ -397,7 +397,7 @@ bool PostEffect::LoadFromFile (const char * fileName)
 
 CS_LEAKGUARD_IMPLEMENT (Layer);
 
-Layer::Layer (LayerDesc &desc)
+Layer::Layer (const LayerDesc &desc)
   : scfImplementationType (this), dirty(true)
 {
   this->desc = desc;

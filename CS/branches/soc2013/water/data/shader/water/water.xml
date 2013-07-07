@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <shader compiler="shaderweaver" name="water">
-
-	<shadervar name="water perturb scale" type="vector2">0.0,0.0</shadervar>
-	<shadervar name="water perturb fade" type="float">1.0</shadervar>
- 
+	<shadervar name="water perturb scale" type="vector2">0.3,0.3</shadervar>
+	<shadervar name="water perturb fade" type="float">0.5</shadervar>
+	
   
-	<technique priority="200">
+	<technique priority="100">
 		<pass>		
 			<combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 	 
 			<snippet id="wave" file="/shader-snippets/wave.xml" />
 			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
 			
-			<connection from="wave" to="reflection" />
-			
+			<connection from="wave" to="reflection" />	
+
 			<parameter id="perturbScaleSV" type="shadervar" weavertype="float2">water perturb scale</parameter>
-			<connection from="perturbScaleSV" to="reflection" />
-      
+			<connection from="perturbScaleSV" to="reflection" />		
+			
 			<parameter id="perturbFadeSV" type="shadervar" weavertype="float">water perturb fade</parameter>
 			<connection from="perturbFadeSV" to="reflection" />
-      
+			
 		</pass>
 	</technique>
+	
 	
 	
 </shader> 

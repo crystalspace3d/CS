@@ -122,25 +122,25 @@
 		
 			struct WaveIn
 			{
-				float3 amps; 
-				float3 kxs; 
-				float3 kys;  
-				float3 freqs; 
-				float3 phases;
+				vec3 amps; 
+				vec3 kxs; 
+				vec3 kys;  
+				vec3 freqs; 
+				vec3 phases;
 				float time;
 			};
 			uniform WaveIn waveInput;
 		
 		
 			//Wave displacement x-z
-			float2 WaveDisp(float2 k, float amp, float2 pos, float freq, float phase, float time) 
+			vec2 WaveDisp(vec2 k, float amp, vec2 pos, float freq, float phase, float time) 
 			{	 
-				float2 normk = normalize(k);
+				vec2 normk = normalize(k);
 				return normk * amp * sin(dot(k, pos) - (freq * time) + phase);
 			}
 	
 			//Wave displacement y
-			float WaveDispVert(float2 k, float amp, float2 pos, float freq, float phase, float time)
+			float WaveDispVert(vec2 k, float amp, vec2 pos, float freq, float phase, float time)
 			{
 				return amp * cos(dot(k, pos) - (freq * time) + phase);
 			}		
@@ -187,21 +187,21 @@
 			position_object = Hposition;
 		
 			//Grab xz position
-			float2 xzpos = (objectToWorld * position_object).xz;
+			vec2 xzpos = (objectToWorld * position_object).xz;
 		
 			//Displace once
-			float2 k = float2(waveInput.kxs.x, waveInput.kys.x);
-			float2 wdxz1 = WaveDisp(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
+			vec2 k = vec2(waveInput.kxs.x, waveInput.kys.x);
+			vec2 wdxz1 = WaveDisp(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
 			float wdy1 = WaveDispVert(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
 			
 			//Displace twice
-			k = float2(waveInput.kxs.y, waveInput.kys.y);
-			float2 wdxz2 = WaveDisp(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
+			k = vec2(waveInput.kxs.y, waveInput.kys.y);
+			vec2 wdxz2 = WaveDisp(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
 			float wdy2 = WaveDispVert(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
 			
 			//Displace thrice, three times displacement!
-			k = float2(waveInput.kxs.z, waveInput.kys.z);
-			float2 wdxz3 = WaveDisp(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
+			k = vec2(waveInput.kxs.z, waveInput.kys.z);
+			vec2 wdxz3 = WaveDisp(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
 			float wdy3 = WaveDispVert(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
 		
 			//Add all the displacements

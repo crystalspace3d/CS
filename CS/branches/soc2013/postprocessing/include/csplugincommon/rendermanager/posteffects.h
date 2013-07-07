@@ -71,7 +71,7 @@ namespace RenderManager
     /// The render target texture format
     csString format;
 
-	TextureAllocationInfo() : format ("argb8"), reusable (true), mipmap (false), maxMipmap (-1), downsample (0) {}
+    TextureAllocationInfo() : mipmap (false), maxMipmap (-1), downsample (0), reusable (true), format ("argb8") {}
 
     bool operator==(const TextureAllocationInfo& other) const
     { 
@@ -286,7 +286,7 @@ namespace RenderManager
     virtual void DrawPostEffect (RenderTreeBase& renderTree, PostEffectDrawTarget flag = TARGET) = 0;
     
     /// Add an effect pass.
-    virtual iPostEffectLayer* AddLayer (LayerDesc &desc) = 0;
+    virtual iPostEffectLayer* AddLayer (const LayerDesc &desc) = 0;
 
     virtual bool RemoveLayer (iPostEffectLayer* layer) = 0;
 

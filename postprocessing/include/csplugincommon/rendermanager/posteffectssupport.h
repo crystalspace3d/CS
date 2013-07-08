@@ -45,9 +45,8 @@ namespace CS
     protected:
       csRef<iPostEffectManager> postEffectManager;
       csRefArray<iPostEffect> postEffects;
-	  csRef<iTextureHandle> pingPong[2];
-	  uint lastW, lastH;
-	  bool changed, enabled;
+      csRef<iTextureHandle> pingPong[2];
+      bool changed, enabled;
     
     public:
       PostEffectsSupport ();

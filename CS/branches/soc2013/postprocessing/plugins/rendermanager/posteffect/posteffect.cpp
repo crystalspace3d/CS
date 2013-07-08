@@ -49,6 +49,16 @@ using namespace CS::RenderManager;
 CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 {
 
+class PriorityShaderVariableContext : 
+  public scfImplementation1<PriorityShaderVariableContext,
+      scfFakeInterface<iShaderVariableContext> >,
+  public CS::Graphics::PriorityShaderVariableContextImpl
+{
+public:
+  PriorityShaderVariableContext(iShaderVariableContext* parent = nullptr, int priority = 0) : 
+    scfImplementationType (this), PriorityShaderVariableContextImpl(parent, priority) {}
+};
+
 CS_LEAKGUARD_IMPLEMENT (PostEffect);
 
 PostEffect::PostEffect (PostEffectManager* manager, const char* name)
@@ -60,7 +70,6 @@ PostEffect::PostEffect (PostEffectManager* manager, const char* name)
 PostEffect::~PostEffect ()
 {
 }
-
 
 bool PostEffect::SetupView (uint width, uint height)
 {
@@ -82,6 +91,9 @@ bool PostEffect::AllocateTextures ()
 	
   csArray<DependencySolver::LayerTextureInfo> result;
   if (!ds.Solve (postLayers, result)) return false;
+
+  /// clear all previous allocations
+  Clear();
 
   TextureAllocationInfo info;
   int start = 0;
@@ -238,7 +250,6 @@ bool PostEffect::SetupShaderVars ()
   {
     csRef<iShaderVariableContext> svContext;
     PriorityShaderVariableContext* pContext = new PriorityShaderVariableContext ();
-
     svContext.AttachNew (pContext);
 
 
@@ -267,6 +278,19 @@ bool PostEffect::SetupShaderVars ()
         CS::StringIDValue svName = manager->svStrings->Request (inp.svTexcoordName);
         sv.AttachNew (new csShaderVariable (svName));
         sv->SetValue (layer.rInfo.texcoordBuf);
+        svContext->AddVariable (sv);
+      }
+
+      if (!inp.svPixelSizeName.Compare(""))
+      {
+        CS::StringIDValue svName = manager->svStrings->Request (inp.svPixelSizeName);
+        sv.AttachNew (new csShaderVariable (svName));
+        int width, height;
+        inp.inputTexture->GetRendererDimensions(width, height);
+        float inv_w, inv_h;
+        inv_w = 1.0f / (float)width;
+        inv_h = 1.0f / (float)height;
+        sv->SetValue (csVector2(inv_w, inv_h));
         svContext->AddVariable (sv);
       }
     }
@@ -311,9 +335,9 @@ void PostEffect::DrawPostEffect (RenderTreeBase& renderTree, PostEffectDrawTarge
         tex = textures[postLayers[i]->outputTextures[j]];
       //is last layer
       if (i == n)
-	  {
+      {
         tex = flag == TARGET ? (iTextureHandle*)target : (flag == SCREEN ? nullptr : tex); 
-	  }
+      }
 
       manager->graphics3D->SetRenderTarget (tex, false, 0,
                   (csRenderTargetAttachment)(rtaColor0 + j));
@@ -378,9 +402,8 @@ void PostEffect::GetLayerRenderSVs (iPostEffectLayer* layer, csShaderVariableSta
   if (l)
   {
     Construct(false);
-	l->rInfo.layerSVs->PushVariables(svStack);
+    l->rInfo.layerSVs->PushVariables(svStack);
   }
-
 }
     
 bool PostEffect::ScreenSpaceYFlipped ()
@@ -456,11 +479,11 @@ csPtr<iPostEffect> PostEffectManager::CreatePostEffect (const char* name)
 csPtr<iTextureHandle> PostEffectManager::RequestTexture (TextureAllocationInfo& info, int num)
 {
   csRef<iTextureHandle> t;
-  char key[50];
+  csString key;
   //format,downsample,mipmap,id
   if (num >= 0)
   {
-    sprintf (key, "%s%d%d%d%d", info.format.GetData(), info.downsample, info.mipmap, info.maxMipmap, num);
+    key.Format("%s%d%d%d%d", info.format.GetData(), info.downsample, info.mipmap, info.maxMipmap, num);
     t = renderTargets.Get (key, t);
   }
 
@@ -655,6 +678,20 @@ void PostEffect::DependencySolver::UpdateUsedRT (int l)
     else
       itor++;
   }
+}
+
+void PostEffect::Clear()
+{
+  textures.DeleteAll();
+  for (uint i = 0; i < postLayers.GetSize (); ++i)
+  {
+    for (uint j = 0; j < postLayers[i]->desc.inputs.GetSize (); ++j)
+    {
+      if (postLayers[i]->desc.inputs[j].type == AUTO || postLayers[i]->desc.inputs[j].type == STATIC)
+        postLayers[i]->desc.inputs[j].inputTexture = nullptr;
+    }
+  }
+  layersDirty = true;
 }
 
 }

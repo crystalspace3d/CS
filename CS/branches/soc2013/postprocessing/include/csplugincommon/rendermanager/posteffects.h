@@ -108,10 +108,14 @@ namespace RenderManager
     }
   };
 
+  /// Defines the type of input
   enum LayerInputType
   {
+    /// uses layers output
     AUTO,
+    /// texture loaded from a file
     STATIC,
+    /// custom input
     MANUAL
   };
 
@@ -122,6 +126,7 @@ namespace RenderManager
 
     csRef<iTextureHandle> inputTexture;
 
+    /// name used to setup or load the input texture
     csString sourceName;
 
     /// Name of the shader variable to provide the input layer texture in
@@ -156,43 +161,43 @@ namespace RenderManager
     csRef<iShader> layerShader;
     csString name;
 
-	LayerDesc () {}
+    LayerDesc () {}
 
     LayerDesc (iShader* shader): layerShader(shader)
-	{
+    {
       inputs.Push(PostEffectLayerInputMap());
       outputs.Push(PostEffectLayerOptions());
-	}
+    }
 
     LayerDesc (iShader* shader, const char * layerName): layerShader(shader), name(layerName)
-	{
+    {
       inputs.Push(PostEffectLayerInputMap());
       outputs.Push(PostEffectLayerOptions());
-	}
+    }
 
     LayerDesc (iShader* shader, PostEffectLayerInputMap &inp): layerShader(shader)
-	{
+    {
       inputs.Push(inp);
       outputs.Push(PostEffectLayerOptions());
-	}
+    }
 
     LayerDesc (iShader* shader, PostEffectLayerInputMap &inp, PostEffectLayerOptions &opt): layerShader(shader)
-	{
+    {
       inputs.Push(inp);
       outputs.Push(opt);
-	}
+    }
 
     LayerDesc (iShader* shader, csArray<PostEffectLayerInputMap> &inp, PostEffectLayerOptions &opt): layerShader(shader)
-	{
+    {
       inputs = inp;
       outputs.Push(opt);
-	}
+    }
 
     LayerDesc (iShader* shader, PostEffectLayerOptions &opt): layerShader(shader)
-	{
+    {
       inputs.Push(PostEffectLayerInputMap());
       outputs.Push(opt);
-	}
+    }
   };
 
   /*
@@ -224,16 +229,15 @@ namespace RenderManager
     virtual void AddDefaultVar(csShaderVariable *var) = 0;
   };
 
-  /**
-   * Describes where the posteffect output will be drawn
-   * Target -> the specified target texture
-   * Screen -> the monitor screen
-   * None -> the default poesteffect allocated texture 
-   */
+
+  /// Describes where the posteffect output will be drawn
   enum PostEffectDrawTarget
   {
+    /// uses the specified target texture
     TARGET,
+    /// draws to the monitor screen
     SCREEN,
+    /// draws to the internal posteffect's texture
     NONE
   };
 
@@ -323,7 +327,10 @@ namespace RenderManager
     virtual bool LoadFromFile (const char * fileName) = 0;
 
     /// Setup the effect
-	virtual bool Construct(bool forced) = 0;
+    virtual bool Construct(bool forced) = 0;
+
+    /// Clean up all allocated textures (references)
+    virtual void Clear() = 0;
   };
 
   /**

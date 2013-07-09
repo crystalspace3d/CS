@@ -32,6 +32,8 @@
 
 #include "iutil/dbghelp.h"
 
+#include <limits>
+
 /**\file
  * Bounding Intervall Hierachy implementation.
  */
@@ -127,11 +129,12 @@ namespace Geometry
  * checks are only performed in debug mode, so those should be performed
  * additionally if needed.
  */
-template<class Child = csBIHChild> class BIH
+template<class Child = csBIHChild> class BIH : public scfImplementation<BIH<Child> >
 {
 public:
   // convenience typedefs
   typedef BIH<Child> Self;
+  typedef Child Child;
   typedef typename Child::BoundType BoundType;
 
   /**
@@ -159,9 +162,6 @@ private:
 
   // bbox of our tree
   csBox3 box;
-
-  // constant for what we consider to be big
-  static int const BIH_MAX = 100000.f;
 
   // child and parent relations
   Self* child1; // null if this is a leaf
@@ -383,14 +383,14 @@ private:
       splitLow[2] = set[numObjects >> 1].min;
 
       // get upper bound for lower part
-      splitLow[1] = -BIH_MAX;
+      splitLow[1] = -std::numeric_limits<float>::max();
       for(int i = 0; i < (numObjects >> 1); ++i)
       {
 	splitLow[1] = csMax(splitLow[1], set[i].max);
       }
 
       // get upper bound for right part
-      splitLow[3] = -BIH_MAX;
+      splitLow[3] = -std::numeric_limits<float>::max();
       for(int i = numObjects >> 1; i < numObjects; ++i)
       {
 	splitLow[3] = csMax(splitLow[3], set[i].max);
@@ -408,14 +408,14 @@ private:
       splitHigh[3] = set[numObjects - 1].max;
 
       // get lower bound for lower part
-      splitHigh[0] = BIH_MAX;
+      splitHigh[0] = std::numeric_limits<float>::max();
       for(int i = 0; i < (numObjects >> 1); ++i)
       {
 	splitHigh[0] = csMin(splitHigh[0], set[i].min);
       }
 
       // get lower bound for upper part
-      splitHigh[2] = BIH_MAX;
+      splitHigh[2] = std::numeric_limits<float>::max();
       for(int i = numObjects >> 1; i < numObjects; ++i)
       {
 	splitHigh[2] = csMin(splitHigh[2], set[i].min);
@@ -539,12 +539,16 @@ private:
 
 public:
   /// Create a new empty BIH.
-  BIH() : 
+  BIH() :
+    // scf initialization
+    scfImplementation(this),
+
     // allocator initialization
     childAlloc(nullptr), treeAlloc(nullptr),
 
     // box initialization
-    box(-BIH_MAX,-BIH_MAX,-BIH_MAX,BIH_MAX,BIH_MAX,BIH_MAX),
+    box(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),
+	std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max()),
 
     // child-parent initialization
     child1(nullptr), child2(nullptr), parent(nullptr),
@@ -647,7 +651,7 @@ public:
    * will not yet alter the structure of the kd-tree. Distribute()
    * will do that.
    */
-  Child* AddObject(const BoundType& bounds, void* object)
+  Child* AddObject(BoundType const& bounds, void* object)
   {
     // validate the object is valid
     CS_ASSERT(object);
@@ -722,7 +726,7 @@ public:
   /**
    * Move an object (give it a new bound).
    */
-  void MoveObject(Child* obj, const BoundType& newBound)
+  void MoveObject(Child* obj, BoundType const& newBound)
   {
     // get old bbox
     csBox3 oldBox = obj->GetBBox();
@@ -793,7 +797,10 @@ public:
   void Distribute()
   {
     // check our distribution state is consistent
-    CS_ASSERT((child1 == nullptr) == (child2 == nullptr) == (splitAxis == CS_BIH_AXISINVALID));
+    CS_ASSERT(
+	 ((child1 == nullptr) && (child2 == nullptr) && (splitAxis == CS_BIH_AXISINVALID))
+      || ((child1 != nullptr) && (child2 != nullptr) && (splitAxis != CS_BIH_AXISINVALID))
+      );
 
     // check for distribution block due to failed attempts
     if(block > 0)
@@ -1017,7 +1024,7 @@ public:
    * The mask parameter is optionally used for frustum checking.
    * Front2Back will pass it to the tree nodes.
    */
-  void Front2Back(const csVector3& pos, VisitFunc* func, void* data, uint32 frustumMask)
+  void Front2Back(csVector3 const& pos, VisitFunc* func, void* data, uint32 frustumMask)
   {
     // validate we got a visiting function
     CS_ASSERT(func);
@@ -1099,7 +1106,7 @@ public:
   /**
    * Return the bounding box of the node itself (includes all children).
    */
-  inline const csBox3& GetNodeBBox() const
+  inline csBox3 const& GetNodeBBox() const
   {
     return box;
   }

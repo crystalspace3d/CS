@@ -168,6 +168,11 @@ class CS_CRYSTALSPACE_EXPORT csKDTree :
   public scfImplementation1<csKDTree, iDebugHelper>
 {
 public:
+  // convenience typedefs
+  typedef csKDTreeChild Child;
+  typedef csBox3 BoundType;
+  typedef csKDTreeVisitFunc VisitFunc;
+
   // This is used for debugging.
   csRef<iKDTreeObjectDescriptor> descriptor;
   void DumpObject (csKDTreeChild* object, const char* msg);

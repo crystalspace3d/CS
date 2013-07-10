@@ -355,6 +355,9 @@ namespace CS
     template<bool bDoFrustumCulling>
     bool csOccluvis::TraverseTreeF2B(VisTree* node,
                                      Front2BackData& f2bData,
+#				    ifdef OCCLUVIS_USE_KD
+				    uint32 timestamp,
+#				    endif
 				     uint32& frustumMask)
     {
       // check whether we should perform frustum culling
@@ -398,6 +401,18 @@ namespace CS
       {
         // get visibility object for this tree object
         iVisibilityObject* visobj = GetNodeVisObject(objects[i]);
+
+#	ifdef OCCLUVIS_USE_KD
+	// test whether we already visited this node
+	if(objects[i]->timestamp == timestamp)
+	{
+	  // skip this object
+	  continue;
+	}
+
+	// update object timestamp
+	objects[i]->timestamp = timestamp;
+#	endif
 
         // skip this object if it's marked invisible
         if(visobj->GetMeshWrapper()->GetFlags().Check(CS_ENTITY_INVISIBLEMESH))
@@ -1391,6 +1406,9 @@ namespace CS
     template<bool sloppy>
     bool csOccluvis::TraverseIntersectSegment(VisTree* node,
 			  IntersectSegmentFront2BackData& data,
+#			  ifdef OCCLUVIS_USE_KD
+			  uint32 timestamp,
+#			  endif
 			  uint32& frustumMask)
     {
       // distribute objects if necessary
@@ -1429,6 +1447,18 @@ namespace CS
       {
 	// get object
 	iVisibilityObject* visobj = GetNodeVisObject(objects[i]);
+
+#	ifdef OCCLUVIS_USE_KD
+	// test whether we already visited this object
+	if(objects[i]->timestamp == timestamp)
+	{
+	  // skip this object
+	  continue;
+	}
+
+	// update object timestamp
+	objects[i]->timestamp = timestamp;
+#	endif
 
 	// get mesh for this object
 	iMeshWrapper* mesh = visobj->GetMeshWrapper();

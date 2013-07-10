@@ -19,7 +19,13 @@
 #ifndef __CS_RENDERMANAGER_OCCLUVIS_H__
 #define __CS_RENDERMANAGER_OCCLUVIS_H__
 
+//#define OCCLUVIS_USE_KD
+
+#ifdef OCCLUVIS_USE_KD
+#include "csgeom/kdtree.h"
+#else
 #include "csgeom/bih.h"
+#endif
 #include "csutil/hash.h"
 #include "csutil/refarr.h"
 #include "csutil/scf_implementation.h"
@@ -135,8 +141,12 @@ namespace CS
       RViewQueryHash RViewQueries;
     };
 
+#   ifdef OCCLUVIS_USE_KD
+    typedef csKDTree VisTree;
+#   else
     typedef csBIH VisTree;
-    typedef csBIH::Child VisTreeNode;
+#   endif
+    typedef VisTree::Child VisTreeNode;
 
     class CS_CRYSTALSPACE_EXPORT csOccluvis :
       public scfImplementationExt1<csOccluvis, VisTree, iVisibilityCuller>
@@ -299,13 +309,21 @@ namespace CS
        * Trasverses the tree from Front to Back.
        */
       template<bool bDoFrustumCulling>
-      static bool TraverseTreeF2B(VisTree* node, Front2BackData& f2bData, uint32& frustum_mask);
+      static bool TraverseTreeF2B(VisTree* node, Front2BackData& f2bData,
+#	ifdef OCCLUVIS_USE_KD
+	uint32 timestamp,
+#	endif
+	uint32& frustum_mask);
 
       /**
        * Traverses the tree from Front to Back checking for intersections with a segment.
        */
       template<bool sloppy>
-      static bool TraverseIntersectSegment(VisTree* node, IntersectSegmentFront2BackData& data, uint32& frustumMask);
+      static bool TraverseIntersectSegment(VisTree* node, IntersectSegmentFront2BackData& data,
+#	ifdef OCCLUVIS_USE_KD
+	uint32 timestamp,
+#	endif
+	uint32& frustumMask);
 
       /**
        * Returns the visibility data of a node.

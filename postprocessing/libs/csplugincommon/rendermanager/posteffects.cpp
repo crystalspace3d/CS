@@ -48,14 +48,14 @@ using namespace CS::RenderManager;
 namespace
 {
   static const char messageID[] = "crystalspace.posteffects.parser";
-        
+
 #define CS_TOKEN_ITEM_FILE "libs/csplugincommon/rendermanager/posteffects.tok"
 #include "cstool/tokenlist.h"
 #undef CS_TOKEN_ITEM_FILE
 }
 
 PostEffectLayersParser::PostEffectLayersParser (iObjectRegistry* objReg)
- : objReg (objReg)
+: objReg (objReg)
 {
   InitTokenTable (xmltokens);
   synldr = csQueryRegistry<iSyntaxService> (objReg);
@@ -65,131 +65,9 @@ PostEffectLayersParser::~PostEffectLayersParser()
 {
 }
 
-bool PostEffectLayersParser::ParseInputs (iDocumentNode* node, 
-                                          iPostEffect* effect,
-		                          ParsedLayers& layers,
-                                          ShadersLayers& shaders, 
-		                          InputsArray& inputs) const
-{
-  csRef<iDocumentNodeIterator> inputsIt = node->GetNodes ("input");
-  while (inputsIt->HasNext())
-  {
-    csRef<iDocumentNode> child = inputsIt->Next();
-    if (child->GetType() != CS_NODE_ELEMENT) continue;
-    
-    const char* layerInpID = child->GetAttributeValue ("layer");
-    if (!layerInpID || !*layerInpID)
-    {
-      synldr->ReportError (messageID, child, "Expected %s attribute",
-			   CS::Quote::Single ("layer"));
-      return false;
-    }
-    iPostEffectLayer* inpLayer = 0;
-    if (strcmp (layerInpID, "*screen") == 0)
-      inpLayer = effect->GetScreenLayer();
-    else
-      inpLayer = layers.Get (layerInpID, 0);
-    if (inpLayer == 0)
-    {
-      synldr->ReportError (messageID, child, "Invalid input layer");
-      return false;
-    }
-    
-    PostEffectLayerInputMap inp;
-    if (child->GetAttribute ("texname").IsValid())
-      inp.svTextureName = child->GetAttributeValue ("texname");
-    if (child->GetAttribute ("texcoord").IsValid())
-      inp.svTexcoordName = child->GetAttributeValue ("texcoord");
-    inputs.Push (inp);
-  }
-  return true;
-}
-
-bool PostEffectLayersParser::ParseLayer (iDocumentNode* node, 
-                                         iPostEffect* effect,
-		                         ParsedLayers& layers,
-                                         ShadersLayers& shaders) const
-{
-  const char* layerID = node->GetAttributeValue ("name");
-  PostEffectLayerOptions layerOpts;
-  layerOpts.info.mipmap = node->GetAttributeValueAsBool ("mipmap", false);
-  layerOpts.info.downsample = node->GetAttributeValueAsInt ("downsample");
-  if (node->GetAttribute ("maxmipmap").IsValid())
-    layerOpts.info.maxMipmap = node->GetAttributeValueAsInt ("maxmipmap");
-    
-  csRefArray<csShaderVariable> shaderVars;
-  bool hasInputs = false;
-  csDirtyAccessArray<PostEffectLayerInputMap> inputs;
-  csRef<iDocumentNodeIterator> it = node->GetNodes();
-  while (it->HasNext())
-  {
-    csRef<iDocumentNode> child = it->Next();
-    if (child->GetType() != CS_NODE_ELEMENT) continue;
-    
-    csStringID id = xmltokens.Request (child->GetValue());
-    switch (id)
-    {
-      case XMLTOKEN_INPUTS:
-        {
-          hasInputs = true;
-          if (!ParseInputs (child, effect, layers, shaders, inputs))
-            return false;
-        }
-	break;
-      case XMLTOKEN_SHADERVAR:
-        {
-          csRef<csShaderVariable> sv;
-          sv.AttachNew (new csShaderVariable);
-          if (!synldr->ParseShaderVar (0, child, *sv))
-            return false;
-          shaderVars.Push (sv);
-        }
-        break;
-      default:
-	synldr->ReportBadToken (child);
-	return false;
-    }
-  }
-    
-  const char* shader = node->GetAttributeValue ("shader");
-  if (!shader || (*shader == 0))
-  {
-    synldr->ReportError (messageID, node, "Expected %s attribute",
-			 CS::Quote::Single ("shader"));
-    return false;
-  }
-  csRef<iShader> shaderObj = shaders.Get (shader, 0);
-  if (!shaderObj.IsValid())
-  {
-    csRef<iLoader> loader (csQueryRegistry<iLoader> (objReg));
-    shaderObj = loader->LoadShader (shader);
-    if (!shaderObj.IsValid()) return false;
-    shaders.Put (shader, shaderObj);
-  }
-  
-  iPostEffectLayer* layer;
-  LayerDesc desc;
-  if (hasInputs)
-    desc = LayerDesc(shaderObj, inputs, layerOpts);
-  else
-    desc = LayerDesc(shaderObj, layerOpts);
-
-  desc.name = layerID;
-  layer = effect->AddLayer (desc);
-
-  if (layerID && *layerID)
-    layers.Put (layerID, layer);
-    
-  for (size_t i = 0; i < shaderVars.GetSize(); i++)
-    layer->GetSVContext()->AddVariable (shaderVars[i]);
-    
-  return true;
-}
-
 bool PostEffectLayersParser::AddLayersFromDocument (iDocumentNode* node, 
                                                     iPostEffect* effect) const
 {
-  ParsedLayers layers;
   ShadersLayers shaders;
 
   csRef<iDocumentNodeIterator> it = node->GetNodes();
@@ -197,31 +75,34 @@ bool PostEffectLayersParser::AddLayersFromDocument (iDocumentNode* node,
   {
     csRef<iDocumentNode> child = it->Next();
     if (child->GetType() != CS_NODE_ELEMENT) continue;
-    
+
     csStringID id = xmltokens.Request (child->GetValue());
     switch (id)
     {
       case XMLTOKEN_LAYER:
-        if (!ParseLayer (child, effect, layers, shaders))
+      {
+        csRef<iPostEffectLayer> layer = effect->AddLayer(LayerDesc());
+        if (!ParseLayer (child, layer, shaders))
           return false;
-	break;
+      }
+      break;
       default:
-	synldr->ReportBadToken (child);
-	return false;
+        synldr->ReportBadToken (child);
+        return false;
     }
   }
-  
+
   return true;
 }
 
 bool PostEffectLayersParser::AddLayersFromFile (const char* filename, 
-						iPostEffect* effect) const
+                                                iPostEffect* effect) const
 {
   csRef<iDocumentSystem> docsys = csQueryRegistry<iDocumentSystem> (
     objReg);
   if (!docsys.IsValid())
     docsys.AttachNew (new csTinyDocumentSystem ());
-  
+
   csRef<iVFS> vfs = csQueryRegistry<iVFS> (objReg);
   CS_ASSERT(vfs);
   csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
@@ -231,7 +112,7 @@ bool PostEffectLayersParser::AddLayersFromFile (const char* filename,
       "Error opening %s", CS::Quote::Single (filename));
     return false;
   }
-  
+
   csRef<iDocument> doc = docsys->CreateDocument();
   const char* error = doc->Parse (file);
   if (error != 0)
@@ -240,7 +121,7 @@ bool PostEffectLayersParser::AddLayersFromFile (const char* filename,
       "Error parsing %s: %s", CS::Quote::Single (filename), error);
     return false;
   }
-  
+
   csRef<iDocumentNode> docRoot = doc->GetRoot();
   if (!docRoot) return false;
   csRef<iDocumentNode> postEffectNode = docRoot->GetNode ("posteffect");
@@ -252,4 +133,117 @@ bool PostEffectLayersParser::AddLayersFromFile (const char* filename,
   }
 
   return AddLayersFromDocument (postEffectNode, effect);
+}
+
+
+
+bool PostEffectLayersParser::ParseLayer (iDocumentNode* layerNode,
+                                         iPostEffectLayer* layer, ShadersLayers& shaders) const
+{
+  LayerDesc desc;
+  csString shader;
+  bool defaultmip;
+  int defaultmaxmip;
+  int downsample;
+
+  GetLayerAttributes (layerNode, desc.name, shader, downsample, defaultmip, defaultmaxmip);
+
+  desc.layerShader = shaders.Get (shader, 0);
+  if (!desc.layerShader.IsValid())
+  {
+    csRef<iLoader> loader (csQueryRegistry<iLoader> (objReg));
+    desc.layerShader = loader->LoadShader (shader);
+    if (!desc.layerShader.IsValid()) return false;
+    shaders.Put (shader, desc.layerShader);
+  }
+
+  int numInput = 0;
+  int numOutput = 0;
+
+  csRef<iDocumentNodeIterator> it = layerNode->GetNodes();
+  while (it->HasNext())
+  {
+    csRef<iDocumentNode> child = it->Next();
+    if (child->GetType() != CS_NODE_ELEMENT) continue;
+
+    csStringID id = xmltokens.Request (child->GetValue());
+    switch (id)
+    {
+      case XMLTOKEN_INPUT:
+      {
+        PostEffectLayerInputMap inp;
+        if (!ParseInput (child, inp))
+          return false;
+        desc.inputs.Push (inp);
+        ++numInput;
+      }
+      break;
+      case XMLTOKEN_OUTPUT:
+      {
+        PostEffectLayerOptions opt;
+        if (!ParseOutput (child, opt, defaultmip, defaultmaxmip))
+          return false;
+        opt.info.downsample = downsample;
+        desc.outputs.Push (opt);
+        ++numOutput;
+      }
+      break;
+      case XMLTOKEN_PARAMETER:
+      {
+        csRef<csShaderVariable> sv;
+        sv.AttachNew (new csShaderVariable);
+        if (!synldr->ParseShaderVar (0, child, *sv))
+          return false;
+        layer->AddDefaultVar (sv);
+      }
+      break;
+      default:
+        synldr->ReportBadToken (child);
+        return false;
+    }
+  }
+  // push default input / output
+  if (numInput == 0) desc.inputs.Push (PostEffectLayerInputMap());
+  if (numOutput == 0) desc.outputs.Push (PostEffectLayerOptions());
+
+  layer->SetLayerDesc (desc);
+  return true;
+}
+
+bool PostEffectLayersParser::GetLayerAttributes (iDocumentNode* layerNode,
+                                                 csString& name, csString& shader, int& downsample,
+                                                 bool& mip, int& maxmip) const
+{
+  name = layerNode->GetAttributeValue ("name", "");
+  shader = layerNode->GetAttributeValue ("shader", "");
+  downsample = layerNode->GetAttributeValueAsInt ("downsample", 0);
+  mip = layerNode->GetAttributeValueAsBool ("mipmap", false);
+  maxmip = layerNode->GetAttributeValueAsInt ("maxmipmap", -1);
+  return true;
+}
+bool PostEffectLayersParser::ParseInput (iDocumentNode* inputNode, PostEffectLayerInputMap& inp) const
+{
+  inp.type = STATIC;
+  const char *value = inputNode->GetAttributeValue ("source");
+  if (value == nullptr)
+  {
+    value = inputNode->GetAttributeValue ("layer", "");
+    inp.type = AUTO;
+  }
+  inp.sourceName = value;
+  inp.svTextureName = inputNode->GetAttributeValue ("texname", "tex diffuse");
+  inp.svTexcoordName = inputNode->GetAttributeValue ("texcoord", "texture coordinate 0");
+  inp.svPixelSizeName =  inputNode->GetAttributeValue ("pixelsize", "");
+  return true;
+}
+
+bool PostEffectLayersParser::ParseOutput (iDocumentNode* outputNode, PostEffectLayerOptions& opt,
+                                          bool default_mip, int default_maxmip) const
+{
+  opt.name = outputNode->GetAttributeValue ("name", "");
+  opt.info.format = outputNode->GetAttributeValue ("format", "argb8");
+  opt.info.reusable = outputNode->GetAttributeValueAsBool ("reusable", true);
+  opt.info.mipmap = outputNode->GetAttributeValueAsBool ("mipmap", default_mip);
+  opt.info.maxMipmap = outputNode->GetAttributeValueAsInt ("maxmipmap", default_maxmip);
+  return true;
 }

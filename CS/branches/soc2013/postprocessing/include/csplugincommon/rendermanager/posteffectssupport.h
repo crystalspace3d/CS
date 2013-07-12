@@ -47,21 +47,21 @@ namespace CS
       csRefArray<iPostEffect> postEffects;
       csRef<iTextureHandle> pingPong[2];
       bool changed, enabled;
-    
+
     public:
       PostEffectsSupport ();
       virtual ~PostEffectsSupport ();
-      
+
       /**
        * Initialize post processing effects support.
        * \param objectReg Object registry. 
        * \param configKey Render manager configuration key. 
        */
       void Initialize (iObjectRegistry* objectReg, const char* configKey);
-    
+
       /**\name iRenderManagerPostEffects implementation
-      * @{ */
-         
+       * @{ */
+
       csPtr<iPostEffect> CreatePostEffect (const char* name) const;
       void AddPostEffect (iPostEffect* effect);      
       bool InsertPostEffect (iPostEffect* effect, size_t index);
@@ -90,7 +90,7 @@ namespace CS
     private:
       bool SetupView (uint width, uint height, CS::Math::Matrix4& perspectiveFixup);
     };
-    
+
   } // namespace RenderManager
 } // namespace CS
 

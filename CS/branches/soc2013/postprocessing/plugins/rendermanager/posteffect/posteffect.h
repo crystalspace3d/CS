@@ -51,19 +51,19 @@ using namespace CS::RenderManager;
 
 CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 {
-    struct LayerRenderInfo
-    {
-        /// Input vertices for layer
-        csRef<iRenderBuffer> vertBuf;
-        ////Input texture coordinates
-        csRef<iRenderBuffer> texcoordBuf;
-        /// Shader vars
-        csRef<iShaderVariableContext> layerSVs;
-        /// Render buffers
-        csRef<csRenderBufferHolder> buffers;
-        /// Render mesh for layer
-        csSimpleRenderMesh fullscreenQuad;
-    };
+  struct LayerRenderInfo
+  {
+    /// Input vertices for layer
+    csRef<iRenderBuffer> vertBuf;
+    ////Input texture coordinates
+    csRef<iRenderBuffer> texcoordBuf;
+    /// Shader vars
+    csRef<iShaderVariableContext> layerSVs;
+    /// Render buffers
+    csRef<csRenderBufferHolder> buffers;
+    /// Render mesh for layer
+    csSimpleRenderMesh fullscreenQuad;
+  };
 
   /// An effect layer.
   class Layer : 
@@ -71,13 +71,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   {
   private:
     friend class PostEffect;
-      
+
     LayerDesc desc;
     LayerRenderInfo rInfo;
     csRef<iShaderVariableContext> svUserContext;
     csRef<iShaderVariableContext> svDefaultContext;
     csArray<int> outputTextures;
     bool dirty;
+
+    bool IsValid();
 
   public:
     CS_LEAKGUARD_DECLARE (Layer);
@@ -90,7 +92,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     iShaderVariableContext* GetSVContext () const { return svUserContext; }
     /// Get inputs to this layer
     const csArray<PostEffectLayerInputMap>& GetInputs () const { return desc.inputs; }
-      
+
     /// Get layer options
     const csArray<PostEffectLayerOptions>& GetOptions () const { return desc.outputs; }
 
@@ -138,24 +140,24 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     bool RemoveLayer (iPostEffectLayer* layer);
     /// Remove all layers
     void ClearLayers ();
-    
+
     /// Get the layer representing the "screen" a scene is rendered to.
     iPostEffectLayer* GetScreenLayer () { return postLayers[postLayers.GetSize() -1]; }
-    
+
     void GetLayerRenderSVs (iPostEffectLayer* layer, csShaderVariableStack& svStack);
 
     /// Get the output texture of a layer.
     iTextureHandle* GetLayerOutput (const iPostEffectLayer* layer);
-    
+
     /// Set the effect's output render target.
     void SetOutputTarget (iTextureHandle* tex) { target = tex; layersDirty = true;}
-  
+
     /// Get the effect's output render target.
     iTextureHandle* GetOutputTarget () const { return target; }
 
     /// Set the effect's input texture.
     void SetInputTexture (iTextureHandle* tex) { input = tex; layersDirty = true;}
-  
+
     /// Get the effect's input texture.
     iTextureHandle* GetInputTexture () const { return input; }
 

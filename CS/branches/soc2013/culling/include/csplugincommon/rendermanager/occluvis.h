@@ -1,5 +1,6 @@
 /*
   Copyright (C) 2010 by Mike Gist and Claudiu Mihail
+  Copyright (C) 2013 by Matthieu Kraus
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public

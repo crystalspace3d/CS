@@ -201,7 +201,7 @@ bool AppWaterdemo2::Application()
   view->SetRectangle (0, 0, g2d->GetWidth (), g2d->GetHeight ());
 
   view->GetCamera ()->SetSector (room);
-  view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 3, 0));
+  view->GetCamera ()->GetTransform ().SetOrigin (csVector3 (0, 30, 0));
   
   printer.AttachNew (new FramePrinter (GetObjectRegistry ()));
 

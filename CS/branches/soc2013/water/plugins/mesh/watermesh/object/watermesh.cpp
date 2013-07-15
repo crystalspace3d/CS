@@ -63,10 +63,10 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define OCEAN_NP_WID  40
 #define OCEAN_NP_LEN  40
 
-#define CELL_WID    20.0f
-#define CELL_LEN    20.0f
+#define CELL_WID    320.0f
+#define CELL_LEN    320.0f
 
-#define MAX_OCEAN_DISTANCE 200.0f
+#define MAX_OCEAN_DISTANCE 8000.0f
 
 using namespace CS::Plugins::WaterMesh;
 
@@ -412,7 +412,8 @@ void csWaterMeshObject::AddNode(csOceanNode start, float dist_sq, const csVector
 void csWaterMeshObject::DrawFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
   uint32 out_mask;
-  float distFromCam_sq = csSquaredDist::PointPoint (start.GetCenter(), camPos);
+  csVector3 startcenter = start.GetCenter();
+  float distFromCam_sq = csSquaredDist::PointPoint ( csVector3(startcenter.x,0,startcenter.z), csVector3(camPos.x,0,camPos.z) );
   if(distFromCam_sq > MAX_OCEAN_DISTANCE*MAX_OCEAN_DISTANCE)
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
@@ -428,7 +429,8 @@ void csWaterMeshObject::DrawFromNode(csOceanNode start, const csVector3 camPos, 
 void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
   uint32 out_mask;
-  float distFromCam_sq = csSquaredDist::PointPoint (start.GetCenter(), camPos);
+  csVector3 startcenter = start.GetCenter();
+  float distFromCam_sq = csSquaredDist::PointPoint ( csVector3(startcenter.x,0,startcenter.z), csVector3(camPos.x,0,camPos.z) );
   if(distFromCam_sq > MAX_OCEAN_DISTANCE*MAX_OCEAN_DISTANCE)
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
@@ -444,7 +446,8 @@ void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPo
 void csWaterMeshObject::DrawBottomFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
   uint32 out_mask;
-  float distFromCam_sq = csSquaredDist::PointPoint (start.GetCenter(), camPos);
+  csVector3 startcenter = start.GetCenter();
+  float distFromCam_sq = csSquaredDist::PointPoint ( csVector3(startcenter.x,0,startcenter.z), csVector3(camPos.x,0,camPos.z) );
   if(distFromCam_sq > MAX_OCEAN_DISTANCE*MAX_OCEAN_DISTANCE)
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
@@ -459,7 +462,8 @@ void csWaterMeshObject::DrawBottomFromNode(csOceanNode start, const csVector3 ca
 void csWaterMeshObject::DrawRightFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
   uint32 out_mask;
-  float distFromCam_sq = csSquaredDist::PointPoint (start.GetCenter(), camPos);
+  csVector3 startcenter = start.GetCenter();
+  float distFromCam_sq = csSquaredDist::PointPoint ( csVector3(startcenter.x,0,startcenter.z), csVector3(camPos.x,0,camPos.z) );
   if(distFromCam_sq > MAX_OCEAN_DISTANCE*MAX_OCEAN_DISTANCE)
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))
@@ -472,7 +476,8 @@ void csWaterMeshObject::DrawRightFromNode(csOceanNode start, const csVector3 cam
 void csWaterMeshObject::DrawLeftFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
   uint32 out_mask;
-  float distFromCam_sq = csSquaredDist::PointPoint (start.GetCenter(), camPos);
+  csVector3 startcenter = start.GetCenter();
+  float distFromCam_sq = csSquaredDist::PointPoint ( csVector3(startcenter.x,0,startcenter.z), csVector3(camPos.x,0,camPos.z) );
   if(distFromCam_sq > MAX_OCEAN_DISTANCE*MAX_OCEAN_DISTANCE)
     return;
   else if(csIntersect3::BoxFrustum (start.GetBBox(), planes, frustum_mask, out_mask))

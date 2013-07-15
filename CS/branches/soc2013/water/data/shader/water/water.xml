@@ -1,24 +1,48 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <shader compiler="shaderweaver" name="water">
-	<shadervar name="water perturb scale" type="vector2">0.3,0.3</shadervar>
-	<shadervar name="water perturb fade" type="float">0.5</shadervar>
+	
 	
   
 	<technique priority="100">
 		<pass>		
 			<combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 	 
-			<snippet id="wave" file="/shader-snippets/wave.xml" />
-			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
-			
-			<connection from="wave" to="reflection" />	
+			<snippet id="position" file="/shader/snippets/wave.xml" />
+			<snippet id="surface" file="/shader/snippets/surface/surface-classic.xml" />
+    
+			<snippet id="lighting" file="/shader/snippets/lighting/lighting-ppl.xml" />
+			<snippet id="fake_light_diffuse" file="/shader-snippets/rgba-black.xml" />
+			<snippet id="ambient" file="/shader-snippets/lighting/ambient-null.xml" />
+			<snippet id="specular" file="/shader-snippets/surface/specular-default.xml" />
+			<snippet id="apply_lighting" file="/shader/snippets/lighting/apply-lighting.xml" />
+			<snippet id="normalmap" file="/shader/snippets/surface/normalmap.xml" />
 
-			<parameter id="perturbScaleSV" type="shadervar" weavertype="float2">water perturb scale</parameter>
-			<connection from="perturbScaleSV" to="reflection" />		
+			<connection from="position" to="normalmap" /> 
+			<connection from="normalmap" to="lighting" />
+
+			<connection from="position" to="lighting" />
 			
-			<parameter id="perturbFadeSV" type="shadervar" weavertype="float">water perturb fade</parameter>
-			<connection from="perturbFadeSV" to="reflection" />
+			<connection from="surface" to="apply_lighting">
+				<explicit from="surfaceColor" to="surfaceDiffuse" />
+			</connection>
+			<connection from="fake_light_diffuse" to="apply_lighting">
+				<explicit from="result" to="lightDiffuse" />
+			</connection>
+			<connection from="lighting" to="apply_lighting">
+				<explicit from="specularColor" to="lightSpecular" />
+			</connection>
+			<connection from="ambient" to="apply_lighting">
+				<explicit from="ambient" to="ambient" />
+			</connection>
+			<connection from="specular" to="apply_lighting">
+				<explicit from="specularColor" to="surfaceSpecular" />
+			</connection>
 			
+			<parameter id="lightOffset" type="int">0</parameter>
+			<parameter id="maxLights" type="int">4</parameter>
+			<connection from="lightOffset" to="apply_lighting" />
+			<connection from="maxLights" to="apply_lighting" />
+	
 		</pass>
 	</technique>
 	

@@ -71,6 +71,8 @@
       <shader type="standard">water</shader>
       <shadervar name="tex normal" type="texture">normal map 1</shadervar>
 	  <shadervar name="tex foam" type="texture">foam</shadervar>
+	  <shadervar name="tex diffuse" type="texture">foam</shadervar>
+	  <shadervar name="specular" type="vector4">0.4,0.7,0.9,1</shadervar>
     </material>
     
     <material name="clouds">
@@ -319,6 +321,8 @@
 
 
   <sector name="room">
+  
+  
 
     <meshobj name="ocean">
       <plugin>water</plugin>

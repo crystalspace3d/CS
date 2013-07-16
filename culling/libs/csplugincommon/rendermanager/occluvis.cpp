@@ -499,7 +499,7 @@ namespace CS
 	  {
 	    // relocate storage
 	    meshes->meshList[m].rmeshes = (csRenderMesh**)cs_realloc(
-	      m >= oldNumMeshes ? 0 : meshes->meshList[m].rmeshes, // force alloc if this is uninit
+	      m >= oldNumMeshes ? nullptr : meshes->meshList[m].rmeshes, // force alloc if this is uninit
 	      sizeof(csRenderMesh*) * num);
 
 	    // check for allocation failure
@@ -954,6 +954,9 @@ namespace CS
 	// nope, allocate a new one
         nodeMeshLists = new csRefArray<NodeMeshList>();
         nodeMeshHash.Put(csPtrKey<iRenderView>(rview), nodeMeshLists);
+
+	// check for allocation failure
+	CS_ASSERT(nodeMeshLists);
       }
 
       // set it in the data

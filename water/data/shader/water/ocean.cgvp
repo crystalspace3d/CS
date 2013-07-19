@@ -60,7 +60,8 @@ vert2frag main (app2vert IN,
 			 uniform float4x4 o2w,
 			 uniform float4 reflectXform,
 			 uniform float4 refractXform,
-			 uniform float3 foamPoints[1000])
+			 uniform float3 foamPoints[1000],
+			 uniform sampler2D Heightmap)
 {
     vert2frag OUT;
 
@@ -85,9 +86,11 @@ vert2frag main (app2vert IN,
 	float wdy3 = WaveDispVert(k, amps.z, xzpos, freqs.z, phases.z, time);
 
 	//Add all the displacements
-	inPos.x -= wdxz1.x + wdxz2.x + wdxz3.x;
-	inPos.z -= wdxz1.y + wdxz2.y + wdxz3.y;
-	inPos.y = wdy1 + wdy2 + wdy3; 
+	//inPos.x -= wdxz1.x + wdxz2.x + wdxz3.x;
+	//inPos.z -= wdxz1.y + wdxz2.y + wdxz3.y;
+	//inPos.y = wdy1 + wdy2 + wdy3; 
+	
+	inPos.y +=  tex2D(Heightmap, IN.TexCoord).r * 0.5  ; 
 	
 	//Get real position
 	float4 reflrefrTC = mul(ModelViewProj, inPos); 

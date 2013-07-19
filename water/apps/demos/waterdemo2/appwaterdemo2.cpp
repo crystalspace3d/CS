@@ -34,7 +34,7 @@ void AppWaterdemo2::Frame()
   csTicks elapsed_time = vc->GetElapsedTicks ();
 
   // Now rotate the camera according to keyboard state
-  float speed = (elapsed_time / 1000.0) * (0.03 * 20);
+  float speed = (elapsed_time / 100.0) * (0.03 * 20);
 
   iCamera* c = view->GetCamera();
   if (kbd->GetKeyState (CSKEY_SHIFT))

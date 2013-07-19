@@ -56,7 +56,7 @@ void csOceanCell::SetupVertices()
   if(!isSetup)
   {
 
-    float gran = pow(2.0,(double)type)*0.1f;
+    float gran = pow(2.0,(double)type)/5.0f;
 
     uint maxjd = (uint) (len * gran);
     uint maxj = maxjd + 1;

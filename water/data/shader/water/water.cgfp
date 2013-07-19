@@ -92,6 +92,7 @@ float4 main (vert2frag IN,
 	foam = foam * 0.5 * distanceFoamcolor.x;
 	
     color.xyz = light + reflColor.xyz + refrColor.xyz + foam.xyz;
+	color.xyz += vec3(1,0,0);
 	color.a = 1.0;
 	return color;
 }

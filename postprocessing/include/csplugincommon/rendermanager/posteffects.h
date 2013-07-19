@@ -346,6 +346,10 @@ namespace CS
       virtual csPtr<iTextureHandle> RequestTexture(TextureAllocationInfo& info, int num) = 0;
 
       virtual bool SetupView (uint width, uint height) = 0;
+
+      virtual iShaderVariableContext* GetSharedSVs () = 0;
+
+      virtual CS::StringIDValue GetStringID(const char * str) const = 0;
     };
 
     // @@@ TODO: give a simple example

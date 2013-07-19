@@ -75,6 +75,7 @@ namespace CS
       iPostEffect* GetPostEffect (size_t index);
 
       iTextureHandle* GetScreenTarget () const;
+
       void SetEffectsOutputTarget (iTextureHandle* tex);  
       iTextureHandle* GetEffectsOutputTarget () const;
 

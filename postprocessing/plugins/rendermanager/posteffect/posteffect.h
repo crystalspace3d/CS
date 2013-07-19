@@ -218,12 +218,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
       bool GetOutput (csPDelArray<Layer>& layers, int inLayer, int inInput, int& outLayerNum, int& outNum);
 
+      const char * GetLastError ();
 
     private:
       LayerTextureInfo GetAvailableRT (PostEffectLayerOptions &opt, int layer, csArray<LayerTextureInfo>& result);
       void UpdateUsedRT (int l);
       std::list<LayerTextureInfo> used;
       std::list<LayerTextureInfo> avaliable;
+      csString lastError;
     };
   };
 
@@ -240,6 +242,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     csRef<iLoader> loader;
     uint curWidth, curHeight;
     PostEffectLayersParser* postEffectParser;
+    csRef<iShaderVariableContext> svSharedContext;
+    csRef<iObjectRegistry> reg;
     bool keepAllIntermediates;
 
     /**
@@ -274,6 +278,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
      */    
     bool SetupView (uint width, uint height);
 
+    /**
+     * Returns the sv contexts with 'global'  
+     * shared shader variables between the post-effects
+     */ 
+    iShaderVariableContext* GetSharedSVs ();
+
+    CS::StringIDValue GetStringID (const char * str) const;
   };
 }
 CS_PLUGIN_NAMESPACE_END (PostEffect)

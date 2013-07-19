@@ -146,7 +146,8 @@ bool PostEffectLayersParser::ParseLayer (iDocumentNode* layerNode,
   int defaultmaxmip;
   int downsample;
 
-  GetLayerAttributes (layerNode, desc.name, shader, downsample, defaultmip, defaultmaxmip);
+  if (!GetLayerAttributes (layerNode, desc.name, shader, downsample, defaultmip, defaultmaxmip))
+    return false;
 
   desc.layerShader = shaders.Get (shader, 0);
   if (!desc.layerShader.IsValid())
@@ -219,6 +220,12 @@ bool PostEffectLayersParser::GetLayerAttributes (iDocumentNode* layerNode,
   downsample = layerNode->GetAttributeValueAsInt ("downsample", 0);
   mip = layerNode->GetAttributeValueAsBool ("mipmap", false);
   maxmip = layerNode->GetAttributeValueAsInt ("maxmipmap", -1);
+  if (name.Find(".") != -1)
+  {
+    csReport (objReg, CS_REPORTER_SEVERITY_ERROR, messageID,
+      "Invalid layer name: %s, character \'.\' is not allowed!", CS::Quote::Single (name));
+    return false;
+  }
   return true;
 }
 bool PostEffectLayersParser::ParseInput (iDocumentNode* inputNode, PostEffectLayerInputMap& inp) const
@@ -229,6 +236,11 @@ bool PostEffectLayersParser::ParseInput (iDocumentNode* inputNode, PostEffectLay
   {
     value = inputNode->GetAttributeValue ("layer", "");
     inp.type = AUTO;
+  }
+  if (inputNode->GetAttributeValue ("source") && inputNode->GetAttributeValue ("layer"))
+  {
+    csReport (objReg, CS_REPORTER_SEVERITY_WARNING, messageID,
+      "Mutual exclusive <source> and <layer> tag found in the same input! Using value from <source>.");
   }
   inp.sourceName = value;
   inp.svTextureName = inputNode->GetAttributeValue ("texname", "tex diffuse");

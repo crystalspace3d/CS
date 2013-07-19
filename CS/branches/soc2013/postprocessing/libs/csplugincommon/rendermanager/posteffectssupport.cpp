@@ -185,6 +185,7 @@ namespace CS
         pingPong[1] = postEffectManager->RequestTexture (info, -1);
         changed = true;
       }
+      
 
       bool effectsDataChanged = changed;
       for (int i = 0; i < pfxCount ; ++i)

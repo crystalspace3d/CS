@@ -48,6 +48,7 @@ using namespace CS::RenderManager;
 
 CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 {
+  const char * messageID = "crystalspace.rendermanager.posteffect";
 
   class PriorityShaderVariableContext : 
     public scfImplementation1<PriorityShaderVariableContext,
@@ -90,7 +91,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     DependencySolver ds;
 
     csArray<DependencySolver::LayerTextureInfo> result;
-    if (!ds.Solve (postLayers, result)) return false;
+    if (!ds.Solve (postLayers, result))
+    {
+      csReport (manager->reg, CS_REPORTER_SEVERITY_ERROR, messageID,
+        ds.GetLastError ());
+      return false;
+    }
 
     /// clear all previous allocations
     Clear();
@@ -106,6 +112,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     for (uint i = start; i < result.GetSize (); ++i)
     {
       csRef<iTextureHandle> tex = manager->RequestTexture (result[i].info, result[i].num);
+      if (!tex.IsValid ())
+      {
+        csReport (manager->reg, CS_REPORTER_SEVERITY_ERROR, messageID,
+          "Failed to allocate texture for %s posteffect", CS::Quote::Single (name));
+        return false;
+      }
       textures.Push (tex);
     }
 
@@ -116,7 +128,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
       {
         if (postLayers[i]->outputTextures[j] < 0 && 
           !postLayers[i]->desc.outputs[j].renderTarget.IsValid ())
+        {
+          csReport (manager->reg, CS_REPORTER_SEVERITY_ERROR, messageID,
+            "Error: output %d of layer %s is invalid!", i, CS::Quote::Single (postLayers[i]->desc.name));
           return false;
+        }
       }
     }
     return true;
@@ -144,6 +160,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
             if (postLayers[l]->outputTextures[o] == -1) return false;
             postLayers[i]->desc.inputs[j].inputTexture = 
               textures[postLayers[l]->outputTextures[o]];
+          } else
+          {
+              csReport (manager->reg, CS_REPORTER_SEVERITY_WARNING, messageID,
+                "Input %s of layer %s of posteffect %s not linked!",
+                CS::Quote::Single (postLayers[i]->desc.inputs[j].sourceName),
+                CS::Quote::Single (postLayers[i]->desc.name),
+                CS::Quote::Single (name));
+              return false;
           }
           break;
         case STATIC:
@@ -256,6 +280,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
       pContext->AddContext(layer.svDefaultContext, 1);
       pContext->AddContext(layer.svUserContext, 2);
+      pContext->AddContext(manager->GetSharedSVs (), 3);
 
       for (uint j = 0; j < layer.GetLayerDesc ().inputs.GetSize (); ++j)
       {
@@ -263,7 +288,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
         csRef<csShaderVariable> sv;
         if (!inp.inputTexture.IsValid ()) return false;
 
-        CS::ShaderVarStringID strID = manager->svStrings->Request (inp.svTextureName);
+        CS::ShaderVarStringID strID = manager->GetStringID (inp.svTextureName);
         sv.AttachNew (new csShaderVariable (strID));
         sv->SetValue (inp.inputTexture);
 
@@ -273,7 +298,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
           csRenderBuffer::GetBufferNameFromDescr (inp.svTexcoordName);
         if (bufferName == CS_BUFFER_NONE)
         {
-          CS::StringIDValue svName = manager->svStrings->Request (inp.svTexcoordName);
+          CS::StringIDValue svName = manager->GetStringID (inp.svTexcoordName);
           sv.AttachNew (new csShaderVariable (svName));
           sv->SetValue (layer.rInfo.texcoordBuf);
           svContext->AddVariable (sv);
@@ -281,7 +306,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
         if (!inp.svPixelSizeName.Compare(""))
         {
-          CS::StringIDValue svName = manager->svStrings->Request (inp.svPixelSizeName);
+          CS::StringIDValue svName = manager->GetStringID (inp.svPixelSizeName);
           sv.AttachNew (new csShaderVariable (svName));
           int width, height;
           inp.inputTexture->GetRendererDimensions(width, height);
@@ -289,6 +314,26 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
           inv_w = 1.0f / (float)width;
           inv_h = 1.0f / (float)height;
           sv->SetValue (csVector2(inv_w, inv_h));
+          svContext->AddVariable (sv);
+        }
+
+        {
+          CS::StringIDValue svName = manager->GetStringID ("inv resolution");
+          sv.AttachNew (new csShaderVariable (svName));
+          int width, height;
+          if (layer.outputTextures[0] != -1)
+            textures[layer.outputTextures[0]]->GetRendererDimensions(width, height);
+          else
+            layer.desc.outputs[0].renderTarget->GetRendererDimensions(width, height);
+          float inv_w, inv_h;
+          inv_w = 1.0f / (float)width;
+          inv_h = 1.0f / (float)height;
+          sv->SetValue (csVector2(inv_w, inv_h));
+          svContext->AddVariable (sv);
+
+          svName = manager->GetStringID ("resolution");
+          sv.AttachNew (new csShaderVariable (svName));
+          sv->SetValue (csVector2(width, height));
           svContext->AddVariable (sv);
         }
       }
@@ -349,6 +394,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
         csSimpleMeshScreenspace);
       manager->graphics3D->FinishDraw ();
     }
+    manager->graphics3D->UnsetRenderTargets();
   }
 
   iPostEffectLayer* PostEffect::AddLayer (const LayerDesc &desc)
@@ -413,6 +459,20 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     return manager->postEffectParser->AddLayersFromFile(fileName, this);
   }
 
+  void PostEffect::Clear()
+  {
+    textures.DeleteAll();
+    for (uint i = 0; i < postLayers.GetSize (); ++i)
+    {
+      for (uint j = 0; j < postLayers[i]->desc.inputs.GetSize (); ++j)
+      {
+        if (postLayers[i]->desc.inputs[j].type == AUTO || postLayers[i]->desc.inputs[j].type == STATIC)
+          postLayers[i]->desc.inputs[j].inputTexture = nullptr;
+      }
+    }
+    layersDirty = true;
+  }
+
   //--------Layer--------------------------------------------------------------
 
   CS_LEAKGUARD_IMPLEMENT (Layer);
@@ -453,6 +513,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
   bool PostEffectManager::Initialize (iObjectRegistry* objectReg)
   {
+    reg = objectReg;
     graphics3D = csQueryRegistry<iGraphics3D> (objectReg);
     svStrings = csQueryRegistryTagInterface<iShaderVarStringSet> (objectReg,
       "crystalspace.shader.variablenameset");
@@ -464,14 +525,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     curWidth = curHeight = 0;
     loader = csQueryRegistry<iLoader> (objectReg);
     postEffectParser = new PostEffectLayersParser (objectReg);
+    svSharedContext.AttachNew (new csShaderVariableContext ());
 
     return true;
   }
 
   csPtr<iPostEffect> PostEffectManager::CreatePostEffect (const char* name)
   {
-    CS_ASSERT (!postEffectsHash.Contains (name));    
-
     csRef<iPostEffect> effect;
     effect.AttachNew (new PostEffect (this, name));
 
@@ -523,12 +583,20 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     return false;
   }
 
-  void PostEffectManager::RemoveUnusedTextures ()
+  iShaderVariableContext* PostEffectManager::GetSharedSVs()
   {
+    return svSharedContext;
   }
 
+  CS::StringIDValue PostEffectManager::GetStringID(const char * str) const
+  {
+    return svStrings->Request(str);
+  }
+
+  //--------PostEffect::DependencySolver--------------------------------------------------------------
   bool PostEffect::DependencySolver::Solve (csPDelArray<Layer>& layers, csArray<PostEffect::DependencySolver::LayerTextureInfo>& result)
   {
+    lastError = "";
     int n = layers.GetSize ()-1;
     for (uint i = 0; i < layers.GetSize (); ++i)
     {
@@ -557,14 +625,24 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
       for (uint j = 0; j < layers[i]->desc.inputs.GetSize (); ++j)
       {
         if (layers[i]->desc.inputs[j].type != AUTO) continue;
+        if (layers[i]->desc.inputs[j].sourceName.Compare ("*screen")) continue;
         //check if format is valid
         if (!IsValid (layers[i]->desc.inputs[j])) continue;
 
         int l, o;
         //maps an input to a layer output
-        if (!GetOutput (layers, i, j, l, o)) return false;
+        if (!GetOutput (layers, i, j, l, o))
+        {
+          lastError.Format ("Could not find layer %s !", CS::Quote::Single (layers[i]->desc.inputs[j].sourceName));
+          return false;
+        }
         // layer i uses layer i + n, n>=0 as input
-        if (i <= l) return false;
+        if (i <= l)
+        {
+          lastError.Format ("Error: layer %s(%d) uses layer %s(%d) as input!", CS::Quote::Single (layers[i]->desc.name),
+            i, CS::Quote::Single (layers[l]->desc.name), l);
+          return false;
+        }
 
         if (layers[l]->outputTextures[o] == -1)
         {
@@ -682,18 +760,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     }
   }
 
-  void PostEffect::Clear()
+  const char * PostEffect::DependencySolver::GetLastError()
   {
-    textures.DeleteAll();
-    for (uint i = 0; i < postLayers.GetSize (); ++i)
-    {
-      for (uint j = 0; j < postLayers[i]->desc.inputs.GetSize (); ++j)
-      {
-        if (postLayers[i]->desc.inputs[j].type == AUTO || postLayers[i]->desc.inputs[j].type == STATIC)
-          postLayers[i]->desc.inputs[j].inputTexture = nullptr;
-      }
-    }
-    layersDirty = true;
+    return lastError;
   }
 
 }

@@ -63,8 +63,8 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define OCEAN_NP_WID  40
 #define OCEAN_NP_LEN  40
 
-#define CELL_WID    320.0f
-#define CELL_LEN    320.0f
+#define CELL_WID    40.0f
+#define CELL_LEN    40.0f
 
 #define MAX_OCEAN_DISTANCE 8000.0f
 
@@ -373,9 +373,8 @@ int csWaterMeshObject::CalculateLOD(float distCam)
 bool csWaterMeshObject::SelectBoundary(int nextCell, csOceanNode position, const csVector3 camPos)
 {
 	int useCell;
-	float distFromCam_sq;
-
-	distFromCam_sq = csSquaredDist::PointPoint (position.GetCenter(), camPos);
+	csVector3 startcenter = position.GetCenter();
+	float distFromCam_sq = csSquaredDist::PointPoint ( csVector3(startcenter.x,0,startcenter.z), csVector3(camPos.x,0,camPos.z) );
 
 	useCell = CalculateLOD(distFromCam_sq);
 
@@ -421,10 +420,10 @@ void csWaterMeshObject::DrawFromNode(csOceanNode start, const csVector3 camPos, 
     AddNode(start, distFromCam_sq, camPos);
   }
 
-  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+ /* DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
   DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
   DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
-  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
+  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);*/
 }
 void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {
@@ -566,8 +565,8 @@ csRenderMesh** csWaterMeshObject::GetRenderMeshes (
     int camXB = (int)floor(camPos.x);
     int camZB = (int)floor(camPos.z);
     
-    float nearX = camXB - (camXB % (int)CELL_LEN);
-    float nearZ = camZB - (camZB % (int)CELL_WID);
+    float nearX = /*camXB - (camXB % (int)CELL_LEN)*/ - (int)CELL_LEN/2;
+    float nearZ = /*camZB - (camZB % (int)CELL_WID)*/ - (int)CELL_WID/2;
     
     renderMeshes.DeleteAll();
     

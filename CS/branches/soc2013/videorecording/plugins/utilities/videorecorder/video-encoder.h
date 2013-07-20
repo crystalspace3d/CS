@@ -30,12 +30,15 @@ class VideoEncoder : public Runnable
   csString videoCodecName;
   csString audioCodecName;
 
+  float videoQuality;
+  int videoBitrate;
+
   csString error;
  
   csRef<iVFS> VFS;
   csRef<iFile> file;
 
-  csConfigAccess* config;
+   iConfigFile* config;
   
   /// libavcodec, libavformat data
   AVFormatContext* avContainer;
@@ -89,7 +92,7 @@ public:
   VideoEncoder(csRef<iVFS> VFS,
 	           ThreadPriority priority,
 		       int width, int height, int framerate,
-			   csConfigAccess* config,
+			   iConfigFile* config,
 		       const csString& filename,
 		       const csString& videoCodecName,
 		       const csString& audioCodecName,

@@ -254,7 +254,7 @@ void csVideoRecorder::Start()
 
   // Create encoder. It is asynchronous and we will not wait for it to perform full initialization.
   // We will handle any initialization errors later (in OnFrameEnd()).
-  encoder = new VideoEncoder(VFS, priority, width, height, (mode == MODE_VFR)? 1000 : framerate, &config, filename, videoCodecName, audioCodecName, queueLength);
+  encoder = new VideoEncoder(VFS, priority, width, height, (mode == MODE_VFR)? 1000 : framerate, config, filename, videoCodecName, audioCodecName, queueLength);
   recording = true;
   startTick = 0;
 

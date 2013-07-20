@@ -49,7 +49,7 @@ void VideoEncoder::SetError(const char* fmt, ...)
 VideoEncoder::VideoEncoder(csRef<iVFS> VFS,
 	                       ThreadPriority priority,
 	                       int width, int height, int framerate,
-			               csConfigAccess* config,
+			                iConfigFile* config,
 		                   const csString& filename,
 		                   const csString& videoCodecName,
 		                   const csString& audioCodecName,
@@ -78,7 +78,10 @@ VideoEncoder::VideoEncoder(csRef<iVFS> VFS,
   audio = NULL;
   audioFrame = NULL;
   audioCodec = NULL;
-   
+
+  videoQuality = config->GetFloat("VideoRecorder.VideoQuality", -1);
+  videoBitrate = config->GetInt("VideoRecorder.VideoBitRate", 0);
+
   // allocate buffers for holding color planes
   Y = new unsigned char[width*height];
   U = new unsigned char[width*height/4];
@@ -261,18 +264,12 @@ bool VideoEncoder::InitVideoStream()
   video->time_base.num = 1;
   video->pix_fmt = PIX_FMT_YUV420P;
 
-//  video->bit_rate = 1500*1000;
-  // FIXME:
-  video->flags |= CODEC_FLAG_QSCALE;
-  video->global_quality = 1*FF_QP2LAMBDA;
-  // set quality
-  /* if (g_VQuality > 100)
-       video->bit_rate = g_VQuality;
-    else
-    {
-        video->flags |= CODEC_FLAG_QSCALE;
-        video->global_quality = g_VQuality*FF_QP2LAMBDA;
-    }*/
+  video->bit_rate = videoBitrate;
+  if (videoQuality >= 0)
+  {
+    video->flags |= CODEC_FLAG_QSCALE;
+    video->global_quality = videoQuality*FF_QP2LAMBDA;
+  }
 
   // some formats want stream headers to be separate
   if (avFormat->flags & AVFMT_GLOBALHEADER)
@@ -281,7 +278,7 @@ bool VideoEncoder::InitVideoStream()
   // set codec options
   AVDictionary* dict = NULL;
   csString codecName = videoCodec->name;
-  csRef<iConfigIterator> option ((*config)->Enumerate("VideoRecorder." + codecName + "."));
+  csRef<iConfigIterator> option (config->Enumerate("VideoRecorder." + codecName + "."));
   while (option->Next())
     av_dict_set(&dict, option->GetKey(true), option->GetStr(), 0);
 

@@ -66,7 +66,7 @@ class VideoEncoder : public Runnable
   csRef<csImageMemory>* queue; // curcullar buffer
   csMicroTicks* queueTicks;
   int queueWritten, queueRead;
-  Mutex mutex; // mutex for queue, queueTicks, queueRead, queueWritten and recording
+  Mutex mutex; // mutex for queue, queueTicks, queueRead, queueWritten, recording and error
   Condition eventAdd; // this event is dispatched when new frame was putted into queue
   Condition eventReady; // this event is dispatched when encoding thread is ready for new frames
  // csRef<iThreadReturn> thread;

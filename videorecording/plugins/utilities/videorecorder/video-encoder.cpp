@@ -35,11 +35,13 @@ static int64_t iFile_seek(void *opaque, int64_t offset, int whence)
 csString VideoEncoder::GetError()
 {
   MutexScopedLock lock(mutex);
-  return error;
+  csString Str = error;
+  return Str;
 }
 
 void VideoEncoder::SetError(const char* fmt, ...)
 {
+  MutexScopedLock lock(mutex);
   va_list args;
   va_start (args, fmt);
   error.FormatV(fmt, args);
@@ -121,7 +123,6 @@ VideoEncoder::~VideoEncoder()
      av_free(audio);
      av_free(audioStream);
      av_free(audioFrame);
-  //   av_free(g_pSamples);
   }
 
   if (avContainer)
@@ -175,8 +176,8 @@ bool VideoEncoder::TryStart()
   avFormat = av_guess_format(NULL, filename.GetData(), NULL);
   if (!avFormat)
   {
-     SetError("Format for given extension was not found");
-     return false;
+    SetError("Format for given extension was not found");
+    return false;
   }
 
   // allocate the output media context
@@ -347,21 +348,14 @@ void VideoEncoder::Run()
   // encode remaining frames
   while (queueRead < queueWritten)
   {
-	  csRef<iImage> screenshot = queue[queueRead % queueLength];
-      SaveFrame(screenshot, queueTicks[queueRead % queueLength]);
-	  queueRead++;
+	csRef<iImage> screenshot = queue[queueRead % queueLength];
+    SaveFrame(screenshot, queueTicks[queueRead % queueLength]);
+	queueRead++;
   }
 
   // output buffered frames
   if (videoCodec && videoCodec->capabilities & CODEC_CAP_DELAY)
     while (WriteFrame(NULL, 0));
-	/*if (g_pSoundInput)
-	{
-		alcCaptureStop(g_pSoundInput);
-		alcCaptureCloseDevice(g_pSoundInput);
-	}*/
-    // output any remaining audio
-   // while( WriteAudioFrame() );
 
   // write the trailer, if any.
   av_write_trailer(avContainer);

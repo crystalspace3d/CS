@@ -344,7 +344,7 @@ void csVideoRecorder::AdvanceClock()
 /// Parse keyname and return key code + modifier status (from bugplug).
 csVideoRecorder::KeyCode csVideoRecorder::GetKeyCode (const char* keystring)
 {  
-  KeyCode key = {-1, false, false, false};
+  KeyCode key = {(utf32_char)-1, false, false, false};
   char const* dash = strchr (keystring, '-');
   while (dash)
   {

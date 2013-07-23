@@ -33,7 +33,7 @@
       <mixmode><alpha/></mixmode>
 
       <buffer source="texture coordinate 0" destination="texture coordinate 0" />
-	  <texture name="height map" destination="Heightmap"/>
+	  <texture name="tex height" destination="Heightmap"/>
 	  <texture name="tex foam" destination="TexFoam"/>
       <texture name="tex normal" destination="TexNormal" />
 	  <texture name="tex plane reflect" destination="TexReflect" />
@@ -74,7 +74,7 @@
 				<variablemap variable="object2world transform" destination="o2w" />
 				<variablemap variable="reflection coord xform" destination="reflectXform" />
 				<variablemap variable="refraction coord xform" destination="refractXform" />
-                <!--<program file="/shader/water/water.cgvp"/>-->
+                <program file="/shader/water/water.cgvp"/>
                 <?endif ?>
             </cgvp>
       </vp>

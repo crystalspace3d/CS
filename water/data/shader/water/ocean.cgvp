@@ -90,7 +90,8 @@ vert2frag main (app2vert IN,
 	//inPos.z -= wdxz1.y + wdxz2.y + wdxz3.y;
 	//inPos.y = wdy1 + wdy2 + wdy3; 
 	
-	inPos.y +=  tex2D(Heightmap, IN.TexCoord).r * 0.5  ; 
+	float2 Texcord = IN.TexCoord + time;
+	inPos.y +=  tex2D(Heightmap, Texcord/256).r * 10.0  ; 
 	
 	//Get real position
 	float4 reflrefrTC = mul(ModelViewProj, inPos); 

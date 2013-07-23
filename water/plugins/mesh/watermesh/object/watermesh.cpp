@@ -59,12 +59,12 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // #include <csutil/sysfunc.h> // provides csPrintf();
 
-#define OCEAN_BBOX_RADIUS 50000.0f
+#define OCEAN_BBOX_RADIUS 500000.0f
 #define OCEAN_NP_WID  40
 #define OCEAN_NP_LEN  40
 
-#define CELL_WID    40.0f
-#define CELL_LEN    40.0f
+#define CELL_WID    512.0f
+#define CELL_LEN    512.0f
 
 #define MAX_OCEAN_DISTANCE 8000.0f
 
@@ -420,10 +420,10 @@ void csWaterMeshObject::DrawFromNode(csOceanNode start, const csVector3 camPos, 
     AddNode(start, distFromCam_sq, camPos);
   }
 
- /* DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
+  DrawRightFromNode(start.GetRight(), camPos, planes, frustum_mask);
   DrawLeftFromNode(start.GetLeft(), camPos, planes, frustum_mask);
   DrawBottomFromNode(start.GetDown(), camPos, planes, frustum_mask);
-  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);*/
+  DrawTopFromNode(start.GetUp(), camPos, planes, frustum_mask);
 }
 void csWaterMeshObject::DrawTopFromNode(csOceanNode start, const csVector3 camPos, csPlane3 *planes, uint32 frustum_mask)
 {

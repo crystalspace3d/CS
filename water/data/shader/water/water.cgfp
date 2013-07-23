@@ -26,10 +26,10 @@ float4 main (vert2frag IN,
 			 uniform float4 lightCol,
 			 uniform float shininess,
 			 uniform float waterAlpha,
-			 uniform sampler2D TexFoam,
 			 uniform sampler2D TexNormal,
+			 uniform sampler2D TexFoam,
 			 uniform sampler2D TexReflect,
-			 uniform sampler2D TexRefract,
+			 uniform sampler2D TexRefract,	 
 			 uniform sampler2D foamDist,
 			 uniform float4x4 ModelViewIT : state.matrix.modelview.invtrans) : COLOR        
 {     
@@ -92,7 +92,7 @@ float4 main (vert2frag IN,
 	foam = foam * 0.5 * distanceFoamcolor.x;
 	
     color.xyz = light + reflColor.xyz + refrColor.xyz + foam.xyz;
-	color.xyz += vec3(1,0,0);
+	//color.xyz += vec3(0,0,0.5);
 	color.a = 1.0;
 	return color;
 }

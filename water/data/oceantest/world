@@ -13,7 +13,7 @@
   
   <shaders>
     <shader>
-      <file>/shader/water/water.xml</file>
+        <file>/shader/water/water.xml</file>
     </shader>
     <shader>
         <file>/shader/lighting/fullbright.xml</file>
@@ -33,12 +33,12 @@
     <texture name="normal map 2">
       <file>/water/w_normalmap.png</file>
     </texture>
-    
-    <texture name="normal map 3">
+	
+	<texture name="normal map 3">
       <file>/water/940-bump.jpg</file>
     </texture>
-	
-	<texture name="foam">
+    
+    <texture name="foam">
 		<file>/water/foam.jpg</file>
 	</texture>
     
@@ -69,10 +69,10 @@
   <materials>
     <material name="oceanMat">
       <shader type="standard">water</shader>
-	  <shadervar name="height map" type="texture">normal map 3</shadervar>
-      <shadervar name="tex normal" type="texture">normal map 1</shadervar>
-	  <shadervar name="tex foam" type="texture">foam</shadervar>
+	  <shadervar name="tex normal" type="texture">normal map 3</shadervar>
+      <shadervar name="tex height" type="texture">normal map 1</shadervar>
 	  
+	  <shadervar name="tex foam" type="texture">foam</shadervar>
 	  
 	  <shadervar name="specular" type="vector4">0.4,0.7,0.9,1</shadervar>
     </material>

@@ -1,0 +1,15 @@
+In order to have the Makehuman plugin working properly, you first need to
+install the Makehuman data files within the Crystal Space directory.
+
+To do so:
+
+- Go to the Makehuman website at
+http://makehuman.org/content/download_alpha_7.html and download the version
+1.0 alpha 7. You can download a simple tarball version if you don't plan to
+use the Makehuman application in itself. Also, the Crystal Space plugin won't
+work currently with the trunk version of Makehuman, a.k.a. 'pure python
+branch', so be sure to pick the version 1.0 alpha 7.
+
+- Extract the Makehuman package and move or copy the directory 'data' into
+the path where resides this README (that is, in 'CS/data/makehuman'). You
+should hence now have a directory 'CS/data/makehuman/data'.

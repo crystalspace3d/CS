@@ -1203,6 +1203,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\liblghtng_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\liblghtngldr_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\liblookat_staticreg.cpp" />
+    <ClCompile Include="..\..\mk\msvc\libmakehuman_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libmedialoader_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libmodelldr_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libmovierecorder_staticreg.cpp" />
@@ -1437,6 +1438,17 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\animesh\animnode\retarget\retarget.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\animnode\speed\speed.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\body\bodymesh.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\character.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\clothes.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\expressions.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\makehuman.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\obj.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\proxy.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\qr_solve.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\r8lib.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\rig.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\targets.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\utility.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\model\skeletonmodel.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\object\animesh.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\object\morphtarget.cpp" />
@@ -1936,6 +1948,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\animesh\animnode\retarget\retarget.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\animnode\speed\speed.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\body\bodymesh.h" />
+    <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\character.h" />
+    <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\makehuman.h" />
+    <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\qr_solve.h" />
+    <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\r8lib.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\model\skeletonmodel.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\object\animesh.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\object\morphtarget.h" />

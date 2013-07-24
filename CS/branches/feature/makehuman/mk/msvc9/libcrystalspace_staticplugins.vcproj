@@ -1652,6 +1652,9 @@
 				RelativePath="..\..\mk\msvc\liblookat_staticreg.cpp">
 			</File>
 			<File
+				RelativePath="..\..\mk\msvc\libmakehuman_staticreg.cpp">
+			</File>
+			<File
 				RelativePath="..\..\mk\msvc\libmedialoader_staticreg.cpp">
 			</File>
 			<File
@@ -2352,6 +2355,39 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\character.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\clothes.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\expressions.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\makehuman.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\obj.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\proxy.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\qr_solve.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\r8lib.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\rig.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\targets.cpp">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\utility.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\model\skeletonmodel.cpp">
@@ -5134,6 +5170,18 @@
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\body\bodymesh.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\character.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\makehuman.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\qr_solve.h">
+			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\r8lib.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\model\skeletonmodel.h">

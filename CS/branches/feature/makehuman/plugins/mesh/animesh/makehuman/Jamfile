@@ -1,0 +1,6 @@
+SubDir TOP plugins mesh animesh makehuman ;
+
+Description makehuman : "Makehuman model generation" ;
+Plugin makehuman : [ Wildcard *.cpp *.h ] ;
+LinkWith makehuman : crystalspace ;
+CompileGroups makehuman : meshes ;

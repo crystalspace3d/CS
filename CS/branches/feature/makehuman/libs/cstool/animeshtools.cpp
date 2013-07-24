@@ -20,6 +20,14 @@
 */
 #include "cssysdef.h"
 
+#include "csgeom/box.h"
+#include "csgfx/renderbuffer.h"
+#include "csgfx/vertexlistwalker.h"
+#include "cstool/rbuflock.h"
+#include "cstool/vfsdirchange.h"
+#include "csutil/regexp.h"
+#include "csutil/stringquote.h"
+
 #include "iengine/mesh.h"
 #include "imap/loader.h"
 #include "imesh/animesh.h"
@@ -30,15 +38,22 @@
 #include "iutil/stringarray.h"
 #include "iutil/vfs.h"
 
-#include "csgfx/renderbuffer.h"
-#include "cstool/vfsdirchange.h"
-#include "csutil/regexp.h"
-#include "csutil/stringquote.h"
-
 #include "cstool/animeshtools.h"
 
 namespace CS {
 namespace Mesh {
+
+struct BBoxPopulationData
+{
+  csBox3 bbox;
+  int childrenCount;
+  size_t index1;
+  size_t index2;
+  size_t index3;
+
+  BBoxPopulationData ()
+    : childrenCount (0), index1 (0), index2 (0), index3 (0) {}
+};
 
 csPtr<iAnimatedMeshFactory> AnimatedMeshTools::LoadAnimesh
 (iObjectRegistry* object_reg, iLoader* loader, const char* factoryName,
@@ -326,6 +341,82 @@ csPtr<iAnimatedMeshFactory> AnimatedMeshTools::ImportGeneralMesh
   factory->Invalidate ();
 
   return csPtr<iAnimatedMeshFactory> (factory);
+}
+
+
+bool AnimatedMeshTools::ApplyMorphTarget (const char* target, const float weight, iAnimatedMeshFactory* amfact)
+{
+  // Clear animesh subsets
+  amfact->ClearSubsets();
+
+  // Find morph target
+  uint mtindex = amfact->FindMorphTarget (target);
+  if (mtindex == (uint)~0)
+  {
+    ReportError ("Can't find target '%s'", target);
+    return false;
+  }
+
+  // Get the animesh vertex buffer where the target will be morphed
+  size_t vertexCount = amfact->GetVertexCount ();
+  csRef<iRenderBuffer> vertexBuf = amfact->GetVertices ();
+  csRenderBufferLock<csVector3> verts (vertexBuf);
+
+  // Apply target directly to the mesh buffer
+  CS::Mesh::iAnimatedMeshMorphTarget* mt = amfact->GetMorphTarget (mtindex);
+  csVertexListWalker<float, csVector3> offsets (mt->GetVertexOffsets ());
+  for (uint vi = 0; vi < vertexCount; vi++)
+  {
+    verts[vi] += (*offsets) * weight;
+    ++offsets;
+  }  
+
+  return true;
+}
+
+bool AnimatedMeshTools::RemoveBones (iAnimatedMeshFactory* factory, CS::Animation::BoneID curBone)
+{
+  // Get a copy of the ordered list of bones composing the skeleton factory
+  CS::Animation::iSkeletonFactory* skeletonFactory = factory->GetSkeletonFactory ();
+  if (!skeletonFactory) return true;
+
+  csArray<CS::Animation::BoneID> bones (skeletonFactory->GetBoneOrderList ());
+
+  // Check if child bones of the current bone can be removed
+  for (size_t i = 0; i < bones.GetSize (); i++)
+    if (skeletonFactory->HasBone (bones[i]) and
+        skeletonFactory->GetBoneParent (bones[i]) == curBone)
+      // If any child bone can't be removed, the current bone can't either
+      if (!RemoveBones (factory, bones[i]))
+        return false;  
+  
+  // Since none of the children bones influence any vertex,
+  // if the current bone does not influence any vertex either, remove it
+  if (skeletonFactory->HasBone (curBone)
+      and factory->GetBoneBoundingBox (curBone).Empty ())
+  {
+    skeletonFactory->RemoveBone (curBone);
+    return true;
+  }
+
+  return false;
+}
+
+void AnimatedMeshTools::CleanSkeleton (iAnimatedMeshFactory* factory)
+{
+  // Get the top bone ID
+  CS::Animation::iSkeletonFactory* skeletonFactory = factory->GetSkeletonFactory ();
+  if (!skeletonFactory) return;
+
+  CS::Animation::BoneID topBone = skeletonFactory->GetTopBoneID ();
+
+  // Iterate on all root bones
+  for (CS::Animation::BoneID bi = 0; bi < topBone; bi++)
+    // If a bone is root of an armature, clean the skeleton tree 
+    // having this bone as root
+    if (skeletonFactory->HasBone (bi) and
+        skeletonFactory->GetBoneParent (bi) == CS::Animation::InvalidBoneID)
+      RemoveBones (factory, bi);
 }
 
 void AnimatedMeshTools::PopulateSkeletonBoundingBoxes

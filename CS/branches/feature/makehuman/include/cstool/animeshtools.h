@@ -26,8 +26,8 @@
  * Tools for the generation of CS::Mesh::iAnimatedMesh's
  */
 
+#include "imesh/skeleton2.h"
 #include "ivaria/reporter.h"
-
 #include "csutil/dirtyaccessarray.h"
 
 struct iGeneralFactoryState;
@@ -71,18 +71,11 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
 						  const char* factoryName,
 						  const char* filename);
 
-  struct BBoxPopulationData
-  {
-    csBox3 bbox;
-    int childrenCount;
-    size_t index1;
-    size_t index2;
-    size_t index3;
-
-    BBoxPopulationData ()
-    : childrenCount (0), index1 (0), index2 (0), index3 (0) {}
-  };
-
+  // Recursively remove bones from animesh's skeleton.
+  // The current bone or any child bone of curBone that influences no vertex
+  // is removed if none of their children bones influence a vertex.
+  static bool RemoveBones (iAnimatedMeshFactory* amfact, 
+                           CS::Animation::BoneID curBone);
 
  public:
 
@@ -148,6 +141,22 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
   static csPtr<iAnimatedMeshFactory> ImportGeneralMesh
     (iObjectRegistry* object_reg, iGeneralFactoryState* genmesh,
      bool deleteMesh = true);
+
+  /**
+   * Apply a morph target directly to the mesh of an animesh factory.
+   *
+   * \param target Name of the morph target
+   * \param weight Weight to blend the given morph target
+   * \return true if success
+   */
+  static bool ApplyMorphTarget (const char* target, const float weight,
+				iAnimatedMeshFactory* factory);
+
+  /**
+   * Remove all bones of an animesh factory that influence no vertex.
+   * A bone is removed only if none of its child bone influence a vertex either.
+   */
+  static void CleanSkeleton (iAnimatedMeshFactory* factory);
 
   /**
    * Populate an animesh factory with bone bounding boxes that are based only on

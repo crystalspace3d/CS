@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- makehuman.csplugin -->
+<plugin>
+  <scf>
+    <classes>
+      <class>
+        <name>crystalspace.mesh.animesh.makehuman</name>
+        <implementation>MakehumanManager</implementation>
+        <description>Makehuman generation of animated meshes</description>
+      </class>
+    </classes>
+  </scf>
+</plugin>

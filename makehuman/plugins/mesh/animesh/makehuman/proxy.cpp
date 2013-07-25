@@ -38,13 +38,13 @@ bool MakehumanCharacter::ParseProxyScale (csStringArray& words, ProxyData& proxy
     return ReportError ("Wrong scaling values in proxy '%s'", proxy.name.GetData ());
 
   // Get scaling axis
-  csString key (words[1]);
+  char key = words[1][0];
   int component = -1;
-  if (key[0] == 'x')
+  if (key == 'x')
     component = 0;
-  else if (key[0] == 'y')
+  else if (key == 'y')
     component = 1;
-  else if (key[0] == 'z')
+  else if (key == 'z')
     component = 2;
 
   // Parse scale values: "v1 v2 den"

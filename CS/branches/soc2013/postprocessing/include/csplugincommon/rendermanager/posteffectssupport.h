@@ -47,6 +47,7 @@ namespace CS
       csRefArray<iPostEffect> postEffects;
       csRef<iTextureHandle> pingPong[2];
       bool changed, enabled;
+      CS::StringIDValue matProjID, invMatProjID, focalLenID, invFocalLenID;
 
     public:
       PostEffectsSupport ();
@@ -90,6 +91,8 @@ namespace CS
 
     private:
       bool SetupView (uint width, uint height, CS::Math::Matrix4& perspectiveFixup);
+
+      bool SetupCommonSVs (iView* view);
     };
 
   } // namespace RenderManager

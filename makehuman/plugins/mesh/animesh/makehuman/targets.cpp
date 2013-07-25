@@ -139,7 +139,7 @@ bool MakehumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
     Target target = targets[ti];
 
     // Skip negligible deformations
-    if (fabs (target.weight) < EPSILON or target.offsets == nullptr)
+    if (fabs (target.weight) < EPSILON || target.offsets == nullptr)
       continue;
 
     // Check if this target concerns basic model properties (gender/ethnic/age)
@@ -151,9 +151,9 @@ bool MakehumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
       csString ethnic (props[0]);
       csString gender (props[1]);
       csString age (props[2]);
-      isBasicProp = (ethnic == "neutral" or ethnic == "african" or ethnic == "asian") and
-	(gender == "female" or gender == "male") and
-	(age == "child" or age == "young" or age == "old");
+      isBasicProp = (ethnic == "neutral" || ethnic == "african" || ethnic == "asian") &&
+	(gender == "female" || gender == "male") &&
+	(age == "child" || age == "young" || age == "old");
     }
 
     // Lock offset buffer

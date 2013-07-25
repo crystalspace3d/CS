@@ -94,7 +94,7 @@ bool MakehumanCharacter::UpdateMeshFactory ()
     return ReportError ("Problem while generating targets and weights of Makehuman model");
 
   // Parse all offset buffers of the model targets
-  for (size_t i=0; i<targets.GetSize (); i++)
+  for (size_t i = 0; i < targets.GetSize (); i++)
   {
     if (!ParseMakehumanTargetFile (targets[i].path, targets[i].offsets))
       return ReportError ("Parsing target file '%s' KO!", targets[i].path.GetData ());
@@ -416,7 +416,7 @@ bool MakehumanCharacter::ParseMakehumanModelFile (const char* filename, Makehuma
   // Skip the three first lines of the file
   // TODO: treat 3rd line tags of Makehuman model file
   uint count = 0;
-  while (!file->AtEOF () and count < 3 and manager->ParseLine (file, line, 255))
+  while (!file->AtEOF () && count < 3 && manager->ParseLine (file, line, 255))
     count++;
 
   while (!file->AtEOF ())
@@ -536,7 +536,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   float total = 0.0f;
   float factor = 1.0f;
 
-  if (african != 0.0 and asian != 0.0)
+  if (african != 0.0 && asian != 0.0)
     factor = 0.5f;
 
   if (african != 0.0)
@@ -807,11 +807,11 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   Target target;
 
   // Ethnics targets
-  for (size_t i0=0; i0< modelVals.ethnics.GetSize (); i0++)
+  for (size_t i0 = 0; i0 < modelVals.ethnics.GetSize (); i0++)
   {
-    for (size_t i1=0; i1< modelVals.gender.GetSize (); i1++)
+    for (size_t i1 = 0; i1 < modelVals.gender.GetSize (); i1++)
     {
-      for (size_t i2=0; i2< modelVals.age.GetSize (); i2++)
+      for (size_t i2 = 0; i2 < modelVals.age.GetSize (); i2++)
       {
         name.Format ("%s-%s%s",
                      modelVals.ethnics[i0].name.GetData (),
@@ -828,14 +828,14 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   }
 
   // Gender and age targets
-  for (size_t i1=0; i1< modelVals.gender.GetSize (); i1++)
+  for (size_t i1 = 0; i1 < modelVals.gender.GetSize (); i1++)
   {
-    for (size_t i2=0; i2< modelVals.age.GetSize (); i2++)
+    for (size_t i2 = 0; i2 < modelVals.age.GetSize (); i2++)
     {    
       // Muscle and weight targets
-      for (size_t i3=0; i3< modelVals.muscle.GetSize (); i3++)
+      for (size_t i3 = 0; i3 < modelVals.muscle.GetSize (); i3++)
       {
-        for (size_t i4=0; i4< modelVals.weight.GetSize (); i4++)
+        for (size_t i4 = 0; i4 < modelVals.weight.GetSize (); i4++)
         {
           name.Format ("universal-%s%s%s%s",
                        modelVals.gender[i1].name.GetData (), 
@@ -846,13 +846,13 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
           target = Target (name.GetData (), path.GetData (), 
                            modelVals.gender[i1].weight * modelVals.age[i2].weight
                            * modelVals.muscle[i3].weight * modelVals.weight[i4].weight);
-          if ((target.weight > EPSILON) and 
-              !(strcmp (modelVals.muscle[i3].name.GetData (), "")==0 and 
-                strcmp (modelVals.weight[i4].name.GetData (), "")==0))
+          if ((target.weight > EPSILON) && 
+              !(strcmp (modelVals.muscle[i3].name.GetData (), "") == 0 &&
+                strcmp (modelVals.weight[i4].name.GetData (), "") == 0))
             targets->Push (target);
 
           // Stomach targets
-          for (size_t i5=0; i5< modelVals.stomach.GetSize (); i5++)
+          for (size_t i5 = 0; i5 < modelVals.stomach.GetSize (); i5++)
           {
             name.Format ("%s%s%s%s%s",
                          modelVals.gender[i1].name.GetData (), 
@@ -871,9 +871,9 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
 
           // Breast size and firmness targets
           if (strcmp (modelVals.gender[i1].name.GetData (), "female") == 0)
-            for (size_t i5=0; i5< modelVals.breastSize.GetSize (); i5++)
+            for (size_t i5 = 0; i5 < modelVals.breastSize.GetSize (); i5++)
             {
-              for (size_t i6=0; i6< modelVals.breastFirmness.GetSize (); i6++)
+              for (size_t i6 = 0; i6 < modelVals.breastFirmness.GetSize (); i6++)
               {
                 name.Format ("%s%s%s%s%s%s",
                              modelVals.gender[i1].name.GetData (), 
@@ -897,7 +897,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
       }
 
       // Genitals targets
-      for (size_t i3=0; i3< modelVals.genitals.GetSize (); i3++)
+      for (size_t i3 = 0; i3 < modelVals.genitals.GetSize (); i3++)
       {
         name.Format ("genitals_%s%s%s",
                      modelVals.gender[i1].name.GetData (), 
@@ -912,7 +912,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
       }
 
       // Buttocks targets
-      for (size_t i3=0; i3< modelVals.buttocks.GetSize (); i3++)
+      for (size_t i3 = 0; i3 < modelVals.buttocks.GetSize (); i3++)
       {
         name.Format ("%s%s%s",
                      modelVals.gender[i1].name.GetData (), 
@@ -926,7 +926,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
       }
 
       // Pelvis tone targets
-      for (size_t i3=0; i3< modelVals.pelvisTone.GetSize (); i3++)
+      for (size_t i3 = 0; i3 < modelVals.pelvisTone.GetSize (); i3++)
       {
         name.Format ("%s%s%s",
                      modelVals.gender[i1].name.GetData (), 
@@ -942,7 +942,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   }
 
   // Breast position targets
-  for (size_t i1=0; i1< modelVals.breastPosition.GetSize (); i1++)
+  for (size_t i1 = 0; i1 < modelVals.breastPosition.GetSize (); i1++)
   {
     name.Format ("%s", modelVals.breastPosition[i1].name.GetData ());
     path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
@@ -952,7 +952,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   }
 
   // Breast distance targets
-  for (size_t i1=0; i1< modelVals.breastDistance.GetSize (); i1++)
+  for (size_t i1 = 0; i1 < modelVals.breastDistance.GetSize (); i1++)
   {
     name.Format ("%s", modelVals.breastDistance[i1].name.GetData ());
     path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
@@ -962,7 +962,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   }
 
   // Breast taper targets
-  for (size_t i1=0; i1< modelVals.breastTaper.GetSize (); i1++)
+  for (size_t i1 = 0; i1 < modelVals.breastTaper.GetSize (); i1++)
   {
     name.Format ("%s", modelVals.breastTaper[i1].name.GetData ());
     path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
@@ -972,7 +972,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   }
 
   // Height targets
-  for (size_t i1=0; i1< modelVals.height.GetSize (); i1++)
+  for (size_t i1 = 0; i1 < modelVals.height.GetSize (); i1++)
   {
     name.Format ("universal-stature%s", modelVals.height[i1].name.GetData ());
     path.Format ("%smacrodetails/%s.target", TARGETS_PATH, name.GetData ());
@@ -982,7 +982,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
   }
 
   // Measure targets
-  for (size_t i1=0; i1< modelVals.measures.GetSize (); i1++)
+  for (size_t i1 = 0; i1 < modelVals.measures.GetSize (); i1++)
   {
     name.Format ("measure-%s", modelVals.measures[i1].name.GetData ());
     path.Format ("%smeasure/%s.target", TARGETS_PATH, name.GetData ());
@@ -993,7 +993,7 @@ bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals,
 
   // Print targets
   printf ("\nMakehuman targets used by model:\n");
-  for (size_t index=0; index<targets->GetSize (); index++)
+  for (size_t index = 0; index < targets->GetSize (); index++)
     printf ("%8.2f%% '%s'\n", (*targets)[index].weight*100, (*targets)[index].path.GetData ());
   printf ("\n");
 

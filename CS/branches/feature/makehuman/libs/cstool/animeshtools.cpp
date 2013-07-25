@@ -384,7 +384,7 @@ bool AnimatedMeshTools::RemoveBones (iAnimatedMeshFactory* factory, CS::Animatio
 
   // Check if child bones of the current bone can be removed
   for (size_t i = 0; i < bones.GetSize (); i++)
-    if (skeletonFactory->HasBone (bones[i]) and
+    if (skeletonFactory->HasBone (bones[i]) &&
         skeletonFactory->GetBoneParent (bones[i]) == curBone)
       // If any child bone can't be removed, the current bone can't either
       if (!RemoveBones (factory, bones[i]))
@@ -393,7 +393,7 @@ bool AnimatedMeshTools::RemoveBones (iAnimatedMeshFactory* factory, CS::Animatio
   // Since none of the children bones influence any vertex,
   // if the current bone does not influence any vertex either, remove it
   if (skeletonFactory->HasBone (curBone)
-      and factory->GetBoneBoundingBox (curBone).Empty ())
+      && factory->GetBoneBoundingBox (curBone).Empty ())
   {
     skeletonFactory->RemoveBone (curBone);
     return true;
@@ -414,7 +414,7 @@ void AnimatedMeshTools::CleanSkeleton (iAnimatedMeshFactory* factory)
   for (CS::Animation::BoneID bi = 0; bi < topBone; bi++)
     // If a bone is root of an armature, clean the skeleton tree 
     // having this bone as root
-    if (skeletonFactory->HasBone (bi) and
+    if (skeletonFactory->HasBone (bi) &&
         skeletonFactory->GetBoneParent (bi) == CS::Animation::InvalidBoneID)
       RemoveBones (factory, bi);
 }

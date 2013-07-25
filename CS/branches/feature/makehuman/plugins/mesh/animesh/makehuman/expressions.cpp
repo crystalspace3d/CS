@@ -82,7 +82,7 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
     index = filename.FindLast ('.');
     filename.SubString (exprname, 0, index);
     // Print expression name
-    if (i!=0 and i%6==0) printf ("\n"); 
+    if (i!=0 && i%6==0) printf ("\n"); 
     printf ("%3i. ", (int)i+1); printf ("%-13s", exprname.GetData ());
     // Create a new expression
     Target newExpr (exprname.GetData (), nullptr, 0.0f);
@@ -98,7 +98,7 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
   printf ("\n\n");
 
   for (size_t i = 0; i < modelVals.ethnics.GetSize (); i++)
-    if (modelVals.ethnics[i].name == "neutral" and modelVals.ethnics[i].weight < 1)
+    if (modelVals.ethnics[i].name == "neutral" && modelVals.ethnics[i].weight < 1)
       printf ("WARNING: Generated macro-expressions are only adapted to 100%% Caucasian models\n"\
               "         while this model is partly African or Asian.\n\n");
 

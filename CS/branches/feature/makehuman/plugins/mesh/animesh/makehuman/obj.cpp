@@ -246,7 +246,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup
   size_t csIndex = 0;
 
   // Treat all Makehuman face groups
-  printf ("face group count %i\n", faceGroups.GetSize());
+  printf ("face group count %zu\n", faceGroups.GetSize());
   for (size_t fgIdx = 0; fgIdx < faceGroups.GetSize (); fgIdx++)
   {
     //printf ("face group %s\n", faceGroups[fgIdx].groupName.GetData());
@@ -283,7 +283,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup
         mhIndex = faceVerts[4*indexF + i];
 
         // Check if Makehuman faces are triangles
-        if (i == 3 and mhIndex == (size_t) ~0)
+        if (i == 3 && mhIndex == (size_t) ~0)
         {
           triangle = true;
           break;
@@ -325,9 +325,9 @@ bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup
             bool testNorm = hasMeshNorm ? true : hasFaceNorm ? 
               (normal == csNormals[mappedV.csIdx]) : true;
 
-            if (faceGroups[fgIdx].materialName == mappedV.material and
-                fabs (uv[0] - texcoords[mappedV.uvIdx][0]) < EPSILON and
-                fabs (uv[1] - texcoords[mappedV.uvIdx][1]) < EPSILON and
+            if (faceGroups[fgIdx].materialName == mappedV.material &&
+                fabs (uv[0] - texcoords[mappedV.uvIdx][0]) < EPSILON &&
+                fabs (uv[1] - texcoords[mappedV.uvIdx][1]) < EPSILON &&
                 testNorm)
             {
               // Makehuman vertex is defined in CS with the same 

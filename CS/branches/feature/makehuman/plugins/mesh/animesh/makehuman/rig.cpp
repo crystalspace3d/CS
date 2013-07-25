@@ -439,7 +439,7 @@ bool MakehumanCharacter::SetBoneLocations (const csHash<VertBuf, csString>& mhJo
  
   // The human model mesh should have its origin displaced to have feets on the ground.
   // Since proxy mesh is generated from this model, its position should not be corrected.
-  if (moveOrigin and !origin.IsZero ())
+  if (moveOrigin && !origin.IsZero ())
   {
     // Move mesh so that its origin is at [0, 0, 0]
     csRef<iMeshObjectFactory> obFact = scfQueryInterface<iMeshObjectFactory> (amfact);
@@ -703,7 +703,7 @@ bool MakehumanCharacter::CreateSkeleton (const char* modelName,
   if (!animeshFactory)
     return ReportError ("Error while creating skeleton: the animesh factory of human model is missing");
 
-  if (proxy and !proxy->factory)
+  if (proxy && !proxy->factory)
     return ReportError ("Error while creating skeleton: the animesh factory of proxy model is missing");
 
   // Init buffers used to parse Makehuman rig

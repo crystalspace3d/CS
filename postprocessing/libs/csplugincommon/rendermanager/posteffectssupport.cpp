@@ -45,6 +45,10 @@ namespace CS
       postEffectManager = csLoadPlugin<iPostEffectManager>
         (pluginManager, "crystalspace.rendermanager.posteffect");
 
+      matProjID = postEffectManager->GetStringID("matrix projection");
+      invMatProjID = postEffectManager->GetStringID("matrix inv projection");
+      focalLenID = postEffectManager->GetStringID("focal length");
+      invFocalLenID = postEffectManager->GetStringID("inv focal length");
 
       // Check for a post-effect to be applied
       if (configKey)
@@ -162,7 +166,7 @@ namespace CS
     {
       uint width = view->GetContext ()->GetWidth ();
       uint height = view->GetContext ()->GetHeight ();
-
+      SetupCommonSVs (view);
       return SetupView (width, height, perspectiveFixup);
     }
 
@@ -238,6 +242,27 @@ namespace CS
     {
       enabled = status;
     }
+
+    bool PostEffectsSupport::SetupCommonSVs (iView* view)
+    {
+      iPerspectiveCamera *pcam = view->GetPerspectiveCamera();
+      iCamera * cam = view->GetCamera();
+      const CS::Math::Matrix4& proj = cam->GetProjectionMatrix();
+      const CS::Math::Matrix4& inv_proj = cam->GetInvProjectionMatrix();
+
+
+      csShaderVariable* sv = postEffectManager->GetSharedSVs()->GetVariableAdd(matProjID);
+      sv->SetValue(proj);
+      sv = postEffectManager->GetSharedSVs()->GetVariableAdd(invMatProjID);
+      sv->SetValue(inv_proj);
+
+      sv = postEffectManager->GetSharedSVs()->GetVariableAdd(focalLenID);
+      sv->SetValue(csVector2(proj.m11, proj.m22));
+      sv = postEffectManager->GetSharedSVs()->GetVariableAdd(invFocalLenID);
+      sv->SetValue(csVector2(1.0f/proj.m11, 1.0f/proj.m22));
+      return true;
+    }
+
 
   } // namespace RenderManager
 } // namespace CS

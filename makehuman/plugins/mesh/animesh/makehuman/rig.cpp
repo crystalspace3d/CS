@@ -158,7 +158,7 @@ bool MakehumanCharacter::ParseJointDefinition (csString line,
     if (sscanf (stmp[4], "%f", &(k2)) != 1)
       return ReportError ("Invalid value in definition of joint location\n");
 
-    if (!jointPos.Contains (csString (stmp[3])) or
+    if (!jointPos.Contains (csString (stmp[3])) ||
         !jointPos.Contains (csString (stmp[5])))
       return ReportError ("Error while calculating joint location: unknown joint");
     

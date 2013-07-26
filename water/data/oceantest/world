@@ -69,8 +69,8 @@
   <materials>
     <material name="oceanMat">
       <shader type="standard">water</shader>
-	  <shadervar name="tex normal" type="texture">normal map 3</shadervar>
-      <shadervar name="tex height" type="texture">normal map 1</shadervar>
+	  <shadervar name="tex normal" type="texture">normal map 1</shadervar>
+      <shadervar name="tex height" type="texture">normal map 3</shadervar>
 	  
 	  <shadervar name="tex foam" type="texture">foam</shadervar>
 	  

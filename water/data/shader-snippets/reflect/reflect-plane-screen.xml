@@ -22,10 +22,10 @@
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
     <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 
-   
+
     <!-- Factor applied to perturbance scaling.
 	 The closer the value to 0 is, the larger is the area at which perturbance is scaled. -->
-    <input id="perturbFadeScale" type="float" default="value" defval="0.0" />
+    <input id="perturbFadeScale" type="float" default="value" defval="0.5" />
 	<input id="perturb" type="float2" default="value" defval="0.0,0.0" />
     
     <!-- Put the computation of the reflection TC into a separate snippet
@@ -264,8 +264,9 @@
 	    mirroredPointDist = 0.0;
 	  
 	  float perturbWeight = clamp (mirroredPointDist * perturbFadeScale, 0.0, 1.0);
-	  tc.xy += perturb * perturbWeight;
+	  //tc.xy += perturb + perturbWeight;
 	  surfaceColor = texture2DProj (texReflect, tc);
+	  surfaceColor.x += perturb.x;
 	  surfaceColor_attr_perfragment = true;
 	  
 	  mirroredPointDistSat = clamp (mirroredPointDist, 0.0, 1.0);

@@ -18,6 +18,32 @@
 		verbatim -->
 		<input file="/shader-snippets/ModelViewProj.inp" private="yes" />
 		<input file="/shader-snippets/ModelView.inp" private="yes" />
+		<input file="/shader-snippets/texCoord.inp"	/>
+	
+		<input name="texHeight" type="tex2d" default="complex">
+			<block location="cg:pass">
+				<texture name="tex height" destination="fragmentIn.texHeight" />
+			</block>
+			<block location="glsl:pass">
+				<texture name="tex height" destination="in_texHeight" />
+			</block>
+      
+			<block location="cg:fragmentIn">
+				<uniform type="tex2d" name="texHeight" />
+			</block>
+
+			<block location="glsl:inputs">
+				<uniform type="tex2d" name="in_texHeight" />
+			</block>
+
+			<block location="cg:vertexMain">
+				texHeight = fragmentIn.texHeight;
+			</block>
+
+			<block location="glsl:vertexMain">
+				#sampler_assign texHeight in_texHeight
+			</block>
+		</input>
 	
 		<input name="objectToWorld" type="float4x4" default="complex" private="yes">
 			<block location="cg:vertexIn">
@@ -168,9 +194,12 @@
 			float wdy3 = WaveDispVert(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
 		
 			//Add all the displacements
-			position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
-			position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
-			position_object.y = wdy1 + wdy2 + wdy3; 
+			//position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
+			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
+			//position_object.y = wdy1 + wdy2 + wdy3; 
+			
+			float2 Texcord = texCoord + waveInput.time;
+			position_object.y +=  tex2D(texHeight, texCoord/256).r * 10.0  ;
 			
 			position_screen = position = mul (ModelViewProj, position_object);
 			position_camera = mul (ModelView, position_object);
@@ -205,9 +234,12 @@
 			float wdy3 = WaveDispVert(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
 		
 			//Add all the displacements
-			position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
-			position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
-			position_object.y = wdy1 + wdy2 + wdy3; 
+			//position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
+			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
+			//position_object.y = wdy1 + wdy2 + wdy3; 
+			
+			vec2 Texcord = texCoord + waveInput.time;
+			position_object.y +=  texture2D(texHeight, Texcord/256.0).g * 10.0  ;
 			
 			gl_Position = position_screen = position = (ModelViewProj * position_object);
 			position_camera = ModelView * position_object;

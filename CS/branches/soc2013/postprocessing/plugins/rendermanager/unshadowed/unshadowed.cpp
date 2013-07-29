@@ -279,6 +279,7 @@ bool RMUnshadowed::RenderView (iView* view, bool recursePortals)
   RenderTreeType::ContextNode* startContext = renderTree.CreateContext (rview);
   startContext->drawFlags |= (CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER);
   startContext->renderTargets[rtaColor0].texHandle = PostEffectsSupport::GetScreenTarget ();
+  startContext->renderTargets[rtaDepth].texHandle = PostEffectsSupport::GetDepthTarget ();
   startContext->perspectiveFixup = perspectiveFixup;
 
   // Setup the main context

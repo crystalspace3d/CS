@@ -41,5 +41,3 @@
 	</layer>
 
 </posteffect>
-
-<parameter name="scale" type="vector2">1,0.015625</parameter>

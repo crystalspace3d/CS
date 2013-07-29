@@ -3,7 +3,7 @@
     <pass>
       <buffer source="texture coordinate 0" destination="texture coordinate 0" />
       <!-- vp plugin="glfixed" / -->
-	  <texture destination="texDepth" name="tex gbuffer depth" />
+	  <texture destination="texDepth" name="tex depth" />
 	  <texture destination="texCSJ" name="tex csj" />
       <fp plugin="glcg">
 	<cgfp>

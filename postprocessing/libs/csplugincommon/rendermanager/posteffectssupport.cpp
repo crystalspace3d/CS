@@ -49,6 +49,9 @@ namespace CS
       invMatProjID = postEffectManager->GetStringID("matrix inv projection");
       focalLenID = postEffectManager->GetStringID("focal length");
       invFocalLenID = postEffectManager->GetStringID("inv focal length");
+      texDepthID = postEffectManager->GetStringID("tex depth");
+
+      autoHook = true;
 
       // Check for a post-effect to be applied
       if (configKey)
@@ -131,6 +134,13 @@ namespace CS
       return pingPong[1];
     }
 
+    iTextureHandle* PostEffectsSupport::GetDepthTarget () const
+    {
+      if (postEffects.IsEmpty () || !enabled || !autoHook)
+        return nullptr;
+      return depthHook;
+    }
+
     void PostEffectsSupport::SetEffectsOutputTarget (iTextureHandle* tex)
     {
       if (postEffects.GetSize () == 0) return;
@@ -166,8 +176,9 @@ namespace CS
     {
       uint width = view->GetContext ()->GetWidth ();
       uint height = view->GetContext ()->GetHeight ();
+      bool ret = SetupView (width, height, perspectiveFixup);
       SetupCommonSVs (view);
-      return SetupView (width, height, perspectiveFixup);
+      return ret;
     }
 
     bool PostEffectsSupport::SetupView (uint width, uint height, 
@@ -188,6 +199,11 @@ namespace CS
         pingPong[0] = postEffectManager->RequestTexture (info, -1);
         pingPong[1] = postEffectManager->RequestTexture (info, -1);
         changed = true;
+        if (autoHook)
+        {
+          info.format = "d32";
+          depthHook = postEffectManager->RequestTexture (info, -1);
+        }
       }
       
 
@@ -238,6 +254,12 @@ namespace CS
       return false;
     }
 
+    void PostEffectsSupport::SetDepthBuffer (iTextureHandle * depth)
+    {
+      autoHook = (depth == nullptr);
+      depthHook = depth;
+    }
+
     void PostEffectsSupport::SetPostEffectsEnabled(bool status)
     {
       enabled = status;
@@ -260,6 +282,9 @@ namespace CS
       sv->SetValue(csVector2(proj.m11, proj.m22));
       sv = postEffectManager->GetSharedSVs()->GetVariableAdd(invFocalLenID);
       sv->SetValue(csVector2(1.0f/proj.m11, 1.0f/proj.m22));
+
+      sv = postEffectManager->GetSharedSVs()->GetVariableAdd(texDepthID);
+      sv->SetValue(depthHook);
       return true;
     }
 

@@ -138,6 +138,9 @@ struct iRenderManagerPostEffects : public virtual iBase
   /// Get the texture to render a scene to for post processing.
   virtual iTextureHandle* GetScreenTarget () const = 0;
 
+  /// Get the depth texture to render.
+  virtual iTextureHandle* GetDepthTarget () const = 0;
+
   /// Draw all the effects in the chain of effects.
   virtual void DrawPostEffects (CS::RenderManager::RenderTreeBase& renderTree) = 0;
 
@@ -166,6 +169,9 @@ struct iRenderManagerPostEffects : public virtual iBase
 
   /// Enables/Disables the post effects  
   virtual void SetPostEffectsEnabled(bool status) = 0;
+
+  /// Sets the depth buffer so that the post effect can access the depth
+  virtual void SetDepthBuffer (iTextureHandle * depth) = 0;
 };
 
 /**

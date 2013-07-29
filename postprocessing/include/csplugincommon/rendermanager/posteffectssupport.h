@@ -46,8 +46,10 @@ namespace CS
       csRef<iPostEffectManager> postEffectManager;
       csRefArray<iPostEffect> postEffects;
       csRef<iTextureHandle> pingPong[2];
+      csRef<iTextureHandle> depthHook;
+      bool autoHook;
       bool changed, enabled;
-      CS::StringIDValue matProjID, invMatProjID, focalLenID, invFocalLenID;
+      CS::StringIDValue matProjID, invMatProjID, focalLenID, invFocalLenID, texDepthID;
 
     public:
       PostEffectsSupport ();
@@ -76,6 +78,7 @@ namespace CS
       iPostEffect* GetPostEffect (size_t index);
 
       iTextureHandle* GetScreenTarget () const;
+      iTextureHandle* GetDepthTarget () const;
 
       void SetEffectsOutputTarget (iTextureHandle* tex);  
       iTextureHandle* GetEffectsOutputTarget () const;
@@ -87,6 +90,13 @@ namespace CS
       bool ScreenSpaceYFlipped () const;
 
       void SetPostEffectsEnabled(bool status);
+
+      /**
+       * Sets the depth buffer so that the post effect can access the depth.
+       * If passed a nullptr(or not set) the manager will automatically allocate 
+       * and provide one.
+       */
+      void SetDepthBuffer (iTextureHandle * depth);
       /** @} */
 
     private:

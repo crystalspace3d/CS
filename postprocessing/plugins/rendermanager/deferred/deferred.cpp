@@ -516,8 +516,10 @@ bool RMDeferred::RenderView(iView *view, bool recursePortals)
   if (showGBuffer)
     ShowGBuffer (renderTree, &gbuffer);
 
+  PostEffectsSupport::SetDepthBuffer (gbuffer.GetDepthBuffer ());
   PostEffectsSupport::SetupView (view, startContext->perspectiveFixup);
   startContext->renderTargets[rtaColor0].texHandle = PostEffectsSupport::GetScreenTarget ();
+  startContext->renderTargets[rtaDepth].texHandle = PostEffectsSupport::GetDepthTarget ();
 
   // Setup the main context
   {

@@ -2372,6 +2372,9 @@
 				RelativePath="..\..\plugins\mesh\animesh\makehuman\obj.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\properties.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\mesh\animesh\makehuman\proxy.cpp">
 			</File>
 			<File

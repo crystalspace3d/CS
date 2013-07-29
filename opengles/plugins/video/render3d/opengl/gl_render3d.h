@@ -376,7 +376,12 @@ private:
   csRef<iRenderBuffer> scrapColors;
   csShaderVariableContext scrapContext;
   csRef<csRenderBufferHolder> scrapBufferHolder;
-  csRenderBufferName defaultBufferMapping[CS_VATTRIB_SPECIFIC_LAST+1]; 
+
+  // for pixmap drawing
+  csRef<csRenderBufferHolder> pixmapBufferHolder;
+
+  // for simple mesh and pixmap drawing
+  csRenderBufferName defaultBufferMapping[CS_VATTRIB_SPECIFIC_LAST+1];
 
   ////////////////////////////////////////////////////////////////////
   //                         Private helpers

@@ -1222,6 +1222,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\expressions.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\makehuman.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\obj.cpp" />
+    <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\properties.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\proxy.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\qr_solve.cpp" />
     <ClCompile Include="..\..\plugins\mesh\animesh\makehuman\r8lib.cpp" />

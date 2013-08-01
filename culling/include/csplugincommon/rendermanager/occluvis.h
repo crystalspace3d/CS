@@ -29,6 +29,7 @@
 #endif
 #include "csutil/hash.h"
 #include "csutil/refarr.h"
+#include "csutil/randomgen.h"
 #include "csutil/scf_implementation.h"
 #include "iengine/engine.h"
 #include "iengine/movable.h"
@@ -88,10 +89,12 @@ namespace CS
       uint32 uQueryFrame;
       uint32 uNextCheck;
       OcclusionVisibility eResult;
+      OcclusionVisibility eLastResult;
 
       QueryData()
         : uOQuery(0), uQueryFrame(0),
-          uNextCheck(0), eResult(INVALID)
+          uNextCheck(0), eResult(INVALID),
+	  eLastResult(INVALID)
       {}
     };
 
@@ -258,6 +261,9 @@ namespace CS
       // Array of visibility objects.
       // @@@TODO: this is only a housekeeping thing - a hash may be better suited for faster deletion
       csRefArray<csVisibilityObjectWrapper> visObjects;
+
+      // RNG for offsetting first query for visible nodes
+      csRandomGen RNG;
 
       // Set to true to pass all objects regardless of visibility next VisCull.
       bool bAllVisible;

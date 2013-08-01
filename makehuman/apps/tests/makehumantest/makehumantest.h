@@ -61,6 +61,8 @@ private:
   bool CreateCustomModel ();
   bool SetupAnimatedMesh ();
 
+  void TestTargetAccess (const char* property, bool testOffsets = false);
+
   /**
    * Load clothes of current Makehuman model as animated mesh factories,
    * adapt them to loaded model and correctly place them in the scene,

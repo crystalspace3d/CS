@@ -22,6 +22,7 @@
 #include "cssysdef.h"
 
 #include "cstool/animeshtools.h"
+#include "cstool/rbuflock.h"
 #include "csutil/scfstringarray.h"
 #include "csutil/xmltiny.h"
 #include "imap/writer.h"
@@ -116,7 +117,7 @@ bool MakehumanTest::Application ()
   //*********** test clothes ***********************
 
   // Put clothes listed in Makehuman properties on the model
-  if (!CreateClothes ()) ReportWarning ("Problem while putting clothes on the model");
+  // if (!CreateClothes ()) ReportWarning ("Problem while putting clothes on the model");
 
   // Put a single clothing item on the model
   //if (!CreateClothingItem ("shirt_medium", true))
@@ -125,9 +126,18 @@ bool MakehumanTest::Application ()
    //********** test facial expressions ***************
 
   //TestMacroExpression ();
-  TestMicroExpression1 ();   // smile
+  //TestMicroExpression1 ();   // smile
   //TestMicroExpression2 ();   // anger
   //TestMicroExpression3 ();   // cry
+
+  TestTargetAccess ("gender");
+  TestTargetAccess ("age");
+  TestTargetAccess ("weight");
+  TestTargetAccess ("muscle");
+  TestTargetAccess ("height");
+  TestTargetAccess ("stomach");
+  TestTargetAccess ("buttocks");
+  TestTargetAccess ("pelvisTone");
 
   // Run the application
   Run ();
@@ -181,6 +191,7 @@ void MakehumanTest::ResetScene ()
 bool MakehumanTest::CreateModel (const char* factoryName, const char* filename, const char* proxy, const char* rig)
 {
   character = makehumanManager->CreateCharacter ();
+  character->SetExpressionGeneration (false);
 
   if (!character->Parse (filename))
     return ReportError ("Error parsing the Makehuman model file '%s'", filename);
@@ -191,15 +202,13 @@ bool MakehumanTest::CreateModel (const char* factoryName, const char* filename, 
   if (!character->UpdateMeshFactory ())
     return ReportError ("Error generating the Makehuman model '%s'", factoryName);
 
-  animeshFactory = character->GetMeshFactory ();
-  printf ("Character vertex count: %i\n", animeshFactory->GetVertexCount ());
-
   return SetupAnimatedMesh ();
 }
 
 bool MakehumanTest::CreateCustomModel ()
 {
   character = makehumanManager->CreateCharacter ();
+  character->SetExpressionGeneration (false);
   character->SetNeutral ();
 /*
   // Those are the set of properties equivalent to a call to SetNeutral ()
@@ -214,16 +223,19 @@ bool MakehumanTest::CreateCustomModel ()
   character->SetProperty ("breastFirmness", 0.5f);
   character->SetProperty ("breastSize", 0.5f);
 */
-  character->SetMeasure ("lowerarmlenght", 1.f);
-  character->SetMeasure ("upperarmlenght", 1.f);
-  character->SetMeasure ("lowerlegheight", -1.f);
-  character->SetMeasure ("upperlegheight", -1.f);
-
   if (!character->UpdateMeshFactory ())
     return ReportError ("Error generating the Makehuman model");
 
+  TestTargetAccess ("gender", true);
+
+  return SetupAnimatedMesh ();
+}
+
+bool MakehumanTest::SetupAnimatedMesh ()
+{
+  // Print some additional information
   animeshFactory = character->GetMeshFactory ();
-  printf ("Character vertex count: %i\n", animeshFactory->GetVertexCount ());
+  printf ("\nCharacter vertex count: %i\n", animeshFactory->GetVertexCount ());
 
   CS::Animation::iSkeletonFactory* skeleton = animeshFactory->GetSkeletonFactory ();
   if (skeleton)
@@ -264,11 +276,6 @@ bool MakehumanTest::CreateCustomModel ()
     scfQueryInterface<iMeshObjectFactory> (animeshFactory);
   printf ("body height: %f\n\n", meshObject->GetObjectModel ()->GetObjectBoundingBox ().GetSize ()[1]);
 
-  return SetupAnimatedMesh ();
-}
-
-bool MakehumanTest::SetupAnimatedMesh ()
-{
   // Create a 'debug' animation node for the animesh
   csRef<CS::Animation::iSkeletonDebugNodeManager> debugManager = 
     csQueryRegistry<CS::Animation::iSkeletonDebugNodeManager> (GetObjectRegistry ());
@@ -319,6 +326,52 @@ bool MakehumanTest::SetupAnimatedMesh ()
 
   ResetScene ();
   return true;
+}
+
+void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
+{
+  // Query the list of morph targets that will get activated if the given
+  // property is modified
+  csArray<CS::Mesh::MakehumanMorphTarget> targets;
+  bool boundary = character->GetPropertyTargets (property, targets);
+
+  // Print the list of targets
+  printf ("\ncount of targets for %s: %zu - currently at boundary: %d\n",
+	  CS::Quote::Single (property), targets.GetSize (), boundary);
+  for (size_t i = 0; i < targets.GetSize (); i++)
+    printf ("target %s scale: %f direction: %i\n", targets[i].name.GetData (),
+	    targets[i].scale, (int) targets[i].direction);
+
+  // Test the validity of the targets that are returned
+  if (!testOffsets) return;
+
+  // Define a step value to be applied 
+  float step = 0.01f;
+  CS::Mesh::MakehumanMorphTargetDirection direction =
+    step > 0.0f ? CS::Mesh::MH_DIRECTION_UP : CS::Mesh::MH_DIRECTION_DOWN;
+
+  // Iterate on all vertices
+  csRenderBufferLock<csVector3> vertices (character->GetMeshFactory ()->GetVertices ());
+  for (size_t i = 0; i < targets.GetSize (); i++)
+  {
+    CS::Mesh::MakehumanMorphTarget& target = targets[i];
+
+    // Check if we are at a target boundary and if the direction is OK
+    if (boundary
+	&& target.direction != CS::Mesh::MH_DIRECTION_BOTH
+	&& target.direction != direction)
+      continue;
+
+    // Iterate on all vertices activated by the morph target
+    for (size_t j = 0; j < target.indices.GetSize (); j++)
+    {
+      // Compute the new position of the vertex after the applciation of this morph target 
+      csVector3 newPosition = vertices[target.indices[j]] + step * target.scale * target.offsets[j];
+
+      // Test the computation of the new position by updating the original vertex
+      vertices[target.indices[j]] = newPosition;
+    }
+  }
 }
 
 bool MakehumanTest::CreateClothes ()

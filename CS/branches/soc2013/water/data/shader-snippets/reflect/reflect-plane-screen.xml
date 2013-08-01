@@ -264,9 +264,8 @@
 	    mirroredPointDist = 0.0;
 	  
 	  float perturbWeight = clamp (mirroredPointDist * perturbFadeScale, 0.0, 1.0);
-	  //tc.xy += perturb + perturbWeight;
+	  tc.xy += perturb * perturbWeight;
 	  surfaceColor = texture2DProj (texReflect, tc);
-	  surfaceColor.x += perturb.x;
 	  surfaceColor_attr_perfragment = true;
 	  
 	  mirroredPointDistSat = clamp (mirroredPointDist, 0.0, 1.0);

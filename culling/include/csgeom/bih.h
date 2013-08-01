@@ -379,21 +379,28 @@ private:
       qsort(set, numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMin);
 
       // partition in the middle - grab lower bounds from sorted list
-      splitLow[0] = set[0].min;
-      splitLow[2] = set[numObjects >> 1].min;
+      splitLow[2] = set[0].min;
+      splitLow[0] = set[numObjects >> 1].min;
 
       // get upper bound for lower part
-      splitLow[1] = -std::numeric_limits<float>::max();
+      splitLow[3] = -std::numeric_limits<float>::max();
       for(int i = 0; i < (numObjects >> 1); ++i)
+      {
+	splitLow[3] = csMax(splitLow[3], set[i].max);
+      }
+
+      // get upper bound for higher part
+      splitLow[1] = -std::numeric_limits<float>::max();
+      for(int i = numObjects >> 1; i < numObjects; ++i)
       {
 	splitLow[1] = csMax(splitLow[1], set[i].max);
       }
 
-      // get upper bound for right part
-      splitLow[3] = -std::numeric_limits<float>::max();
-      for(int i = numObjects >> 1; i < numObjects; ++i)
+      // if the lower borders are equal, make sure the lower upper border
+      // goes first
+      if(splitLow[0] == splitLow[2] && splitLow[1] > splitLow[3])
       {
-	splitLow[3] = csMax(splitLow[3], set[i].max);
+	std::swap(splitLow[1], splitLow[3]);
       }
     }
 
@@ -420,14 +427,29 @@ private:
       {
 	splitHigh[2] = csMin(splitHigh[2], set[i].min);
       }
+
+      // if the upper borders are equal, make sure the higher lower border
+      // goes first
+      if(splitHigh[1] == splitHigh[3] && splitHigh[0] < splitHigh[2])
+      {
+	std::swap(splitHigh[0], splitHigh[2]);
+      }
     }
 
     // we don't need the actual data of the sort, anymore - free it
     cs_free(set);
 
     // calculate qualities
-    float qualityLow = splitLow[2] - splitLow[1];
-    float qualityHigh = splitHigh[2] - splitHigh[1];
+    float qualityLow = 
+        splitLow[0] - box.GetMin(axis) // lower border cutoff
+      + splitLow[2] - splitLow[1]      // center cutoff
+      + box.GetMax(axis) - splitLow[3] // upper border cutoff
+      ;
+    float qualityHigh = 
+        splitHigh[0] - box.GetMin(axis) // lower border cutoff
+      + splitHigh[2] - splitHigh[1]     // center cutoff
+      + box.GetMax(axis) - splitHigh[3] // upper border cutoff
+      ;
 
     // check which version is better
     if(qualityLow > qualityHigh)
@@ -463,7 +485,7 @@ private:
     CS_ASSERT(split[0] < split[1] && split[2] < split[3]);
 
     // if one split completely contains the other the contained one must be the first one
-    CS_ASSERT(!(split[0] < split[2] && split[1] > split[3]));
+    CS_ASSERT(!(split[0] <= split[2] && split[1] >= split[3]));
 
     // keep track how many objects couldn't be distributed
     int failed = 0;
@@ -554,7 +576,7 @@ public:
     child1(nullptr), child2(nullptr), parent(nullptr),
 
     // split initialization
-    splitAxis(CS_BIH_AXISINVALID), block(0), blockThreshold(-1.0f), minSplitObjects(10),
+    splitAxis(CS_BIH_AXISINVALID), block(0), blockThreshold(0.0f), minSplitObjects(10),
 
     // objects initialization
     objects(nullptr), numObjects(0), maxObjects(0), estimateObjects(0)
@@ -833,6 +855,9 @@ public:
 	float quality;
 	{
 	  // get all splits
+	  // @@@TODO: it'd be nice to keep the sorted array from the
+	  //	      different splits so we don't have to sort/categorize
+	  //	      the objects again
 	  Split splitX; Split splitY; Split splitZ;
 	  float qualityX = FindBestSplitLocation(CS_BIH_AXISX, splitX);
 	  float qualityY = FindBestSplitLocation(CS_BIH_AXISY, splitY);

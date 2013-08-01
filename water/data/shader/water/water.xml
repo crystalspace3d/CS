@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <shader compiler="shaderweaver" name="water">
+<shadervar name="water perturb scale" type="vector4">0.5,0.5,0,0</shadervar>
+<shadervar name="water perturb fade" type="float">1</shadervar>
+<shadervar name="normal map scale" type="vector2">0.00390625,0.00390625</shadervar>
+
   
 	<technique priority="200">
 		<pass>		
@@ -7,8 +11,17 @@
 	 
 			<snippet id="wave" file="/shader/snippets/wave.xml" />
 			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
-			<snippet id="normalmap" file="/shader-snippets/surface/normalmap-none.xml" />
+			<snippet id="normalmap" file="/shader-snippets/surface/normalmap-tiled.xml" />
 			<snippet id="perturb_norm_refl" file="/shader-snippets/tcoffset2-perturb-normal-cam.xml" />
+			
+			<parameter id="perturbscale" type="shadervar" weavertype="float4">water perturb scale</parameter>
+			<connection from="perturbscale" to="perturb_norm_refl" />
+
+			<parameter id="perturbfade" type="shadervar" weavertype="float">water perturb fade</parameter>
+			<connection from="perturbfade" to="reflection" />
+			
+			<parameter id="normalscale" type="shadervar" weavertype="float2">normal map scale</parameter>
+			<connection from="normalscale" to="normalmap" />
 			
 			<connection from="normalmap" to="perturb_norm_refl" />
 			<connection from="perturb_norm_refl" to="reflection" />

@@ -437,6 +437,8 @@ bool MakehumanCharacter::GenerateProxyMicroExpressions (const ProxyData& proxy,
   // Generate micro-expressions offsets for human model, using its associated proxy
   size_t mhIndex;
   csVector3 v0, v1, v2;
+  size_t* mapping;
+
   size_t totalVertices = (size_t) proxy.proxyVerts.GetSize ();
   if (totalVertices == 0)
     return ReportError ("Error while generating proxy expressions: proxy vertices are not defined");
@@ -444,46 +446,71 @@ bool MakehumanCharacter::GenerateProxyMicroExpressions (const ProxyData& proxy,
   for (size_t ei = 0; ei < modelExpr.GetSize (); ei++)
   {
     // Create new micro-expression for model proxy
-    Target expr (modelExpr[ei].name.GetData (), "", 0.0f);
-    expr.offsets = csRenderBuffer::CreateRenderBuffer 
-      (totalVertices, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
-    csVector3* proxyOffsets = (csVector3*) expr.offsets->Lock (CS_BUF_LOCK_NORMAL);
+    size_t proxyIndex = proxyExpr.Push (Target (modelExpr[ei].name.GetData ()));
+    Target& expr = proxyExpr[proxyIndex];
 
-    // Lock micro-expression offsets of detailed model
-    csRenderBufferLock<csVector3> modelOffsets (modelExpr[ei].offsets, CS_BUF_LOCK_READ);
+    // Build a mapping buffer for the vertices that are activated by the morph target
+    csHash<size_t, size_t> indexMapping;
+    for (size_t i = 0; i < modelExpr[ei].indices.GetSize (); i++)
+      indexMapping.Put (modelExpr[ei].indices[i], i);
 
     for (size_t index = 0; index < totalVertices; index++)
     {
       ProxyVert pvert = proxy.proxyVerts[index];
 
-      // Proxy offset is defined by the offset of a single model vertex
+      // Case where the proxy offset is defined by the offset of a single model vertex
       if ((pvert.v[1] == -1) || (pvert.v[2] == -1))
       {
         mhIndex = pvert.v[0];
-        proxyOffsets[index] = modelOffsets[mhIndex];
+	mapping = indexMapping.GetElementPointer (mhIndex);
+	if (mapping)
+	{
+	  expr.offsets.Push (modelExpr[ei].offsets[*mapping]);
+	  expr.indices.Push (index);
+	}
+
         continue;
       }
 
-      // Proxy offset is defined by barycentric coordinates of
-      // model vertices displaced by expression offsets
+      // Case where the proxy offset is defined by barycentric coordinates of
+      // the model vertices displaced by the expression offsets
+      bool activated = false;
+
       mhIndex = pvert.v[0];
-      v0 = modelOffsets[mhIndex];
+      mapping = indexMapping.GetElementPointer (mhIndex);
+      if (mapping)
+      {
+	activated = true;
+	v0 = modelExpr[ei].offsets[*mapping];
+      }
+      else v0 = 0.0f;
+
       mhIndex = pvert.v[1];
-      v1 = modelOffsets[mhIndex];
+      mapping = indexMapping.GetElementPointer (mhIndex);
+      if (mapping)
+      {
+	activated = true;
+	v1 = modelExpr[ei].offsets[*mapping];
+      }
+      else v1 = 0.0f;
+
       mhIndex = pvert.v[2];
-      v2 = modelOffsets[mhIndex];
+      mapping = indexMapping.GetElementPointer (mhIndex);
+      if (mapping)
+      {
+	activated = true;
+	v2 = modelExpr[ei].offsets[*mapping];
+      }
+      else v2 = 0.0f;
 
-      proxyOffsets[index][0] =
-        pvert.w[0] * v0[0] + pvert.w[1] * v1[0] + pvert.w[2] * v2[0];
-      proxyOffsets[index][1] =
-        pvert.w[0] * v0[1] + pvert.w[1] * v1[1] + pvert.w[2] * v2[1];
-      proxyOffsets[index][2] =
-        pvert.w[0] * v0[2] + pvert.w[1] * v1[2] + pvert.w[2] * v2[2];
+      if (!activated) continue;
+
+      csVector3 offset (pvert.w[0] * v0[0] + pvert.w[1] * v1[0] + pvert.w[2] * v2[0],
+		       pvert.w[0] * v0[1] + pvert.w[1] * v1[1] + pvert.w[2] * v2[1],
+		       pvert.w[0] * v0[2] + pvert.w[1] * v1[2] + pvert.w[2] * v2[2]);
+      expr.offsets.Push (offset);
+      expr.indices.Push (index);
     }
-
-    // Save generated proxy expression
-    expr.offsets->Release ();
-    proxyExpr.Push (expr);
   }
 
   return true;

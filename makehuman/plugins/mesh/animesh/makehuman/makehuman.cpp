@@ -67,6 +67,7 @@ bool MakehumanManager::Initialize (iObjectRegistry* objectRegistry)
       - cache size
 
     TODO: use a cache for the ressource files
+    TODO: threaded loading of the data
   */
 
   // Parse the object file describing the Makehuman neutral model

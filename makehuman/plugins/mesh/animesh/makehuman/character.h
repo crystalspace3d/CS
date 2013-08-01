@@ -37,6 +37,9 @@ public:
   ~MakehumanCharacter ();
 
   //-- iMakehumanCharacter
+  virtual void SetExpressionGeneration (bool generate);
+  virtual bool GetExpressionGeneration () const;
+
   virtual iAnimatedMeshFactory* GetMeshFactory () const;
   virtual bool UpdateMeshFactory ();
 
@@ -55,6 +58,11 @@ public:
   virtual size_t GetClothCount () const;
   virtual iAnimatedMeshFactory* GetClothMesh (size_t index) const;
 
+  virtual bool GetPropertyTargets
+    (const char* property, csArray<MakehumanMorphTarget>& targets);
+  virtual bool GetMeasureTargets
+    (const char* measure, csArray<MakehumanMorphTarget>& targets);
+
 private:
   csRef<MakehumanManager> manager;
   csRef<iAnimatedMeshFactory> animeshFactory;
@@ -62,9 +70,14 @@ private:
   csString proxy;
   csString rig;
 
+  bool generateExpressions;
+
   /// Model variables
   csString modelName;
   MakehumanModel human;            // array of model properties
+
+  // Property values of the model
+  ModelTargets modelVals;
 
   /// Backup of Makehuman buffers (used for proxy processing)
   csArray<VertBuf> mappingBuffer;   // index correspondence between mhx and cs vertices 
@@ -122,16 +135,47 @@ private:
    */
   bool ProcessModelProperties (const MakehumanModel human,  ModelTargets* modelVals);
 
+  void ConvertTargets (csArray<MakehumanMorphTarget>& targets,
+		       csArray<Target>& localTargets,
+		       float scale,
+		       MakehumanMorphTargetDirection direction);
+
   /**
    * Build target list containing full path of Makehuman target files and their 
    * corresponding weights.
    * \param modelVals  List of target tags and weights for each model property
    * \param targets  Generated list of Makehuman target filenames and their 
    *                 associated weights (only relevant if the method returns true)
-   * \Return true if targets were successfully generated
    */
-  bool GenerateTargetsWeights (const ModelTargets modelVals, 
-                               csArray<Target>* targets);
+  void GenerateTargetsWeights (const ModelTargets& modelVals, 
+                               csArray<Target>& targets);
+
+  void GenerateTargetsWeightsEthnics (const ModelTargets& modelVals,
+				      csArray<Target>& targets) const;
+  void GenerateTargetsWeightsAgeGender (const ModelTargets& modelVals,
+					csArray<Target>& targets) const;
+  void GenerateTargetsWeightsWeightMuscle (const ModelTargets& modelVals,
+					   csArray<Target>& targets) const;
+  void GenerateTargetsWeightsStomach (const ModelTargets& modelVals,
+				      csArray<Target>& targets) const;
+  void GenerateTargetsWeightsBreast (const ModelTargets& modelVals,
+				     csArray<Target>& targets) const;
+  void GenerateTargetsWeightsGenitals (const ModelTargets& modelVals,
+				       csArray<Target>& targets) const;
+  void GenerateTargetsWeightsButtocks (const ModelTargets& modelVals,
+				       csArray<Target>& targets) const;
+  void GenerateTargetsWeightsPelvis (const ModelTargets& modelVals,
+				     csArray<Target>& targets) const;
+  void GenerateTargetsWeightsBreastPosition (const ModelTargets& modelVals,
+					     csArray<Target>& targets) const;
+  void GenerateTargetsWeightsBreastDistance (const ModelTargets& modelVals,
+					     csArray<Target>& targets) const;
+  void GenerateTargetsWeightsBreastTaper (const ModelTargets& modelVals,
+					  csArray<Target>& targets) const;
+  void GenerateTargetsWeightsHeight (const ModelTargets& modelVals,
+				     csArray<Target>& targets) const;
+  void GenerateTargetsWeightsMeasure (const ModelTargets& modelVals,
+				      csArray<Target>& targets) const;
 
   /// MakeHuman target parser (.target)
 
@@ -144,8 +188,12 @@ private:
    * \param offsetsBuffer  Offsets buffer of parsed Makehuman target
    * \Return true if success
    */
+/*
   bool ParseMakehumanTargetFile (const char* filename,
                                  csRef<iRenderBuffer>& offsetsBuffer);
+*/
+  bool ParseMakehumanTargetFile
+    (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices);
 
   /**
    * Apply morph targets to Makehuman mesh buffer

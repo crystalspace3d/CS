@@ -307,10 +307,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup
         }
         
         if (jointDef)
-        {
           joint.vertices.Push (mhIndex);
-          joint.vertexCount++;
-        }
 
         if (hasUV)
         {
@@ -441,7 +438,6 @@ bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup
     {
       MappingVertex vmap = mapBuf[i][vi];
       buf.vertices.Push (vmap.csIdx);
-      buf.vertexCount++;
     }
     mappingBuf.Push (buf);
   }

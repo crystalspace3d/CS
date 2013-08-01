@@ -86,11 +86,6 @@ using namespace CS::Mesh;
 struct VertBuf
 {
   csArray<size_t> vertices;  // array of vertex indices
-  size_t vertexCount;        // number of indices
-
-  VertBuf ()
-  : vertexCount (0)
-  {}
 };
 
 struct MappingVertex
@@ -185,19 +180,47 @@ struct MakehumanModel
 /// DATA STRUCTURES FOR MAKEHUMAN MORPH TARGETS
 
 // Morph target data
+/*
 struct Target
 {
   csString name;     // name of the morph target
   csString path;     // path of the morph target file
   float weight;      // weight associated to the morph target
-  csRef<iRenderBuffer> offsets;  // offsets buffer of morph target
+  //csRef<iRenderBuffer> offsets;  // offsets buffer of morph target
+  csArray<csVector3> offsets;  // offsets buffer of morph target
+  csArray<size_t> indices;  // indices of the vertices that are morphed
 
   Target ()
   : name (""), path (""), weight (0.0), offsets (nullptr)
   {}
 
+  Target (const char* n)
+  : name (n), path (""), weight (1.0), offsets (nullptr)
+  {}
+
   Target (const char* n, const char* p, float val)
   : name (n), path (p), weight (val), offsets (nullptr)
+  {}
+};
+*/
+struct Target
+{
+  csString name;     // name of the morph target
+  csString path;     // path of the morph target file
+  float weight;      // weight associated to the morph target
+  csArray<csVector3> offsets;  // offsets buffer of morph target
+  csArray<size_t> indices;  // indices of the vertices that are morphed
+
+  Target ()
+  : weight (0.0)
+  {}
+
+  Target (const char* n)
+  : name (n), weight (1.0)
+  {}
+
+  Target (const char* n, const char* p, float val)
+  : name (n), path (p), weight (val)
   {}
 };
 
@@ -220,6 +243,26 @@ struct ModelTargets {
   csArray<Target> breastTaper;
   csArray<Target> pelvisTone;
   csArray<Target> measures;
+
+  void DeleteAll ()
+  {
+    gender.DeleteAll ();
+    age.DeleteAll ();
+    ethnics.DeleteAll ();
+    weight.DeleteAll ();
+    muscle.DeleteAll ();
+    height.DeleteAll ();
+    genitals.DeleteAll ();
+    buttocks.DeleteAll ();
+    stomach.DeleteAll ();
+    breastFirmness.DeleteAll ();
+    breastSize.DeleteAll ();
+    breastPosition.DeleteAll ();
+    breastDistance.DeleteAll ();
+    breastTaper.DeleteAll ();
+    pelvisTone.DeleteAll ();
+    measures.DeleteAll ();    
+  }
 };
 
 /// DATA STRUCTURES FOR MAKEHUMAN PROXIES (i.e. MODELS, RIGS, CLOTHES)
@@ -227,7 +270,7 @@ struct ModelTargets {
 // Vertex data of a proxy
 struct ProxyVert
 {
-  int   v[3];   // vertex indices
+  int v[3];     // vertex indices
   float w[3];   // weights
   float d[3];   // offsets
 

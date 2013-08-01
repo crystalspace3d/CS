@@ -33,18 +33,18 @@ CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
 
 bool MakehumanCharacter::CalculateBaricenter (const VertBuf& facegroup, csVector3& center)
 {
-  if (facegroup.vertexCount == 0)
+  if (facegroup.vertices.GetSize () == 0)
     return false;
 
   size_t mhIndex;
   center.Set (0.0f);
-  for (size_t i = 0; i < facegroup.vertexCount; i++)
+  for (size_t i = 0; i < facegroup.vertices.GetSize (); i++)
   {
     mhIndex = facegroup.vertices[i];
     center += morphedMesh[mhIndex];
   }
 
-  center /= (float) facegroup.vertexCount;
+  center /= (float) facegroup.vertices.GetSize ();
   return true;
 } 
 
@@ -534,13 +534,12 @@ bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
       VertexInfluence vw = bi.weights[i];
 
       VertBuf mapv = mappingBuffer[vw.vertex];
-      for (size_t j = 0; j < mapv.vertexCount; j++)
+      for (size_t j = 0; j < mapv.vertices.GetSize (); j++)
       {
         size_t csIndex = mapv.vertices[j];
         size_t index = weights[csIndex].influences.InsertSorted (vw.weight);
         weights[csIndex].bones.Insert (index, curBone);
       }
-
     }
   }
 
@@ -657,7 +656,7 @@ bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
     {
       wi = it.Next (vi);    
       VertBuf mapv = proxy->mappingBuffer[vi];
-      for (size_t j = 0; j < mapv.vertexCount; j++)
+      for (size_t j = 0; j < mapv.vertices.GetSize (); j++)
       {
         size_t csIndex = mapv.vertices[j];
         size_t index = weights[csIndex].influences.InsertSorted (wi);

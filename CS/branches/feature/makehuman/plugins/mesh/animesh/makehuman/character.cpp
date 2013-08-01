@@ -58,21 +58,31 @@ void MakehumanModel::SetNeutral ()
 
 MakehumanCharacter::MakehumanCharacter (MakehumanManager* manager)
   : scfImplementationType (this), manager (manager),
-  proxy (), rig()
+  proxy (), rig(), generateExpressions (true)
 {
   // Create the animated mesh factory
   csRef<iMeshObjectFactory> factory = manager->animeshType->NewFactory ();
   animeshFactory = scfQueryInterfaceSafe<CS::Mesh::iAnimatedMeshFactory> (factory);
 
   // Copy the base buffers from the manager
-  coords = manager->coords;;
-  texcoords = manager->texcoords;;
-  normals = manager->normals;;
+  coords = manager->coords;
+  texcoords = manager->texcoords;
+  normals = manager->normals;
 }
 
 MakehumanCharacter::~MakehumanCharacter ()
 {
   mappingBuffer.DeleteAll ();
+}
+
+void MakehumanCharacter::SetExpressionGeneration (bool generate)
+{
+  generateExpressions = generate;
+}
+
+bool MakehumanCharacter::GetExpressionGeneration () const
+{
+  return generateExpressions;
 }
 
 iAnimatedMeshFactory* MakehumanCharacter::GetMeshFactory () const
@@ -82,21 +92,20 @@ iAnimatedMeshFactory* MakehumanCharacter::GetMeshFactory () const
 
 bool MakehumanCharacter::UpdateMeshFactory ()
 {
-  // Process property values of model
-  ModelTargets modelVals;
+  // Process the property values of the model
+  modelVals.DeleteAll ();
   if (!ProcessModelProperties (human, &modelVals))
     return ReportError ("Problem while processing Makehuman model properties");
   PrintModelProperties (modelVals);
 
-  // Generate a list of target names and weights
+  // Generate the list of target names and weights
   csArray<Target> targets;
-  if (!GenerateTargetsWeights (modelVals, &targets))
-    return ReportError ("Problem while generating targets and weights of Makehuman model");
+  GenerateTargetsWeights (modelVals, targets);
 
   // Parse all offset buffers of the model targets
   for (size_t i = 0; i < targets.GetSize (); i++)
   {
-    if (!ParseMakehumanTargetFile (targets[i].path, targets[i].offsets))
+    if (!ParseMakehumanTargetFile (targets[i].path, targets[i].offsets, targets[i].indices))
       return ReportError ("Parsing target file '%s' KO!", targets[i].path.GetData ());
   }
 
@@ -104,14 +113,17 @@ bool MakehumanCharacter::UpdateMeshFactory ()
   if (!ApplyTargetsToModel (targets))
     return ReportError ("Problem while applying morph targets to Makehuman mesh buffer");
 
-  // Parse macro-expressions of Makehuman model
   csArray<Target> macroExpressions;
-  if (!GenerateMacroExpressions (modelVals, macroExpressions))
-    ReportError ("Problem while generating model's macro-expressions");
+  if (generateExpressions)
+  {
+    // Parse macro-expressions of Makehuman model
+    if (!GenerateMacroExpressions (modelVals, macroExpressions))
+      ReportError ("Problem while generating model's macro-expressions");
 
-  // Generate micro-expressions of Makehuman model
-  if (!GenerateMicroExpressions (modelVals, microExpressions))
-    ReportError ("Problem while generating model's micro-expressions");
+    // Generate micro-expressions of Makehuman model
+    if (!GenerateMicroExpressions (modelVals, microExpressions))
+      ReportError ("Problem while generating model's micro-expressions");
+  }
 
    // Generate CS mesh buffers
   csDirtyAccessArray<Submesh> csSubmeshes;
@@ -270,13 +282,16 @@ bool MakehumanCharacter::UpdateMeshFactory ()
   if ((!proxy || strcmp (proxy, "") == 0)
       && (!human.proxyFilename || strcmp (human.proxyFilename, "") == 0))
   {
-    // Add the facial macro-expressions to the animesh factory
-    if (!AddExpressionsToModel (animeshFactory, mappingBuffer, "macro_", macroExpressions))
-      ReportError ("Could not add macro-expressions to the animesh factory");
+    if (generateExpressions)
+    {
+      // Add the facial macro-expressions to the animesh factory
+      if (!AddExpressionsToModel (animeshFactory, mappingBuffer, "macro_", macroExpressions))
+	ReportError ("Could not add macro-expressions to the animesh factory");
 
-    // Add the facial micro-expressions to the animesh factory
-    if (!AddExpressionsToModel (animeshFactory, mappingBuffer, "", microExpressions))
-      ReportError ("Could not add micro-expressions to the animesh factory");
+      // Add the facial micro-expressions to the animesh factory
+      if (!AddExpressionsToModel (animeshFactory, mappingBuffer, "", microExpressions))
+	ReportError ("Could not add micro-expressions to the animesh factory");
+    }
   }
 
   // If a proxy is defined
@@ -310,9 +325,8 @@ bool MakehumanCharacter::UpdateMeshFactory ()
 
     // Create animesh factory from model proxy
     // TODO: re-use the current animesh factory
-    animeshFactory =
-      CreateProxyMesh (name.GetData (), path.GetData (),
-		       human.skinFile, false, *proxyModel);
+    animeshFactory = CreateProxyMesh (name.GetData (), path.GetData (),
+				      texturePath, false, *proxyModel);
     if (!animeshFactory)
       return ReportError ("Creating animesh factory from Makehuman model proxy %s KO!",
 			  CS::Quote::Single (human.proxyFilename.GetData ()));
@@ -325,14 +339,17 @@ bool MakehumanCharacter::UpdateMeshFactory ()
     // Remove the bones that are not influencing any vertex
     CS::Mesh::AnimatedMeshTools::CleanSkeleton (animeshFactory);
 
-    // Generate the facial micro-expressions of the Makehuman model proxy
-    csArray<Target> proxyExpressions;
-    if (!GenerateProxyMicroExpressions (*proxyModel, microExpressions, proxyExpressions))
-      ReportError ("Problem while generating micro-expressions of proxy model");
+    if (generateExpressions)
+    {
+      // Generate the facial micro-expressions of the Makehuman model proxy
+      csArray<Target> proxyExpressions;
+      if (!GenerateProxyMicroExpressions (*proxyModel, microExpressions, proxyExpressions))
+	ReportError ("Problem while generating micro-expressions of proxy model");
 
-    // Add the facial micro-expressions to the animesh factory
-    if (!AddExpressionsToModel (animeshFactory, proxyModel->mappingBuffer, "", proxyExpressions))
-      ReportError ("Could not add micro-expressions to the animesh factory of proxy model");
+      // Add the facial micro-expressions to the animesh factory
+      if (!AddExpressionsToModel (animeshFactory, proxyModel->mappingBuffer, "", proxyExpressions))
+	ReportError ("Could not add micro-expressions to the animesh factory of proxy model");
+    }
 
     // Update the animesh factory
     animeshFactory->Invalidate ();
@@ -516,486 +533,6 @@ bool MakehumanCharacter::ParseMakehumanModelFile (const char* filename, Makehuma
       }
     }
   }
-
-  return true;
-}
-
-bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, ModelTargets* modelVals)
-{
-  if (!modelVals)
-    return ReportError ( "Makehuman model is not valid");
-
-  Target val, val1, val2;
-  float w;
-
-  // ethnics
-  // african: 0 is neutral; 1 is african
-  // asian: 0 is neutral; 1 is asian
-  float african = human.props.Get (csString ("african"), 0);  
-  float asian   = human.props.Get (csString ("asian"), 0);
-  float total = 0.0f;
-  float factor = 1.0f;
-
-  if (african != 0.0 && asian != 0.0)
-    factor = 0.5f;
-
-  if (african != 0.0)
-  {
-    val = Target ("african", nullptr, factor * african);
-    modelVals->ethnics.Push (val);
-    total += factor * african;
-  }
-  if (asian != 0.0)
-  {
-    val = Target ("asian", nullptr, factor * asian);
-    modelVals->ethnics.Push (val);
-    total += factor * asian;
-  }
-  if (total != 1.0)
-  {
-    val = Target ("neutral", nullptr, 1.0 - total);
-    modelVals->ethnics.Push (val);
-  }
-
-  // gender: 0 is female; 1 is male; 0.5 is neutral
-  float gender = human.props.Get (csString ("gender"), 0);
-  // TODO: allow values outside of normal value bounds?
-  /*
-  if (gender != 1.0)
-  {
-    val = Target ("female", nullptr, 1.0 - gender);
-    modelVals->gender.Push (val);
-  }
-  if (gender != 0.0)
-  {
-    val = Target ("male", nullptr, gender);
-    modelVals->gender.Push (val);
-  }
-  */
-  if (gender <= 1.0)
-  {
-    val = Target ("female", nullptr, 1.0 - gender);
-    modelVals->gender.Push (val);
-  }
-  if (gender >= 0.0)
-  {
-    val = Target ("male", nullptr, gender);
-    modelVals->gender.Push (val);
-  }
-
-  // age: 0 is child, 0.5 is young and 1 is old
-  // (considering: 0 is 12 years old, 0.5 is 25 and 1 is 70)
-  float age = human.props.Get (csString ("age"), 0);  
-  w = 0;
-  if (age > 0.5)
-  {
-    val1 = Target ("-old", nullptr, (age - 0.5) * 2.0);
-    modelVals->age.Push (val1);
-    w = val1.weight;
-  }
-  else if (age < 0.5)
-  {
-    val2 = Target ("-child", nullptr, (0.5 - age) * 2.0);
-    modelVals->age.Push (val2);
-    w = val2.weight;
-  }
-  if (w != 1)
-  {
-    val = Target ("-young", nullptr, 1.0 - w);
-    modelVals->age.Push (val);
-  }
-
-  // weight: 0 for underweight, 1 for overweight
-  float weight = human.props.Get (csString ("weight"), 0);  
-  w = 0;
-  if (weight > 0.5)
-  {
-    val1 = Target ("-heavy", nullptr, (weight - 0.5) * 2.0);
-    modelVals->weight.Push (val1);
-    w = val1.weight;
-  }
-  else if (weight < 0.5)
-  {
-    val2 = Target ("-light", nullptr, (0.5 - weight) * 2.0);
-    modelVals->weight.Push (val2);
-    w = val2.weight;
-  }
-  if (w != 1)
-  {
-    val = Target ("", nullptr, 1.0 - w);
-    modelVals->weight.Push (val);
-  }
-
-  // muscle: 0 for flacid, 1 for muscular
-  float muscle = human.props.Get (csString ("muscle"), 0);  
-  w = 0;
-  if (muscle > 0.5)
-  {
-    val1 = Target ("-muscle", nullptr, (muscle - 0.5) * 2.0);
-    modelVals->muscle.Push (val1);
-    w = val1.weight;
-  }
-  else if (muscle < 0.5)
-  {
-    val2 = Target ("-flaccid", nullptr, (0.5 - muscle) * 2.0);
-    modelVals->muscle.Push (val2);
-    w = val2.weight;
-  }
-  if (w != 1)
-  {
-    val = Target ("", nullptr, 1.0 - w);
-    modelVals->muscle.Push (val);
-  }
-
-  // height: -1 for dwarf, 1 for giant
-  float height = human.props.Get (csString ("height"), 0);  
-  if (height > 0.0)
-  {
-    val = Target ("-giant", nullptr, height);
-    modelVals->height.Push (val);
-  }
-  else if (height < 0.0)
-  {
-    val = Target ("-dwarf", nullptr, -height);
-    modelVals->height.Push (val);
-  }
-
-  // genitals: -1 is female, 1 is male
-  float genitals = human.props.Get (csString ("genitals"), 0);  
-  if (genitals > 0.0)
-  {
-    val = Target ("-masculine", nullptr, genitals);
-    modelVals->genitals.Push (val);
-  }
-  else if (genitals < 0.0)
-  {
-    val = Target ("-feminine", nullptr, -genitals);
-    modelVals->genitals.Push (val);
-  }
-
-  // buttocks: -1 for round buttocks, 1 for flat
-  float buttocks = human.props.Get (csString ("buttocks"), 0);  
-  if (buttocks > 0.0)
-  {
-    val = Target ("-nates2", nullptr, buttocks);
-    modelVals->buttocks.Push (val);
-  }
-  else if (buttocks < 0.0)
-  {
-    val = Target ("-nates1", nullptr, -buttocks);
-    modelVals->buttocks.Push (val);
-  }
-
-  // stomach: -1 for round belly, 1 for flat
-  float stomach = human.props.Get (csString ("stomach"), 0);  
-  if (stomach > 0.0)
-  {
-    val = Target ("-stomach2", nullptr, stomach);
-    modelVals->stomach.Push (val);
-  }
-  else if (stomach < 0.0)
-  {
-    val = Target ("-stomach1", nullptr, -stomach);
-    modelVals->stomach.Push (val);
-  }
-
-  // breast firmness: 0 is saggy, 1 is firm
-  float breastFirmness = human.props.Get (csString ("breastFirmness"), 0);  
-  if (breastFirmness != 1.0)
-  {
-    val = Target ("-firmness0", nullptr, 1.0 - breastFirmness);
-    modelVals->breastFirmness.Push (val);
-  }
-  if (breastFirmness != 0.0)
-  {
-    val = Target ("-firmness1", nullptr, breastFirmness);
-    modelVals->breastFirmness.Push (val);
-  }
-
-  // breast size: -1 is flat, 1 is big
-  float breastSize = human.props.Get (csString ("breastSize"), 0);  
-  if (breastSize > 0.0)
-  {
-    val = Target ("-cup2", nullptr, breastSize);
-    modelVals->breastSize.Push (val);
-  }
-  else if (breastSize < 0.0)
-  {
-    val = Target ("-cup1", nullptr, -breastSize);
-    modelVals->breastSize.Push (val);
-  }
-
-  // breast position: -1 is down, 1 is up
-  float breastPosition = human.props.Get (csString ("breastPosition"), 0);  
-  if (breastPosition > 0.0)
-  {
-    val = Target ("breast-up", nullptr, breastPosition);
-    modelVals->breastPosition.Push (val);
-  }
-  else if (breastPosition < 0.0)
-  {
-    val = Target ("breast-down", nullptr, -breastPosition);
-    modelVals->breastPosition.Push (val);
-  }
-
-  // breast distance: -1 is minimal, 1 is maximal
-  float breastDistance = human.props.Get (csString ("breastDistance"), 0);  
-  if (breastDistance > 0.0)
-  {
-    val = Target ("breast-dist-max", nullptr, breastDistance);
-    modelVals->breastDistance.Push (val);
-  }
-  else if (breastDistance < 0.0)
-  {
-    val = Target ("breast-dist-min", nullptr, -breastDistance);
-    modelVals->breastDistance.Push (val);
-  }
-
-  // breast taper: -1 is minimal, 1 is maximal
-  float breastTaper = human.props.Get (csString ("breastTaper"), 0);  
-  if (breastTaper > 0.0)
-  {
-    val = Target ("breast-point-max", nullptr, breastTaper);
-    modelVals->breastTaper.Push (val);
-  }
-  else if (breastTaper < 0.0)
-  {
-    val = Target ("breast-point-min", nullptr, -breastTaper);
-    modelVals->breastTaper.Push (val);
-  }
-
-  // pelvis tone: -1 for fat pelvis, 1 for slim
-  float pelvisTone = human.props.Get (csString ("pelvisTone"), 0);  
-  if (pelvisTone > 0.0)
-  {
-    val = Target ("-pelvis-tone2", nullptr, pelvisTone);
-    modelVals->pelvisTone.Push (val);
-  }
-  else if (pelvisTone < 0.0)
-  {
-    val = Target ("-pelvis-tone1", nullptr, -pelvisTone);
-    modelVals->pelvisTone.Push (val);
-  }
-
-  // measures: -1 to decrease, 1 to increase
-  csString prop;
-  csHash<float, csString>::ConstGlobalIterator it;
-  for (it = human.measures.GetIterator (); it.HasNext (); )
-  {
-    float w = it.Next (prop);
-    if (w < 0)
-    {
-      prop.Append ("-decrease");
-      val = Target (prop.GetData (), nullptr, -w);
-      modelVals->measures.Push (val);
-    }
-    else if (w > 0)
-    {
-      prop.Append ("-increase");
-      val = Target (prop.GetData (), nullptr, w);
-      modelVals->measures.Push (val);
-    }
-  }
-
-  return true;
-}
-
-bool MakehumanCharacter::GenerateTargetsWeights (const ModelTargets modelVals, 
-						 csArray<Target>* targets)
-{
-  csString path, name;
-  Target target;
-
-  // Ethnics targets
-  for (size_t i0 = 0; i0 < modelVals.ethnics.GetSize (); i0++)
-  {
-    for (size_t i1 = 0; i1 < modelVals.gender.GetSize (); i1++)
-    {
-      for (size_t i2 = 0; i2 < modelVals.age.GetSize (); i2++)
-      {
-        name.Format ("%s-%s%s",
-                     modelVals.ethnics[i0].name.GetData (),
-                     modelVals.gender[i1].name.GetData (), 
-                     modelVals.age[i2].name.GetData ());
-        path.Format ("%smacrodetails/%s.target", TARGETS_PATH, name.GetData ());
-        target = Target (name.GetData (), path.GetData (),
-                         modelVals.ethnics[i0].weight * modelVals.gender[i1].weight 
-                         * modelVals.age[i2].weight);
-        if (target.weight > EPSILON)
-          targets->Push (target);
-      }
-    }
-  }
-
-  // Gender and age targets
-  for (size_t i1 = 0; i1 < modelVals.gender.GetSize (); i1++)
-  {
-    for (size_t i2 = 0; i2 < modelVals.age.GetSize (); i2++)
-    {    
-      // Muscle and weight targets
-      for (size_t i3 = 0; i3 < modelVals.muscle.GetSize (); i3++)
-      {
-        for (size_t i4 = 0; i4 < modelVals.weight.GetSize (); i4++)
-        {
-          name.Format ("universal-%s%s%s%s",
-                       modelVals.gender[i1].name.GetData (), 
-                       modelVals.age[i2].name.GetData (), 
-                       modelVals.muscle[i3].name.GetData (), 
-                       modelVals.weight[i4].name.GetData ());
-          path.Format ("%smacrodetails/%s.target", TARGETS_PATH, name.GetData ());
-          target = Target (name.GetData (), path.GetData (), 
-                           modelVals.gender[i1].weight * modelVals.age[i2].weight
-                           * modelVals.muscle[i3].weight * modelVals.weight[i4].weight);
-          if ((target.weight > EPSILON) && 
-              !(strcmp (modelVals.muscle[i3].name.GetData (), "") == 0 &&
-                strcmp (modelVals.weight[i4].name.GetData (), "") == 0))
-            targets->Push (target);
-
-          // Stomach targets
-          for (size_t i5 = 0; i5 < modelVals.stomach.GetSize (); i5++)
-          {
-            name.Format ("%s%s%s%s%s",
-                         modelVals.gender[i1].name.GetData (), 
-                         modelVals.age[i2].name.GetData (), 
-                         modelVals.muscle[i3].name.GetData (), 
-                         modelVals.weight[i4].name.GetData (),
-                         modelVals.stomach[i5].name.GetData ());
-            path.Format ("%sdetails/%s.target", TARGETS_PATH, name.GetData ());
-            target = Target (name.GetData (), path.GetData (), 
-                             modelVals.gender[i1].weight * modelVals.age[i2].weight
-                             * modelVals.muscle[i3].weight * modelVals.weight[i4].weight
-                             * modelVals.stomach[i5].weight);
-            if (target.weight > EPSILON)
-              targets->Push (target);
-          }
-
-          // Breast size and firmness targets
-          if (strcmp (modelVals.gender[i1].name.GetData (), "female") == 0)
-            for (size_t i5 = 0; i5 < modelVals.breastSize.GetSize (); i5++)
-            {
-              for (size_t i6 = 0; i6 < modelVals.breastFirmness.GetSize (); i6++)
-              {
-                name.Format ("%s%s%s%s%s%s",
-                             modelVals.gender[i1].name.GetData (), 
-                             modelVals.age[i2].name.GetData (), 
-                             modelVals.muscle[i3].name.GetData (), 
-                             modelVals.weight[i4].name.GetData (),
-                             modelVals.breastSize[i5].name.GetData (), 
-                             modelVals.breastFirmness[i6].name.GetData ());
-                path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
-                target = Target (name.GetData (), path.GetData (), 
-                                 modelVals.gender[i1].weight * modelVals.age[i2].weight
-                                 * modelVals.muscle[i3].weight * modelVals.weight[i4].weight
-                                 * modelVals.breastSize[i5].weight 
-                                 * modelVals.breastFirmness[i6].weight);
-                if (target.weight > EPSILON)
-                  targets->Push (target);
-              }
-            }
-
-        }
-      }
-
-      // Genitals targets
-      for (size_t i3 = 0; i3 < modelVals.genitals.GetSize (); i3++)
-      {
-        name.Format ("genitals_%s%s%s",
-                     modelVals.gender[i1].name.GetData (), 
-                     modelVals.genitals[i3].name.GetData (), 
-                     modelVals.age[i2].name.GetData ());
-        path.Format ("%sdetails/%s.target", TARGETS_PATH, name.GetData ());
-        path.ReplaceAll ("-", "_");
-        target = Target (name.GetData (), path.GetData (), modelVals.gender[i1].weight *
-                         modelVals.genitals[i3].weight * modelVals.age[i2].weight);
-        if (target.weight > EPSILON)
-          targets->Push (target);
-      }
-
-      // Buttocks targets
-      for (size_t i3 = 0; i3 < modelVals.buttocks.GetSize (); i3++)
-      {
-        name.Format ("%s%s%s",
-                     modelVals.gender[i1].name.GetData (), 
-                     modelVals.age[i2].name.GetData (), 
-                     modelVals.buttocks[i3].name.GetData ());
-        path.Format ("%sdetails/%s.target", TARGETS_PATH, name.GetData ());
-        target = Target (name.GetData (), path.GetData (), modelVals.gender[i1].weight 
-                         * modelVals.age[i2].weight * modelVals.buttocks[i3].weight);
-        if (target.weight > EPSILON)
-          targets->Push (target);
-      }
-
-      // Pelvis tone targets
-      for (size_t i3 = 0; i3 < modelVals.pelvisTone.GetSize (); i3++)
-      {
-        name.Format ("%s%s%s",
-                     modelVals.gender[i1].name.GetData (), 
-                     modelVals.age[i2].name.GetData (), 
-                     modelVals.pelvisTone[i3].name.GetData ());
-        path.Format ("%sdetails/%s.target", TARGETS_PATH, name.GetData ());
-        target = Target (name.GetData (), path.GetData (), modelVals.gender[i1].weight 
-                         * modelVals.age[i2].weight * modelVals.pelvisTone[i3].weight);
-        if (target.weight > EPSILON)
-          targets->Push (target);
-      }
-    }
-  }
-
-  // Breast position targets
-  for (size_t i1 = 0; i1 < modelVals.breastPosition.GetSize (); i1++)
-  {
-    name.Format ("%s", modelVals.breastPosition[i1].name.GetData ());
-    path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
-    target = Target (name.GetData (), path.GetData (), modelVals.breastPosition[i1].weight);
-    if (target.weight > EPSILON)
-      targets->Push (target);
-  }
-
-  // Breast distance targets
-  for (size_t i1 = 0; i1 < modelVals.breastDistance.GetSize (); i1++)
-  {
-    name.Format ("%s", modelVals.breastDistance[i1].name.GetData ());
-    path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
-    target = Target (name.GetData (), path.GetData (), modelVals.breastDistance[i1].weight);
-    if (target.weight > EPSILON)
-      targets->Push (target);
-  }
-
-  // Breast taper targets
-  for (size_t i1 = 0; i1 < modelVals.breastTaper.GetSize (); i1++)
-  {
-    name.Format ("%s", modelVals.breastTaper[i1].name.GetData ());
-    path.Format ("%sbreast/%s.target", TARGETS_PATH, name.GetData ());
-    target = Target (name.GetData (), path.GetData (), modelVals.breastTaper[i1].weight);
-    if (target.weight > EPSILON)
-      targets->Push (target);
-  }
-
-  // Height targets
-  for (size_t i1 = 0; i1 < modelVals.height.GetSize (); i1++)
-  {
-    name.Format ("universal-stature%s", modelVals.height[i1].name.GetData ());
-    path.Format ("%smacrodetails/%s.target", TARGETS_PATH, name.GetData ());
-    target = Target (name.GetData (), path.GetData (), modelVals.height[i1].weight);
-    if (target.weight > EPSILON)
-      targets->Push (target);
-  }
-
-  // Measure targets
-  for (size_t i1 = 0; i1 < modelVals.measures.GetSize (); i1++)
-  {
-    name.Format ("measure-%s", modelVals.measures[i1].name.GetData ());
-    path.Format ("%smeasure/%s.target", TARGETS_PATH, name.GetData ());
-    target = Target (name.GetData (), path.GetData (), modelVals.measures[i1].weight);
-    if (target.weight > EPSILON)
-      targets->Push (target);
-  }
-
-  // Print targets
-  printf ("\nMakehuman targets used by model:\n");
-  for (size_t index = 0; index < targets->GetSize (); index++)
-    printf ("%8.2f%% '%s'\n", (*targets)[index].weight*100, (*targets)[index].path.GetData ());
-  printf ("\n");
 
   return true;
 }

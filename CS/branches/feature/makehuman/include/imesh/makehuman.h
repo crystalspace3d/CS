@@ -36,9 +36,29 @@ namespace Mesh {
 
 struct iAnimatedMeshFactory;
 
+enum MakehumanMorphTargetDirection
+{
+  MH_DIRECTION_BOTH = 0,
+  MH_DIRECTION_UP,
+  MH_DIRECTION_DOWN
+};
+
+class MakehumanMorphTarget
+{
+public:
+  csString name;
+  csArray<csVector3> offsets;
+  csArray<size_t> indices;
+  float scale;
+  MakehumanMorphTargetDirection direction;
+};
+
 struct iMakehumanCharacter : public virtual iBase
 {
   SCF_INTERFACE (iMakehumanCharacter, 1, 0, 0);
+
+  virtual void SetExpressionGeneration (bool generate) = 0;
+  virtual bool GetExpressionGeneration () const = 0;
 
   virtual iAnimatedMeshFactory* GetMeshFactory () const = 0;
   // TODO: this can be called only once for now
@@ -60,6 +80,11 @@ struct iMakehumanCharacter : public virtual iBase
 
   // TODO: remove
   virtual iAnimatedMeshFactory* GetClothMesh (size_t index) const = 0;
+
+  virtual bool GetPropertyTargets
+    (const char* property, csArray<MakehumanMorphTarget>& targets) = 0;
+  virtual bool GetMeasureTargets
+    (const char* measure, csArray<MakehumanMorphTarget>& targets) = 0;
 };
 
 /**

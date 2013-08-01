@@ -653,12 +653,19 @@ namespace CS
       }
 
       // get result if we didn't get it, yet
+      queryData->eLastResult = queryData->eResult;
       queryData->eResult = g3d->OQIsVisible(queryData->uOQuery) ? VISIBLE : INVISIBLE;
 
       // assume visible nodes will stay visible for a specified amount of time
       if(queryData->eResult == VISIBLE)
       {
         queryData->uNextCheck += visibilityFrameSkip * (uint32)nodeMeshHash.GetSize();
+
+	// add random delay when nodes first become visible to prevent synchronization
+	if(queryData->eLastResult != VISIBLE)
+	{
+	  queryData->uNextCheck += RNG.Get(visibilityFrameSkip);
+	}
       }
 
       // mark node visibility according to our new result

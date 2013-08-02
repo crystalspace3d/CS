@@ -1,4 +1,4 @@
-<shader compiler="xmlshader" name="postproc_blur">
+<shader compiler="xmlshader" name="hbao_shader">
   <technique priority="200">
     <pass>
       <buffer source="texture coordinate 0" destination="texture coordinate 0" />

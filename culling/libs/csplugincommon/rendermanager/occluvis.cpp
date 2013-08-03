@@ -1011,12 +1011,9 @@ namespace CS
       // look up node mesh lists array for this render view
       csRefArray<NodeMeshList>* nodeMeshLists = nodeMeshHash.Get(csPtrKey<iRenderView>(rview), nullptr);
 
-      // create a new one if there is none
-      if(nodeMeshLists == nullptr)
-      {
-        nodeMeshLists = new csRefArray<NodeMeshList>();
-        nodeMeshHash.Put(csPtrKey<iRenderView>(rview), nodeMeshLists);
-      }
+      // we cannot render without a mesh list
+      // @@@RlyDontKnow: how does this happen if it does at all?
+      CS_ASSERT(nodeMeshLists);
 
       // disable frame buffer writes
       // @@@NOTE: this may be overwritten by shaders
@@ -1029,7 +1026,7 @@ namespace CS
       size_t lastTicket;
 
       // go over the node list performing a depth only pass and occlusion queries as needed
-      for(size_t n = 0; n < nodeMeshLists->GetSize (); ++n)
+      for(size_t n = 0; n < nodeMeshLists->GetSize(); ++n)
       {
 	// get next mesh list
         NodeMeshList*& nodeMeshList = (*nodeMeshLists)[n];

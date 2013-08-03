@@ -355,15 +355,16 @@ private:
    * negative bad - the bigger, the better) and the locations for the
    * split in the split value.
    */
-  float FindBestSplitLocation(int axis, Split& split)
+  template<int axis, bool low, bool first>
+  void FindBestSplitLocation(float& bestQuality, SortElement* (&buffers)[2])
   {
     // validate storage
     CS_ASSERT(objects && numObjects <= maxObjects);
 
-    // allocate arrays we'll use for partitioning
-    SortElement* set = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*numObjects));
+    // get our working buffer
+    SortElement* set = buffers[0];
 
-    // fill arrays and find mean and max size
+    // fill sort array
     for(int i = 0; i < numObjects; ++i)
     {
       SortElement& s = set[i];
@@ -372,95 +373,95 @@ private:
       set[i].idx = i;
     }
 
-    // check simple partitioning for lower bounds
-    Split splitLow;
+    // check simple partitioning
+    // sort by according bound
+    if(low)
     {
-      // sort by lower bound
       qsort(set, numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMin);
+    }
+    else
+    {
+      qsort(set, numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMax);
+    }
 
-      // partition in the middle - grab lower bounds from sorted list
-      splitLow[2] = set[0].min;
-      splitLow[0] = set[numObjects >> 1].min;
+    // create our split
+    Split split;
 
+    // partition in the middle - grab according bounds from sorted list
+    if(low)
+    {
+      split[2] = set[0].min;
+      split[0] = set[numObjects >> 1].min;
+    }
+    else
+    {
+      split[1] = set[(numObjects >> 1) - 1].max;
+      split[3] = set[numObjects - 1].max;
+    }
+
+    // grab the other bounds
+    if(low)
+    {
       // get upper bound for lower part
-      splitLow[3] = -std::numeric_limits<float>::max();
+      split[3] = -std::numeric_limits<float>::max();
       for(int i = 0; i < (numObjects >> 1); ++i)
       {
-	splitLow[3] = csMax(splitLow[3], set[i].max);
+	split[3] = csMax(split[3], set[i].max);
       }
 
       // get upper bound for higher part
-      splitLow[1] = -std::numeric_limits<float>::max();
+      split[1] = -std::numeric_limits<float>::max();
       for(int i = numObjects >> 1; i < numObjects; ++i)
       {
-	splitLow[1] = csMax(splitLow[1], set[i].max);
-      }
-
-      // if the lower borders are equal, make sure the lower upper border
-      // goes first
-      if(splitLow[0] == splitLow[2] && splitLow[1] > splitLow[3])
-      {
-	std::swap(splitLow[1], splitLow[3]);
+	split[1] = csMax(split[1], set[i].max);
       }
     }
-
-    // check simple partitioning for upper bounds
-    Split splitHigh;
+    else
     {
-      // sort by lower bound
-      qsort(set, numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMax);
-
-      // partition in the middle - grab upper bounds from sorted list
-      splitHigh[1] = set[(numObjects >> 1) - 1].max;
-      splitHigh[3] = set[numObjects - 1].max;
-
       // get lower bound for lower part
-      splitHigh[0] = std::numeric_limits<float>::max();
+      split[0] = std::numeric_limits<float>::max();
       for(int i = 0; i < (numObjects >> 1); ++i)
       {
-	splitHigh[0] = csMin(splitHigh[0], set[i].min);
+	split[0] = csMin(split[0], set[i].min);
       }
 
       // get lower bound for upper part
-      splitHigh[2] = std::numeric_limits<float>::max();
+      split[2] = std::numeric_limits<float>::max();
       for(int i = numObjects >> 1; i < numObjects; ++i)
       {
-	splitHigh[2] = csMin(splitHigh[2], set[i].min);
+	split[2] = csMin(split[2], set[i].min);
       }
+    }
 
-      // if the upper borders are equal, make sure the higher lower border
-      // goes first
-      if(splitHigh[1] == splitHigh[3] && splitHigh[0] < splitHigh[2])
+    // check if second interval is contained in first - if so swap them
+    if(split[0] <= split[2] && split[1] >= split[3])
+    {
+      std::swap(split[0], split[2]);
+      std::swap(split[1], split[3]);
+    }
+
+    // calculate quality
+    float quality = split[2] - split[1]; // center cutoff - ignore border cutoff
+
+    // check whether our split is better than previous ones
+    // if there are any - if so set it as best split
+    if(first || quality > bestQuality)
+    {
+      // set our quality as best
+      bestQuality = quality;
+
+      // set our split axis
+      splitAxis = axis;
+
+      // swap buffers
+      buffers[0] = buffers[1];
+      buffers[1] = set;
+
+      // set our split as best one
+      for(int i = 0; i < 4; ++i)
       {
-	std::swap(splitHigh[0], splitHigh[2]);
+	this->split[i] = split[i];
       }
-    }
-
-    // we don't need the actual data of the sort, anymore - free it
-    cs_free(set);
-
-    // calculate qualities
-    float qualityLow = 
-        splitLow[0] - box.GetMin(axis) // lower border cutoff
-      + splitLow[2] - splitLow[1]      // center cutoff
-      + box.GetMax(axis) - splitLow[3] // upper border cutoff
-      ;
-    float qualityHigh = 
-        splitHigh[0] - box.GetMin(axis) // lower border cutoff
-      + splitHigh[2] - splitHigh[1]     // center cutoff
-      + box.GetMax(axis) - splitHigh[3] // upper border cutoff
-      ;
-
-    // check which version is better
-    if(qualityLow > qualityHigh)
-    { // min-version wins
-      memcpy(&split, &splitLow, sizeof(Split));
-      return qualityLow;
-    }
-    else
-    { // max-version wins
-      memcpy(&split, &splitHigh, sizeof(Split));
-      return qualityHigh;
     }
   }
 
@@ -852,80 +853,68 @@ public:
       else
       {
 	// time for some fun - find the axis with the best split
+
+	// keep track of our best quality
 	float quality;
-	{
-	  // get all splits
-	  // @@@TODO: it'd be nice to keep the sorted array from the
-	  //	      different splits so we don't have to sort/categorize
-	  //	      the objects again
-	  Split splitX; Split splitY; Split splitZ;
-	  float qualityX = FindBestSplitLocation(CS_BIH_AXISX, splitX);
-	  float qualityY = FindBestSplitLocation(CS_BIH_AXISY, splitY);
-	  float qualityZ = FindBestSplitLocation(CS_BIH_AXISZ, splitZ);
 
-	  // find the best one!
-	  if(qualityX > qualityY)
-	  {
-	    // sorry Y, you're out
-	    if(qualityX > qualityZ)
-	    {
-	      // go kill'em all X, good job
-	      splitAxis = CS_BIH_AXISX;
-	      memcpy(&split, &splitX, sizeof(Split));
-	      quality = qualityX;
-	      
-	    }
-	    else
-	    {
-	      // X didn't make it through the second round, congrats Z!
-	      splitAxis = CS_BIH_AXISZ;
-	      memcpy(&split, &splitZ, sizeof(Split));
-	      quality = qualityZ;
-	    }
-	  }
-	  else
-	  {
-	    // aaaaaand you're gone X
-	    if(qualityY > qualityZ)
-	    {
-	      // you did it Y!
-	      splitAxis = CS_BIH_AXISY;
-	      memcpy(&split, &splitY, sizeof(Split));
-	      quality = qualityY;
-	    }
-	    else
-	    {
-	      // Z took home the cup, yay
-	      splitAxis = CS_BIH_AXISZ;
-	      memcpy(&split, &splitZ, sizeof(Split));
-	      quality = qualityZ;
-	    }
-	  }
-	}
+	// allocate buffers to hold the split
+	SortElement* buffers[2];
+	buffers[0] = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*numObjects));
+	buffers[1] = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*numObjects));
 
-	// let's check whether we actually got a winner or just someone
-	// not quite as bad as the rest
+	// validate allocations
+	CS_ASSERT(buffers[0]);
+	CS_ASSERT(buffers[1]);
+
+	// evaluate all splits
+	FindBestSplitLocation<CS_BIH_AXISX, true, true>(quality, buffers);   // low  X
+	FindBestSplitLocation<CS_BIH_AXISX, false, false>(quality, buffers); // high X
+	FindBestSplitLocation<CS_BIH_AXISY, true, false>(quality, buffers);  // low  Y
+	FindBestSplitLocation<CS_BIH_AXISY, false, false>(quality, buffers); // high Y
+	FindBestSplitLocation<CS_BIH_AXISZ, true, false>(quality, buffers);  // low  Z
+	FindBestSplitLocation<CS_BIH_AXISZ, false, false>(quality, buffers); // high Z
+
+	// check whether the best split is actually good enough
 	if(quality > blockThreshold)
 	{
-	  // watch out, we got a real winner of there
-	  // allocate some childs
+	  // allocate childs
 	  child1 = TreeAlloc().Alloc();
 	  child2 = TreeAlloc().Alloc();
 
-	  // let them know who's the boss
+	  // verify allocations
+	  CS_ASSERT(child1);
+	  CS_ASSERT(child2);
+
+	  // set us as their parent
 	  child1->SetParent(this);
 	  child2->SetParent(this);
 
-	  // throw all the objects we can find at them - to each their own
-	  DistributeLeafObjects();
+	  // distribute objects according to the split we found
+	  // first child gets lower half
+	  for(int i = 0; i < (numObjects >> 1); ++i)
+	  {
+	    child1->AddObject(objects[buffers[1][i].idx]);
+	  }
 
-	  // dare them if they threw them back...
-	  CS_ASSERT(numObjects == 0);
+	  // second child gets upper half
+	  for(int i = numObjects >> 1; i < numObjects; ++i)
+	  {
+	    child2->AddObject(objects[buffers[1][i].idx]);
+	  }
+
+	  // free our buffers as we don't need them anymore
+	  cs_free(buffers[0]);
+	  cs_free(buffers[1]);
+
+	  // truncate our object list as we distributed all childs
+	  numObjects = 0;
 
 	  // update their boxes so they know where they belong
+	  // first child gets cut according to first interval
 	  child1->box = box;
 	  child1->box.SetMin(splitAxis, split[0]);
 	  child1->box.SetMax(splitAxis, split[1]);
+	  // second child gets cut according to second interval
 	  child2->box = box;
 	  child2->box.SetMin(splitAxis, split[2]);
 	  child2->box.SetMax(splitAxis, split[3]);
@@ -1067,20 +1056,17 @@ public:
       CS_ASSERT(child1);
       CS_ASSERT(child2);
 
-      // traverse second child first if we're in it's part of the interval
-      // @@@RlyDontKnow: point is that we sort so big nodes in the second child
-      //                 and we want to hit them early on - for small nodes this
-      //                 is essentially equal as the chance for an overlap is small
-      if(pos[splitAxis] > split[2])
+      // traverse first child first if it is part of the interval
+      if(pos[splitAxis] < split[1])
       {
-	child2->Front2Back(pos, func, data, frustumMask);
 	child1->Front2Back(pos, func, data, frustumMask);
+	child2->Front2Back(pos, func, data, frustumMask);
       }
-      // else go for the first one first
+      // else go for the second one first
       else
       {
-	child1->Front2Back(pos, func, data, frustumMask);
 	child2->Front2Back(pos, func, data, frustumMask);
+	child1->Front2Back(pos, func, data, frustumMask);
       }
     }
   }

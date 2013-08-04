@@ -106,43 +106,64 @@ namespace CS
 
       ~TreeNodeVisibilityData()
       {
+	// we cannot free anything without a backend
         if(g3d)
         {
+	  // free query data for all render views
           FreeQueryData();
         }
       }
 
       QueryData* GetQueryData(iGraphics3D* ig3d, iRenderView* rview)
       {
+	// get the query data for this render view if we already have some
         csRef<QueryData> queryData = RViewQueries.Get(csPtrKey<iRenderView>(rview), csRef<QueryData>());
 
+	// check whether we already have data
         if(!queryData.IsValid())
-        {
+        { // no, create it
+	  // cache our graphics backend as we'll need it to delete our queries
           g3d = ig3d;
+
+	  // create new query data
           queryData.AttachNew(new QueryData);
+
+	  // create a query object
           g3d->OQInitQueries(&queryData->uOQuery, 1);
+
+	  // add it to our query list
+	  queries.Push(queryData->uOQuery);
+
+	  // add the new data to our lookup hash for this rview
           RViewQueries.Put(csPtrKey<iRenderView>(rview), queryData);
         }
 
+	// return obtained data
         return queryData;
       }
 
       void FreeQueryData()
       {
-        RViewQueryHash::GlobalIterator itr = RViewQueries.GetIterator();
-        while(itr.HasNext())
-        {
-          g3d->OQDelQueries(&itr.Next()->uOQuery, 1);
-        }
+	// delete queries
+	g3d->OQDelQueries(queries.GetArray(), static_cast<int>(queries.GetSize()));
+	queries.Empty();
 
+	// clear hash
         RViewQueries.DeleteAll();
       }
 
     private:
+      // graphics backend - required to free data on destruction
       iGraphics3D* g3d;
 
+      // convenience typedef for hash type
       typedef csHash<csRef<QueryData>, csPtrKey<iRenderView> > RViewQueryHash;
+
+      // hash that holds query data for each render view
       RViewQueryHash RViewQueries;
+
+      // housekeeping array with all queries for this node
+      csDirtyAccessArray<unsigned> queries;
     };
 
 #   ifdef OCCLUVIS_USE_KD

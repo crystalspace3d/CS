@@ -116,7 +116,7 @@ namespace CS
       {
         csRef<QueryData> queryData = RViewQueries.Get(csPtrKey<iRenderView>(rview), csRef<QueryData>());
 
-        if (!queryData.IsValid())
+        if(!queryData.IsValid())
         {
           g3d = ig3d;
           queryData.AttachNew(new QueryData);
@@ -127,10 +127,10 @@ namespace CS
         return queryData;
       }
 
-      void FreeQueryData ()
+      void FreeQueryData()
       {
         RViewQueryHash::GlobalIterator itr = RViewQueries.GetIterator();
-        while (itr.HasNext())
+        while(itr.HasNext())
         {
           g3d->OQDelQueries(&itr.Next()->uOQuery, 1);
         }
@@ -479,7 +479,7 @@ namespace CS
       /**
        * Prepare culling for the next frame.
        */
-      virtual void RenderViscull (iRenderView* rview, iShaderVariableContext* shadervars);
+      virtual void RenderViscull(iRenderView* rview, iShaderVariableContext* shadervars);
 
      /**
       * Mark that we're about to perform precaching.

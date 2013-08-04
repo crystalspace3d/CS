@@ -61,7 +61,7 @@ namespace CS
         iMeshWrapper* mw = nodeMeshList->meshList[m].imesh;
 
 	// draw all render meshes in this mesh wrapper
-        for (int i = 0; i < nodeMeshList->meshList[m].num; ++i, ++currRenderMesh)
+        for(int i = 0; i < nodeMeshList->meshList[m].num; ++i, ++currRenderMesh)
         {
 	  // get current render mesh
           csRenderMesh* rm = nodeMeshList->meshList[m].rmeshes[i];
@@ -97,7 +97,7 @@ namespace CS
             else
             {
 	      // get occlusion specific depth write shader if any
-              depthShader = mat->GetShader (depthWriteID);
+              depthShader = mat->GetShader(depthWriteID);
 
 	      // if none was found, try the generic depth write shader
               if(depthShader == nullptr)
@@ -153,7 +153,7 @@ namespace CS
 	      shaderVarStack.Clear();
 
               // add shader variables from the mesh wrapper
-              mw->GetSVContext ()->PushVariables(shaderVarStack);
+              mw->GetSVContext()->PushVariables(shaderVarStack);
 
 	      // add shader variables from specific context if any
               if(shadervars != nullptr)
@@ -238,7 +238,7 @@ namespace CS
 	    allPortalVertsNums.SetSize(portalCount);
 
 	    // compute our screen and camera space polygons
-            rm->portal->ComputeScreenPolygons (rview, 
+            rm->portal->ComputeScreenPolygons(rview, 
 	      allPortalVerts2d.GetArray(), allPortalVerts3d.GetArray(),
 	      vertexCountClipped, allPortalVertsNums.GetArray(),
               rview->GetGraphics3D()->GetWidth(), rview->GetGraphics3D()->GetHeight());
@@ -500,7 +500,7 @@ namespace CS
 	}
 
         // check for 'always visible'
-        switch (visobj->GetMeshWrapper()->GetZBufMode())
+        switch(visobj->GetMeshWrapper()->GetZBufMode())
         {
         case CS_ZBUF_NONE:
         case CS_ZBUF_INVERT: // @@@TODO: why is INVERT always visible? it's just an inverted TEST
@@ -527,7 +527,7 @@ namespace CS
         else
         {
           // check the z-buffer mode
-          switch(visobj->GetMeshWrapper()->GetZBufMode ())
+          switch(visobj->GetMeshWrapper()->GetZBufMode())
           {
           case CS_ZBUF_NONE:
           case CS_ZBUF_INVERT:
@@ -715,7 +715,7 @@ namespace CS
       vistestObjectsInuse = false;
     }
 
-    csOccluvis::~csOccluvis ()
+    csOccluvis::~csOccluvis()
     {
       // get all mesh lists
       csArray<csRefArray<NodeMeshList>*> nodeMeshLists = nodeMeshHash.GetAll();
@@ -727,7 +727,7 @@ namespace CS
       }
     }
 
-    void csOccluvis::Setup (char const* defaultShaderName)
+    void csOccluvis::Setup(char const* defaultShaderName)
     {
       // set name of default shader
       defaultShader = defaultShaderName;
@@ -803,7 +803,7 @@ namespace CS
 	CS_ASSERT(visobjWrap);
 
 	// check whether it belongs to our object
-        if (visobjWrap->GetVisObject() == visobj)
+        if(visobjWrap->GetVisObject() == visobj)
         {
 #	  ifdef CS_DEBUG
 	  // found it
@@ -928,7 +928,7 @@ namespace CS
       shaderVarStack.Setup(svStrings->GetSize());
 
       // render everything without culling if all meshes are to be marked visible
-      if (bAllVisible)
+      if(bAllVisible)
       {
         // mark all visible
         MarkAllVisible(this, f2bData);
@@ -967,10 +967,10 @@ namespace CS
         NodeMeshList*& nodeMeshList = nodeMeshLists->Get(n-1);
 
         // check whether frustum checks passed
-        if (nodeMeshList->framePassed == engine->GetCurrentFrameNumber())
+        if(nodeMeshList->framePassed == engine->GetCurrentFrameNumber())
         {
           // check whether this node is marked visibile
-          if (nodeMeshList->alwaysVisible || GetNodeVisibility(nodeMeshList->node, rview) == VISIBLE)
+          if(nodeMeshList->alwaysVisible || GetNodeVisibility(nodeMeshList->node, rview) == VISIBLE)
           {
             // get visibility object for this node
 	    iVisibilityObject* visobj = GetNodeVisObject(nodeMeshList->node);
@@ -987,7 +987,7 @@ namespace CS
       return true;
     }
 
-    void csOccluvis::RenderViscull (iRenderView* rview, iShaderVariableContext* shadervars)
+    void csOccluvis::RenderViscull(iRenderView* rview, iShaderVariableContext* shadervars)
     {
       // if we're marking all visible this frame, just return
       if(bAllVisible)
@@ -1027,7 +1027,7 @@ namespace CS
         NodeMeshList*& nodeMeshList = (*nodeMeshLists)[n];
        
         // check whether frustum checks passed
-        if (nodeMeshList->framePassed == engine->GetCurrentFrameNumber())
+        if(nodeMeshList->framePassed == engine->GetCurrentFrameNumber())
         {
 	  // check whether the visibility of this node needs to be checked
           if(nodeMeshList->alwaysVisible || !CheckNodeVisibility(nodeMeshList->node, rview))
@@ -1057,7 +1057,7 @@ namespace CS
       g3d->SetZMode(oldZMode);
 
       // enable framebuffer writes again
-      g3d->SetWriteMask (true, true, true, true);
+      g3d->SetWriteMask(true, true, true, true);
 
       // force a depth clear in wireframe mode
       // @@@TODO: is this really needed? does it even work like it's done here?
@@ -1067,15 +1067,15 @@ namespace CS
       }
     }
 
-    bool F2BSorter::operator() (csOccluvis::NodeMeshList* const& m1,
-                                csOccluvis::NodeMeshList* const& m2)
+    bool F2BSorter::operator()(csOccluvis::NodeMeshList* const& m1,
+                               csOccluvis::NodeMeshList* const& m2)
     {
       // get mesh wrappers from mesh lists
       iMeshWrapper* mw1 = m1->meshList->imesh;
       iMeshWrapper* mw2 = m2->meshList->imesh;
 
       // check whether they have the same rander priority
-      if(mw1->GetRenderPriority () == mw2->GetRenderPriority())
+      if(mw1->GetRenderPriority() == mw2->GetRenderPriority())
       { // nope, order by distance
 	// get node bounding boxes
         csBox3 const& m1box = m1->node->GetBBox();
@@ -1105,7 +1105,7 @@ namespace CS
                                      csBox3 const& box)
     {
       // check whether the node's bbox intersects with the target one
-      if (!box.TestIntersect (node->GetNodeBBox()))
+      if(!box.TestIntersect(node->GetNodeBBox()))
         return;
 
       // get all objects in this node
@@ -1155,7 +1155,7 @@ namespace CS
         v = &vistestObjects;
 
 	// clear it
-        vistestObjects.Empty ();
+        vistestObjects.Empty();
       }
 
       // traverse tree performing the box visibility test
@@ -1172,11 +1172,11 @@ namespace CS
     //======== VisTest sphere ==================================================
     void csOccluvis::TraverseTreeSphere(VisTree* node,
                                         VistestObjectsArray* voArray,
-                                        const csVector3& centre,
-                                        const float sqradius)
+                                        csVector3 const& centre,
+                                        float const sqradius)
     {
       // check whether the node's bbox intersects with the target sphere
-      if (!csIntersect3::BoxSphere(node->GetNodeBBox(), centre, sqradius))
+      if(!csIntersect3::BoxSphere(node->GetNodeBBox(), centre, sqradius))
         return;
 
       // get all objects in this node
@@ -1205,7 +1205,7 @@ namespace CS
       }
     }
 
-    csPtr<iVisibilityObjectIterator> csOccluvis::VisTest (const csSphere& sphere)
+    csPtr<iVisibilityObjectIterator> csOccluvis::VisTest(csSphere const& sphere)
     {
       // visbility test object array
       VistestObjectsArray* v = nullptr;
@@ -1226,7 +1226,7 @@ namespace CS
         v = &vistestObjects;
 
 	// clear it
-        vistestObjects.Empty ();
+        vistestObjects.Empty();
       }
 
       // traverse tree performing the sphere visibility test
@@ -1247,7 +1247,7 @@ namespace CS
                                         float const sqradius)
     {
       // check whether the node's bbox intersects with the target sphere
-      if (!csIntersect3::BoxSphere(node->GetNodeBBox(), centre, sqradius))
+      if(!csIntersect3::BoxSphere(node->GetNodeBBox(), centre, sqradius))
         return;
 
       // get all objects in this node
@@ -1326,7 +1326,7 @@ namespace CS
       }
     }
 
-    csPtr<iVisibilityObjectIterator> csOccluvis::VisTest (csPlane3* planes, int numPlanes)
+    csPtr<iVisibilityObjectIterator> csOccluvis::VisTest(csPlane3* planes, int numPlanes)
     {
       // visbility test object array
       VistestObjectsArray* v = nullptr;
@@ -1347,7 +1347,7 @@ namespace CS
         v = &vistestObjects;
 
 	// clear it
-        vistestObjects.Empty ();
+        vistestObjects.Empty();
       }
 
       // traverse tree performing the sphere visibility test
@@ -1403,7 +1403,7 @@ namespace CS
       }
     }
 
-    void csOccluvis::VisTest (csPlane3* planes, int num_planes,
+    void csOccluvis::VisTest(csPlane3* planes, int num_planes,
                               iVisibilityCullerListener* viscallback)
     {
       TraverseTreePlanes(this, viscallback, planes, (1 << num_planes) - 1);
@@ -1618,7 +1618,7 @@ namespace CS
       data.r = std::numeric_limits<float>::max(); // maximum segment space distance
       data.mesh = nullptr; // no mesh hit
       data.polygon_idx = -1; // no poly hit
-      data.vector = new VistestObjectsArray (); // empty array
+      data.vector = new VistestObjectsArray(); // empty array
       data.accurate = accurate; // forward accuracy setting
       data.bf = bf; // forward culling setting
 
@@ -1645,7 +1645,7 @@ namespace CS
       data.r = std::numeric_limits<float>::max(); // maximum segment space distance
       data.mesh = nullptr; // no mesh hit
       data.polygon_idx = -1; // no poly hit
-      data.vector = new VistestObjectsArray (); // empty array
+      data.vector = new VistestObjectsArray(); // empty array
       data.accurate = accurate; // forward accuracy setting
       data.bf = bf; // forward culling setting
 
@@ -1678,7 +1678,7 @@ namespace CS
       data.seg.Set(start, end);
 
       // allocate storage for results
-      data.vector = new VistestObjectsArray ();
+      data.vector = new VistestObjectsArray();
       
       // trace segment sloppily
       Front2Back(end-start, (VisTree::VisitFunc*)TraverseIntersectSegment<true>, &data, 0);

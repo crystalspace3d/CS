@@ -54,16 +54,6 @@ namespace CS
         BeginNodeQuery(node, rview);
       }
 
-      // backup current z-buffer mode
-      csZBufMode oldZMode = g3d->GetZMode ();
-
-      // backup current wireframe drawing seting
-      bool wireframe = g3d->GetEdgeDrawing();
-
-      // disable wireframe drawing if necessary
-      if(wireframe)
-	g3d->SetEdgeDrawing(false);
-
       // draw all meshes in this node
       for(int currRenderMesh = 0, m = 0; m < nodeMeshList->numMeshes; ++m)
       {
@@ -338,13 +328,6 @@ namespace CS
           }
         }
       }
-
-      // restore z-buffer mode
-      g3d->SetZMode(oldZMode);
-
-      // restore wireframe drawing mode
-      if(wireframe)
-	g3d->SetEdgeDrawing(true);
 
       // finish occlusion query
       if(bQueryVisibility)
@@ -653,7 +636,6 @@ namespace CS
       }
 
       // get result if we didn't get it, yet
-      queryData->eLastResult = queryData->eResult;
       queryData->eResult = g3d->OQIsVisible(queryData->uOQuery) ? VISIBLE : INVISIBLE;
 
       // assume visible nodes will stay visible for a specified amount of time
@@ -691,6 +673,9 @@ namespace CS
 
       // get query data for our node
       QueryData* queryData = GetNodeVisData(node).GetQueryData(g3d, rview);
+
+      // backup old result
+      queryData->eLastResult = queryData->eResult;
 
       // clear cached result
       queryData->eResult = UNKNOWN;
@@ -1025,6 +1010,16 @@ namespace CS
       // we'll keep track of the last used ticket
       size_t lastTicket;
 
+      // backup current z-buffer mode
+      csZBufMode oldZMode = g3d->GetZMode();
+
+      // backup current wireframe drawing seting
+      bool wireframe = g3d->GetEdgeDrawing();
+
+      // disable wireframe drawing if necessary
+      if(wireframe)
+	g3d->SetEdgeDrawing(false);
+
       // go over the node list performing a depth only pass and occlusion queries as needed
       for(size_t n = 0; n < nodeMeshLists->GetSize(); ++n)
       {
@@ -1054,12 +1049,19 @@ namespace CS
         lastShader->DeactivatePass(lastTicket);
       }
 
+      // restore wireframe drawing mode
+      if(wireframe)
+	g3d->SetEdgeDrawing(true);
+
+      // restore z-buffer mode
+      g3d->SetZMode(oldZMode);
+
       // enable framebuffer writes again
       g3d->SetWriteMask (true, true, true, true);
 
       // force a depth clear in wireframe mode
       // @@@TODO: is this really needed? does it even work like it's done here?
-      if(g3d->GetEdgeDrawing())
+      if(wireframe)
       {
 	g3d->BeginDraw(g3d->GetCurrentDrawFlags() | CSDRAW_CLEARZBUFFER);
       }

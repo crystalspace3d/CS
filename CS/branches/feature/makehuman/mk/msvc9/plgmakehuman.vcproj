@@ -1583,6 +1583,9 @@
 			<File
 				RelativePath="..\..\plugins\mesh\animesh\makehuman\r8lib.h">
 			</File>
+			<File
+				RelativePath="..\..\plugins\mesh\animesh\makehuman\targets.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

@@ -1235,6 +1235,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\makehuman.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\qr_solve.h" />
     <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\r8lib.h" />
+    <ClInclude Include="..\..\plugins\mesh\animesh\makehuman\targets.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\plgmakehuman.rc" />

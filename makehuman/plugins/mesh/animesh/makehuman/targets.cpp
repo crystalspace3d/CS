@@ -21,9 +21,45 @@
 */
 #include "cssysdef.h"
 #include "character.h"
+#include "targets.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
 {
+
+/*-------------------------------------------------------------------------*
+ * MakehumanMorphTarget
+ *-------------------------------------------------------------------------*/
+
+MakehumanMorphTarget::MakehumanMorphTarget ()
+  : scfImplementationType (this)
+{
+
+}
+
+const char* MakehumanMorphTarget::GetName () const
+{
+  return name;
+}
+
+const csArray<csVector3>& MakehumanMorphTarget::GetOffsets () const
+{
+  return offsets;
+}
+
+const csArray<size_t>& MakehumanMorphTarget::GetIndices () const
+{
+  return indices;
+}
+
+float MakehumanMorphTarget::GetScale () const
+{
+  return scale;
+}
+
+MakehumanMorphTargetDirection MakehumanMorphTarget::GetDirection () const
+{
+  return direction;
+}
 
 /*-------------------------------------------------------------------------*
  * MakeHuman targets parser (.target)

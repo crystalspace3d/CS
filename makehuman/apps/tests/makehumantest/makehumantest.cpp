@@ -332,15 +332,15 @@ void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
 {
   // Query the list of morph targets that will get activated if the given
   // property is modified
-  csArray<CS::Mesh::MakehumanMorphTarget> targets;
+  csRefArray<CS::Mesh::iMakehumanMorphTarget> targets;
   bool boundary = character->GetPropertyTargets (property, targets);
 
   // Print the list of targets
   printf ("\ncount of targets for %s: %zu - currently at boundary: %d\n",
 	  CS::Quote::Single (property), targets.GetSize (), boundary);
   for (size_t i = 0; i < targets.GetSize (); i++)
-    printf ("target %s scale: %f direction: %i\n", targets[i].name.GetData (),
-	    targets[i].scale, (int) targets[i].direction);
+    printf ("target %s scale: %f direction: %i\n", targets[i]->GetName (),
+	    targets[i]->GetScale (), (int) targets[i]->GetDirection ());
 
   // Test the validity of the targets that are returned
   if (!testOffsets) return;
@@ -354,22 +354,24 @@ void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
   csRenderBufferLock<csVector3> vertices (character->GetMeshFactory ()->GetVertices ());
   for (size_t i = 0; i < targets.GetSize (); i++)
   {
-    CS::Mesh::MakehumanMorphTarget& target = targets[i];
+    CS::Mesh::iMakehumanMorphTarget* target = targets[i];
 
     // Check if we are at a target boundary and if the direction is OK
     if (boundary
-	&& target.direction != CS::Mesh::MH_DIRECTION_BOTH
-	&& target.direction != direction)
+	&& target->GetDirection () != CS::Mesh::MH_DIRECTION_BOTH
+	&& target->GetDirection () != direction)
       continue;
 
     // Iterate on all vertices activated by the morph target
-    for (size_t j = 0; j < target.indices.GetSize (); j++)
+    const csArray<csVector3>& offsets = target->GetOffsets ();
+    const csArray<size_t>& indices = target->GetIndices ();
+    for (size_t j = 0; j < indices.GetSize (); j++)
     {
       // Compute the new position of the vertex after the applciation of this morph target 
-      csVector3 newPosition = vertices[target.indices[j]] + step * target.scale * target.offsets[j];
+      csVector3 newPosition = vertices[indices[j]] + step * target->GetScale () * offsets[j];
 
       // Test the computation of the new position by updating the original vertex
-      vertices[target.indices[j]] = newPosition;
+      vertices[indices[j]] = newPosition;
     }
   }
 }

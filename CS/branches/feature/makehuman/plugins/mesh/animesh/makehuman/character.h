@@ -59,9 +59,9 @@ public:
   virtual iAnimatedMeshFactory* GetClothMesh (size_t index) const;
 
   virtual bool GetPropertyTargets
-    (const char* property, csArray<MakehumanMorphTarget>& targets);
+    (const char* property, csRefArray<iMakehumanMorphTarget>& targets);
   virtual bool GetMeasureTargets
-    (const char* measure, csArray<MakehumanMorphTarget>& targets);
+    (const char* measure, csRefArray<iMakehumanMorphTarget>& targets);
 
 private:
   csRef<MakehumanManager> manager;
@@ -135,7 +135,7 @@ private:
    */
   bool ProcessModelProperties (const MakehumanModel human,  ModelTargets* modelVals);
 
-  void ConvertTargets (csArray<MakehumanMorphTarget>& targets,
+  void ConvertTargets (csRefArray<iMakehumanMorphTarget>& targets,
 		       csArray<Target>& localTargets,
 		       float scale,
 		       MakehumanMorphTargetDirection direction);

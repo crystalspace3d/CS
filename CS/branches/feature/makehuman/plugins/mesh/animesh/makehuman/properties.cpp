@@ -21,47 +21,50 @@
 */
 #include "cssysdef.h"
 #include "character.h"
+#include "targets.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
 {
 
-void MakehumanCharacter::ConvertTargets (csArray<MakehumanMorphTarget>& targets,
+void MakehumanCharacter::ConvertTargets (csRefArray<iMakehumanMorphTarget>& targets,
 					 csArray<Target>& localTargets,
 					 float scale,
 					 MakehumanMorphTargetDirection direction)
 {
   for (size_t i = 0; i < localTargets.GetSize (); i++)
   {
-    size_t targetIndex = targets.Push (MakehumanMorphTarget ());
-    MakehumanMorphTarget& target = targets[targetIndex];
+    csRef<MakehumanMorphTarget> target;
+    target.AttachNew (new MakehumanMorphTarget ());
 
-    target.name = localTargets[i].name;
-    target.scale = scale * localTargets[i].weight;
-    target.direction = direction;
+    target->name = localTargets[i].name;
+    target->scale = scale * localTargets[i].weight;
+    target->direction = direction;
 
-    ParseMakehumanTargetFile (localTargets[i].path, target.offsets, target.indices);
+    ParseMakehumanTargetFile (localTargets[i].path, target->offsets, target->indices);
 
     // Translate the vertex indices from Makehuman to CS
-    size_t count = target.indices.GetSize ();
+    size_t count = target->indices.GetSize ();
     for (size_t j = 0; j < count; j++)
     {
-      VertBuf& mapping = mappingBuffer[target.indices[j]];
+      VertBuf& mapping = mappingBuffer[target->indices[j]];
 
-      target.indices[j] = mapping.vertices[0];
+      target->indices[j] = mapping.vertices[0];
 
       for (size_t k = 1; k < mapping.vertices.GetSize (); k++)
       {
-	target.offsets.Push (target.offsets[j]);
-	target.indices.Push (mapping.vertices[k]);
+	target->offsets.Push (target->offsets[j]);
+	target->indices.Push (mapping.vertices[k]);
       }
     }
+
+    targets.Push (target);
   }
 
   localTargets.DeleteAll ();
 }
 
 bool MakehumanCharacter::GetPropertyTargets
-  (const char* property, csArray<MakehumanMorphTarget>& targets)
+  (const char* property, csRefArray<iMakehumanMorphTarget>& targets)
 {
   // Copy the model values of this character
   ModelTargets values = modelVals;
@@ -501,7 +504,7 @@ bool MakehumanCharacter::GetPropertyTargets
 }
 
 bool MakehumanCharacter::GetMeasureTargets
-(const char* measure, csArray<MakehumanMorphTarget>& targets)
+(const char* measure, csRefArray<iMakehumanMorphTarget>& targets)
 {
   // Copy the model values of this character
   ModelTargets values = modelVals;

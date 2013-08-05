@@ -43,14 +43,15 @@ enum MakehumanMorphTargetDirection
   MH_DIRECTION_DOWN
 };
 
-class MakehumanMorphTarget
+struct iMakehumanMorphTarget : public virtual iBase
 {
-public:
-  csString name;
-  csArray<csVector3> offsets;
-  csArray<size_t> indices;
-  float scale;
-  MakehumanMorphTargetDirection direction;
+  SCF_INTERFACE (iMakehumanMorphTarget, 1, 0, 0);
+
+  virtual const char* GetName () const = 0;
+  virtual const csArray<csVector3>& GetOffsets () const = 0;
+  virtual const csArray<size_t>& GetIndices () const = 0;
+  virtual float GetScale () const = 0;
+  virtual MakehumanMorphTargetDirection GetDirection () const = 0;
 };
 
 struct iMakehumanCharacter : public virtual iBase
@@ -82,9 +83,9 @@ struct iMakehumanCharacter : public virtual iBase
   virtual iAnimatedMeshFactory* GetClothMesh (size_t index) const = 0;
 
   virtual bool GetPropertyTargets
-    (const char* property, csArray<MakehumanMorphTarget>& targets) = 0;
+    (const char* property, csRefArray<iMakehumanMorphTarget>& targets) = 0;
   virtual bool GetMeasureTargets
-    (const char* measure, csArray<MakehumanMorphTarget>& targets) = 0;
+    (const char* measure, csRefArray<iMakehumanMorphTarget>& targets) = 0;
 };
 
 /**

@@ -395,7 +395,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
     void RenderForwardMeshes(size_t layerCount, const size_t ctxCount)
     {
       // iterate over all layers
-      for (size_t layer = 0; layer < layerCount; ++layer)
+      for(size_t layer = 0; layer < layerCount; ++layer)
       {
 	// set layer
 	meshRender.SetLayer(layer);
@@ -418,7 +418,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(RMDeferred)
 	  continue;
 
 	// set camera transform
-        graphics3D->SetWorldToCamera(ctx->cameraTransform.GetInverse ());
+        graphics3D->SetWorldToCamera(ctx->cameraTransform.GetInverse());
 
 	// render all objects given a render
 	fn(*ctx, render);

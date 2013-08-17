@@ -351,7 +351,7 @@ public:
     iMeshWrapper** p_mesh = 0, int* poly_idx = 0,
     bool accurate = true, bool bf = false);
   virtual const char* ParseCullerParameters (iDocumentNode*) { return 0; }
-  virtual void RenderViscull (iRenderView* rview, iShaderVariableContext* shaders) {}
+  virtual bool RenderViscull (iRenderView* rview, iShaderVariableContext* shaders) { return false; }
   virtual void BeginPrecacheCulling () { VisTest ((iRenderView*)0, 0); }
   virtual void EndPrecacheCulling () {}
 

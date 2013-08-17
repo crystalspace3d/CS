@@ -462,6 +462,13 @@ namespace CS
 	  // check for allocation failure
 	  CS_ASSERT(meshes->meshList);
 
+	  // clear storage for uninit lists
+	  for(int m = oldNumMeshes; m < numMeshes; ++m)
+	  {
+	    meshes->meshList[m].num = 0;
+	    meshes->meshList[m].rmeshes = nullptr;
+	  }
+
 	  // update number of meshes
 	  meshes->numMeshes = numMeshes;
 	}
@@ -482,7 +489,7 @@ namespace CS
 	  {
 	    // relocate storage
 	    meshes->meshList[m].rmeshes = (csRenderMesh**)cs_realloc(
-	      m >= oldNumMeshes ? nullptr : meshes->meshList[m].rmeshes, // force alloc if this is uninit
+	      meshes->meshList[m].rmeshes,
 	      sizeof(csRenderMesh*) * num);
 
 	    // check for allocation failure
@@ -987,11 +994,11 @@ namespace CS
       return true;
     }
 
-    void csOccluvis::RenderViscull(iRenderView* rview, iShaderVariableContext* shadervars)
+    bool csOccluvis::RenderViscull(iRenderView* rview, iShaderVariableContext* shadervars)
     {
       // if we're marking all visible this frame, just return
       if(bAllVisible)
-        return;
+        return false;
 
       // look up node mesh lists array for this render view
       csRefArray<NodeMeshList>* nodeMeshLists = nodeMeshHash.Get(csPtrKey<iRenderView>(rview), nullptr);
@@ -1065,6 +1072,8 @@ namespace CS
       {
 	g3d->BeginDraw(g3d->GetCurrentDrawFlags() | CSDRAW_CLEARZBUFFER);
       }
+
+      return true;
     }
 
     bool F2BSorter::operator()(csOccluvis::NodeMeshList* const& m1,

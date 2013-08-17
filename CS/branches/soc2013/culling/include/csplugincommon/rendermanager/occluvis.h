@@ -500,7 +500,7 @@ namespace CS
       /**
        * Prepare culling for the next frame.
        */
-      virtual void RenderViscull(iRenderView* rview, iShaderVariableContext* shadervars);
+      virtual bool RenderViscull(iRenderView* rview, iShaderVariableContext* shadervars);
 
      /**
       * Mark that we're about to perform precaching.

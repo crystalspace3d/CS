@@ -288,7 +288,7 @@ namespace CS
       bool bAllVisible;
 
       // Frame skip parameter
-      static unsigned const visibilityFrameSkip = 10;
+      unsigned visibilityFrameSkip;
 
       // Hash of mesh nodes for a render view.
       csHash<csRefArray<NodeMeshList>*, csPtrKey<iRenderView> > nodeMeshHash;

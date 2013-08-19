@@ -3684,7 +3684,7 @@ void csGLGraphics3D::OQVisibleQueries(unsigned int* queries, bool* results, int 
     // grow storage if needed
     if (num_queries > queryBufferSize)
     {
-      GLRENDER3D_CHECKED_COMMAND(this,ext->glBufferData(GL_QUERY_BUFFER_ARB, num_queries*sizeof(GLuint), NULL, GL_DYNAMIC_READ));
+      ext->glBufferData(GL_QUERY_BUFFER_ARB, num_queries*sizeof(GLuint), NULL, GL_DYNAMIC_READ);
       queryBufferSize = num_queries;
     }
 
@@ -3692,7 +3692,7 @@ void csGLGraphics3D::OQVisibleQueries(unsigned int* queries, bool* results, int 
     for(int i = 0; i < num_queries; ++i)
     {
       // read result for ith query into the buffer
-      GLRENDER3D_CHECKED_COMMAND(this,ext->glGetQueryObjectuivARB(queries[i], GL_QUERY_RESULT_ARB, (GLuint*)(0 + i*sizeof(GLuint))));
+      ext->glGetQueryObjectuivARB(queries[i], GL_QUERY_RESULT_ARB, (GLuint*)(0 + i*sizeof(GLuint)));
     }
 
     // map buffer

@@ -40,6 +40,61 @@ namespace CS
 {
   namespace RenderManager
   {
+    void csOccluvis::FinishQueries()
+    {
+      // check whether there are any queries to finish
+      if(queries.IsEmpty())
+      {
+	// nothing to be done
+	return;
+      }
+
+      // allocate array for query results
+      bool* visibility = new bool[queries.GetSize()];
+      unsigned* query = new unsigned[queries.GetSize()];
+
+      // check for allocation failure
+      CS_ASSERT(visibility);
+      CS_ASSERT(query);
+
+      for(size_t i = 0; i < queries.GetSize(); ++i)
+      {
+	query[i] = queries[i]->uOQuery;
+      }
+
+      // get query results
+      g3d->OQVisibleQueries(query, visibility, queries.GetSize());
+
+      // write results back
+      for(size_t i = 0; i < queries.GetSize(); ++i)
+      {
+	// convenience variable
+	QueryData* queryData = queries[i];
+
+	// write back query result
+	queryData->eResult = visibility[i] ? VISIBLE : INVISIBLE;
+
+	// assume visible nodes will stay visible for a specified amount of time
+	if(queryData->eResult == VISIBLE)
+	{
+	  queryData->uNextCheck += visibilityFrameSkip * (uint32)nodeMeshHash.GetSize();
+
+	  // add random delay when nodes first become visible to prevent synchronization
+	  if(queryData->eLastResult != VISIBLE)
+	  {
+	    queryData->uNextCheck += RNG.Get(visibilityFrameSkip);
+	  }
+	}
+      }
+
+      // free query results
+      delete [] visibility;
+      delete [] query;
+
+      // clear active queries
+      queries.Empty();
+    }
+
     template<bool bQueryVisibility>
     void csOccluvis::RenderMeshes(VisTreeNode* node,
                                   iRenderView* rview,
@@ -621,43 +676,16 @@ namespace CS
 
     OcclusionVisibility csOccluvis::GetNodeVisibility(VisTreeNode* node, iRenderView* rview)
     {
-      // get current frame number
-      uint32 uFrame = engine->GetCurrentFrameNumber();
-
       // get query data for our node
       QueryData* queryData = GetNodeVisData(node).GetQueryData(g3d, rview);
 
-      // clamp next check to current frame
-      uFrame = uFrame > queryData->uNextCheck ? uFrame : queryData->uNextCheck;
-
       // mark node visible if we don't have a valid result
-      if(queryData->eResult == INVALID || uFrame != queryData->uQueryFrame + 1)
+      if(queryData->eResult == INVALID)
       {
         return VISIBLE;
       }
 
-      // mark node visibility according to cached result if we have one
-      if(queryData->eResult != UNKNOWN)
-      {
-        return queryData->eResult;
-      }
-
-      // get result if we didn't get it, yet
-      queryData->eResult = g3d->OQIsVisible(queryData->uOQuery) ? VISIBLE : INVISIBLE;
-
-      // assume visible nodes will stay visible for a specified amount of time
-      if(queryData->eResult == VISIBLE)
-      {
-        queryData->uNextCheck += visibilityFrameSkip * (uint32)nodeMeshHash.GetSize();
-
-	// add random delay when nodes first become visible to prevent synchronization
-	if(queryData->eLastResult != VISIBLE)
-	{
-	  queryData->uNextCheck += RNG.Get(visibilityFrameSkip);
-	}
-      }
-
-      // mark node visibility according to our new result
+      // mark node visibility according to cached result
       return queryData->eResult;
     }
 
@@ -687,8 +715,8 @@ namespace CS
       // clear cached result
       queryData->eResult = UNKNOWN;
 
-      // update frame in which we issued the query
-      queryData->uQueryFrame = uFrame;
+      // add query to active query list
+      queries.Push(queryData);
 
       // start query
       g3d->OQBeginQuery(queryData->uOQuery);
@@ -907,6 +935,9 @@ namespace CS
 
     bool csOccluvis::VisTest(iRenderView* rview, iVisibilityCullerListener* viscallback, int, int)
     {
+      // make sure query results are read back
+      FinishQueries();
+
       // get the render context of this few
       csRenderContext* ctxt = rview->GetRenderContext();
 

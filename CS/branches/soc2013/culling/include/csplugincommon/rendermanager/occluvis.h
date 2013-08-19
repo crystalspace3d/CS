@@ -86,15 +86,13 @@ namespace CS
     struct QueryData : public csRefCount
     {
       unsigned int uOQuery;
-      uint32 uQueryFrame;
       uint32 uNextCheck;
       OcclusionVisibility eResult;
       OcclusionVisibility eLastResult;
 
       QueryData()
-        : uOQuery(0), uQueryFrame(0),
-          uNextCheck(0), eResult(INVALID),
-	  eLastResult(INVALID)
+        : uOQuery(0), uNextCheck(0),
+	  eResult(INVALID), eLastResult(INVALID)
       {}
     };
 
@@ -304,6 +302,9 @@ namespace CS
       VistestObjectsArray vistestObjects;
       bool vistestObjectsInuse;
 
+      // currently active queries
+      csArray<QueryData*> queries;
+
       // Depth test shader type ID.
       csStringID depthTestID;
 
@@ -322,6 +323,11 @@ namespace CS
       friend class F2BSorter;
 
     protected:
+      /**
+       * Reads back the results of all currently active queries.
+       */
+      void FinishQueries();
+
       /**
        * Renders the meshes in the given list.
        */

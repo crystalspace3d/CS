@@ -10159,6 +10159,33 @@ typedef GLvoid (csAPIENTRY* csGLSTRINGMARKERGREMEDY) (GLsizei len, const GLvoid*
  * @{ */
 
 /** @} */
+/**\name GL_ARB_query_buffer_object constants
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt</a>.
+ * @{ */
+#ifndef GL_QUERY_BUFFER
+#define GL_QUERY_BUFFER                                              0x9192
+#endif
+
+#ifndef GL_QUERY_BUFFER_BINDING
+#define GL_QUERY_BUFFER_BINDING                                      0x9193
+#endif
+
+#ifndef GL_QUERY_RESULT_NO_WAIT
+#define GL_QUERY_RESULT_NO_WAIT                                      0x9194
+#endif
+
+#ifndef GL_QUERY_BUFFER_BARRIER_BIT
+#define GL_QUERY_BUFFER_BARRIER_BIT                                  0x00008000
+#endif
+
+
+/** @} */
+
+/**\name GL_ARB_query_buffer_object functions
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt</a>.
+ * @{ */
+
+/** @} */
 /**\name GL_ARB_draw_buffers constants
  * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">http://www.opengl.org/registry/specs/ARB/draw_buffers.txt</a>.
  * @{ */
@@ -16251,6 +16278,11 @@ public:
    * @{ */
 
   /** @} */
+  /**\name GL_ARB_query_buffer_object functions
+   * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt</a>.
+   * @{ */
+
+  /** @} */
   /**\name GL_ARB_draw_buffers functions
    * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">http://www.opengl.org/registry/specs/ARB/draw_buffers.txt</a>.
    * @{ */
@@ -16971,6 +17003,9 @@ public:
   /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/occlusion_query2.txt">GL_ARB_occlusion_query2</a> extension was found. 
    * Set by csGLExtensionManager::InitGL_ARB_occlusion_query2(). */
   bool CS_GL_ARB_occlusion_query2;
+  /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">GL_ARB_query_buffer_object</a> extension was found. 
+   * Set by csGLExtensionManager::InitGL_ARB_query_buffer_object(). */
+  bool CS_GL_ARB_query_buffer_object;
   /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">GL_ARB_draw_buffers</a> extension was found. 
    * Set by csGLExtensionManager::InitGL_ARB_draw_buffers(). */
   bool CS_GL_ARB_draw_buffers;
@@ -17201,6 +17236,7 @@ protected:
   bool tested_CS_GL_EXT_texture_rectangle;
   bool tested_CS_GL_ARB_occlusion_query;
   bool tested_CS_GL_ARB_occlusion_query2;
+  bool tested_CS_GL_ARB_query_buffer_object;
   bool tested_CS_GL_ARB_draw_buffers;
   bool tested_CS_GL_EXT_blend_equation_separate;
   bool tested_CS_GL_EXT_texture_sRGB;
@@ -22894,6 +22930,40 @@ public:
     {
 
       EXTMGR_REPORT_INIT_RESULT("GL", GL_ARB_occlusion_query2)
+    }
+    else
+    {
+      Report (msgExtNotFound, "GL", CS::Quote::Single (ext));
+    }
+  }
+  
+  /** Initialize <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">GL_ARB_query_buffer_object</a> extension. 
+   * Check presence with csGLExtensionFlags::CS_GL_ARB_query_buffer_object. */
+  void InitGL_ARB_query_buffer_object ()
+  {
+    if (tested_CS_GL_ARB_query_buffer_object) return;
+    if (!extstr) return;
+    tested_CS_GL_ARB_query_buffer_object = true;
+    const char* ext = "GL_ARB_query_buffer_object";
+    InitQueries();
+    if (!CS_Queries)
+    {
+      Report (msgDependencyNotFound, "GL", CS::Quote::Single (ext), CS::Quote::Single ("Queries"));
+      return;
+    }
+    char cfgkey[26 + 26 + 1];
+    sprintf (cfgkey, "Video.OpenGL.UseExtension.%s", ext);
+    
+    CS_GL_ARB_query_buffer_object = CheckExtension (extstr, ext);
+
+    bool allclear, funcTest;
+    (void)funcTest; // shut up "variable unused" warnings
+    bool init = CS_GL_ARB_query_buffer_object;
+    allclear = true;
+    if (init)	// Don't check the functions if ext isn't reported anyway
+    {
+
+      EXTMGR_REPORT_INIT_RESULT("GL", GL_ARB_query_buffer_object)
     }
     else
     {

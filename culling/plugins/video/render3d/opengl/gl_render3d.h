@@ -781,6 +781,7 @@ public:
   virtual void OQDelQueries(unsigned int* queries, int num_queries);
   virtual bool OQueryFinished(unsigned int occlusion_query);
   virtual bool OQIsVisible(unsigned int occlusion_query, unsigned int sampleLimit);
+  virtual void OQVisibleQueries (unsigned int* queries, bool* results, int num_queries);
   virtual void OQBeginQuery (unsigned int occlusion_query);
   virtual void OQEndQuery ();
 

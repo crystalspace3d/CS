@@ -3651,6 +3651,57 @@ bool csGLGraphics3D::OQIsVisible(unsigned int occlusion_query, unsigned int samp
   }
 }
 
+void csGLGraphics3D::OQVisibleQueries(unsigned int* queries, bool* results, int num_queries)
+{
+  // check for query buffer support and query all results at once if present
+  if (ext->CS_GL_ARB_query_buffer_object)
+  {
+    // buffer to hold results
+    GLuint buffer;
+
+    // generate buffer
+    ext->glGenBuffers(1, &buffer);
+
+    // set buffer usage type
+    ext->glBindBuffer(GL_QUERY_BUFFER, buffer);
+
+    // set buffer size
+    ext->glBufferData(GL_QUERY_BUFFER, num_queries*sizeof(GLuint), NULL, GL_DYNAMIC_READ);
+
+    // query results
+    for(int i = 0; i < num_queries; ++i)
+    {
+      // read result for ith query into the buffer
+      ext->glGetQueryObjectuivARB(queries[i], GL_QUERY_RESULT, (GLuint*)(0 + i*sizeof(GLuint)));
+    }
+
+    // map buffer
+    GLuint* bufferData = (GLuint*)ext->glMapBuffer(buffer, GL_READ_ONLY);
+
+    // copy results
+    for(int i = 0; i < num_queries; ++i)
+    {
+      // we assume sample count is 0, so we don't have to differentiate between the query and query2
+      results[i] = bufferData[i] > 0;
+    }
+
+    // unmap buffer
+    ext->glUnmapBuffer(buffer);
+
+    // delete buffer
+    ext->glDeleteBuffers(1, &buffer);
+  }
+  // no query buffer support available
+  else
+  {
+    // query each result individually
+    for(int i = 0; i < num_queries; ++i)
+    {
+      results[i] = OQIsVisible(queries[i], 0);
+    }
+  }
+}
+
 // @@@ Temporary comment: Core dumps below on Mesa 9.0 with Intel hardware on Ubuntu. No
 // support for 'GL_ANY_SAMPLES_PASSED_ARB'. Update coming. Check on release.
 void csGLGraphics3D::OQBeginQuery (unsigned int occlusion_query)

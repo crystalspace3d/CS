@@ -77,7 +77,7 @@ namespace CS
 	// assume visible nodes will stay visible for a specified amount of time
 	if(queryData->eResult == VISIBLE)
 	{
-	  queryData->uNextCheck += visibilityFrameSkip * (uint32)nodeMeshHash.GetSize();
+	  queryData->uNextCheck += visibilityFrameSkip;
 
 	  // add random delay when nodes first become visible to prevent synchronization
 	  if(queryData->eLastResult != VISIBLE)

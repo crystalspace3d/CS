@@ -25,6 +25,7 @@
 #include "csplugincommon/rendermanager/occluvis.h"
 #include "cstool/rbuflock.h"
 #include "cstool/rendermeshholder.h"
+#include "csutil/cfgacc.h"
 #include "iengine/camera.h"
 #include "iengine/engine.h"
 #include "iengine/portal.h"
@@ -726,6 +727,9 @@ namespace CS
       : scfImplementationType(this), object_reg(object_reg),
         shaderVarStack(0,0)
     {
+      // get config to read settings
+      csConfigAccess config(object_reg);
+
       // get iGraphics3D ref
       g3d = csQueryRegistry<iGraphics3D>(object_reg);
 
@@ -748,6 +752,9 @@ namespace CS
 
       // disable extern object list
       vistestObjectsInuse = false;
+
+      // get frame skip parameter from config
+      visibilityFrameSkip = config->GetInt("Engine.Occluvis.FrameSkip", 10);
     }
 
     csOccluvis::~csOccluvis()

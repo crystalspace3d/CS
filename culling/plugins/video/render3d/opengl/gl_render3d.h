@@ -378,6 +378,10 @@ private:
   csRef<csRenderBufferHolder> scrapBufferHolder;
   csRenderBufferName defaultBufferMapping[CS_VATTRIB_SPECIFIC_LAST+1]; 
 
+  // for occlusion queries
+  GLuint queryBuffer;
+  size_t queryBufferSize;
+
   ////////////////////////////////////////////////////////////////////
   //                         Private helpers
   ////////////////////////////////////////////////////////////////////

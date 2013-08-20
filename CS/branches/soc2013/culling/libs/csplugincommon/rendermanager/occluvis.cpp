@@ -66,6 +66,9 @@ namespace CS
       // get query results
       g3d->OQVisibleQueries(query, visibility, queries.GetSize());
 
+      // get current frame number
+      uint32 uNextCheck = engine->GetCurrentFrameNumber() + visibilityFrameSkip;
+
       // write results back
       for(size_t i = 0; i < queries.GetSize(); ++i)
       {
@@ -78,7 +81,7 @@ namespace CS
 	// assume visible nodes will stay visible for a specified amount of time
 	if(queryData->eResult == VISIBLE)
 	{
-	  queryData->uNextCheck += visibilityFrameSkip;
+	  queryData->uNextCheck = uNextCheck;
 
 	  // add random delay when nodes first become visible to prevent synchronization
 	  if(queryData->eLastResult != VISIBLE)

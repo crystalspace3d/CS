@@ -3630,18 +3630,12 @@ bool csGLGraphics3D::PerformExtensionV (char const* command, va_list /*args*/)
 
 void csGLGraphics3D::OQInitQueries(unsigned int* queries,int num_queries)
 {
-  if (num_queries != 0)
-  {
-    ext->glGenQueriesARB((GLsizei)num_queries, (GLuint*)queries);
-  }
+  ext->glGenQueriesARB((GLsizei)num_queries, (GLuint*)queries);
 }
 
 void csGLGraphics3D::OQDelQueries(unsigned int* queries, int num_queries)
 {
-  if(num_queries != 0 && queries != 0)
-  {
-    ext->glDeleteQueriesARB(num_queries, (GLuint*)queries);
-  }
+  ext->glDeleteQueriesARB(num_queries, (GLuint*)queries);
 }
 
 bool csGLGraphics3D::OQueryFinished(unsigned int occlusion_query)

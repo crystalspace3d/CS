@@ -50,6 +50,12 @@ namespace CS
   {
     struct iPostEffectLayer;
 
+    enum DownsampleAxis
+    {
+      AXIS_X = 1,
+      AXIS_Y,
+      AXIS_XY
+    };
 
     struct TextureAllocationInfo
     {
@@ -61,9 +67,11 @@ namespace CS
 
       /**
        * Reduce output size. Each downsample step reduces the output by half 
-       * in each dimensions.
+       * in the specified axis.
        */
       int downsample;
+
+      DownsampleAxis axis;
 
       /// Prevent texture reuse. Useful for readback or feedback effects.
       bool reusable;
@@ -71,13 +79,14 @@ namespace CS
       /// The render target texture format
       csString format;
 
-      TextureAllocationInfo() : mipmap (false), maxMipmap (-1), downsample (0), reusable (true), format ("argb8") {}
+      TextureAllocationInfo() : mipmap (false), maxMipmap (-1), downsample (0), axis(AXIS_XY), reusable (true), format ("argb8") {}
 
       bool operator==(const TextureAllocationInfo& other) const
       { 
         return (mipmap == other.mipmap)
           && (maxMipmap == other.maxMipmap)
           && (downsample == other.downsample)
+          && (axis == other.axis)
           && (reusable == other.reusable)
           && (format == other.format);
       }
@@ -154,11 +163,24 @@ namespace CS
         svTexcoordName ("texture coordinate 0") {}
     };
 
+    class iCustomProcessor : public virtual iBase
+    {
+    public:
+      SCF_INTERFACE (iCustomProcessor, 1, 0, 0);
+
+      virtual bool SetupView(uint width, uint height) = 0;
+
+      virtual bool PreProcess(csArray<PostEffectLayerInputMap>& inputs) = 0;
+
+      virtual bool PostProcess(iTextureHandle * output, uint id) = 0;
+    };
+
     struct LayerDesc
     {
       csArray<PostEffectLayerInputMap> inputs;
       csArray<PostEffectLayerOptions> outputs;
       csRef<iShader> layerShader;
+      csRef<iCustomProcessor> layerProcessor;
       csString name;
 
       LayerDesc () {}
@@ -294,6 +316,10 @@ namespace CS
 
       virtual bool RemoveLayer (iPostEffectLayer* layer) = 0;
 
+      virtual iPostEffectLayer* GetLayer (const char * name) = 0;
+
+      virtual iPostEffectLayer* GetLayer (int num) = 0;
+
       /// Remove all layers
       virtual void ClearLayers () = 0;
 
@@ -364,7 +390,7 @@ namespace CS
       typedef csHash<csRef<iShader>, csString> ShadersLayers;
 
       bool ParseLayer (iDocumentNode* layerNode, iPostEffectLayer* layer, ShadersLayers& shaders) const;
-      bool GetLayerAttributes (iDocumentNode* layerNode, csString& name, csString& shader, int& downsample, bool& mip, int& maxmip) const;
+      bool GetLayerAttributes (iDocumentNode* layerNode, csString& name, csString& shader, int& downsample, DownsampleAxis& axis, bool& mip, int& maxmip) const;
       bool ParseInput (iDocumentNode* inputNode, PostEffectLayerInputMap& inp) const;
       bool ParseOutput (iDocumentNode* outputNode, PostEffectLayerOptions& opt, bool default_mip, int default_maxmip) const;
 

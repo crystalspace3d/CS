@@ -1,0 +1,51 @@
+<shader compiler="xmlshader" name="build abc">
+  <technique priority="200">
+    <pass>
+      <buffer source="texture coordinate 0" destination="texture coordinate 0" />
+
+	  <texture destination="g_TexDepth" name="tex depth" />
+      <fp plugin="glcg">
+	<cgfp>
+	  <variablemap variable="coc scale" destination="g_CoCScale" />
+	  <variablemap variable="inv resolution" destination="g_InvResolution" />
+
+	  <program>
+
+	      <![CDATA[
+
+
+
+uniform sampler2D g_TexDepth;
+
+float g_CoCScale;
+float2 g_InvResolution;
+
+
+float4 main(float2 texUV: TEXCOORD0) : COLOR
+{
+	float2 offset = float2(g_InvResolution.x, 0.0);
+	float depth0 = 1.0 / (1.0 - tex2D (g_TexDepth, texUV).x);
+	float depth1 = 1.0 / (1.0 - tex2D (g_TexDepth, texUV - offset).x);
+	float bias = 1.0 / (1.0 - tex2D (g_TexDepth, float2(0.5, 0.5)).x);
+	
+	float CoC0 = g_CoCScale*abs(depth0 - bias);
+	float CoC1 = g_CoCScale*abs(depth1 - bias);
+	CoC1 = (texUV - offset).x < 0.0 ? 0.0 : CoC1;
+	
+	CoC0 = clamp(CoC0, 0.0, g_CoCScale);
+	CoC1 = clamp(CoC1, 0.0, g_CoCScale);
+	
+	CoC0 *= CoC0;
+	CoC1 *= CoC1;
+	
+	return float4(-CoC1, 1.0 + CoC0 + CoC1, -CoC0, 1.0);
+}
+
+	      ]]>
+
+	  </program>
+	</cgfp>
+      </fp>
+    </pass>
+  </technique>
+</shader>

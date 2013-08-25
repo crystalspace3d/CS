@@ -1,0 +1,81 @@
+<shader compiler="xmlshader" name="reduce">
+  <technique priority="200">
+    <pass>
+      <buffer source="texture coordinate 0" destination="texture coordinate 0" />
+
+	  <texture destination="g_TexABC" name="tex coef" />
+	  <texture destination="g_TexY" name="tex color" />
+      <fp plugin="glcg">
+	<cgfp>
+	  <variablemap variable="resolution" destination="g_Resolution" />
+	  <variablemap variable="inv resolution" destination="g_InvResolution" />
+	  <variablemap variable="pixel size" destination="g_InputInvRes" />
+	  <program>
+
+	      <![CDATA[
+
+
+uniform sampler2D g_TexABC;
+uniform sampler2D g_TexY;
+
+float2 g_Resolution;
+float2 g_InvResolution;
+float2 g_InputInvRes;
+
+float2 getTexCoord(float2 uv)
+{
+	int i = (int)(uv.y * g_Resolution.y);
+	i = i << 1;
+	float y = i*g_InputInvRes.y + 0.5*g_InputInvRes.y;
+	return float2(uv.x, y);
+
+}
+
+void main(float2 texUV: TEXCOORD0, out float4 outABC : COLOR1, out float4 outY : COLOR0)
+{
+	float2 offset = float2(0.0, g_InputInvRes.y);
+	float2 uv = getTexCoord(texUV) + offset;
+
+	float3 abc = tex2D (g_TexABC, uv).xyz;
+	float3 abc_left = tex2D (g_TexABC, uv - offset).xyz;
+	float3 abc_right = tex2D (g_TexABC, uv + offset).xyz;
+	
+	float3 Y = tex2D (g_TexY, uv).xyz;
+	float3 Y_left = tex2D (g_TexY, uv - offset).xyz;
+	float3 Y_right = tex2D (g_TexY, uv + offset).xyz;
+	
+	
+	float a, b, c;
+	float3 y;
+	float k1, k2;
+
+	
+	k1 = - abc.x / abc_left.y;
+	
+	a = abc_left.x * k1;
+	b = abc_left.z * k1 + abc.y;
+	c = 0.0;
+	y = Y_left * k1 + Y;
+	
+	if ((uv + offset).y < 1.0)
+	{
+		k2 = - abc.z / abc_right.y;
+		b += abc_right.x * k2;
+		c += abc_right.z * k2;
+		y += Y_right * k2;
+	}
+	
+	
+	outABC = float4(a, b, c, 1.0);
+	outY = float4(y, 1.0);
+
+}
+
+	      ]]>
+
+	  </program>
+	</cgfp>
+      </fp>
+    </pass>
+  </technique>
+</shader>

@@ -1,0 +1,68 @@
+<shader compiler="xmlshader" name="reduce">
+  <technique priority="200">
+    <pass>
+      <buffer source="texture coordinate 0" destination="texture coordinate 0" />
+
+	  <texture destination="g_TexY" name="tex color" />
+	  <texture destination="g_TexABC" name="tex coef" />
+      <fp plugin="glcg">
+	<cgfp>
+	  <variablemap variable="resolution" destination="g_Resolution" />
+	  <variablemap variable="inv resolution" destination="g_InvResolution" />
+	  <variablemap variable="pixel size" destination="g_InputInvRes" />
+	  <program>
+
+	      <![CDATA[
+
+
+
+uniform sampler2D g_TexY;
+uniform sampler2D g_TexABC;
+
+float2 g_Resolution;
+float2 g_InvResolution;
+
+
+float4 main(float2 texUV: TEXCOORD0) : COLOR
+{
+	float3 color;
+	float3 abc1 = tex2D (g_TexABC, float2(texUV.x, 0.16666666)).xyz;
+	float3 abc2 = tex2D (g_TexABC, float2(texUV.x, 0.50)).xyz;
+	float3 abc3 = tex2D (g_TexABC, float2(texUV.x, 0.83333333)).xyz;
+	
+	float3 y1 = tex2D (g_TexY, float2(texUV.x, 0.16666666)).xyz;
+	float3 y2 = tex2D (g_TexY, float2(texUV.x, 0.50)).xyz;
+	float3 y3 = tex2D (g_TexY, float2(texUV.x, 0.83333333)).xyz;
+	
+	abc1.z = abc1.z / abc1.y;
+	y1 = y1 / abc1.y;
+	
+	float m = abc2.y - abc1.z*abc2.x;
+	abc2.z = abc2.z / m;
+	y2 = (y2 - y1* abc2.x) / m;
+	
+	m = abc3.y - abc2.z*abc3.x;
+	abc3.z = abc3.z / m;
+	y3 = (y3 - y2* abc3.x) / m;
+	
+	y2 = y2 - y3*abc2.z;
+	y1 = y1 - y2*abc1.z;
+	
+	if ((texUV.y - g_InvResolution.y) < 0.0 )
+		color = y1;
+	else if ((texUV.y + g_InvResolution.y) > 1.0 )
+		color = y3;
+	else
+		color = y2;
+	
+	return float4(color, 1.0);
+}
+
+	      ]]>
+
+	  </program>
+	</cgfp>
+      </fp>
+    </pass>
+  </technique>
+</shader>

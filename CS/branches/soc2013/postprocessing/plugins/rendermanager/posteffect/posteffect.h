@@ -104,6 +104,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
     void AddDefaultVar(csShaderVariable *var);
 
+    void doPreprocess();
+
+    void doPostprocess(csRefArray<iTextureHandle>& textures);
+
   };
 
   class PostEffectManager;
@@ -138,6 +142,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
     /// Remove a layer
     bool RemoveLayer (iPostEffectLayer* layer);
+
+    /// get layer by name
+    iPostEffectLayer* GetLayer (const char * name);
+
+    ///get layer by index
+    iPostEffectLayer* GetLayer (int num);
+
     /// Remove all layers
     void ClearLayers ();
 

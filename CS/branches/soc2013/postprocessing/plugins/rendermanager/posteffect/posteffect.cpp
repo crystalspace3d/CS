@@ -371,6 +371,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     int n = postLayers.GetSize () - 1;
     for (int i = 0; i <= n; ++i)
     {
+
+      postLayers[i]->doPreprocess();
+
       for (uint j = 0; j < postLayers[i]->outputTextures.GetSize (); ++j)
       {
         iTextureHandle *tex;
@@ -393,6 +396,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
       manager->graphics3D->DrawSimpleMesh (postLayers[i]->rInfo.fullscreenQuad,
         csSimpleMeshScreenspace);
       manager->graphics3D->FinishDraw ();
+
+      postLayers[i]->doPostprocess(textures);
     }
     manager->graphics3D->UnsetRenderTargets();
   }
@@ -473,6 +478,23 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     layersDirty = true;
   }
 
+  iPostEffectLayer * PostEffect::GetLayer (const char * name)
+  {
+    for (uint i = 0; i < postLayers.GetSize(); ++i)
+    {
+      if (postLayers[i]->desc.name.Compare(name))
+        return postLayers[i];
+    }
+    return nullptr;
+  }
+
+  iPostEffectLayer * PostEffect::GetLayer (int  num)
+  {
+    if ((num > 0) && (num < postLayers.GetSize()))
+      return postLayers[num];
+    return nullptr;
+  }
+
   //--------Layer--------------------------------------------------------------
 
   CS_LEAKGUARD_IMPLEMENT (Layer);
@@ -493,6 +515,21 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   bool Layer::IsValid()
   {
     return desc.outputs.GetSize() > 0 && desc.layerShader.IsValid();
+  }
+
+  void Layer::doPreprocess()
+  {
+    if (desc.layerProcessor.IsValid())
+      desc.layerProcessor->PreProcess(desc.inputs);
+  }
+
+  void Layer::doPostprocess(csRefArray<iTextureHandle>& textures)
+  {
+    if (desc.layerProcessor.IsValid())
+    {
+      for (int i = 0; i < outputTextures.GetSize(); ++i)
+        desc.layerProcessor->PostProcess(textures[outputTextures[i]], i);
+    }
   }
 
 
@@ -542,10 +579,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   {
     csRef<iTextureHandle> t;
     csString key;
-    //format,downsample,mipmap,id
+    //format,downsample,axis,mipmap,id
     if (num >= 0)
     {
-      key.Format("%s%d%d%d%d", info.format.GetData(), info.downsample, info.mipmap, info.maxMipmap, num);
+      key.Format("%s%d%d%d%d%d", info.format.GetData(), info.downsample, info.axis, info.mipmap, info.maxMipmap, num);
       t = renderTargets.Get (key, t);
     }
 
@@ -557,8 +594,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
         texFlags |= CS_TEXTURE_NOMIPMAPS;
       texFlags |= CS_TEXTURE_CREATE_CLEAR;
 
-      int texW = graphics3D->GetWidth () >> info.downsample;
-      int texH = graphics3D->GetHeight () >> info.downsample;
+      int texW = graphics3D->GetWidth ();
+      int texH = graphics3D->GetHeight ();
+
+      texW = (info.axis & AXIS_X) ? (texW >> info.downsample) : texW;
+      texH = (info.axis & AXIS_Y) ? (texH >> info.downsample) : texH;
+
       t = graphics3D->GetTextureManager ()->CreateTexture (texW, texH, 
         csimg2D, info.format, texFlags);
       if (info.maxMipmap > 0)

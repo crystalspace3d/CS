@@ -145,8 +145,9 @@ bool PostEffectLayersParser::ParseLayer (iDocumentNode* layerNode,
   bool defaultmip;
   int defaultmaxmip;
   int downsample;
+  DownsampleAxis axis;
 
-  if (!GetLayerAttributes (layerNode, desc.name, shader, downsample, defaultmip, defaultmaxmip))
+  if (!GetLayerAttributes (layerNode, desc.name, shader, downsample, axis, defaultmip, defaultmaxmip))
     return false;
 
   desc.layerShader = shaders.Get (shader, 0);
@@ -185,6 +186,7 @@ bool PostEffectLayersParser::ParseLayer (iDocumentNode* layerNode,
         if (!ParseOutput (child, opt, defaultmip, defaultmaxmip))
           return false;
         opt.info.downsample = downsample;
+        opt.info.axis = axis;
         desc.outputs.Push (opt);
         ++numOutput;
       }
@@ -213,11 +215,22 @@ bool PostEffectLayersParser::ParseLayer (iDocumentNode* layerNode,
 
 bool PostEffectLayersParser::GetLayerAttributes (iDocumentNode* layerNode,
                                                  csString& name, csString& shader, int& downsample,
-                                                 bool& mip, int& maxmip) const
+                                                 DownsampleAxis& axis,bool& mip, int& maxmip) const
 {
   name = layerNode->GetAttributeValue ("name", "");
   shader = layerNode->GetAttributeValue ("shader", "");
   downsample = layerNode->GetAttributeValueAsInt ("downsample", 0);
+  const char * caxis = layerNode->GetAttributeValue ("axis", "XY");
+  csString saxis = caxis;
+  if (saxis.CompareNoCase("X")) axis = AXIS_X;
+  else if (saxis.CompareNoCase("Y")) axis = AXIS_Y;
+  else if (saxis.CompareNoCase("XY")) axis = AXIS_XY;
+  else
+  {
+    axis = AXIS_XY;
+    csReport (objReg, CS_REPORTER_SEVERITY_WARNING, messageID,
+      "Invalid downsample axis, using %s instead.", CS::Quote::Single ("XY"));
+  }
   mip = layerNode->GetAttributeValueAsBool ("mipmap", false);
   maxmip = layerNode->GetAttributeValueAsInt ("maxmipmap", -1);
   if (name.Find(".") != -1)

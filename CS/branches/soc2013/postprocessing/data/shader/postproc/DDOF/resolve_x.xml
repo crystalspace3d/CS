@@ -1,0 +1,80 @@
+<shader compiler="xmlshader" name="reduce">
+  <technique priority="200">
+    <pass>
+      <buffer source="texture coordinate 0" destination="texture coordinate 0" />
+
+	  <texture destination="g_TexX" name="tex solution" />
+	  <texture destination="g_TexY" name="tex color" />
+	  <texture destination="g_TexABC" name="tex coef" />
+      <fp plugin="glcg">
+	<cgfp>
+	  <variablemap variable="resolution" destination="g_Resolution" />
+	  <variablemap variable="inv resolution" destination="g_InvResolution" />
+	  <variablemap variable="pixel size" destination="g_InputInvRes" />
+	  <program>
+
+	      <![CDATA[
+
+
+uniform sampler2D g_TexX;
+
+uniform sampler2D g_TexY;
+uniform sampler2D g_TexABC;
+
+float2 g_Resolution;
+float2 g_InvResolution;
+float2 g_InputInvRes;
+
+float2 getTexCoord(float2 uv)
+{
+	int i = (int)(uv.x * g_Resolution.x);
+	i = i>>1;
+	float x = i*g_InputInvRes.x + g_InputInvRes.x*0.5;
+	return float2(x, uv.y);
+}
+
+float isEven(float u)
+{
+	int i = (int)(u*g_Resolution.x);
+	return (i&1) != 0 ? 0.0 : 1.0;
+}
+
+float4 main(float2 texUV: TEXCOORD0) : COLOR
+{
+	float2 offset = float2(g_InputInvRes.x, 0.0);
+	float2 uv = getTexCoord(texUV);
+
+	float3 color;
+	
+	
+	if (isEven(texUV.x))
+	{
+
+		/*float3 abc = tex2D (g_TexABC, texUV).xyz;
+		float3 color_left = ((uv - offset).x < 0.0) ? float3(0.0) : tex2D (g_TexX, uv - offset).xyz;
+		float3 color_right = ((uv + offset).x > 1.0) ? float3(0.0) : tex2D (g_TexX, uv + offset).xyz;
+		float3 Y = tex2D (g_TexY, texUV).xyz;*/
+		
+		float3 abc = tex2D (g_TexABC, texUV).xyz;
+		float3 color_left = ((uv - offset).x < 0.0) ? float3(0.0) : tex2D (g_TexX, uv - offset).xyz;
+		float3 color_right = (uv.x > 1.0) ? float3(0.0) : tex2D (g_TexX, uv).xyz;
+		float3 Y = tex2D (g_TexY, texUV).xyz;
+		
+		
+		color = (Y - abc.x*color_left - abc.z * color_right) / abc.y;
+	}
+	else
+		color = tex2D (g_TexX, uv).xyz;
+
+	
+	return float4(color, 1.0);
+}
+
+	      ]]>
+
+	  </program>
+	</cgfp>
+      </fp>
+    </pass>
+  </technique>
+</shader>

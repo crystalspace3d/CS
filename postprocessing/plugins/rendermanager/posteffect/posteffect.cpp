@@ -74,6 +74,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
   bool PostEffect::SetupView (uint width, uint height)
   {
+    if (callback.IsValid ())
+      (*callback)(width, height);
+
     bool dirty = layersDirty;
     Construct (false);
     return dirty;
@@ -82,8 +85,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
   iTextureHandle* PostEffect::GetScreenTarget ()
   {
+    size_t n;
     if (postLayers.GetSize ())
-      return postLayers[postLayers.GetSize () - 1]->GetOptions ()[0].renderTarget;
+    {
+      const PostEffectLayerOptions * opts = postLayers[postLayers.GetSize () - 1]->GetOptions (n);
+      if (n)
+        return opts[0].renderTarget;
+    }
     return nullptr;
   }
   bool PostEffect::AllocateTextures ()
@@ -428,6 +436,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
   void PostEffect::ClearLayers ()
   {
+    Clear();
     postLayers.DeleteAll ();
   }
 
@@ -495,6 +504,11 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     return nullptr;
   }
 
+  void PostEffect::SetSetupViewCallback (iSetupViewCallback * pCallback)
+  {
+    callback = pCallback;
+  }
+
   //--------Layer--------------------------------------------------------------
 
   CS_LEAKGUARD_IMPLEMENT (Layer);
@@ -520,7 +534,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   void Layer::doPreprocess()
   {
     if (desc.layerProcessor.IsValid())
-      desc.layerProcessor->PreProcess(desc.inputs);
+      desc.layerProcessor->PreProcess(desc.inputs.GetArray (), desc.inputs.GetSize ());
   }
 
   void Layer::doPostprocess(csRefArray<iTextureHandle>& textures)

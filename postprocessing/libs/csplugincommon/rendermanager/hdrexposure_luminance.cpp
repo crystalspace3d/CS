@@ -213,7 +213,10 @@ namespace CS
 	    PostEffectLayerInputMap inputMap;
 		//TODO: Fix hdr to work with the new implementation of posteffects
 	    //inputMap.manualInput = stage.svInput;
-	    tempLayer = computeFX->AddLayer (LayerDesc (computeShader, inputMap));
+            LayerDesc desc;
+            desc.layerShader = computeShader;
+            desc.AddInput (inputMap);
+	    tempLayer = computeFX->AddLayer (desc);
 	    
 	    // Determine 'priority ticket' for stage
 	    svstack.Setup (shaderManager->GetSVNameStringset ()->GetSize ());

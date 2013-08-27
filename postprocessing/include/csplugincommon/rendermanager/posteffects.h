@@ -50,11 +50,18 @@ namespace CS
   {
     struct iPostEffectLayer;
 
+    /*
+     * Downsample axis specifies in wich axis the 
+     * output texture will be downsampled.
+     */
     enum DownsampleAxis
     {
+      /// Downsample in x axis
       AXIS_X = 1,
-      AXIS_Y,
-      AXIS_XY
+      /// Downsample in y axis
+      AXIS_Y = 2,
+      /// Downsample in both axis
+      AXIS_XY = (AXIS_X | AXIS_Y)
     };
 
     struct TextureAllocationInfo
@@ -71,6 +78,7 @@ namespace CS
        */
       int downsample;
 
+      /// The axis to downsample
       DownsampleAxis axis;
 
       /// Prevent texture reuse. Useful for readback or feedback effects.
@@ -163,63 +171,58 @@ namespace CS
         svTexcoordName ("texture coordinate 0") {}
     };
 
+    /*
+     * Custom layer processor interface
+     *
+     * This interface is intended to perform custom
+     * pre/post processing and also update shaders
+     * variables if needed.
+     */
     class iCustomProcessor : public virtual iBase
     {
     public:
       SCF_INTERFACE (iCustomProcessor, 1, 0, 0);
 
-      virtual bool SetupView(uint width, uint height) = 0;
+      /*
+       * Pre process function.
+       * Everything that needs to be done before drawing goes here.
+       */
+      virtual bool PreProcess (PostEffectLayerInputMap* inputs, size_t count) = 0;
 
-      virtual bool PreProcess(csArray<PostEffectLayerInputMap>& inputs) = 0;
-
-      virtual bool PostProcess(iTextureHandle * output, uint id) = 0;
+      /*
+       * Post process function.
+       * Everything that needs to be done after drawing goes here.
+       */
+      virtual bool PostProcess (iTextureHandle * output, uint id) = 0;
     };
 
+    /// Layer descriptor
     struct LayerDesc
     {
-      csArray<PostEffectLayerInputMap> inputs;
-      csArray<PostEffectLayerOptions> outputs;
+      csDirtyAccessArray<PostEffectLayerInputMap> inputs;
+      csDirtyAccessArray<PostEffectLayerOptions> outputs;
       csRef<iShader> layerShader;
       csRef<iCustomProcessor> layerProcessor;
       csString name;
 
       LayerDesc () {}
 
-      LayerDesc (iShader* shader): layerShader(shader)
+      LayerDesc (iShader* shader, const char * layerName = ""): layerShader(shader), name(layerName)
       {
         inputs.Push(PostEffectLayerInputMap());
         outputs.Push(PostEffectLayerOptions());
       }
 
-      LayerDesc (iShader* shader, const char * layerName): layerShader(shader), name(layerName)
-      {
-        inputs.Push(PostEffectLayerInputMap());
-        outputs.Push(PostEffectLayerOptions());
-      }
-
-      LayerDesc (iShader* shader, PostEffectLayerInputMap &inp): layerShader(shader)
+      void AddInput (PostEffectLayerInputMap& inp)
       {
         inputs.Push(inp);
-        outputs.Push(PostEffectLayerOptions());
       }
 
-      LayerDesc (iShader* shader, PostEffectLayerInputMap &inp, PostEffectLayerOptions &opt): layerShader(shader)
+      void AddOutput (PostEffectLayerOptions& opt)
       {
-        inputs.Push(inp);
         outputs.Push(opt);
       }
 
-      LayerDesc (iShader* shader, csArray<PostEffectLayerInputMap> &inp, PostEffectLayerOptions &opt): layerShader(shader)
-      {
-        inputs = inp;
-        outputs.Push(opt);
-      }
-
-      LayerDesc (iShader* shader, PostEffectLayerOptions &opt): layerShader(shader)
-      {
-        inputs.Push(PostEffectLayerInputMap());
-        outputs.Push(opt);
-      }
     };
 
     /*
@@ -233,10 +236,10 @@ namespace CS
       virtual iShaderVariableContext* GetSVContext () const = 0;
 
       /// Get the inputs to this layer
-      virtual const csArray<PostEffectLayerInputMap>& GetInputs () const = 0;
+      virtual const PostEffectLayerInputMap * GetInputs (size_t& size) const = 0;
 
       /// Get the layer options
-      virtual const csArray<PostEffectLayerOptions>& GetOptions () const = 0;
+      virtual const PostEffectLayerOptions * GetOptions (size_t& size) const = 0;
 
       ///Get the layer name
       virtual const char * GetName () const = 0;
@@ -251,6 +254,17 @@ namespace CS
       virtual void AddDefaultVar(csShaderVariable *var) = 0;
     };
 
+    /*
+     * SetupView callback
+     */
+    class iSetupViewCallback : public virtual iBase
+    {
+    public:
+      SCF_INTERFACE (iSetupViewCallback, 1, 0, 0);
+
+      /// calback
+      virtual bool operator () (int width, int height) = 0;
+    };
 
     /// Describes where the posteffect output will be drawn
     enum PostEffectDrawTarget
@@ -357,6 +371,9 @@ namespace CS
 
       /// Clean up all allocated textures (references)
       virtual void Clear() = 0;
+
+      /// callback for setupview function
+      virtual void SetSetupViewCallback(iSetupViewCallback * pCallback) = 0;
     };
 
     /**

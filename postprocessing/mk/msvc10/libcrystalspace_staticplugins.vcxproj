@@ -2091,6 +2091,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\ddofhelper.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
     <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
@@ -2285,6 +2286,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\ddofhelper.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
@@ -2315,6 +2317,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\ddofhelper.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
@@ -2345,6 +2348,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\ddofhelper.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
@@ -2376,6 +2380,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\ddofhelper.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />

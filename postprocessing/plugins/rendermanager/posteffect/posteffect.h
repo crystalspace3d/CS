@@ -91,10 +91,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     /// Get the shader variables for this layer.
     iShaderVariableContext* GetSVContext () const { return svUserContext; }
     /// Get inputs to this layer
-    const csArray<PostEffectLayerInputMap>& GetInputs () const { return desc.inputs; }
+    const PostEffectLayerInputMap * GetInputs (size_t& size) const { size = desc.inputs.GetSize();
+      return desc.inputs.GetArray (); }
 
     /// Get layer options
-    const csArray<PostEffectLayerOptions>& GetOptions () const { return desc.outputs; }
+    const PostEffectLayerOptions * GetOptions (size_t& size) const { size = desc.outputs.GetSize();
+      return desc.outputs.GetArray (); }
 
     const char * GetName () const {return desc.name;}
 
@@ -191,6 +193,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     /// Clean up all allocated textures (references)
     void Clear();
 
+    /// callback for setupview function
+    void SetSetupViewCallback (iSetupViewCallback * pCallback);
   private:
 
     bool AllocateTextures();
@@ -207,7 +211,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     uint dbgIntermediateTextures;
     csPDelArray<Layer> postLayers;
     bool layersDirty;
-
+    csRef<iSetupViewCallback> callback;
 
 
     class DependencySolver

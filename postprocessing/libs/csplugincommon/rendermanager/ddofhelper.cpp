@@ -61,14 +61,18 @@ namespace CS
       //TODO: use csRef<DDOFHelper> instead
       DDOFHelper * helper;
       csRef<iPostEffect> effect;
+      int w, h;
     public:
       DDOFSetupView (DDOFHelper *pHelper, iPostEffect * pEffect) : scfImplementationType (this), 
-        helper (pHelper), effect (pEffect)
+        helper (pHelper), effect (pEffect), w(-1), h(-1)
       {
       }
 
       bool operator () (int width, int height)
       {
+        if (w == width && h == height) return true;
+        w = width;
+        h = height;
         if (/*helper.IsValid() &&*/ effect.IsValid())
         {
           bool ret = helper->Setup(effect, width, height);

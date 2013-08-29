@@ -96,13 +96,14 @@ public:
   MakehumanTest ();
   ~MakehumanTest ();
 
-  //-- CS::Utility::DemoApplication
-  void Frame ();
-  bool CreateRoom ();
-    
   //-- csApplicationFramework
   bool OnInitialize (int argc, char* argv[]);
   bool Application ();
+
+  //-- CS::Utility::DemoApplication
+  void Frame ();
+  bool OnKeyboard (iEvent &event);
+  bool CreateRoom ();
 };
 
 #endif // __MAKEHUMANTEST_H__

@@ -65,15 +65,6 @@ MakehumanTest::~MakehumanTest ()
   }
 }
 
-void MakehumanTest::Frame ()
-{
-  // Default behavior from DemoApplication
-  DemoApplication::Frame ();
-
-  if (debugNode)
-    debugNode->Draw (view->GetCamera ());
-}
-
 bool MakehumanTest::OnInitialize (int argc, char* argv [])
 {
   // Default behavior from DemoApplication
@@ -130,19 +121,50 @@ bool MakehumanTest::Application ()
   //TestMicroExpression2 ();   // anger
   //TestMicroExpression3 ();   // cry
 
-  TestTargetAccess ("gender");
-  TestTargetAccess ("age");
-  TestTargetAccess ("weight");
-  TestTargetAccess ("muscle");
-  TestTargetAccess ("height");
-  TestTargetAccess ("stomach");
-  TestTargetAccess ("buttocks");
-  TestTargetAccess ("pelvisTone");
+  // Update the HUD
+  hudManager->GetKeyDescriptions ()->Push ("r: reset the model");
 
   // Run the application
   Run ();
 
   return true;
+}
+
+void MakehumanTest::Frame ()
+{
+  // Default behavior from DemoApplication
+  DemoApplication::Frame ();
+
+  if (debugNode)
+    debugNode->Draw (view->GetCamera ());
+}
+
+bool MakehumanTest::OnKeyboard (iEvent &event)
+{
+  // Default behavior from DemoApplication
+  DemoApplication::OnKeyboard (event);
+
+  csKeyEventType eventtype = csKeyEventHelper::GetEventType (&event);
+  if (eventtype == csKeyEventTypeDown)
+  {
+    // Reset the model to the neutral state
+    if (csKeyEventHelper::GetCookedCode (&event) == 'r')
+    {
+      csPrintf ("Resetting the model to neutral\n");
+
+      character->SetNeutral ();
+
+      if (!character->UpdateMeshFactory ())
+      {
+	ReportError ("Error re-generating the Makehuman model");
+	return true;
+      }
+
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool MakehumanTest::CreateRoom ()
@@ -186,6 +208,15 @@ void MakehumanTest::ResetScene ()
   animeshObject->GetMeshWrapper ()->QuerySceneNode ()->GetMovable ()->SetTransform
     (csOrthoTransform (csMatrix3 (), csVector3 (0.0f)));
   animeshObject->GetMeshWrapper ()->QuerySceneNode ()->GetMovable ()->UpdateMove ();
+
+  // Reset the position of the camera
+  csRef<iMeshObjectFactory> meshObject =
+    scfQueryInterface<iMeshObjectFactory> (character->GetMeshFactory ());
+  float height = meshObject->GetObjectModel ()->GetObjectBoundingBox ().GetSize ()[1];
+
+  view->GetCamera ()->SetTransform
+    (csOrthoTransform (csMatrix3 (),
+		       csVector3 (0.0f, height * 0.5f, -height)));
 }
 
 bool MakehumanTest::CreateModel (const char* factoryName, const char* filename, const char* proxy, const char* rig)
@@ -210,6 +241,7 @@ bool MakehumanTest::CreateCustomModel ()
   character = makehumanManager->CreateCharacter ();
   character->SetExpressionGeneration (false);
   character->SetNeutral ();
+
 /*
   // Those are the set of properties equivalent to a call to SetNeutral ()
   character->SetProperty ("weight", 0.5f);
@@ -226,7 +258,7 @@ bool MakehumanTest::CreateCustomModel ()
   if (!character->UpdateMeshFactory ())
     return ReportError ("Error generating the Makehuman model");
 
-  TestTargetAccess ("gender", true);
+  //TestTargetAccess ("gender", true);
 
   return SetupAnimatedMesh ();
 }
@@ -235,7 +267,7 @@ bool MakehumanTest::SetupAnimatedMesh ()
 {
   // Print some additional information
   animeshFactory = character->GetMeshFactory ();
-  printf ("\nCharacter vertex count: %i\n", animeshFactory->GetVertexCount ());
+  csPrintf ("\nCharacter vertex count: %i\n", animeshFactory->GetVertexCount ());
 
   CS::Animation::iSkeletonFactory* skeleton = animeshFactory->GetSkeletonFactory ();
   if (skeleton)
@@ -336,10 +368,10 @@ void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
   bool boundary = character->GetPropertyTargets (property, targets);
 
   // Print the list of targets
-  printf ("\ncount of targets for %s: %zu - currently at boundary: %d\n",
-	  CS::Quote::Single (property), targets.GetSize (), boundary);
+  csPrintf ("\ncount of targets for %s: %i - currently at boundary: %d\n",
+	    CS::Quote::Single (property), (int) targets.GetSize (), boundary);
   for (size_t i = 0; i < targets.GetSize (); i++)
-    printf ("target %s scale: %f direction: %i\n", targets[i]->GetName (),
+    csPrintf ("target %s scale: %f direction: %i\n", targets[i]->GetName (),
 	    targets[i]->GetScale (), (int) targets[i]->GetDirection ());
 
   // Test the validity of the targets that are returned
@@ -367,7 +399,7 @@ void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
     const csArray<size_t>& indices = target->GetIndices ();
     for (size_t j = 0; j < indices.GetSize (); j++)
     {
-      // Compute the new position of the vertex after the applciation of this morph target 
+      // Compute the new position of the vertex after the application of this morph target 
       csVector3 newPosition = vertices[indices[j]] + step * target->GetScale () * offsets[j];
 
       // Test the computation of the new position by updating the original vertex

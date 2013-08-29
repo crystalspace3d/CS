@@ -111,7 +111,7 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
       // Parse target file into a temporary offset buffer
       csArray<csVector3> offsets;
       csArray<size_t> indices;
-      if (!ParseMakehumanTargetFile (filename.GetData (), offsets, indices))
+      if (!manager->ParseMakehumanTargetFile (filename.GetData (), offsets, indices))
         return ReportError ("Could not parse the Makehuman target file %s", filename.GetData ());
 
       // Cumulate displacement in the offset buffer of the expression
@@ -574,7 +574,7 @@ bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
       // Parse target file into a temporary offset buffer
       csArray<csVector3> offsets;
       csArray<size_t> indices;
-      if (!ParseMakehumanTargetFile (filename.GetData (), offsets, indices))
+      if (!manager->ParseMakehumanTargetFile (filename.GetData (), offsets, indices))
         return ReportError ("Could not parse the Makehuman target file %s", filename.GetData ());
 
       // Cumulate displacement in the offset buffer of the expression

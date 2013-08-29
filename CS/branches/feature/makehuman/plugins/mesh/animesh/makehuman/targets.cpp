@@ -62,17 +62,22 @@ MakehumanMorphTargetDirection MakehumanMorphTarget::GetDirection () const
 }
 
 /*-------------------------------------------------------------------------*
- * MakeHuman targets parser (.target)
+ * MakeHuman morph targets parser (.target)
  *-------------------------------------------------------------------------*/
-/*
-bool MakehumanCharacter::ParseMakehumanTargetFile (const char* filename, 
-						   csRef<iRenderBuffer>& offsetsBuffer)
-*/
-bool MakehumanCharacter::ParseMakehumanTargetFile
+bool MakehumanManager::ParseMakehumanTargetFile
   (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices)
 {
+  // Check if the target buffers are already in the cache
+  TargetBuffer* buffer = targetBuffers.GetElementPointer (filename);
+  if (buffer)
+  {
+    offsets = buffer->offsets;
+    indices = buffer->indices;
+    return true;
+  }
+
   // Open the Makehuman target file
-  csRef<iFile> file = manager->OpenFile (filename, TARGETS_PATH);
+  csRef<iFile> file = OpenFile (filename, TARGETS_PATH);
   if (!file)
     return ReportError ("Could not open file %s", filename);
   if (file->GetSize () == 0)
@@ -86,7 +91,7 @@ bool MakehumanCharacter::ParseMakehumanTargetFile
   while (!file->AtEOF ())
   {
     // Parse a line
-    if (!manager->ParseLine (file, line, 255)) 
+    if (!ParseLine (file, line, 255)) 
     {
       if (!file->AtEOF ())
         return ReportError ("Malformed Makehuman target file");
@@ -137,6 +142,14 @@ bool MakehumanCharacter::ParseMakehumanTargetFile
       offsets.Push (csVector3 (offsetX, offsetY, offsetZ));
       indices.Push (mhxIndex);
     }
+  }
+
+  // Cache the target buffers
+  {
+    TargetBuffer& buffer = targetBuffers.Put (filename, TargetBuffer ());
+    buffer.offsets = offsets;
+    buffer.indices = indices;
+    // TODO: don't let the cache grow too high
   }
 
   return true;

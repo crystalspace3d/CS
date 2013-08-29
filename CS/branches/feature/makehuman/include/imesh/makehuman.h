@@ -62,7 +62,6 @@ struct iMakehumanCharacter : public virtual iBase
   virtual bool GetExpressionGeneration () const = 0;
 
   virtual iAnimatedMeshFactory* GetMeshFactory () const = 0;
-  // TODO: this can be called only once for now
   virtual bool UpdateMeshFactory () = 0;
 
   virtual void Clear () = 0;
@@ -76,6 +75,7 @@ struct iMakehumanCharacter : public virtual iBase
   virtual void SetMeasure (const char* measure, float value) = 0;
   //void SetMeasureDistance (const char* measure, float distance);
   virtual void SetProperty (const char* property, float value) = 0;
+  virtual float GetProperty (const char* property) const = 0;
   virtual void ClearClothes () = 0;
   virtual size_t GetClothCount () const = 0;
 

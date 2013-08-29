@@ -40,7 +40,7 @@ void MakehumanCharacter::ConvertTargets (csRefArray<iMakehumanMorphTarget>& targ
     target->scale = scale * localTargets[i].weight;
     target->direction = direction;
 
-    ParseMakehumanTargetFile (localTargets[i].path, target->offsets, target->indices);
+    manager->ParseMakehumanTargetFile (localTargets[i].path, target->offsets, target->indices);
 
     // Translate the vertex indices from Makehuman to CS
     size_t count = target->indices.GetSize ();
@@ -613,12 +613,12 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
 
   // gender: 0 is female; 1 is male; 0.5 is neutral
   float gender = human.props.Get (csString ("gender"), 0.5f);
-  if (fabsf (1.0f - gender) > SMALL_EPSILON)
+  //if (fabsf (1.0f - gender) > SMALL_EPSILON)
   {
     val = Target ("female", nullptr, 1.0f - gender);
     modelVals->gender.Push (val);
   }
-  if (fabsf (gender) > SMALL_EPSILON)
+  //if (fabsf (gender) > SMALL_EPSILON)
   {
     val = Target ("male", nullptr, gender);
     modelVals->gender.Push (val);

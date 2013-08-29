@@ -260,7 +260,10 @@ bool MakehumanCharacter::ParseProxyFile (const char* proxyFile, ProxyData& proxy
   return true;
 }
 
-bool MakehumanCharacter::AdaptProxyToModel (ProxyData& proxy)
+bool MakehumanCharacter::AdaptProxyToModel (ProxyData& proxy,
+					    csDirtyAccessArray<csVector3>& coords,
+					    csDirtyAccessArray<csVector2>& texcoords,
+					    csDirtyAccessArray<csVector3>& normals)
 {
   if (animeshFactory->GetVertexCount () != 0)
   {
@@ -350,6 +353,10 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
   // proxy object is defined
   csDirtyAccessArray<FaceGroup> faceGroups;
   csString dirPath;
+  csDirtyAccessArray<csVector3> proxyCoords;
+  csDirtyAccessArray<csVector2> proxyTexcoords;
+  csDirtyAccessArray<csVector3> proxyNormals;
+
   if (!proxy.objFile.IsEmpty ())
   {
     // Get path of object file
@@ -360,7 +367,7 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
     objPath.Append (proxy.objFile);
 
     // Parse the object file
-    if (!manager->ParseObjectFile (objPath.GetData (), faceGroups))   
+    if (!manager->ParseObjectFile (objPath.GetData (), proxyCoords, proxyTexcoords, proxyNormals, faceGroups))   
       // Warning: this clears the buffers coords/texcoords/normals
       // TODO: change that
     {
@@ -371,22 +378,23 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
 
   else faceGroups = manager->faceGroups;
 
-  // Copy the base buffers from the manager
-  coords = manager->coords;;
-  texcoords = manager->texcoords;;
-  normals = manager->normals;;
+  // Copy the base buffers
+  coords = proxyCoords;
+  texcoords = proxyTexcoords;
+  normals = proxyNormals;
 
   // Adapt the proxy mesh to the model
-  if (!AdaptProxyToModel (proxy))
+  if (!AdaptProxyToModel (proxy, coords, texcoords, normals))
   {
     ReportError ("Failed the adaptation of proxy '%s' to human model", proxyName);
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
   }
 
   // Generate CS mesh buffers
-  csHash< VertBuf, csString > tmp;
+  csHash<VertBuf, csString> tmp;
   csDirtyAccessArray<Submesh> csSubmeshes;
-  if (!GenerateMeshBuffers (faceGroups, doubleSided, tmp, csSubmeshes, proxy.mappingBuffer))
+  if (!GenerateMeshBuffers (coords, texcoords, normals,
+			    faceGroups, doubleSided, tmp, csSubmeshes, proxy.mappingBuffer))
   {
     ReportError ("Generating mesh buffers for Makehuman proxy KO!");
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
@@ -403,14 +411,14 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
   if (texture)
   {
     // Use texture given as parameter (model skin)
-    proxy.factory = CreateAnimatedMesh (texture, csSubmeshes);
+    proxy.factory = CreateAnimatedMesh (coords, texcoords, normals, csSubmeshes, texture);
   }
   else
   {
     // Use texture file referenced by proxy file (clothing texture)
     csString textureFilePath (dirPath);
     textureFilePath.Append (proxy.texFile);
-    proxy.factory = CreateAnimatedMesh (textureFilePath.GetData (), csSubmeshes);
+    proxy.factory = CreateAnimatedMesh (coords, texcoords, normals, csSubmeshes, textureFilePath.GetData ());
   }
 
   if (!proxy.factory)

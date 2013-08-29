@@ -516,7 +516,7 @@ bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
   // Get bone influences per mesh vertex and sort them in increasing order
   csRef<CS::Animation::iSkeletonFactory> skelFact = amfact->GetSkeletonFactory ();
   size_t numVerts = amfact->GetVertexCount ();
-  csArray< BoneInfluences > weights;
+  csArray<BoneInfluences> weights;
   weights.SetSize (numVerts);
   csString boneName;
 
@@ -595,7 +595,7 @@ bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
   // Init buffer of CS bone influences
   csRef<CS::Animation::iSkeletonFactory> skelFact = proxy->factory->GetSkeletonFactory ();
   size_t numVerts = proxy->factory->GetVertexCount ();
-  csArray< BoneInfluences > weights;
+  csArray<BoneInfluences> weights;
   weights.SetSize (numVerts);
 
   // Evaluate influence of each bone
@@ -747,7 +747,6 @@ bool MakehumanCharacter::CreateSkeleton (const char* modelName,
     if (!CreateSkelFact (skelName.GetData (), bones, boneOrder, animeshFactory))
       return false;
 
-    // TODO: put back
     // Set bone locations
     if (!SetBoneLocations (mhJoints, jointPos, bones, true, animeshFactory))
       return ReportError ("Problem while setting bone locations");

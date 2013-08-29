@@ -33,6 +33,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
  *-------------------------------------------------------------------------*/
 
 bool MakehumanManager::ParseObjectFile (const char* filename,
+					csDirtyAccessArray<csVector3>& coords,
+					csDirtyAccessArray<csVector2>& texcoords,
+					csDirtyAccessArray<csVector3>& normals,
 					csDirtyAccessArray<FaceGroup>& faceGroups)
 {
   printf ("Parsing object file '%s'... ", filename);
@@ -219,7 +222,10 @@ bool MakehumanManager::ParseObjectFile (const char* filename,
   return true;
 }
 
-bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup>& faceGroups,
+bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coords,
+					      csDirtyAccessArray<csVector2>& texcoords,
+					      csDirtyAccessArray<csVector3>& normals,
+					      const csDirtyAccessArray<FaceGroup>& faceGroups,
 					      const bool doubleSided,
 					      csHash<VertBuf, csString>& mhJoints,
 					      csDirtyAccessArray<Submesh>& csSubmeshes,
@@ -446,8 +452,11 @@ bool MakehumanCharacter::GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup
 }
 
 csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateAnimatedMesh
-(const char* textureFile, 
- const csDirtyAccessArray<Submesh>& csSubmeshes)
+(csDirtyAccessArray<csVector3>& coords,
+ csDirtyAccessArray<csVector2>& texcoords,
+ csDirtyAccessArray<csVector3>& normals,
+ const csDirtyAccessArray<Submesh>& csSubmeshes,
+ const char* textureFile)
 {
   // Create an animated mesh factory
   csRef<iMeshObjectFactory> fact = manager->animeshType->NewFactory ();

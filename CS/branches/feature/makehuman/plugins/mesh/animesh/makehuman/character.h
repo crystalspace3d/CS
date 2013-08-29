@@ -53,6 +53,7 @@ public:
 
   virtual void SetMeasure (const char* measure, float value);
   virtual void SetProperty (const char* property, float value);
+  virtual float GetProperty (const char* property) const;
 
   virtual void ClearClothes ();
   virtual size_t GetClothCount () const;
@@ -177,23 +178,7 @@ private:
   void GenerateTargetsWeightsMeasure (const ModelTargets& modelVals,
 				      csArray<Target>& targets) const;
 
-  /// MakeHuman target parser (.target)
-
-  /**
-   * Parse a Makehuman target file into a buffer defining a displacement 
-   * for each CS vertex.
-   * \param filename  Path of a Makehuman target file (i.e. filepath composed of 
-   *                  the morph target name and the extension '.target':
-   *                  '<vfs_path>/<target_name>.target')
-   * \param offsetsBuffer  Offsets buffer of parsed Makehuman target
-   * \Return true if success
-   */
-/*
-  bool ParseMakehumanTargetFile (const char* filename,
-                                 csRef<iRenderBuffer>& offsetsBuffer);
-*/
-  bool ParseMakehumanTargetFile
-    (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices);
+  /// MakeHuman morph target management
 
   /**
    * Apply morph targets to Makehuman mesh buffer
@@ -206,15 +191,6 @@ private:
   bool ApplyTargetsToModel (const csArray<Target>& targets);
 
   /// MakeHuman mesh object parser (.obj)
-
-  /**
-   * Parse a Makehuman object file. 
-   * \param filename  Path of a Wavefront OBJ file (with extension '.obj')
-   * \param faceGroups  Parsed face groups of Makehuman object
-   * \Return true if the object file was successfully parsed
-   */
-  //bool ParseObjectFile (const char* filename,
-  //                    csDirtyAccessArray<FaceGroup>& faceGroups);
 
   /**
    * Generate a mapping buffer between Makehuman and Crystal Space vertices,
@@ -231,7 +207,10 @@ private:
    *
    * Call ParseObjectFile() before generating Crystal Space buffers
    */
-  bool GenerateMeshBuffers (const csDirtyAccessArray<FaceGroup>& faceGroups,
+  bool GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coords,
+			    csDirtyAccessArray<csVector2>& texcoords,
+			    csDirtyAccessArray<csVector3>& normals,
+			    const csDirtyAccessArray<FaceGroup>& faceGroups,
                             const bool doubleSided,
                             csHash<VertBuf, csString>& mhJoints,
                             csDirtyAccessArray<Submesh>& csSubmeshes,
@@ -247,7 +226,11 @@ private:
    * Call GenerateMeshBuffers() before creating the Crystal Space animesh
    */
   csPtr<CS::Mesh::iAnimatedMeshFactory> CreateAnimatedMesh 
-          (const char* textureFile, const csDirtyAccessArray<Submesh>& csSubmeshes);
+          (csDirtyAccessArray<csVector3>& coords,
+	   csDirtyAccessArray<csVector2>& texcoords,
+	   csDirtyAccessArray<csVector3>& normals,
+	   const csDirtyAccessArray<Submesh>& csSubmeshes,
+	   const char* textureFile);
 
 
   /// MakeHuman rig parser (.rig)
@@ -504,7 +487,10 @@ private:
    * have been previously created with method GenerateModel() before calling 
    * this one.
    */
-  bool AdaptProxyToModel (ProxyData& proxy);
+  bool AdaptProxyToModel (ProxyData& proxy,
+			  csDirtyAccessArray<csVector3>& coords,
+			  csDirtyAccessArray<csVector2>& texcoords,
+			  csDirtyAccessArray<csVector3>& normals);
 
   /**
    * Create a proxy object by parsing a Makehuman proxy file, adapt it to

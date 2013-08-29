@@ -180,29 +180,6 @@ struct MakehumanModel
 /// DATA STRUCTURES FOR MAKEHUMAN MORPH TARGETS
 
 // Morph target data
-/*
-struct Target
-{
-  csString name;     // name of the morph target
-  csString path;     // path of the morph target file
-  float weight;      // weight associated to the morph target
-  //csRef<iRenderBuffer> offsets;  // offsets buffer of morph target
-  csArray<csVector3> offsets;  // offsets buffer of morph target
-  csArray<size_t> indices;  // indices of the vertices that are morphed
-
-  Target ()
-  : name (""), path (""), weight (0.0), offsets (nullptr)
-  {}
-
-  Target (const char* n)
-  : name (n), path (""), weight (1.0), offsets (nullptr)
-  {}
-
-  Target (const char* n, const char* p, float val)
-  : name (n), path (p), weight (val), offsets (nullptr)
-  {}
-};
-*/
 struct Target
 {
   csString name;     // name of the morph target
@@ -333,6 +310,8 @@ struct ProxyData
 class MakehumanManager : public scfImplementation2<MakehumanManager,
   CS::Mesh::iMakehumanManager, iComponent>
 {
+  friend class MakehumanCharacter;
+
 public:
   MakehumanManager (iBase* parent);
   ~MakehumanManager ();
@@ -415,35 +394,14 @@ private:
   csDirtyAccessArray<csVector3> coords;     // array of vertex coordinates
   csDirtyAccessArray<csVector2> texcoords;  // array of texture coordinates
   csDirtyAccessArray<csVector3> normals;    // array of vertex normals
-/*
-  /// Model variables
-  csString modelName;
-  MakehumanModel* human;            // array of model properties
-  csRef<CS::Mesh::iAnimatedMeshFactory> animeshFactory;  // model factory
-  csArray<VertBuf> mappingBuffer;   // correspondence between mhx and cs vertices 
-                                    // of the model
 
-  /// Backup of Makehuman buffers (used for proxy processing)
-  csDirtyAccessArray<csVector3> basicMesh;  // array of vertex coordinates of 
-                                            // neutral Makehuman model
-  csDirtyAccessArray<csVector3> morphedMesh;   // array of vertex coordinates of
-                                               // morphed Makehuman model
-  csArray<csVector3> basicMorph;    // total offsets corresponding to basic properties
-                                    // (gender/ethnic/age) of Makehuman model
-  csHash<VertBuf, csString> mhJoints;   // list of Makehuman joints used to define
-                                        // bone positions (parsed from file 'base.obj')
-  csArray<Target> microExpressions; // generated micro-expressions of Makehuman model
-  
-  /// Temporary Makehuman data (parsed from a Makehuman object file)
-  csDirtyAccessArray<csVector3> coords;     // array of vertex coordinates
-  csDirtyAccessArray<csVector2> texcoords;  // array of texture coordinates
-  csDirtyAccessArray<csVector3> normals;    // array of vertex normals
+  struct TargetBuffer
+  {
+    csArray<csVector3> offsets;
+    csArray<size_t> indices;
+  };
+  csHash<TargetBuffer, csString> targetBuffers;
 
-  /// Temporary Crystal Space mesh buffers (corresponding to parsed Makehuman object)
-  csDirtyAccessArray<csVector3> csCoords;     // array of CS vertex coordinates
-  csDirtyAccessArray<csVector2> csTexcoords;  // array of CS texture coordinates
-  csDirtyAccessArray<csVector3> csNormals;    // array of CS vertex normals
-*/
   /**************************************************************************/
 
   /// Utility methods
@@ -464,9 +422,25 @@ private:
    * \Return true if the object file was successfully parsed
    */
   bool ParseObjectFile (const char* filename,
+			csDirtyAccessArray<csVector3>& coords,
+			csDirtyAccessArray<csVector2>& texcoords,
+			csDirtyAccessArray<csVector3>& normals,
                         csDirtyAccessArray<FaceGroup>& faceGroups);
 
-  friend class MakehumanCharacter;
+  /// MakeHuman morph target parser (.target)
+
+  /**
+   * Parse a Makehuman target file into a buffer defining a displacement 
+   * for each CS vertex.
+   * \param filename  Path of a Makehuman target file (i.e. filepath composed of 
+   *                  the morph target name and the extension '.target':
+   *                  '<vfs_path>/<target_name>.target')
+   * \param offsetsBuffer  Offsets buffer of parsed Makehuman target
+   * \Return true if success
+   */
+  bool ParseMakehumanTargetFile
+    (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices);
+
 };
 
 }

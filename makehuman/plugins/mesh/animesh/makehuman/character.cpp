@@ -63,11 +63,6 @@ MakehumanCharacter::MakehumanCharacter (MakehumanManager* manager)
   // Create the animated mesh factory
   csRef<iMeshObjectFactory> factory = manager->animeshType->NewFactory ();
   animeshFactory = scfQueryInterfaceSafe<CS::Mesh::iAnimatedMeshFactory> (factory);
-
-  // Copy the base buffers from the manager
-  coords = manager->coords;
-  texcoords = manager->texcoords;
-  normals = manager->normals;
 }
 
 MakehumanCharacter::~MakehumanCharacter ()
@@ -92,8 +87,25 @@ iAnimatedMeshFactory* MakehumanCharacter::GetMeshFactory () const
 
 bool MakehumanCharacter::UpdateMeshFactory ()
 {
-  // Process the property values of the model
+  // Clear all previous data
   modelVals.DeleteAll ();
+  mappingBuffer.DeleteAll ();
+  basicMesh.DeleteAll ();
+  morphedMesh.DeleteAll ();
+  basicMorph.DeleteAll ();
+  mhJoints.DeleteAll ();
+  microExpressions.DeleteAll ();
+  csCoords.DeleteAll ();
+  csTexcoords.DeleteAll ();
+  csNormals.DeleteAll ();
+  clothes.DeleteAll ();
+
+  // Copy the base buffers from the manager
+  coords = manager->coords;
+  texcoords = manager->texcoords;
+  normals = manager->normals;
+
+  // Process the property values of the model
   if (!ProcessModelProperties (human, &modelVals))
     return ReportError ("Problem while processing Makehuman model properties");
   PrintModelProperties (modelVals);
@@ -105,7 +117,7 @@ bool MakehumanCharacter::UpdateMeshFactory ()
   // Parse all offset buffers of the model targets
   for (size_t i = 0; i < targets.GetSize (); i++)
   {
-    if (!ParseMakehumanTargetFile (targets[i].path, targets[i].offsets, targets[i].indices))
+    if (!manager->ParseMakehumanTargetFile (targets[i].path, targets[i].offsets, targets[i].indices))
       return ReportError ("Parsing target file '%s' KO!", targets[i].path.GetData ());
   }
 
@@ -127,7 +139,8 @@ bool MakehumanCharacter::UpdateMeshFactory ()
 
    // Generate CS mesh buffers
   csDirtyAccessArray<Submesh> csSubmeshes;
-  if (!GenerateMeshBuffers (manager->faceGroups, false, mhJoints, csSubmeshes, mappingBuffer))
+  if (!GenerateMeshBuffers (coords, texcoords, normals,
+			    manager->faceGroups, false, mhJoints, csSubmeshes, mappingBuffer))
     return ReportError ("Generating mesh buffers for Makehuman model KO!");
 
   // Create mesh for human model
@@ -264,6 +277,7 @@ bool MakehumanCharacter::UpdateMeshFactory ()
   // Calculate mesh tangents
   animeshFactory->ComputeTangents ();
 
+  animeshFactory->SetSkeletonFactory (nullptr);
   animeshFactory->Invalidate ();
 
   // Find the name of the rig
@@ -396,6 +410,11 @@ void MakehumanCharacter::SetMeasure (const char* measure, float value)
 void MakehumanCharacter::SetProperty (const char* property, float value)
 {
   human.props.PutUnique (property, value);
+}
+
+float MakehumanCharacter::GetProperty (const char* property) const
+{
+  return human.props.Get (property, 0.0f);
 }
 
 void MakehumanCharacter::ClearClothes ()

@@ -71,7 +71,7 @@ bool MakehumanManager::Initialize (iObjectRegistry* objectRegistry)
   */
 
   // Parse the object file describing the Makehuman neutral model
-  if (!ParseObjectFile (MESH_DATA_FILE, faceGroups))
+  if (!ParseObjectFile (MESH_DATA_FILE, coords, texcoords, normals, faceGroups))
     return ReportError ("Failed parsing of base object file '%s'", MESH_DATA_FILE);
 
   return true;

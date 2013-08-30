@@ -29,13 +29,12 @@
 #include "csutil/set.h"
 #include "csutil/weakref.h"
 #include "csgeom/plane3.h"
+#include "csgeom/kdtree.h"
 #include "imesh/objmodel.h"
 #include "iengine/viscull.h"
 #include "iengine/movable.h"
 #include "iengine/mesh.h"
 
-class csKDTree;
-class csKDTreeChild;
 class csFrustumVis;
 struct iMovable;
 struct iMeshWrapper;

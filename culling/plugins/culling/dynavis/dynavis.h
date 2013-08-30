@@ -34,6 +34,7 @@
 #include "iengine/movable.h"
 #include "csgeom/plane3.h"
 #include "csgeom/tcovbuf.h"
+#include "csgeom/kdtree.h"
 #include "iengine/viscull.h"
 #include "dmodel.h"
 #include "dhistmgr.h"
@@ -45,8 +46,6 @@
 #define csDynaVis			csDynaVis_DEBUG
 #endif
 
-class csKDTree;
-class csKDTreeChild;
 class csCoverageBuffer;
 class csTiledCoverageBuffer;
 class csDynaVis;

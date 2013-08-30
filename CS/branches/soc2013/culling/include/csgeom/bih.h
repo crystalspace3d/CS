@@ -77,7 +77,7 @@ public:
     Set(bounds.Min(), bounds.Max());
   }
 
-  inline csBox3 GetBBox() const
+  inline csBox3 const& GetBBox() const
   {
     return *this;
   }

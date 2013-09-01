@@ -54,7 +54,7 @@ namespace CS
      * system that can be solved fast. Then we recursively perform the
      * backsubtitution. This algorithm is known as Cyclic Reduction.
      */
-    class CS_CRYSTALSPACE_EXPORT DDOFHelper
+    class CS_CRYSTALSPACE_EXPORT DDOFHelper : public scfImplementation0<DDOFHelper>
     {
       csRef<iLoader> loader;
       csHash<csRef<iShader>, csString> shaders;
@@ -104,7 +104,7 @@ namespace CS
       /**
        * Constructor
        */
-      DDOFHelper(iObjectRegistry* reg): objReg(reg) {}
+      DDOFHelper(iObjectRegistry* reg): scfImplementationType (this), objReg(reg) {}
 
       /*
        * Adds a setup view callback to handle resolution changes.

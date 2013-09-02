@@ -311,26 +311,29 @@ private:
   // An optional user object for this node.
   csRef<iUserData> userobject;
 
-  // This is used for debugging.
+  // description of this node - used for debugging
   csRef<iObjectDescriptor> descriptor;
 
-  csBox3 node_bbox;             // Bbox of the node itself.
+  // bounding box box of the node itself
+  csBox3 node_bbox;
 
-  int split_axis;               // One of CS_KDTREE_AXIS?
-  float split_location;         // Where is the split?
+  // One of CS_KDTREE_AXIS?
+  int splitAxis;
+  // Where is the split?
+  float splitLocation;
 
   // Objects in this node. If this node also has children (child1
   // and child2) then the objects here have to be moved to these
   // children. The 'Distribute()' function will do that.
   Child** objects;
-  int num_objects;
-  int max_objects;
+  int numObjects;
+  int maxObjects;
 
   // Estimate of the total number of objects in this tree including children.
-  int estimate_total_objects;
+  int estimateTotalObjects;
 
   // Minimum amount of objects in this tree before we consider splitting.
-  int min_split_objects;
+  int minSplitObjects;
 
   // Disallow Distribute().
   // If this flag > 0 it means that we cannot find a good split
@@ -341,11 +344,11 @@ private:
   // so that when it becomes 0 we can make a new Distribute() attempt can
   // be made. This situation should be rare though.
 #define DISALLOW_DISTRIBUTE_TIME 20
-  int disallow_distribute;
+  int disallowDistribute;
 
   // Current timestamp we are using for Front2Back(). Objects that
   // have the same timestamp are already visited during Front2Back().
-  uint32 global_timestamp;
+  uint32 globalTimestamp;
 
   // get tree allocator
   inline csBlockAllocator<Self>& TreeAlloc ()
@@ -385,24 +388,24 @@ private:
   void AddObject (Child* obj)
   {
     // check for corrupt object storage
-    CS_ASSERT (((max_objects == 0) == (objects == nullptr)));
+    CS_ASSERT (((maxObjects == 0) == (objects == nullptr)));
 
     // check whether we have to grow the obejct storage
-    if (num_objects >= max_objects)
+    if (numObjects >= maxObjects)
     {
       // double the storage size, but grow it by at least 80 objects
-      max_objects += csMin (max_objects+2, 80);
+      maxObjects += csMin (maxObjects+2, 80);
 
       // allocate new storage
-      Child** new_objects = new Child* [max_objects];
+      Child** new_objects = new Child* [maxObjects];
 
       // check for allocation failure
       CS_ASSERT (new_objects);
 
       // copy old objects to new storage if necessary
-      if (objects && num_objects > 0)
+      if (objects && numObjects > 0)
       {
-	memcpy (new_objects, objects, sizeof (csKDTreeChild*) * num_objects);
+	memcpy (new_objects, objects, sizeof (csKDTreeChild*) * numObjects);
       }
 
       // free old storage
@@ -413,10 +416,10 @@ private:
     }
 
     // add object to storage
-    objects[num_objects++] = obj;
+    objects[numObjects++] = obj;
 
     // update estimated object count
-    estimate_total_objects++;
+    estimateTotalObjects++;
   }
 
   /**
@@ -441,8 +444,8 @@ private:
       leaf->RemoveObject (idx);
 
       // reduce distribution block on leaf
-      if (leaf->disallow_distribute > 0)
-	leaf->disallow_distribute--;
+      if (leaf->disallowDistribute > 0)
+	leaf->disallowDistribute--;
 
       // remove the leaf from the object
       object->RemoveLeaf (i);
@@ -453,25 +456,25 @@ private:
   void RemoveObject (int idx)
   {
     // check for out-of-bounds
-    CS_ASSERT (idx >= 0 && idx < num_objects);
+    CS_ASSERT (idx >= 0 && idx < numObjects);
 
     // move objets in storage if necessary
-    if (idx != num_objects - 1)
+    if (idx != numObjects - 1)
     {
       memmove (&objects[idx], &objects[idx+1],
-	  sizeof (csKDTreeChild*) * (num_objects-idx-1));
+	  sizeof (csKDTreeChild*) * (numObjects-idx-1));
     }
 
     // update object counts
-    estimate_total_objects--;
-    num_objects--;
+    estimateTotalObjects--;
+    numObjects--;
   }
 
   /// Find an object. Returns -1 if not found.
   int FindObject (Child* obj)
   {
     // iterate over all objects looking for ours
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       // check whether we found it
       if (objects[i] == obj)
@@ -491,8 +494,8 @@ private:
   void AddObjectInt (Child* obj)
   {
     // decrease distribution block if there is one
-    if (disallow_distribute > 0)
-      disallow_distribute--;
+    if (disallowDistribute > 0)
+      disallowDistribute--;
 
     // add us as leaf for the object
     obj->AddLeaf (this);
@@ -515,7 +518,7 @@ private:
   {
     // If we have only two objects we use the middle of the
     // empty space between the two if there is any.
-    if (num_objects == 2)
+    if (numObjects == 2)
     {
       // get the object bounidng boxes to attempt a split
       const csBox3& bbox0 = objects[0]->GetBBox ();
@@ -560,15 +563,15 @@ private:
 
     // Find minimum and maximum value along the axis.
     // allocate arrays to hold object bounds
-    CS_ALLOC_STACK_ARRAY_FALLBACK (float, objectsMin, num_objects, 50000);
-    CS_ALLOC_STACK_ARRAY_FALLBACK (float, objectsMax, num_objects, 50000);
+    CS_ALLOC_STACK_ARRAY_FALLBACK (float, objectsMin, numObjects, 50000);
+    CS_ALLOC_STACK_ARRAY_FALLBACK (float, objectsMax, numObjects, 50000);
 
     // initialize minimum and maximum
     float mina =  KDTREE_MAX;
     float maxa = -KDTREE_MAX;
 
     // iterate over all objects filling the arrays and updating the overall bounds
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       // get object bounding box
       const csBox3& bbox = objects[i]->GetBBox ();
@@ -608,7 +611,7 @@ private:
       // so we can evaluate the split quality
       int left = 0;
       int right = 0;
-      for (int i = 0 ; i < num_objects ; i++)
+      for (int i = 0 ; i < numObjects ; i++)
       {
 	// check whether this object would go into the left ndoe
 	if (objectsMax[i] < a-.0001) left++;
@@ -653,23 +656,23 @@ private:
 
   /**
    * If this node is a leaf then we will split the objects currently
-   * in this leaf according to the pre-filled in split_axis
-   * and split_location.
+   * in this leaf according to the pre-filled in splitAxis
+   * and splitLocation.
    */
   void DistributeLeafObjects ()
   {
     // ensure we have a valid split axis
-    CS_ASSERT (split_axis >= CS_KDTREE_AXISX && split_axis <= CS_KDTREE_AXISZ);
+    CS_ASSERT (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ);
 
     // go over all objects and add them to the according child(s)
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       // get object bounding box so we can categorize it
       const csBox3& bbox = objects[i]->GetBBox ();
 
       // get upper and lower bound
-      float bbox_min = bbox.Min (split_axis);
-      float bbox_max = bbox.Max (split_axis);
+      float bbox_min = bbox.Min (splitAxis);
+      float bbox_max = bbox.Max (splitAxis);
 
       // keep track whether we already removed ourself as leaf for the object
       bool leaf_replaced = false;
@@ -678,7 +681,7 @@ private:
       // @@@NOTE: SMALL_EPSILON is used to ensure that when bbox_min
       //          is equal to bbox_max we don't get a situation where
       //          both of the if's are not used.
-      if (bbox_min-SMALL_EPSILON <= split_location)
+      if (bbox_min-SMALL_EPSILON <= splitLocation)
       {
 	// remove us as leaf for the object and set the child as leaf
 	objects[i]->ReplaceLeaf (this, child1);
@@ -690,7 +693,7 @@ private:
 	child1->AddObject (objects[i]);
       }
       // check whether the object (also) belongs to the right node
-      if (bbox_max >= split_location)
+      if (bbox_max >= splitLocation)
       {
 	// if we already removed ourself, simply add the other leaf
 	if (leaf_replaced)
@@ -713,7 +716,7 @@ private:
     }
 
     // update our object count
-    num_objects = 0;
+    numObjects = 0;
 
     // @@@TODO: Clean up objects array if there are too many objects?
     //          There should be some threshold at least.
@@ -742,7 +745,7 @@ private:
     if (child1)
     {
       // check whether left one goes first
-      if (pos[split_axis] <= split_location)
+      if (pos[splitAxis] <= splitLocation)
       {
 	// yes, continue with left, then right one
 	child1->Front2Back (pos, func, userdata, cur_timestamp, frustum_mask);
@@ -791,7 +794,7 @@ private:
   void ResetTimestamps ()
   {
     // clear timestamps for all objects
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       objects[i]->timestamp = 0;
     }
@@ -835,7 +838,7 @@ private:
     child2 = nullptr;
 
     // add our objects to the target
-    for (int i = 0; i < num_objects ; i++)
+    for (int i = 0; i < numObjects ; i++)
     {
       // get the object to process
       Child* obj = objects[i];
@@ -857,8 +860,8 @@ private:
     }
 
     // update our object count
-    num_objects = 0;
-    estimate_total_objects = 0;
+    numObjects = 0;
+    estimateTotalObjects = 0;
   }
 
 public:
@@ -878,17 +881,17 @@ public:
 	        KDTREE_MAX,  KDTREE_MAX,  KDTREE_MAX),
 
     // split initialization
-    split_axis (CS_KDTREE_AXISINVALID),
+    splitAxis (CS_KDTREE_AXISINVALID),
 
     // object storage initialization
-    objects (nullptr), num_objects (0), max_objects (0),
-    estimate_total_objects (0),
+    objects (nullptr), numObjects (0), maxObjects (0),
+    estimateTotalObjects (0),
 
     // distribution initialization
-    min_split_objects (20), disallow_distribute (0),
+    minSplitObjects (20), disallowDistribute (0),
 
     // global timestamp initialization
-    global_timestamp (1)
+    globalTimestamp (1)
   {
   }
 
@@ -916,14 +919,14 @@ public:
    */
   void SetMinimumSplitAmount (int m)
   {
-    min_split_objects = m;
+    minSplitObjects = m;
   }
 
   /// Make the tree empty.
   void Clear ()
   {
     // go over all objects and remove them
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       objects[i]->RemoveLeaf (this);
 
@@ -935,9 +938,9 @@ public:
     // clear object storage
     delete[] objects;
     objects = 0;
-    num_objects = 0;
-    max_objects = 0;
-    estimate_total_objects = 0;
+    numObjects = 0;
+    maxObjects = 0;
+    estimateTotalObjects = 0;
 
     // ensure we have either two or no children
     CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
@@ -952,14 +955,14 @@ public:
     }
 
     // clear split
-    split_axis = CS_KDTREE_AXISINVALID;
+    splitAxis = CS_KDTREE_AXISINVALID;
 
     // reset bounding box
     node_bbox.Set(-KDTREE_MAX, -KDTREE_MAX, -KDTREE_MAX,
 		   KDTREE_MAX,  KDTREE_MAX,  KDTREE_MAX);
 
     // clear distribution
-    disallow_distribute = 0;
+    disallowDistribute = 0;
 
     // free user object
     userobject.Invalidate();
@@ -1053,8 +1056,8 @@ public:
       {
 	// Even after moving we are still completely inside the bounding box
 	// of the current leaf.
-	if (leaf->disallow_distribute > 0)
-	  leaf->disallow_distribute--;
+	if (leaf->disallowDistribute > 0)
+	  leaf->disallowDistribute--;
 	return;
       }
     }
@@ -1082,7 +1085,7 @@ public:
   {
     // check whether there is anything to distribute and
     // whether distribution is blocked
-    if (num_objects == 0 || disallow_distribute > 0)
+    if (numObjects == 0 || disallowDistribute > 0)
     {
       // nothing to be done
       return;
@@ -1099,15 +1102,15 @@ public:
       DistributeLeafObjects ();
 
       // ensure nothing is left
-      CS_ASSERT (num_objects == 0);
+      CS_ASSERT (numObjects == 0);
 
       // update the estimated object count
-      estimate_total_objects = child1->GetEstimatedObjectCount ()
+      estimateTotalObjects = child1->GetEstimatedObjectCount ()
 	  + child2->GetEstimatedObjectCount ();
     }
     // we don't have children yet, so we have to try and find a split
     // if we actually have enough objects to justify a distribution
-    else if (num_objects > min_split_objects)
+    else if (numObjects > minSplitObjects)
     {
       // to find a split location we evaluate multiple options for each
       // axis and use the one with the best quality
@@ -1146,8 +1149,8 @@ public:
       if (best_qual > 0)
       {
 	// it is, set it as split
-	split_axis = best_axis;
-	split_location = best_split_loc;
+	splitAxis = best_axis;
+	splitLocation = best_split_loc;
 
 	// allocate children
 	child1 = TreeAlloc ().Alloc ();
@@ -1167,24 +1170,24 @@ public:
 
 	// set bounding boxes
 	child1->node_bbox = GetNodeBBox ();
-	child1->node_bbox.SetMax (split_axis, split_location);
+	child1->node_bbox.SetMax (splitAxis, splitLocation);
 	child2->node_bbox = GetNodeBBox ();
-	child2->node_bbox.SetMin (split_axis, split_location);
+	child2->node_bbox.SetMin (splitAxis, splitLocation);
 
 	// distribute objects according to the split
 	DistributeLeafObjects ();
 
 	// ensure all objects are distributed
-	CS_ASSERT (num_objects == 0);
+	CS_ASSERT (numObjects == 0);
 
 	// update estimated object count
-	estimate_total_objects = child1->GetEstimatedObjectCount ()
+	estimateTotalObjects = child1->GetEstimatedObjectCount ()
 	  + child2->GetEstimatedObjectCount ();
       }
       else
       {
 	// bad split, block distribution
-	disallow_distribute = DISALLOW_DISTRIBUTE_TIME;
+	disallowDistribute = DISALLOW_DISTRIBUTE_TIME;
       }
     }
   }
@@ -1226,7 +1229,7 @@ public:
       FlattenTo (this);
 
       // remove distribution block if there is one.
-      disallow_distribute = 0;
+      disallowDistribute = 0;
     }
   }
 
@@ -1239,7 +1242,7 @@ public:
         void* userdata, uint32 frustum_mask)
   {
     NewTraversal ();
-    TraverseRandom (func, userdata, global_timestamp, frustum_mask);
+    TraverseRandom (func, userdata, globalTimestamp, frustum_mask);
   }
 
   /**
@@ -1252,7 +1255,7 @@ public:
         void* userdata, uint32 frustum_mask)
   {
     NewTraversal ();
-    Front2Back (pos, func, userdata, global_timestamp, frustum_mask);
+    Front2Back (pos, func, userdata, globalTimestamp, frustum_mask);
   }
 
   /**
@@ -1273,16 +1276,16 @@ public:
     // For safety reasons we will reset all timestamps to 0
     // for all objects in the tree and also set the global
     // timestamp to 1 again every 4.000.000.000 calls of Front2Back
-    if (global_timestamp > 4000000000u)
+    if (globalTimestamp > 4000000000u)
     {
       ResetTimestamps ();
-      global_timestamp = 1;
+      globalTimestamp = 1;
     }
     else
     {
-      global_timestamp++;
+      globalTimestamp++;
     }
-    return global_timestamp;
+    return globalTimestamp;
   }
 
   /**
@@ -1306,7 +1309,7 @@ public:
    */
   inline int GetObjectCount () const
   {
-    return num_objects;
+    return numObjects;
   }
 
   /**
@@ -1317,7 +1320,7 @@ public:
    */
   inline int GetEstimatedObjectCount ()
   {
-    return estimate_total_objects;
+    return estimateTotalObjects;
   }
 
   /**
@@ -1340,7 +1343,7 @@ public:
 private:
   // debugging functions
   // perform various sanity checks on the tree for validation
-  bool Debug_CheckTree (csString& str)
+  bool DebugCheckTreeTraversal (csString& str)
   {
 #   define KDT_ASSERT_BOOL(test,msg) \
     if (!(test)) \
@@ -1363,15 +1366,15 @@ private:
       //-------
 
       // ensure we have a valid split axis
-      KDT_ASSERT_BOOL (split_axis >= CS_KDTREE_AXISX && split_axis <= CS_KDTREE_AXISZ, "axis");
+      KDT_ASSERT_BOOL (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ, "axis");
 
       // ensure the node bounding box contains the bounding boxes of the children
       KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child1->GetNodeBBox ()), "node_bbox mismatch");
       KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child2->GetNodeBBox ()), "node_bbox mismatch");
 
       // ensure the split location is contained in the node bounding box
-      KDT_ASSERT_BOOL (split_location >= GetNodeBBox ().Min (split_axis), "split/node");
-      KDT_ASSERT_BOOL (split_location <= GetNodeBBox ().Max (split_axis), "split/node");
+      KDT_ASSERT_BOOL (splitLocation >= GetNodeBBox ().Min (splitAxis), "split/node");
+      KDT_ASSERT_BOOL (splitLocation <= GetNodeBBox ().Max (splitAxis), "split/node");
 
       // compute union of child bounding boxes
       csBox3 new_node_bbox = child1->GetNodeBBox () + child2->GetNodeBBox ();
@@ -1384,9 +1387,9 @@ private:
       KDT_ASSERT_BOOL (child2->parent == this, "parent check");
 
       // perform checks for our children
-      if (!child1->Debug_CheckTree (str))
+      if (!child1->DebugCheckTreeTraversal (str))
 	return false;
-      if (!child2->Debug_CheckTree (str))
+      if (!child2->DebugCheckTreeTraversal (str))
 	return false;
     }
 
@@ -1396,10 +1399,10 @@ private:
     //-------
 
     // ensure we don't have more objects than our storage can hold
-    KDT_ASSERT_BOOL (num_objects <= max_objects, "object list");
+    KDT_ASSERT_BOOL (numObjects <= maxObjects, "object list");
 
     // check all objects for validity
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       // get the current object
       Child* o = objects[i];
@@ -1430,23 +1433,23 @@ private:
 #   undef KDT_ASSERT_BOOL
   }
 
-  void Debug_Dump (csString& str, int indent)
+  void DebugDumpTraversal (csString& str, int indent)
   {
     // get a string for indentation
     csString ind("");
     ind.PadLeft(indent);
 
     // get debug statistics for this node
-    csRef<iString> stats = Debug_Statistics ();
+    csRef<iString> stats = DebugStatisticsTraversal ();
 
     // append our data to the dump
     str.AppendFmt ("%s KDT disallow_dist=%d\n%s     node_bbox=%s\n%s %s",
-	  ind.GetData (), disallow_distribute,
+	  ind.GetData (), disallowDistribute,
 	  ind.GetData (), GetNodeBBox ().Description ().GetData (),
 	  ind.GetData (), stats->GetData ());
 
     // append object count
-    str.AppendFmt ("%s   %d objects\n", ind.GetData (), num_objects);
+    str.AppendFmt ("%s   %d objects\n", ind.GetData (), numObjects);
 
     // ensure we have either two or no children
     CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
@@ -1455,25 +1458,25 @@ private:
     if (child1)
     {
       // ensure axis is valid
-      CS_ASSERT (split_axis >= CS_KDTREE_AXISX && split_axis <= CS_KDTREE_AXISY);
+      CS_ASSERT (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISY);
 
       // append our split split data
       char axis[3] = {'x','y','z'};
       str.AppendFmt ("%s   axis=%c loc=%g\n",
-	  ind.GetData (), axis[split_axis], split_location);
+	  ind.GetData (), axis[splitAxis], splitLocation);
 
       // dump our children
-      child1->Debug_Dump (str, indent+2);
-      child2->Debug_Dump (str, indent+2);
+      child1->DebugDumpTraversal (str, indent+2);
+      child2->DebugDumpTraversal (str, indent+2);
     }
   }
 
-  void Debug_Statistics (int& tot_objects,
+  void DebugStatisticsTraversal (int& tot_objects,
         int& tot_nodes, int& tot_leaves, int depth, int& max_depth,
         float& balance_quality)
   {
     // keep track of the total amount of objects
-    tot_objects += num_objects;
+    tot_objects += numObjects;
 
     CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
 
@@ -1507,12 +1510,12 @@ private:
 
       // grab statistics for left child
       int left = 0;
-      child1->Debug_Statistics (left, tot_nodes,
+      child1->DebugStatisticsTraversal (left, tot_nodes,
 	  tot_leaves, depth, max_depth, balance_quality);
 
       // grab statistics for right child
       int right = 0;
-      child2->Debug_Statistics (right, tot_nodes,
+      child2->DebugStatisticsTraversal (right, tot_nodes,
 	  tot_leaves, depth, max_depth, balance_quality);
 
       // add the objects of the child to the total amount of objects
@@ -1525,7 +1528,7 @@ private:
     }
   }
 
-  csPtr<iString> Debug_Statistics ()
+  csPtr<iString> DebugStatisticsTraversal ()
   {
     // get a scf string to output our results to
     scfString* rc = new scfString ();
@@ -1547,7 +1550,7 @@ private:
     float balance_quality = 0;
 
     // collect the statictics by traversing the tree
-    Debug_Statistics (tot_objects, tot_nodes, tot_leaves, 0, max_depth,
+    DebugStatisticsTraversal (tot_objects, tot_nodes, tot_leaves, 0, max_depth,
 	  balance_quality);
 
     // format our output
@@ -1559,7 +1562,7 @@ private:
     return csPtr<iString> ((iString*)rc);
   }
 
-  csTicks Debug_Benchmark (int num_iterations)
+  csTicks DebugBenchmark (int num_iterations)
   {
     // start of first benchmark
     csTicks pass0 = csGetTicks ();
@@ -1593,7 +1596,7 @@ private:
     // front to back order on an incremently built tree
     for (int i = 0 ; i < num_iterations ; i++)
     {
-      Front2Back (csVector3 (0, 0, 0), Debug_TraverseFuncBenchmark, 0, 0);
+      Front2Back (csVector3 (0, 0, 0), DebugBenchmarkTraversal, 0, 0);
     }
 
     // end of second/start of third benchmark
@@ -1617,7 +1620,7 @@ private:
     // with all information available
     for (int i = 0 ; i < num_iterations ; i++)
     {
-      Front2Back (csVector3 (0, 0, 0), Debug_TraverseFuncBenchmark, 0, 0);
+      Front2Back (csVector3 (0, 0, 0), DebugBenchmarkTraversal, 0, 0);
     }
 
     // end of last benchmark
@@ -1632,14 +1635,14 @@ private:
     return pass4-pass0;
   }
 
-  static bool Debug_TraverseFuncBenchmark (Self* treenode, void*,
+  static bool DebugBenchmarkTraversal (Self* treenode, void*,
 	  uint32 cur_timestamp, uint32&)
   {
     treenode->Distribute ();
 
-    int num_objects = treenode->GetObjectCount ();
+    int numObjects = treenode->GetObjectCount ();
     Child** objects = treenode->GetObjects ();
-    for (int i = 0 ; i < num_objects ; i++)
+    for (int i = 0 ; i < numObjects ; i++)
     {
       if (objects[i]->timestamp != cur_timestamp)
 	objects[i]->timestamp = cur_timestamp;
@@ -1666,7 +1669,7 @@ public:
     scfString* rc = new scfString ();
 
     // perform check
-    if (!Debug_CheckTree (rc->GetCsString ()))
+    if (!DebugCheckTreeTraversal (rc->GetCsString ()))
     {
       // return error if it failed
       return csPtr<iString> (rc);
@@ -1682,14 +1685,14 @@ public:
   // performs a benchmark and returns the time it took
   virtual csTicks Benchmark (int num_iterations)
   {
-    return Debug_Benchmark (num_iterations);
+    return DebugBenchmark (num_iterations);
   }
 
   // performs a text dump of the tree
   virtual csPtr<iString> Dump ()
   {
     scfString* rc = new scfString ();
-    Debug_Dump (rc->GetCsString (), 0);
+    DebugDumpTraversal (rc->GetCsString (), 0);
     return csPtr<iString> (rc);
   }
 

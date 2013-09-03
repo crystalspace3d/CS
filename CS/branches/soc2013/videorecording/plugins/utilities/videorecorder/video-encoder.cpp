@@ -367,7 +367,11 @@ bool VideoEncoder::InitAudioStream()
   // put audio parameters
   audio->sample_rate = freq;
   audio->channels = channels;
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(51, 26, 0)
+  audio->channel_layout = avcodec_guess_channel_layout(channels, audioCodec->id, NULL); 
+#else
   audio->channel_layout = av_get_default_channel_layout(channels);
+#endif
 
   audio->bit_rate = audioBitrate;
   if (audioQuality >= 0)

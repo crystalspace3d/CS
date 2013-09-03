@@ -280,8 +280,6 @@ public:
    */
   struct iObjectDescriptor : public virtual iBase
   {
-    SCF_INTERFACE (iObjectDescriptor, 0, 0, 1);
-
     virtual csPtr<iString> DescribeObject (Child* child) = 0;
   };
 
@@ -292,7 +290,6 @@ public:
    */
   struct iUserData : public virtual iBase
   {
-    SCF_INTERFACE (iUserData, 0, 0, 1);
   };
 
 private:

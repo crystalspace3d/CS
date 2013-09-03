@@ -15,7 +15,11 @@ extern "C"
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/mathematics.h>
-#include <libavutil/channel_layout.h>
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(52, 2, 0)
+  #include <libavutil/audioconvert.h>
+#else
+  #include <libavutil/channel_layout.h>
+#endif
 }
 
 using namespace CS::Threading;

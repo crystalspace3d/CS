@@ -277,11 +277,8 @@ void csVideoRecorder::Stop()
   if (!recording)
 	return;
   
-  Report(CS_REPORTER_SEVERITY_NOTIFY, "stopping");
   encoder->Stop();
-  Report(CS_REPORTER_SEVERITY_NOTIFY, "stop");
   encoder.Invalidate();
-  Report(CS_REPORTER_SEVERITY_NOTIFY, "inv");
   recording = false;
   if (softSoundRenderer && recordSound)
     softSoundRenderer->RemoveOutputFilter(SS_FILTER_LOC_RENDEROUT, &soundRecorder);

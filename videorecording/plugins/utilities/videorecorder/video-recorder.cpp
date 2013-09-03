@@ -8,7 +8,6 @@
 #include "csgfx/imagememory.h"
 
 #include "video-recorder.h"
-#include "video-encoder.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(VideoRecorder)
 {
@@ -17,14 +16,16 @@ SCF_IMPLEMENT_FACTORY(csVideoRecorder);
 csVideoRecorder::csVideoRecorder (iBase* parent) : 
   scfImplementationType (this, parent),
   keyEventHandler(this),
-  frameEventHandler(this)
+  frameEventHandler(this),
+  soundRecorder(this)
 {
   object_reg = NULL;
 
   initialized = false;
   paused = false;
   recording = false;
-  
+  recordSound = false;
+
   encoder = NULL;
   fakeClock = NULL;
 }
@@ -44,7 +45,17 @@ bool csVideoRecorder::Initialize (iObjectRegistry* object_reg)
     csEventID events2[2] = { Frame, CS_EVENTLIST_END };
     q->RegisterListener (&frameEventHandler, events2);
   }
-  
+
+  csRef<iSndSysRenderer> soundRenderer (csQueryRegistry<iSndSysRenderer> (object_reg));
+  if (soundRenderer)
+  {
+	softSoundRenderer = scfQueryInterface<iSndSysRendererSoftware>(soundRenderer);
+	if (!softSoundRenderer)
+      Report(CS_REPORTER_SEVERITY_NOTIFY, "Sound renderer is not software, sound will not be recorded");
+  }
+  else
+	Report(CS_REPORTER_SEVERITY_NOTIFY, "No sound renderer, sound will not be recorded");
+
   // Replace clock with our own
   fakeClock.AttachNew (new FakeClock (this));
   realClock = csQueryRegistry<iVirtualClock> (object_reg);
@@ -121,8 +132,6 @@ bool csVideoRecorder::InitPlugin()
   forcedHeight = config->GetInt("VideoRecorder.Height", 0);
   framerate = config->GetInt("VideoRecorder.FPS", 30);
   extension = config->GetStr("VideoRecorder.Extension", "mp4");
-  videoCodecName = config->GetStr("VideoRecorder.VideoCodec", "libx264");
-  audioCodecName = config->GetStr("VideoRecorder.AudioCodec", "libmp3lame");
   const char* Mode = config->GetStr("VideoRecorder.Mode", "vfr");
   if (strcmp(Mode, "vfr") == 0)
 	  mode = MODE_VFR;
@@ -132,19 +141,15 @@ bool csVideoRecorder::InitPlugin()
 	  mode = MODE_FORCED_CFR;
   else
 	  mode = MODE_VFR;
-  
-  const char* Prio = config->GetStr("VideoRecorder.Prioriry", "normal");
-  if (strcmp(Prio, "low") == 0)
-	  priority = Threading::THREAD_PRIO_LOW;
-  else if (strcmp(Prio, "normal") == 0)
-	  priority = Threading::THREAD_PRIO_NORMAL;
-  else if (strcmp(Prio, "high") == 0)
-	  priority = Threading::THREAD_PRIO_HIGH;
-  else
-	  priority = Threading::THREAD_PRIO_NORMAL;
 
-
-  queueLength = config->GetInt("VideoRecorder.Queue", 6);
+  recordSound = strcmp(config->GetStr("VideoRecorder.AudioCodec", "no"), "no") != 0;
+  if (recordSound && mode == MODE_FORCED_CFR)
+  {
+    Report (CS_REPORTER_SEVERITY_WARNING, "Sound recording is not supported in forced-cfr mode!");
+    recordSound = false;
+  }
+  if (recordSound && !softSoundRenderer)
+    recordSound = false;
 
   initialized = true;
   return true;
@@ -252,9 +257,15 @@ void csVideoRecorder::Start()
 	  filename = filenameHelper.FindNextFilename (VFS);
   }
 
+  // add sound recording filter
+  if (recordSound && (!softSoundRenderer || !softSoundRenderer->AddOutputFilter(SS_FILTER_LOC_RENDEROUT, &soundRecorder)))
+	recordSound = false;
+
   // Create encoder. It is asynchronous and we will not wait for it to perform full initialization.
   // We will handle any initialization errors later (in OnFrameEnd()).
-  encoder = new VideoEncoder(VFS, priority, width, height, (mode == MODE_VFR)? 1000 : framerate, config, filename, videoCodecName, audioCodecName, queueLength);
+  encoder.AttachNew(new VideoEncoder(VFS, config, filename,
+	                                 width, height, (mode == MODE_VFR)? 1000 : framerate,
+							         recordSound? soundFormat.Channels : 0, soundFormat.Freq));
   recording = true;
   startTick = 0;
 
@@ -265,11 +276,15 @@ void csVideoRecorder::Stop()
 {
   if (!recording)
 	return;
-
-  encoder->Stop(); // FIXME: we don't need to wait for it to finish
-  delete encoder;
-  encoder = NULL;
+  
+  Report(CS_REPORTER_SEVERITY_NOTIFY, "stopping");
+  encoder->Stop();
+  Report(CS_REPORTER_SEVERITY_NOTIFY, "stop");
+  encoder.Invalidate();
+  Report(CS_REPORTER_SEVERITY_NOTIFY, "inv");
   recording = false;
+  if (softSoundRenderer && recordSound)
+    softSoundRenderer->RemoveOutputFilter(SS_FILTER_LOC_RENDEROUT, &soundRecorder);
 
   Report(CS_REPORTER_SEVERITY_NOTIFY, "Stop video recording to %s", filename.GetData());
 }

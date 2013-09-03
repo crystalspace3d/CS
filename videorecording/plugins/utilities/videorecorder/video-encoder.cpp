@@ -368,7 +368,10 @@ bool VideoEncoder::InitAudioStream()
   audio->sample_rate = freq;
   audio->channels = channels;
 #if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(51, 26, 0)
-  audio->channel_layout = avcodec_guess_channel_layout(channels, audioCodec->id, NULL); 
+  if (channels == 2)
+	audio->channel_layout = AV_CH_LAYOUT_STEREO;
+  else
+	audio->channel_layout = AV_CH_LAYOUT_MONO;
 #else
   audio->channel_layout = av_get_default_channel_layout(channels);
 #endif

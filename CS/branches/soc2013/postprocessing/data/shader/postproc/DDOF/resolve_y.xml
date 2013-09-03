@@ -1,3 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  
+  (C) 2013 by Pedro SOUZA
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public
+  License along with this library; if not, write to the Free
+  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-->
 <shader compiler="xmlshader" name="reduce">
   <technique priority="200">
     <pass>
@@ -11,61 +29,15 @@
 	  <variablemap variable="resolution" destination="g_Resolution" />
 	  <variablemap variable="inv resolution" destination="g_InvResolution" />
 	  <variablemap variable="pixel size" destination="g_InputInvRes" />
+	  <variablemap variable="axis direction" destination="g_Axis" />
 	  <program>
 
 	      <![CDATA[
 
-
-uniform sampler2D g_TexX;
-
-uniform sampler2D g_TexY;
-uniform sampler2D g_TexABC;
-
-float2 g_Resolution;
-float2 g_InvResolution;
-float2 g_InputInvRes;
-
-float2 getTexCoord(float2 uv)
-{
-	int i = (int)(uv.y * g_Resolution.y);
-	i = i>>1;
-	float y = i*g_InputInvRes.y + g_InputInvRes.y*0.5;
-	return float2(uv.x, y);
-}
-
-float isEven(float u)
-{
-	int i = (int)(u*g_Resolution.y);
-	return (i&1) != 0 ? 0.0 : 1.0;
-}
-
-float4 main(float2 texUV: TEXCOORD0) : COLOR
-{
-	float2 offset = float2(0.0, g_InputInvRes.y);
-	float2 uv = getTexCoord(texUV);
-
-	float3 color;
-	
-	
-	if (isEven(texUV.y))
-	{
-		float3 abc = tex2D (g_TexABC, texUV).xyz;
-		float3 color_left = ((uv - offset).y < 0.0) ? float3(0.0) : tex2D (g_TexX, uv - offset).xyz;
-		float3 color_right = (uv.y > 1.0) ? float3(0.0) : tex2D (g_TexX, uv).xyz;
-		float3 Y = tex2D (g_TexY, texUV).xyz;
-		
-		
-		color = (Y - abc.x*color_left - abc.z * color_right) / abc.y;
-
-	}
-	else
-		color = tex2D (g_TexX, uv).xyz;
-	
-	return float4(color, 1.0);
-}
+float2 g_Axis = float2(0, 1);
 
 	      ]]>
-
+		<?Include resolve.cgfp ?>
 	  </program>
 	</cgfp>
       </fp>

@@ -1,3 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--  
+  (C) 2013 by Pedro SOUZA
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Library General Public License for more details.
+
+  You should have received a copy of the GNU Library General Public
+  License along with this library; if not, write to the Free
+  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-->
+
 <shader compiler="xmlshader" name="reduce">
   <technique priority="200">
     <pass>
@@ -14,65 +33,10 @@
 
 	      <![CDATA[
 
-
-uniform sampler2D g_TexABC;
-uniform sampler2D g_TexY;
-
-float2 g_Resolution;
-float2 g_InvResolution;
-float2 g_InputInvRes;
-
-float2 getTexCoord(float2 uv)
-{
-	int i = (int)(uv.y * g_Resolution.y);
-	i = i << 1;
-	float y = i*g_InputInvRes.y + 0.5*g_InputInvRes.y;
-	return float2(uv.x, y);
-
-}
-
-void main(float2 texUV: TEXCOORD0, out float4 outABC : COLOR1, out float4 outY : COLOR0)
-{
-	float2 offset = float2(0.0, g_InputInvRes.y);
-	float2 uv = getTexCoord(texUV) + offset;
-
-	float3 abc = tex2D (g_TexABC, uv).xyz;
-	float3 abc_left = tex2D (g_TexABC, uv - offset).xyz;
-	float3 abc_right = tex2D (g_TexABC, uv + offset).xyz;
-	
-	float3 Y = tex2D (g_TexY, uv).xyz;
-	float3 Y_left = tex2D (g_TexY, uv - offset).xyz;
-	float3 Y_right = tex2D (g_TexY, uv + offset).xyz;
-	
-	
-	float a, b, c;
-	float3 y;
-	float k1, k2;
-
-	
-	k1 = - abc.x / abc_left.y;
-	
-	a = abc_left.x * k1;
-	b = abc_left.z * k1 + abc.y;
-	c = 0.0;
-	y = Y_left * k1 + Y;
-	
-	if ((uv + offset).y < 1.0)
-	{
-		k2 = - abc.z / abc_right.y;
-		b += abc_right.x * k2;
-		c += abc_right.z * k2;
-		y += Y_right * k2;
-	}
-	
-	
-	outABC = float4(a, b, c, 1.0);
-	outY = float4(y, 1.0);
-
-}
+float2 g_Axis = float2(0, 1);
 
 	      ]]>
-
+		<?Include reduce.cgfp ?>
 	  </program>
 	</cgfp>
       </fp>

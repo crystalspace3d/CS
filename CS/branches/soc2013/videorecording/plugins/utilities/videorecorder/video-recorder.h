@@ -8,14 +8,14 @@
 #include "ivaria/movierecorder.h"
 #include "ivaria/reporter.h"
 #include "ivideo/graph2d.h"
+#include "isndsys/ss_renderer.h"
 #include "csutil/eventhandlers.h"
 #include "csutil/weakref.h"
 #include "csutil/scf_implementation.h"
 #include "csutil/cfgacc.h"
-#include "csutil/threading/thread.h"
 #include "cstool/numberedfilenamehelper.h"	
 
-class VideoEncoder;
+#include "video-encoder.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(VideoRecorder)
 {
@@ -46,18 +46,24 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   csRef<iReporter> reporter;
   csRef<iGraphics2D> g2d;
   csRef<iVFS> VFS;
+  csRef<iSndSysRendererSoftware> softSoundRenderer;
   csRef<iVirtualClock> realClock;
 
   bool initialized;
   bool paused;
   bool recording;
+  bool recordSound;
   Mode mode;
 
   // pseudo time used with forced-cfr mode
   csMicroTicks currentMicroTicks;
   csMicroTicks elapsedMicroTicks;
+
+  csMicroTicks startTick;
+  csMicroTicks pauseTick;
+  csMicroTicks prevTick;
   
-  VideoEncoder* encoder;
+  csRef<VideoEncoder> encoder;
   
   /// format of the movie filename (e.g. "/this/crystal000")
   CS::NumberedFilenameHelper filenameHelper;
@@ -71,17 +77,9 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   int width, height;
   int framerate;
   csString extension;
-  csString videoCodecName;
-  csString audioCodecName;
-
-  int queueLength;
-  /// Priority for encoding thread
-  Threading::ThreadPriority priority;
-
-  csMicroTicks startTick;
-  csMicroTicks pauseTick;
-  csMicroTicks prevTick;
-
+  
+  csSndSysSoundFormat soundFormat;
+ 
   struct KeyCode
   {
     utf32_char code;
@@ -203,6 +201,31 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
     }
   };
   csRef<FakeClock> fakeClock;
+  
+  class SoundRecorder : 
+    public scfImplementation1<SoundRecorder, iSndSysSoftwareOutputFilter>
+  {
+    csWeakRef<csVideoRecorder> parent;
+
+  public:
+    SoundRecorder (csVideoRecorder* parent) : scfImplementationType (this), parent (parent) {}
+    virtual ~SoundRecorder () {}
+
+	virtual void DeliverData (const csSoundSample *SampleBuffer, size_t Frames)
+	{
+		if (parent && parent->encoder && parent->recording && !parent->paused)
+			parent->encoder->DeliverSoundData(SampleBuffer, Frames);
+	}
+	
+	virtual bool FormatNotify (const csSndSysSoundFormat *pSoundFormat)
+	{
+		if (!parent || pSoundFormat->Bits != 16)
+			return false;
+		parent->soundFormat = *pSoundFormat;
+		return true;
+	}
+  };
+  SoundRecorder soundRecorder;
 
 public:
   csVideoRecorder (iBase* parent);

@@ -46,24 +46,22 @@ void VideoEncoder::SetError(const char* fmt, ...)
   va_start (args, fmt);
   error.FormatV(fmt, args);
   va_end (args);
+
+  recording = false;
 }
 
-VideoEncoder::VideoEncoder(csRef<iVFS> VFS,
-	                       ThreadPriority priority,
-	                       int width, int height, int framerate,
-			                iConfigFile* config,
-		                   const csString& filename,
-		                   const csString& videoCodecName,
-		                   const csString& audioCodecName,
-				           int queueLength)
+VideoEncoder::VideoEncoder(
+	           csRef<iVFS> VFS, iConfigFile* config,
+	           const csString& filename,
+		       int width, int height, int framerate,
+			   uint8 channels, int freq)
 {
   this->width = width;
   this->height = height;
   this->framerate = framerate;
+  this->channels = channels;
+  this->freq = freq;
   this->filename = filename;
-  this->videoCodecName = videoCodecName;
-  this->audioCodecName = audioCodecName;
-  this->queueLength = queueLength;
 
   this->config = config;
   this->VFS = VFS;
@@ -80,66 +78,73 @@ VideoEncoder::VideoEncoder(csRef<iVFS> VFS,
   audio = NULL;
   audioFrame = NULL;
   audioCodec = NULL;
+  
+  int queueLength = config->GetInt("VideoRecorder.Queue", 6);
+
+  videoCodecName = config->GetStr("VideoRecorder.VideoCodec", "libx264");
+  audioCodecName = config->GetStr("VideoRecorder.AudioCodec", "no");
 
   videoQuality = config->GetFloat("VideoRecorder.VideoQuality", -1);
-  videoBitrate = config->GetInt("VideoRecorder.VideoBitRate", 0);
+  videoBitrate = config->GetInt("VideoRecorder.VideoBitRate", 3000000);
+
+  audioQuality = config->GetFloat("VideoRecorder.AudioQuality", -1);
+  audioBitrate = config->GetInt("VideoRecorder.AudioBitRate", 100000);
+  
+  ThreadPriority priority;
+  const char* prio = config->GetStr("VideoRecorder.Prioriry", "normal");
+  if (strcmp(prio, "low") == 0)
+	  priority = THREAD_PRIO_LOW;
+  else if (strcmp(prio, "normal") == 0)
+	  priority = THREAD_PRIO_NORMAL;
+  else if (strcmp(prio, "high") == 0)
+	  priority = THREAD_PRIO_HIGH;
+  else
+	  priority = THREAD_PRIO_NORMAL;
 
   // allocate buffers for holding color planes
-  Y = new unsigned char[width*height];
-  U = new unsigned char[width*height/4];
-  V = new unsigned char[width*height/4];
+  Y.SetSize(width*height);
+  U.SetSize(width*height/4); // because of YUV 4:2:0 format, U and V are 2x times smaller in each direction
+  V.SetSize(width*height/4); // (4x total)
 
-  queue = new csRef<csImageMemory>[queueLength];
-  queueTicks = new csMicroTicks[queueLength];
+  videoQueue.SetSize(queueLength);
+  videoQueueTicks.SetSize(queueLength);
  
-  queueWritten = 0;
-  queueRead = -1;
+  videoQueueWritten = 0;
+  videoQueueRead = 0;
+  audioQueueWritten = 0;
+  audioQueueRead = 0;
   
-  thread.AttachNew (new Thread(this));
-  thread->SetPriority(priority);
-  thread->Start();
+  recording = true;
+  recordAudio = false;
+
+  encodingThread.AttachNew (new Thread(this));
+  encodingThread->SetPriority(priority);
+  encodingThread->Start();
 }
 
 VideoEncoder::~VideoEncoder()
 {
-  delete[] Y;
-  delete[] U;
-  delete[] V;
-
-  delete[] queue;
-  delete[] queueTicks;
-
   // free everything
-  if (videoStream)
-  {
+  if (video)
      avcodec_close(video);
-     av_free(video);
-     av_free(videoStream);
-     av_free(videoFrame);
-  }
-  if (audioStream)
-  {
+  if (audio)
      avcodec_close(audio);
-     av_free(audio);
-     av_free(audioStream);
-     av_free(audioFrame);
-  }
-
-  if (avContainer)
-	av_free(avContainer);
+  av_free(videoFrame);
+  av_free(audioFrame);
+  avformat_free_context(avContainer);
 }
 
 bool VideoEncoder::NeedFrame()
 {
-  // check if queue is full
+  // check if queue is not full
   MutexScopedLock lock (mutex);
-  return queueWritten - queueRead < queueLength;
+  return videoQueueWritten - videoQueueRead < videoQueue.GetSize();
 }
 
 void VideoEncoder::Wait()
 {
   MutexScopedLock lock (mutex);
-  if (queueWritten - queueRead < queueLength)
+  if (videoQueueWritten - videoQueueRead < videoQueue.GetSize())
 	return;
   eventReady.Wait(mutex);
 }
@@ -151,11 +156,11 @@ void VideoEncoder::AddFrame(csMicroTicks Time, csRef<csImageMemory> Frame)
     MutexScopedLock lock (mutex);
 	
     // Put image in queue
-    queue[queueWritten % queueLength] = Frame;
-	queueTicks[queueWritten % queueLength] = Time;
-	queueWritten++;
+    videoQueue.Put(videoQueueWritten % videoQueue.GetSize(), Frame);
+	videoQueueTicks[videoQueueWritten % videoQueue.GetSize()] = Time;
+	videoQueueWritten++;
   }
-  eventAdd.NotifyOne();
+  eventWakeUp.NotifyOne(); // wake up encoding thread if it is sleeping
 }
 
 void VideoEncoder::Stop()
@@ -164,12 +169,15 @@ void VideoEncoder::Stop()
     MutexScopedLock lock (mutex);
     recording = false;
   }
-  eventAdd.NotifyOne();
-  thread->Wait(); // FIXME: we shouldn't wait
-  thread.Invalidate();
+  // wake up encoding thread if it is sleeping
+  eventWakeUp.NotifyOne();
+
+  // wait for encoding thread to finish and release it
+  encodingThread->Wait();
+  encodingThread.Invalidate();
 }
 
-// try start video recording, returns false if something goes wrong
+// try to start video recording, returns false if something goes wrong
 bool VideoEncoder::TryStart()
 {
   // find format
@@ -204,6 +212,12 @@ bool VideoEncoder::TryStart()
   if (!InitVideoStream())
 	return false;
 
+  recordAudio = false;
+  if (audioCodec && channels) // we can proceed without audio
+	  recordAudio = InitAudioStream();
+  if (GetError() != "")
+	  return false;
+
   // write format info to log
   av_dump_format(avContainer, 0, avContainer->filename, 1);
 
@@ -216,6 +230,7 @@ bool VideoEncoder::TryStart()
       SetError("Couldn't open file for recording - %s", filename.GetData());
       return false;
     }
+	// we are redirecting writing to iFile
 	avContainer->pb = avio_alloc_context(writeBuffer, WRITE_BUFFER_SIZE,
 		1, // write flag (true)
 		(iFile*)file, // user data pointer
@@ -232,8 +247,6 @@ bool VideoEncoder::TryStart()
 
   // write the stream header, if any
   avformat_write_header(avContainer, NULL);
-
-  recording = true;
 
   return true;
 }
@@ -276,7 +289,7 @@ bool VideoEncoder::InitVideoStream()
   if (avFormat->flags & AVFMT_GLOBALHEADER)
       video->flags |= CODEC_FLAG_GLOBAL_HEADER;
 
-  // set codec options
+  // set codec specific options
   AVDictionary* dict = NULL;
   csString codecName = videoCodec->name;
   csRef<iConfigIterator> option (config->Enumerate("VideoRecorder." + codecName + "."));
@@ -300,9 +313,105 @@ bool VideoEncoder::InitVideoStream()
   }
 
   videoFrame->linesize[0] = width; // Y
-  videoFrame->linesize[1] = width/2; // Cb
-  videoFrame->linesize[2] = width/2; // Cr
+  videoFrame->linesize[1] = width/2; // U, width is divided by 2 because of 4:2:0 chroma subsampling
+  videoFrame->linesize[2] = width/2; // V
   videoFrame->linesize[3] = 0;
+  return true;
+}
+
+// initialize output audio stream
+bool VideoEncoder::InitAudioStream()
+{
+  audioFrame = avcodec_alloc_frame();
+  if (!audioFrame)
+    return false;
+
+  audioStream = avformat_new_stream(avContainer, audioCodec);
+  if (!audioStream)
+     return false;
+  audioStream->id = 1;
+
+  audio = audioStream->codec;
+
+  avcodec_get_context_defaults3(audio, audioCodec);
+  audio->codec_id = audioCodec->id;
+   
+  audio->sample_fmt = AV_SAMPLE_FMT_S16;
+  // find known sample format  
+  if (audioCodec->sample_fmts)
+  {
+	bool s16 = false, s16p = false, flt = false, fltp = false;
+	// let's see what formats this codec supports
+	for (const AVSampleFormat* pFmt = audioCodec->sample_fmts; *pFmt != AV_SAMPLE_FMT_NONE; pFmt++)
+	{
+	  if (*pFmt == AV_SAMPLE_FMT_S16)
+		s16 = true;
+	  if (*pFmt == AV_SAMPLE_FMT_S16P)
+		s16p = true;
+	  if (*pFmt == AV_SAMPLE_FMT_FLT)
+		flt = true;
+	  if (*pFmt == AV_SAMPLE_FMT_FLTP)
+		fltp = true;
+	}
+	// select sample format
+	if (s16)
+	  audio->sample_fmt = AV_SAMPLE_FMT_S16;
+	else if (s16p)
+	  audio->sample_fmt = AV_SAMPLE_FMT_S16P;
+	else if (flt)
+	  audio->sample_fmt = AV_SAMPLE_FMT_FLT;
+	else if (fltp)
+	  audio->sample_fmt = AV_SAMPLE_FMT_FLTP;
+  }
+
+  // put audio parameters
+  audio->sample_rate = freq;
+  audio->channels = channels;
+  audio->channel_layout = av_get_default_channel_layout(channels);
+
+  audio->bit_rate = audioBitrate;
+  if (audioQuality >= 0)
+  {
+    audio->flags |= CODEC_FLAG_QSCALE;
+    audio->global_quality = audioQuality*FF_QP2LAMBDA;
+  }
+
+  // some formats want stream headers to be separate
+  if (avFormat->flags & AVFMT_GLOBALHEADER)
+      audio->flags |= CODEC_FLAG_GLOBAL_HEADER;
+
+  // set codec specific options
+  AVDictionary* dict = NULL;
+  csString codecName = audioCodec->name;
+  csRef<iConfigIterator> option (config->Enumerate("VideoRecorder." + codecName + "."));
+  while (option->Next())
+    av_dict_set(&dict, option->GetKey(true), option->GetStr(), 0);
+
+  // open the codec
+  if (avcodec_open2(audio, audioCodec, &dict) < 0)
+  {
+	// we already added new stream to our file, but now there is error, so now we can't simply ignore audio,
+	// abort with error instead.
+	SetError("Could not open audio codec %s", audioCodec->long_name);
+    return false;
+  }
+
+  av_dict_free(&dict);
+  
+#if LIBAVCODEC_VERSION_MAJOR >= 54
+  if (audioCodec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE)
+#else
+  if (audio->frame_size == 0)
+#endif
+    numSamples = 2048;
+  else
+    numSamples = audio->frame_size;
+
+  {
+    MutexScopedLock lock (mutex);
+	audioQueue.SetSize(numSamples*channels*64);
+  }
+ 
   return true;
 }
 
@@ -316,46 +425,51 @@ void VideoEncoder::Run()
 
   while (true)
   {
-    // Get an item from queue
     csRef<iImage> screenshot;
     csMicroTicks time;
 
-	{
-      MutexScopedLock lock (mutex);
-	  queueRead++;
-	}
 	eventReady.NotifyAll();
     {
       // Make sure we lock the queue before trying to access it
       MutexScopedLock lock (mutex);
       // Wait until we have an image
-      while (queueRead >= queueWritten && recording)
-        eventAdd.Wait (mutex);
+      while (videoQueueRead >= videoQueueWritten && recording)
+        eventWakeUp.Wait (mutex);
 
 	  if (!recording)
-		  break;
+		break;
 
-	  //csPrintf("queue %3i  %3i\n", queueWritten, queueRead);
-		 
       // Get image
-      screenshot = queue[queueRead % queueLength];
-	  time = queueTicks[queueRead % queueLength];
+      screenshot = videoQueue[videoQueueRead % videoQueue.GetSize()];
+	  time = videoQueueTicks[videoQueueRead % videoQueue.GetSize()];
     }
-   
 	SaveFrame(screenshot, time);
+	SaveAudio();
+	{
+	  if (error != "")
+		return;
+      MutexScopedLock lock (mutex);
+	  videoQueueRead++;
+	}
   }
 
   // encode remaining frames
-  while (queueRead < queueWritten)
   {
-	csRef<iImage> screenshot = queue[queueRead % queueLength];
-    SaveFrame(screenshot, queueTicks[queueRead % queueLength]);
-	queueRead++;
+	  MutexScopedLock lock (mutex);
+	  while (videoQueueRead < videoQueueWritten)
+	  {
+		csRef<iImage> screenshot = videoQueue[videoQueueRead % videoQueue.GetSize()];
+		SaveFrame(screenshot, videoQueueTicks[videoQueueRead % videoQueue.GetSize()]);
+		videoQueueRead++;
+	  }
   }
 
   // output buffered frames
   if (videoCodec && videoCodec->capabilities & CODEC_CAP_DELAY)
     while (WriteFrame(NULL, 0));
+  
+  if (recordAudio && audioCodec && audioCodec->capabilities & CODEC_CAP_DELAY)
+    while (WriteAudio(NULL));
 
   // write the trailer, if any.
   av_write_trailer(avContainer);
@@ -364,9 +478,6 @@ void VideoEncoder::Run()
 
 bool VideoEncoder::WriteFrame(AVFrame* frame, csMicroTicks time)
 {
-  if (!videoStream)
-    return false;
-
   AVPacket Packet;
   av_init_packet(&Packet);
   Packet.data = NULL;
@@ -384,7 +495,7 @@ bool VideoEncoder::WriteFrame(AVFrame* frame, csMicroTicks time)
 
     if (av_interleaved_write_frame(avContainer, &Packet) != 0)
 	{
-    //  Report(CS_REPORTER_SEVERITY_WARNING, "Error while writing video frame");
+      SetError("Error while writing video frame");
 	  return false;
     }
     return false;
@@ -395,10 +506,10 @@ bool VideoEncoder::WriteFrame(AVFrame* frame, csMicroTicks time)
     int got_packet;
     if (avcodec_encode_video2(video, &Packet, frame, &got_packet) < 0)
 	{
-   //   Report(CS_REPORTER_SEVERITY_WARNING, "avcodec_encode_video2 failed");
+      SetError("avcodec_encode_video2 failed");
 	  return false;
 	}
-    if (!got_packet)
+    if (!got_packet) // this is ok, some codecs delay output
       return false;
 		
     if (Packet.pts != AV_NOPTS_VALUE)
@@ -409,15 +520,15 @@ bool VideoEncoder::WriteFrame(AVFrame* frame, csMicroTicks time)
     Packet.size = avcodec_encode_video(video, outBuffer, OUT_BUFFER_SIZE, frame);
     if (Packet.size < 0)
 	{
-  //    Report(CS_REPORTER_SEVERITY_WARNING, "avcodec_encode_video failed");
+      SetError("avcodec_encode_video failed");
 	  return false;
 	}
-    if (Packet.size == 0)
+    if (Packet.size == 0) // this is ok
       return false;
 
     if (video->coded_frame->pts != AV_NOPTS_VALUE)
       Packet.pts = av_rescale_q(video->coded_frame->pts, video->time_base, videoStream->time_base);
-    if (video->coded_frame->key_frame )
+    if (video->coded_frame->key_frame)
       Packet.flags |= AV_PKT_FLAG_KEY;
     Packet.data = outBuffer;
 #endif
@@ -425,7 +536,7 @@ bool VideoEncoder::WriteFrame(AVFrame* frame, csMicroTicks time)
     Packet.stream_index = videoStream->index;
     if (av_interleaved_write_frame(avContainer, &Packet) != 0)
     {
-    //  Report(CS_REPORTER_SEVERITY_WARNING, "Error while writing video frame");
+      SetError("Error while writing video frame");
 	  return false;
 	}      
     return true;
@@ -467,8 +578,124 @@ void VideoEncoder::SaveFrame(csRef<iImage>& img, csMicroTicks time)
 	V[i*width/2 + j] = 128 + (( 7196*r - 6026*g - 1170*b) >> 16);
   }
 
-  videoFrame->data[0] = Y;
-  videoFrame->data[1] = U;
-  videoFrame->data[2] = V;
+  videoFrame->data[0] = &Y[0];
+  videoFrame->data[1] = &U[0];
+  videoFrame->data[2] = &V[0];
   WriteFrame(videoFrame, time);
+}
+
+bool VideoEncoder::WriteAudio(AVFrame* frame)
+{
+  if (!recordAudio)
+    return false;
+
+  AVPacket Packet = { 0 };
+  av_init_packet(&Packet);
+
+  int got_packet;
+  if (avcodec_encode_audio2(audio, &Packet, frame, &got_packet) != 0)
+  {
+	SetError("avcodec_encode_audio2 failed");
+	return false;
+  }
+
+  if (!got_packet) // this is ok, some codecs delay output
+	return false;
+
+  // Write the compressed frame to the media file.
+  Packet.stream_index = audioStream->index;
+  if (av_interleaved_write_frame(avContainer, &Packet) != 0)
+  {
+    SetError("Error while writing video frame");
+	return false;
+  }      
+  return true;
+}
+
+void VideoEncoder::SaveAudio()
+{
+  if (!recordAudio)
+    return;
+
+  // read current queue status
+  int read, written;  
+  {
+    MutexScopedLock lock (mutex);
+	read = audioQueueRead;
+	written = audioQueueWritten;
+  }
+
+  while (read + numSamples*channels <= written)
+  {
+    AVPacket Packet = { 0 };
+    av_init_packet(&Packet);
+
+    audioFrame->nb_samples = numSamples;
+
+	void* buffer = (uint8_t*)&audioQueue[read % audioQueue.GetSize()];
+	int bufSize = numSamples*channels*sizeof(uint16);
+	
+	// convert to float if necessary (map from [-2^15; 2^15 - 1] to [-1.0, 1.0])
+    if (audio->sample_fmt == AV_SAMPLE_FMT_FLT || audio->sample_fmt == AV_SAMPLE_FMT_FLTP)
+	{
+	  audioBufferFlt.SetSize(numSamples*channels);
+	  for (int i = 0; i < numSamples*channels; i++)
+		audioBufferFlt[i] = audioQueue[read % audioQueue.GetSize() + i] / 32768.0f;
+	  buffer = &audioBufferFlt[0];
+	  bufSize = numSamples*channels*sizeof(float);
+	}
+
+	avcodec_fill_audio_frame(audioFrame, audio->channels, audio->sample_fmt, (uint8_t*)buffer, bufSize, 1);
+	read += numSamples*channels;
+
+	WriteAudio(audioFrame);
+  }
+
+  // write new queue status
+  {
+    MutexScopedLock lock (mutex);
+	audioQueueRead = read;
+  }
+}
+
+void VideoEncoder::DeliverSoundData (const csSoundSample *SampleBuffer, size_t NumSamples)
+{
+  // read current queue status
+  int read, written;  
+  {
+    if (!recordAudio)
+	  return;
+    MutexScopedLock lock (mutex);
+	read = audioQueueRead;
+	written = audioQueueWritten;
+  }
+
+  if (audio->sample_fmt == AV_SAMPLE_FMT_S16P || audio->sample_fmt == AV_SAMPLE_FMT_FLTP)
+  {
+	// codec wants data in planar format (that is - first numSamples for first channel, then for second)
+	// we need to do hard job for this conversion
+	for (uint i = 0; i < NumSamples; i++)
+	  for  (uint j = 0; j < channels; j++)
+	  {
+		int s = (written + i*channels + j) % audioQueue.GetSize();
+		int N = numSamples*channels;
+		int n = s / N;
+		int k = s % N;
+        audioQueue[n*N + (k % channels)*numSamples + k/channels] = SampleBuffer[i + NumSamples*j] >> 16;
+	  }
+  }
+  else
+  {
+	// codec wants data in interleaved format - one sample for left channel, one sample for right channel, etc.
+	// this is simpler
+	for (uint i = 0; i < NumSamples; i++)
+	  for  (uint j = 0; j < channels; j++)
+        audioQueue[(written + i*channels + j) % audioQueue.GetSize()] = SampleBuffer[i + NumSamples*j] >> 16;
+  }
+
+  // write new queue status
+  {
+    MutexScopedLock lock (mutex);
+	audioQueueWritten += channels*NumSamples;
+  }
 }

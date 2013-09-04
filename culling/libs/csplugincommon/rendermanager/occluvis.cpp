@@ -398,10 +398,10 @@ namespace CS
     template<bool bDoFrustumCulling>
     bool csOccluvis::TraverseTreeF2B(VisTree* node,
                                      Front2BackData& f2bData,
-#				    ifdef OCCLUVIS_USE_KD
+#				    if (OCCLUVIS_TREETYPE == 0)
 				    uint32 timestamp,
 #				    endif
-				     uint32& frustumMask)
+				    uint32& frustumMask)
     {
       // check whether we should perform frustum culling
       if(bDoFrustumCulling)
@@ -445,7 +445,7 @@ namespace CS
         // get visibility object for this tree object
         iVisibilityObject* visobj = GetNodeVisObject(objects[i]);
 
-#	ifdef OCCLUVIS_USE_KD
+#	if (OCCLUVIS_TREETYPE == 0)
 	// test whether we already visited this node
 	if(objects[i]->timestamp == timestamp)
 	{
@@ -1466,7 +1466,7 @@ namespace CS
     template<bool sloppy>
     bool csOccluvis::TraverseIntersectSegment(VisTree* node,
 			  IntersectSegmentFront2BackData& data,
-#			  ifdef OCCLUVIS_USE_KD
+#			  if (OCCLUVIS_TREETYPE == 0)
 			  uint32 timestamp,
 #			  endif
 			  uint32& frustumMask)
@@ -1508,7 +1508,7 @@ namespace CS
 	// get object
 	iVisibilityObject* visobj = GetNodeVisObject(objects[i]);
 
-#	ifdef OCCLUVIS_USE_KD
+#	if (OCCLUVIS_TREETYPE == 0)
 	// test whether we already visited this object
 	if(objects[i]->timestamp == timestamp)
 	{

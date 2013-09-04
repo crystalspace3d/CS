@@ -20,12 +20,20 @@
 #ifndef __CS_RENDERMANAGER_OCCLUVIS_H__
 #define __CS_RENDERMANAGER_OCCLUVIS_H__
 
-//#define OCCLUVIS_USE_KD
+// set acceleration structure to use:
+// csKDTree: 0
+// csBIH: 1
+// csBVH: 2
+#define OCCLUVIS_TREETYPE 2
 
-#ifdef OCCLUVIS_USE_KD
-#include "csgeom/kdtree.h"
+#if (OCCLUVIS_TREETYPE == 0)
+#  include "csgeom/kdtree.h"
+#elif (OCCLUVIS_TREETYPE == 1)
+#  include "csgeom/bih.h"
+#elif (OCCLUVIS_TREETYPE == 2)
+#  include "csgeom/bvh.h"
 #else
-#include "csgeom/bih.h"
+#  error Unknown occluvis tree type
 #endif
 #include "csutil/hash.h"
 #include "csutil/refarr.h"
@@ -164,11 +172,13 @@ namespace CS
       csDirtyAccessArray<unsigned> queries;
     };
 
-#   ifdef OCCLUVIS_USE_KD
+#if (OCCLUVIS_TREETYPE == 0)
     typedef csKDTree VisTree;
-#   else
+#elif (OCCLUVIS_TREETYPE == 1)
     typedef csBIH VisTree;
-#   endif
+#elif (OCCLUVIS_TREETYPE == 2)
+    typedef csBVH VisTree;
+#endif
     typedef VisTree::Child VisTreeNode;
 
     class CS_CRYSTALSPACE_EXPORT csOccluvis :
@@ -344,7 +354,7 @@ namespace CS
        */
       template<bool bDoFrustumCulling>
       static bool TraverseTreeF2B(VisTree* node, Front2BackData& f2bData,
-#	ifdef OCCLUVIS_USE_KD
+#	if (OCCLUVIS_TREETYPE == 0)
 	uint32 timestamp,
 #	endif
 	uint32& frustum_mask);
@@ -354,7 +364,7 @@ namespace CS
        */
       template<bool sloppy>
       static bool TraverseIntersectSegment(VisTree* node, IntersectSegmentFront2BackData& data,
-#	ifdef OCCLUVIS_USE_KD
+#	if (OCCLUVIS_TREETYPE == 0)
 	uint32 timestamp,
 #	endif
 	uint32& frustumMask);

@@ -18,7 +18,6 @@
 	      {
 
 				float ao = tex2D (texAO, TexCoord).x;
-				return float4(ao, ao, ao, 1);
 				float3 color = tex2D (texDiff, TexCoord).xyz*ao;
 				return float4(color.x, color.y, color.z, 1.0);
 	      }

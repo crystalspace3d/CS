@@ -2,13 +2,13 @@
 
 	<layer name="hbao" shader="/shader/postproc/HBAO/HBAO.xml" downsample="1">
 	
-		<parameter name="angle bias" type="float">0.52359877</parameter> <!-- 30 degrees -->
+		<parameter name="angle bias" type="float">0.1</parameter> <!-- 5.72 degrees -->
 		<parameter name="sqr radius" type="float">0.01</parameter>
 		<parameter name="inv radius" type="float">10</parameter>
 		<parameter name="radius" type="float">0.1</parameter>
 		<parameter name="num steps" type="float">8</parameter>
 		<parameter name="num directions" type="float">16</parameter>
-		<parameter name="contrast" type="float">2.3</parameter>
+		<parameter name="contrast" type="float">1.5</parameter>
 		<parameter name="attenuation" type="float">1.0</parameter>
 		
 		<input source="/data/posteffects/CosSinJitter.bmp" texname="tex csj"/>

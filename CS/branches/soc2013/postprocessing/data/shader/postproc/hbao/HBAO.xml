@@ -200,7 +200,7 @@ float4 main(float2 texUV: TEXCOORD0): COLOR
     float d;
     float alpha = 2.0f * M_PI / g_NumDir;
 	float3 rand = tex2D (texCSJ, texUV*g_Resolution*0.015625).xyz;
-
+	rand.xy = rand.xy*2 - float2(1);
 
 
 	for (d = 0; d < g_NumDir; d++) {

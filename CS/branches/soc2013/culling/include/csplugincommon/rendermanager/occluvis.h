@@ -24,7 +24,7 @@
 // csKDTree: 0
 // csBIH: 1
 // csBVH: 2
-#define OCCLUVIS_TREETYPE 2
+#define OCCLUVIS_TREETYPE 1
 
 #if (OCCLUVIS_TREETYPE == 0)
 #  include "csgeom/kdtree.h"

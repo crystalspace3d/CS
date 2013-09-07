@@ -64,7 +64,7 @@ namespace CS
       }
 
       // get query results
-      g3d->OQVisibleQueries(query, visibility, queries.GetSize());
+      g3d->OQVisibleQueries(query, visibility, static_cast<int>(queries.GetSize()));
 
       // get current frame number
       uint32 uNextCheck = engine->GetCurrentFrameNumber() + visibilityFrameSkip;

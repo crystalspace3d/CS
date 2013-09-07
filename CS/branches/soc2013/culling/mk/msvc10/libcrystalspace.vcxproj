@@ -1456,6 +1456,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   <ItemGroup>
     <ClInclude Include="..\..\include\csgeom\bih.h" />
     <ClInclude Include="..\..\include\csgeom\bvh.h" />
+    <ClInclude Include="..\..\include\csgeom\spatialtree.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\aabbtree.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\box.h" />
     <ClInclude Include="..\..\libs\..\include\csgeom\bsptree.h" />

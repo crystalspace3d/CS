@@ -19,16 +19,9 @@
 #ifndef __CS_KDTREE_H__
 #define __CS_KDTREE_H__
 
-#include "csextern.h"
+#include "csgeom/spatialtree.h"
 
-#include "csgeom/box.h"
-#include "csgeom/sphere.h"
-
-#include "csutil/blockallocator.h"
-#include "csutil/ref.h"
-#include "csutil/scfstr.h"
 #include "csutil/scf_implementation.h"
-#include "csutil/floatrand.h"
 
 #include "iutil/dbghelp.h"
 
@@ -39,175 +32,11 @@
  * @{ */
 
 struct iGraphics3D;
-struct iString;
 
-class CS_CRYSTALSPACE_EXPORT csKDTreeChildCommon
+namespace CS
 {
-private:
-  // Pointer back to the original object.
-  void* object;
-
-  // leaves we belong to
-  csArray<void*> leafs;
-
-public:
-  // timestamp for the last time this object was visited
-  uint32 timestamp;
-
-  /**
-   * Set the pointer to the black box object.
-   */
-  inline void SetObject (void* obj)
-  {
-    object = obj;
-  }
-
-  /**
-   * Get the pointer to the black box object.
-   */
-  inline void* GetObject () const
-  {
-    return object;
-  }
-
-  /// Physically add a leaf to this child.
-  void AddLeaf (void* leaf)
-  {
-    leafs.Push (leaf);
-  }
-
-  /// Physically remove a leaf from this child.
-  void RemoveLeaf (int idx)
-  {
-    leafs.DeleteIndexFast (idx);
-  }
-
-  /// Physically remove a leaf from this child.
-  void RemoveLeaf (void* leaf)
-  {
-    leafs.Delete (leaf);
-  }
-
-  /**
-   * Replace a leaf with another one. This is more
-   * efficient than doing RemoveLeaf/AddLeaf and it is
-   * useful in many cases where you want to move a child
-   * in the tree.
-   */
-  void ReplaceLeaf (void* old_leaf, void* new_leaf)
-  {
-    // find the leaf to replace
-    size_t idx = leafs.Find (old_leaf);
-
-    // ensure it was found
-    CS_ASSERT(idx != csArrayItemNotFound);
-
-    // replace it
-    leafs[idx] = new_leaf;
-  }
-
-  /**
-   * Find leaf.
-   */
-  int FindLeaf (void* leaf)
-  {
-    return static_cast<int> (leafs.Find (leaf));
-  }
-
-  // Get number of leaves this child belongs to.
-  inline int GetLeafCount () const
-  {
-    return static_cast<int> (leafs.GetSize ());
-  }
-
-  // Get a leaf this child belongs to.
-  inline void* GetLeaf (int idx) const
-  {
-    return leafs[idx];
-  }
-
-};
-
-/**
- * A child in a KD-tree using bounding boxes.
- */
-class CS_CRYSTALSPACE_EXPORT csKDTreeChild
-  : public csBox3, public csKDTreeChildCommon
+namespace Geometry
 {
-public:
-  // used by implementation
-  typedef csBox3 BoundType;
-
-  // set user-supplied boundaries
-  inline void SetBounds(BoundType const& bounds)
-  {
-    Set(bounds.Min(), bounds.Max());
-  }
-
-  // create a random bound for benchmarking purposes
-  static BoundType RandomBound()
-  {
-    static csRandomFloatGen rng;
-    float x = rng.Get (-50,50);
-    float y = rng.Get (-50,50);
-    float z = rng.Get (-50,50);
-    return BoundType (x, y, z, rng.Get (x, x+7),
-      rng.Get (y, y+7), rng.Get (z, z+7));
-  }
-
-  /**
-   * Get the bounding box of this object.
-   */
-  inline csBox3 const& GetBBox () const
-  {
-    return *this;
-  }
-};
-
-/**
- * A child in a KD-tree using bounding boxes.
- */
-class CS_CRYSTALSPACE_EXPORT csKDTreeSphereChild
-  : public csSphere, public csKDTreeChildCommon
-{
-private:
-  csBox3 box;
-
-public:
-  // used by implementation
-  typedef csSphere BoundType;
-
-  // set user-supplied boundaries
-  inline void SetBounds(BoundType const& bounds)
-  {
-    // copy from other sphere
-    SetCenter (bounds.GetCenter ());
-    SetRadius (bounds.GetRadius ());
-
-    // update our bounding box
-    box.Set (bounds.GetCenter () - csVector3 (bounds.GetRadius ()),
-	     bounds.GetCenter () + csVector3 (bounds.GetRadius ()));
-  }
-
-  // create a random bound for benchmarking purposes
-  static BoundType RandomBound()
-  {
-    static csRandomFloatGen rng;
-    return BoundType (
-      csVector3 (rng.Get (-50,50), rng.Get (-50,50), rng.Get (-50,50)),
-      rng.Get (0,7));
-  }
-
-
-  /**
-   * Get the bounding box of this object.
-   */
-  inline csBox3 const& GetBBox () const
-  {
-    return box;
-  }
-};
-
 enum
 {
   CS_KDTREE_AXISINVALID = -1,
@@ -216,12 +45,6 @@ enum
   CS_KDTREE_AXISZ = 2
 };
 
-#define KDTREE_MAX 100000.
-
-namespace CS
-{
-namespace Geometry
-{
 /**
  * A KD-tree.
  * A KD-tree is a binary tree that organizes 3D space.
@@ -239,8 +62,11 @@ namespace Geometry
  * a better tree as more information is available then.
  */
 template<class Child>
-class KDTree : public scfImplementation1<KDTree<Child>, iDebugHelper>
+class KDTree :
+  public scfImplementation1<KDTree<Child>, iDebugHelper>,
+  public SpatialTree<KDTree<Child>, Child>
 {
+  friend class SpatialTreeType;
 public:
   // convenience typedefs
   typedef KDTree<Child> Self;
@@ -272,233 +98,44 @@ public:
   typedef bool (VisitFunc)(Self* treenode, void* userdata,
 	  uint32 timestamp, uint32& frustum_mask);
 
-  /**
-   * If you implement this interface then you can give that to the
-   * KDtree. The KDtree can then use this to find the description of an object.
-   * This can be used for debugging as the KDtree will print out that description
-   * if it finds something is wrong.
-   */
-  struct iObjectDescriptor : public virtual iBase
-  {
-    virtual csPtr<iString> DescribeObject (Child* child) = 0;
-  };
-
-  /**
-   * The data type for user data to be attached to the KDTree.
-   * It provides no functions but makes it possible to do a direct cast
-   * for performance instead of doing an scfQueryInterface.
-   */
-  struct iUserData : public virtual iBase
-  {
-  };
-
 private:
-  // allocators
-  csBlockAllocator<Child>* childAlloc;
-  csBlockAllocator<Self>* treeAlloc;
-
-  // childs of this branch
-  // either both of those are valid (this is a branch)
-  // or both of them are nullptr (this is a leaf)
-  Self* child1;
-  Self* child2;
-  // the parent node in the tree - nullptr if this is the root
-  Self* parent;
-
-  // An optional user object for this node.
-  csRef<iUserData> userobject;
-
-  // description of this node - used for debugging
-  csRef<iObjectDescriptor> descriptor;
-
-  // bounding box box of the node itself
-  csBox3 node_bbox;
-
   // One of CS_KDTREE_AXIS?
   int splitAxis;
   // Where is the split?
   float splitLocation;
 
-  // Objects in this node. If this node also has children (child1
-  // and child2) then the objects here have to be moved to these
-  // children. The 'Distribute()' function will do that.
-  Child** objects;
-  int numObjects;
-  int maxObjects;
-
-  // Estimate of the total number of objects in this tree including children.
-  int estimateTotalObjects;
-
-  // Minimum amount of objects in this tree before we consider splitting.
-  int minSplitObjects;
-
-  // Disallow Distribute().
-  // If this flag > 0 it means that we cannot find a good split
-  // location for the current list of objects. So in that case we don't
-  // split at all and set this flag to DISALLOW_DISTRIBUTE_TIME so
-  // that we will no longer attempt to distribute for a while. Whenever
-  // objects are added or removed to this node this flag will be decreased
-  // so that when it becomes 0 we can make a new Distribute() attempt can
-  // be made. This situation should be rare though.
-#define DISALLOW_DISTRIBUTE_TIME 20
-  int disallowDistribute;
-
   // Current timestamp we are using for Front2Back(). Objects that
   // have the same timestamp are already visited during Front2Back().
   uint32 globalTimestamp;
-
-  // get tree allocator
-  inline csBlockAllocator<Self>& TreeAlloc ()
-  {
-    if (treeAlloc == nullptr)
-    {
-      if (parent == nullptr)
-      {
-	treeAlloc = new csBlockAllocator<Self> ();
-      }
-      else
-      {
-	treeAlloc = &parent->TreeAlloc ();
-      }
-    }
-    return *treeAlloc;
-  }
-
-  // get child allocator
-  inline csBlockAllocator<Child>& ChildAlloc ()
-  {
-    if (childAlloc == nullptr)
-    {
-      if (parent == nullptr)
-      {
-	childAlloc = new csBlockAllocator<Child> ();
-      }
-      else
-      {
-	childAlloc = &parent->ChildAlloc ();
-      }
-    }
-    return *childAlloc;
-  }
-
-  /// Physically add a child to this tree node.
-  void AddObject (Child* obj)
-  {
-    // check for corrupt object storage
-    CS_ASSERT (((maxObjects == 0) == (objects == nullptr)));
-
-    // check whether we have to grow the obejct storage
-    if (numObjects >= maxObjects)
-    {
-      // double the storage size, but grow it by at least 80 objects
-      maxObjects += csMin (maxObjects+2, 80);
-
-      // allocate new storage
-      Child** new_objects = new Child* [maxObjects];
-
-      // check for allocation failure
-      CS_ASSERT (new_objects);
-
-      // copy old objects to new storage if necessary
-      if (objects && numObjects > 0)
-      {
-	memcpy (new_objects, objects, sizeof (csKDTreeChild*) * numObjects);
-      }
-
-      // free old storage
-      delete[] objects;
-
-      // set new storage
-      objects = new_objects;
-    }
-
-    // add object to storage
-    objects[numObjects++] = obj;
-
-    // update estimated object count
-    estimateTotalObjects++;
-  }
 
   /**
    * Unlink an object from the kd-tree. The 'Child' instance
    * will NOT be deleted.
    */
-  void UnlinkObject (Child* object)
+  void UnlinkObject(Child* object)
   {
     // remove this object from all leaves it belongs to
-    for (int i = object->GetLeafCount () - 1 ; i >= 0 ; i--)
+    for(int i = 0; i < object->GetLeafCount(); ++i)
     {
       // get one of the leaves
-      Self* leaf = static_cast<Self*> (object->GetLeaf (i));
+      Self* leaf = static_cast<Self*>(object->GetLeaf(i));
 
       // check it actually knows about the object
-      int idx = leaf->FindObject (object);
+      int idx = leaf->FindObject(object);
 
       // ensure the object is known to the leaf
-      CS_ASSERT (idx != -1);
+      CS_ASSERT(idx != -1);
 
       // remove the object from the leaf
-      leaf->RemoveObject (idx);
+      leaf->RemoveObject(idx);
 
       // reduce distribution block on leaf
-      if (leaf->disallowDistribute > 0)
-	leaf->disallowDistribute--;
-
-      // remove the leaf from the object
-      object->RemoveLeaf (i);
-    }
-  }
-
-  /// Physically remove a child from this tree node.
-  void RemoveObject (int idx)
-  {
-    // check for out-of-bounds
-    CS_ASSERT (idx >= 0 && idx < numObjects);
-
-    // move objets in storage if necessary
-    if (idx != numObjects - 1)
-    {
-      memmove (&objects[idx], &objects[idx+1],
-	  sizeof (csKDTreeChild*) * (numObjects-idx-1));
+      if(leaf->block > 0)
+	--leaf->block;
     }
 
-    // update object counts
-    estimateTotalObjects--;
-    numObjects--;
-  }
-
-  /// Find an object. Returns -1 if not found.
-  int FindObject (Child* obj)
-  {
-    // iterate over all objects looking for ours
-    for (int i = 0 ; i < numObjects ; i++)
-    {
-      // check whether we found it
-      if (objects[i] == obj)
-      {
-	// return it's index
-	return i;
-      }
-    }
-
-    // couldn't find it, return an error
-    return -1;
-  }
-
-  /**
-   * Add an object to this kd-tree node.
-   */
-  void AddObjectInt (Child* obj)
-  {
-    // decrease distribution block if there is one
-    if (disallowDistribute > 0)
-      disallowDistribute--;
-
-    // add us as leaf for the object
-    obj->AddLeaf (this);
-
-    // physically add object to our tree
-    AddObject (obj);
+    // clear all leaves for the object
+    object->RemoveLeaves();
   }
 
   /**
@@ -515,24 +152,24 @@ private:
   {
     // If we have only two objects we use the middle of the
     // empty space between the two if there is any.
-    if (numObjects == 2)
+    if(numObjects == 2)
     {
       // get the object bounidng boxes to attempt a split
-      const csBox3& bbox0 = objects[0]->GetBBox ();
-      const csBox3& bbox1 = objects[1]->GetBBox ();
+      const csBox3& bbox0 = objects[0]->GetBBox();
+      const csBox3& bbox1 = objects[1]->GetBBox();
 
       // check whether they objects are separable
       // test whether the first object is left of the second one
       // (small threshold to avoid a bad split location)
-      float max0 = bbox0.Max (axis);
-      float min1 = bbox1.Min (axis);
-      if (max0 < min1-.01)
+      float max0 = bbox0.Max(axis);
+      float min1 = bbox1.Min(axis);
+      if(max0 < min1-.01)
       {
 	// split in the middle of the empty space
 	split_loc = max0 + (min1-max0) * 0.5;
 
 	// validate split
-	CS_ASSERT (split_loc > max0 && split_loc < min1);
+	CS_ASSERT(split_loc > max0 && split_loc < min1);
 
 	// perfect seperation is a good split
 	return 10.0;
@@ -540,15 +177,15 @@ private:
 
       // test whether the first object is right of the second one
       // (small threshold to avoid a bad split location)
-      float min0 = bbox0.Min (axis);
-      float max1 = bbox1.Max (axis);
-      if (max1 < min0-.01)
+      float min0 = bbox0.Min(axis);
+      float max1 = bbox1.Max(axis);
+      if(max1 < min0-.01)
       {
 	// split in the middle of the empty space
 	split_loc = max1 + (min0-max1) * 0.5;
 
 	// validate split
-	CS_ASSERT (split_loc > max1 && split_loc < min0);
+	CS_ASSERT(split_loc > max1 && split_loc < min0);
 
 	// perfect separation is a good split
 	return 10.0;
@@ -560,46 +197,61 @@ private:
 
     // Find minimum and maximum value along the axis.
     // allocate arrays to hold object bounds
-    CS_ALLOC_STACK_ARRAY_FALLBACK (float, objectsMin, numObjects, 50000);
-    CS_ALLOC_STACK_ARRAY_FALLBACK (float, objectsMax, numObjects, 50000);
+    CS_ALLOC_STACK_ARRAY_FALLBACK(float, objectsMin, numObjects, 50000);
+    CS_ALLOC_STACK_ARRAY_FALLBACK(float, objectsMax, numObjects, 50000);
 
     // initialize minimum and maximum
-    float mina =  KDTREE_MAX;
-    float maxa = -KDTREE_MAX;
+    float mina =  std::numeric_limits<float>::max();
+    float maxa = -std::numeric_limits<float>::max();
 
     // iterate over all objects filling the arrays and updating the overall bounds
-    for (int i = 0 ; i < numObjects ; i++)
+    for(int i = 0 ; i < numObjects ; i++)
     {
       // get object bounding box
-      const csBox3& bbox = objects[i]->GetBBox ();
+      const csBox3& bbox = objects[i]->GetBBox();
 
       // get minimum and maximum
-      float mi = bbox.Min (axis);
-      float ma = bbox.Max (axis);
+      float mi = bbox.Min(axis);
+      float ma = bbox.Max(axis);
 
       // set object bounds
       objectsMin[i] = mi;
       objectsMax[i] = ma;
 
       // update overall bounds
-      if (mi < mina) mina = mi;
-      if (ma > maxa) maxa = ma;
+      if (mi < mina)
+      {
+	mina = mi;
+      }
+      if(ma > maxa)
+      {
+	maxa = ma;
+      }
     }
 
     // clamp the overall bounds to the node box as they may exceed it
     // due to objects belonging to multiple nodes
-    if (mina < node_bbox.Min (axis)) mina = node_bbox.Min (axis);
-    if (maxa > node_bbox.Max (axis)) maxa = node_bbox.Max (axis);
+    if(mina < box.Min(axis))
+    {
+      mina = box.Min(axis);
+    }
+    if(maxa > box.Max(axis))
+    {
+      maxa = box.Max(axis);
+    }
 
     // reject the split if the interval is too small
-    if (fabs (mina - maxa) < 0.0001f) return -1.0f;
+    if(fabs(mina - maxa) < 0.0001f)
+    {
+      return -1.0f;
+    }
 
     // attempt to find a split
     // intialize best quality
     long best_qual = -2;
 
     // try a few different splits
-    for (int attempt = 0 ; attempt < 5 ; attempt++)
+    for(int attempt = 0; attempt < 5; ++attempt)
     {
       // we'll try to find a split in the middle of our bounds
       float a = (mina + maxa) / 2.0f;
@@ -608,13 +260,18 @@ private:
       // so we can evaluate the split quality
       int left = 0;
       int right = 0;
-      for (int i = 0 ; i < numObjects ; i++)
+      for(int i = 0; i < numObjects; ++i)
       {
 	// check whether this object would go into the left ndoe
-	if (objectsMax[i] < a-.0001) left++;
-
+	if(objectsMax[i] < a-.0001)
+	{
+	  ++left;
+	}
 	// check whether this object would go into the right node
-	else if (objectsMin[i] > a+.0001) right++;
+	else if(objectsMin[i] > a+.0001)
+	{
+	  ++right;
+	}
       }
 
       // evaluate the split quality
@@ -622,7 +279,7 @@ private:
 
       // if either side of the split is empty this is a bad split
       // which we shouldn't take
-      if (left == 0 || right == 0)
+      if(left == 0 || right == 0)
       {
 	qual = -1.0;
       }
@@ -635,16 +292,22 @@ private:
 
       // update our best quality and split location if this is the best split
       // so far
-      if (qual > best_qual)
+      if(qual > best_qual)
       {
 	best_qual = qual;
 	split_loc = a;
       }
 
       // if the split was leftish, try a split more to the left
-      if (left <= right) maxa = a;
+      if(left <= right)
+      {
+	maxa = a;
+      }
       // else try one more to the right
-      else mina = a;
+      else
+      {
+	mina = a;
+      }
     }
 
     // return our best split quality
@@ -656,20 +319,20 @@ private:
    * in this leaf according to the pre-filled in splitAxis
    * and splitLocation.
    */
-  void DistributeLeafObjects ()
+  void DistributeLeafObjects()
   {
     // ensure we have a valid split axis
-    CS_ASSERT (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ);
+    CS_ASSERT(splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ);
 
     // go over all objects and add them to the according child(s)
-    for (int i = 0 ; i < numObjects ; i++)
+    for(int i = 0; i < numObjects; ++i)
     {
       // get object bounding box so we can categorize it
-      const csBox3& bbox = objects[i]->GetBBox ();
+      const csBox3& bbox = objects[i]->GetBBox();
 
       // get upper and lower bound
-      float bbox_min = bbox.Min (splitAxis);
-      float bbox_max = bbox.Max (splitAxis);
+      float bbox_min = bbox.Min(splitAxis);
+      float bbox_max = bbox.Max(splitAxis);
 
       // keep track whether we already removed ourself as leaf for the object
       bool leaf_replaced = false;
@@ -678,38 +341,38 @@ private:
       // @@@NOTE: SMALL_EPSILON is used to ensure that when bbox_min
       //          is equal to bbox_max we don't get a situation where
       //          both of the if's are not used.
-      if (bbox_min-SMALL_EPSILON <= splitLocation)
+      if(bbox_min-SMALL_EPSILON <= splitLocation)
       {
 	// remove us as leaf for the object and set the child as leaf
-	objects[i]->ReplaceLeaf (this, child1);
+	objects[i]->ReplaceLeaf(this, child1);
 
 	// indicate we're already removed as leaf
 	leaf_replaced = true;
 
 	// add object to the child
-	child1->AddObject (objects[i]);
+	child1->AddObject(objects[i]);
       }
       // check whether the object (also) belongs to the right node
-      if (bbox_max >= splitLocation)
+      if(bbox_max >= splitLocation)
       {
 	// if we already removed ourself, simply add the other leaf
-	if (leaf_replaced)
+	if(leaf_replaced)
 	{
-	  objects[i]->AddLeaf (child2);
+	  objects[i]->AddLeaf(child2);
 	}
 	// else remove ourself and add the leaf
 	else
 	{
-	  objects[i]->ReplaceLeaf (this, child2);
+	  objects[i]->ReplaceLeaf(this, child2);
 	  leaf_replaced = true;
 	}
 
 	// add object to the child
-	child2->AddObject (objects[i]);
+	child2->AddObject(objects[i]);
       }
 
       // ensure the object went into a child
-      CS_ASSERT (leaf_replaced);
+      CS_ASSERT(leaf_replaced);
     }
 
     // update our object count
@@ -729,30 +392,30 @@ private:
         void* userdata, uint32 cur_timestamp, uint32 frustum_mask)
   {
     // check whether we want to continue the traversal
-    if (!func (this, userdata, cur_timestamp, frustum_mask))
+    if(!func(this, userdata, cur_timestamp, frustum_mask))
     {
       // we don't, abort
       return;
     }
 
     // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
+    CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // check whether we have children
-    if (child1)
+    if(child1)
     {
       // check whether left one goes first
-      if (pos[splitAxis] <= splitLocation)
+      if(pos[splitAxis] <= splitLocation)
       {
 	// yes, continue with left, then right one
-	child1->Front2Back (pos, func, userdata, cur_timestamp, frustum_mask);
-	child2->Front2Back (pos, func, userdata, cur_timestamp, frustum_mask);
+	child1->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
+	child2->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
       }
       else
       {
 	// no, continue with right, then left one
-	child2->Front2Back (pos, func, userdata, cur_timestamp, frustum_mask);
-	child1->Front2Back (pos, func, userdata, cur_timestamp, frustum_mask);
+	child2->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
+	child1->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
       }
     }
   }
@@ -763,313 +426,125 @@ private:
    * The mask parameter is optionally used for frustum checking.
    * Front2Back will pass it to the tree nodes.
    */
-  void TraverseRandom (VisitFunc* func,
+  void TraverseRandom(VisitFunc* func,
         void* userdata, uint32 cur_timestamp, uint32 frustum_mask)
   {
     // check whether we want to continue the traversal
-    if (!func (this, userdata, cur_timestamp, frustum_mask))
+    if(!func(this, userdata, cur_timestamp, frustum_mask))
     {
       // we don't, abort
       return;
     }
 
     // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
+    CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // check whether we have children
-    if (child1)
+    if(child1)
     {
       // we do, continue traversal there
-      child1->TraverseRandom (func, userdata, cur_timestamp, frustum_mask);
-      child2->TraverseRandom (func, userdata, cur_timestamp, frustum_mask);
+      child1->TraverseRandom(func, userdata, cur_timestamp, frustum_mask);
+      child2->TraverseRandom(func, userdata, cur_timestamp, frustum_mask);
     }
   }
 
   /**
    * Reset timestamps of all objects in this treenode.
    */
-  void ResetTimestamps ()
+  void ResetTimestamps()
   {
     // clear timestamps for all objects
-    for (int i = 0 ; i < numObjects ; i++)
+    for(int i = 0; i < numObjects; ++i)
     {
       objects[i]->timestamp = 0;
     }
 
     // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
+    CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // check whether we have children
-    if (child1)
+    if(child1)
     {
       // also reset timestamps for children
-      child1->ResetTimestamps ();
-      child2->ResetTimestamps ();
+      child1->ResetTimestamps();
+      child2->ResetTimestamps();
     }
   }
 
-  /**
-   * Flatten the children of this node to the given node.
-   */
-  void FlattenTo (Self* node)
+  void ClearSplit()
   {
-    // ensure we have either no or two children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
-
-    // check whether we have children
-    if (!child1)
-    {
-      // nope, nothing to be done
-      return;
-    }
-
-    // First flatten the children.
-    // @@@TODO: Is this the most optimal solution?
-    child1->FlattenTo (node);
-    child2->FlattenTo (node);
-
-    // free children
-    TreeAlloc ().Free (child1);
-    TreeAlloc ().Free (child2);
-    child1 = nullptr;
-    child2 = nullptr;
-
-    // add our objects to the target
-    for (int i = 0; i < numObjects ; i++)
-    {
-      // get the object to process
-      Child* obj = objects[i];
-
-      // check whether it already belongs to the target
-      if (obj->FindLeaf (node) != -1)
-      {
-	// it does, simply remove us from the leaf list
-	obj->RemoveLeaf (this);
-      }
-      else
-      {
-	// it doesn't, replace us with the target
-	obj->ReplaceLeaf (this, node);
-
-	// add object to the target
-	node->AddObject (obj);
-      }
-    }
-
-    // update our object count
-    numObjects = 0;
-    estimateTotalObjects = 0;
+    // clear split
+    splitAxis = CS_KDTREE_AXISINVALID;
   }
 
 public:
   /// Create a new empty KD-tree.
-  KDTree () :
+  KDTree() :
     // scf initialization
-    scfImplementationType (this),
-
-    // allocator initialization
-    childAlloc (nullptr), treeAlloc (nullptr),
-
-    // child-parent initialization
-    child1 (nullptr), child2 (nullptr), parent (nullptr),
-
-    // box initialization
-    node_bbox (-KDTREE_MAX, -KDTREE_MAX, -KDTREE_MAX,
-	        KDTREE_MAX,  KDTREE_MAX,  KDTREE_MAX),
+    scfImplementationType(this),
 
     // split initialization
-    splitAxis (CS_KDTREE_AXISINVALID),
-
-    // object storage initialization
-    objects (nullptr), numObjects (0), maxObjects (0),
-    estimateTotalObjects (0),
-
-    // distribution initialization
-    minSplitObjects (20), disallowDistribute (0),
+    splitAxis(CS_KDTREE_AXISINVALID),
 
     // global timestamp initialization
-    globalTimestamp (1)
+    globalTimestamp(1)
   {
-  }
-
-  /// Destroy the KD-tree.
-  virtual ~KDTree ()
-  {
-    Clear ();
-  }
-
-  /// Set the parent.
-  void SetParent (Self* p)
-  {
-    parent = p;
-  }
-
-  /// For debugging: set the object descriptor.
-  void SetObjectDescriptor (iObjectDescriptor* d)
-  {
-    descriptor = d;
-  }
-
-  /**
-   * Set the minimum amount of objects before we consider splitting this tree.
-   * By default this is set to 1.
-   */
-  void SetMinimumSplitAmount (int m)
-  {
-    minSplitObjects = m;
-  }
-
-  /// Make the tree empty.
-  void Clear ()
-  {
-    // go over all objects and remove them
-    for (int i = 0 ; i < numObjects ; i++)
-    {
-      objects[i]->RemoveLeaf (this);
-
-      // destruct this object if there are no more leafs refering to it.
-      if (objects[i]->GetLeafCount () == 0)
-	ChildAlloc().Free (objects[i]);
-    }
-
-    // clear object storage
-    delete[] objects;
-    objects = 0;
-    numObjects = 0;
-    maxObjects = 0;
-    estimateTotalObjects = 0;
-
-    // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
-
-    // destruct children
-    if (child1)
-    {
-      TreeAlloc().Free (child1);
-      child1 = nullptr;
-      TreeAlloc().Free (child2);
-      child2 = nullptr;
-    }
-
-    // clear split
-    splitAxis = CS_KDTREE_AXISINVALID;
-
-    // reset bounding box
-    node_bbox.Set(-KDTREE_MAX, -KDTREE_MAX, -KDTREE_MAX,
-		   KDTREE_MAX,  KDTREE_MAX,  KDTREE_MAX);
-
-    // clear distribution
-    disallowDistribute = 0;
-
-    // free user object
-    userobject.Invalidate();
-  }
-
-  /// Get the user object attached to this node.
-  inline iUserData* GetUserObject () const
-  {
-    return userobject;
-  }
-
-  /**
-   * Set the user object for this node. Can be 0 to clear
-   * it. The old user object will be DecRef'ed and the (optional)
-   * new one will be IncRef'ed.
-   */
-  void SetUserObject (iUserData* userobj)
-  {
-    userobject = userobj;
-  }
-
-  /**
-   * Add an object to this kd-tree node.
-   * Returns a Child pointer which represents the object
-   * inside the kd-tree. Object addition is delayed. This function
-   * will not yet alter the structure of the kd-tree. Distribute()
-   * will do that.
-   */
-  Child* AddObject (BoundType const& bounds, void* object)
-  {
-    // allocate a new child
-    Child* obj = ChildAlloc ().Alloc ();
-
-    // set the object we got on it
-    obj->SetObject (object);
-
-    // set boundaries on the object
-    obj->SetBounds (bounds);
-
-    // add the child to our tree
-    AddObjectInt (obj);
-
-    // return the created child
-    return obj;
-  }
-
-  /**
-   * Remove an object from the kd-tree. The 'Child' instance
-   * will be deleted.
-   */
-  void RemoveObject (Child* object)
-  {
-    UnlinkObject (object);
-    ChildAlloc ().Free (object);
   }
 
   /**
    * Move an object (give it a new bounding box).
    */
-  void MoveObject (Child* object, BoundType const& bounds)
+  void MoveObject(Child* object, BoundType const& bounds)
   {
     // ensure the object actually belongs somewhere
-    CS_ASSERT (object->GetLeafCount () > 0);
+    CS_ASSERT(object->GetLeafCount () > 0);
 
     // get old box
     csBox3 old_bbox(object->GetBBox ());
 
     // update bounds for the object
-    object->SetBounds (bounds);
+    object->SetBounds(bounds);
 
     // get new box
-    csBox3 const& new_bbox = object->GetBBox ();
+    csBox3 const& new_bbox = object->GetBBox();
 
     // First check if the bounding box actually changed.
-    csVector3 dmin = old_bbox.Min () - new_bbox.Min ();
-    csVector3 dmax = old_bbox.Max () - new_bbox.Max ();
-    if ((dmin < .00001f) && (dmax < .00001f))
+    csVector3 dmin = old_bbox.Min() - new_bbox.Min();
+    csVector3 dmax = old_bbox.Max() - new_bbox.Max();
+    if((dmin < .00001f) && (dmax < .00001f))
     {
       return;
     }
 
     // get the first leaf for the object
-    Self* leaf = static_cast<Self*> (object->GetLeaf (0));
+    Self* leaf = static_cast<Self*>(object->GetLeaf (0));
 
     // if the object only belongs to one leaf check whether the leaf still
     // contains the whole bounding box of the object - if yes we don't have
     // to do anything
-    if (object->GetLeafCount () == 1)
+    if(object->GetLeafCount() == 1)
     {
-      if (leaf->GetNodeBBox ().Contains (new_bbox))
+      if(leaf->GetNodeBBox().Contains(new_bbox))
       {
 	// Even after moving we are still completely inside the bounding box
 	// of the current leaf.
-	if (leaf->disallowDistribute > 0)
-	  leaf->disallowDistribute--;
+	if (leaf->block > 0)
+	  leaf->block--;
 	return;
       }
     }
 
     // remove object from all current leaves
-    UnlinkObject (object);
+    UnlinkObject(object);
 
     // find the first parent of an old leaf that contains the new bounding box
-    while (leaf->parent && !leaf->GetNodeBBox ().Contains (new_bbox))
+    while(leaf->parent && !leaf->GetNodeBBox ().Contains(new_bbox))
     {
       leaf = leaf->parent;
     }
 
     // add the object to it
-    leaf->AddObjectInt (object);
+    leaf->AddObjectInternal(object);
   }
 
   /**
@@ -1078,36 +553,36 @@ public:
    * will only distribute one level (this node) and will not
    * recurse into the children.
    */
-  void Distribute ()
+  void Distribute()
   {
     // check whether there is anything to distribute and
     // whether distribution is blocked
-    if (numObjects == 0 || disallowDistribute > 0)
+    if(numObjects == 0 || block > 0)
     {
       // nothing to be done
       return;
     }
 
     // ensure we have either no childs or two childs
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
+    CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // if we already have childs simply distribute the objects among
     // our children
-    if (child1)
+    if(child1)
     {
       // distribute the objects
-      DistributeLeafObjects ();
+      DistributeLeafObjects();
 
       // ensure nothing is left
-      CS_ASSERT (numObjects == 0);
+      CS_ASSERT(numObjects == 0);
 
       // update the estimated object count
-      estimateTotalObjects = child1->GetEstimatedObjectCount ()
-	  + child2->GetEstimatedObjectCount ();
+      estimateObjects = child1->GetEstimatedObjectCount()
+	  + child2->GetEstimatedObjectCount();
     }
     // we don't have children yet, so we have to try and find a split
     // if we actually have enough objects to justify a distribution
-    else if (numObjects > minSplitObjects)
+    else if(numObjects > minSplitObjects)
     {
       // to find a split location we evaluate multiple options for each
       // axis and use the one with the best quality
@@ -1116,13 +591,13 @@ public:
 
       // start with the x axis
       int best_axis = CS_KDTREE_AXISX;
-      long best_qual = FindBestSplitLocation (CS_KDTREE_AXISX, best_split_loc);
+      long best_qual = FindBestSplitLocation(CS_KDTREE_AXISX, best_split_loc);
 
       // check y axis
-      long qual = FindBestSplitLocation (CS_KDTREE_AXISY, split_loc_tmp);
+      long qual = FindBestSplitLocation(CS_KDTREE_AXISY, split_loc_tmp);
 
       // check whether it's better than x
-      if (qual > best_qual)
+      if(qual > best_qual)
       {
 	// it is, set it as best
 	best_axis = CS_KDTREE_AXISY;
@@ -1131,10 +606,10 @@ public:
       }
 
       // check z axis
-      qual = FindBestSplitLocation (CS_KDTREE_AXISZ, split_loc_tmp);
+      qual = FindBestSplitLocation(CS_KDTREE_AXISZ, split_loc_tmp);
 
       // check whether it's better than x and y
-      if (qual > best_qual)
+      if(qual > best_qual)
       {
 	// it is, set it as best
 	best_axis = CS_KDTREE_AXISZ;
@@ -1143,90 +618,49 @@ public:
       }
 
       // check whether the best split is good enough
-      if (best_qual > 0)
+      if(best_qual > 0)
       {
 	// it is, set it as split
 	splitAxis = best_axis;
 	splitLocation = best_split_loc;
 
 	// allocate children
-	child1 = TreeAlloc ().Alloc ();
-	child2 = TreeAlloc ().Alloc ();
+	child1 = TreeAlloc().Alloc();
+	child2 = TreeAlloc().Alloc();
 
 	// validate allocations
 	CS_ASSERT (child1);
 	CS_ASSERT (child2);
 
 	// set us as parent
-	child1->SetParent (this);
-	child2->SetParent (this);
+	child1->SetParent(this);
+	child2->SetParent(this);
 
 	// set object descriptor
-	child1->SetObjectDescriptor (descriptor);
-	child2->SetObjectDescriptor (descriptor);
+	child1->SetObjectDescriptor(descriptor);
+	child2->SetObjectDescriptor(descriptor);
 
 	// set bounding boxes
-	child1->node_bbox = GetNodeBBox ();
-	child1->node_bbox.SetMax (splitAxis, splitLocation);
-	child2->node_bbox = GetNodeBBox ();
-	child2->node_bbox.SetMin (splitAxis, splitLocation);
+	child1->box = GetNodeBBox();
+	child1->box.SetMax(splitAxis, splitLocation);
+	child2->box = GetNodeBBox();
+	child2->box.SetMin(splitAxis, splitLocation);
 
 	// distribute objects according to the split
-	DistributeLeafObjects ();
+	DistributeLeafObjects();
 
 	// ensure all objects are distributed
-	CS_ASSERT (numObjects == 0);
+	CS_ASSERT(numObjects == 0);
 
 	// update estimated object count
-	estimateTotalObjects = child1->GetEstimatedObjectCount ()
-	  + child2->GetEstimatedObjectCount ();
+	estimateObjects = child1->GetEstimatedObjectCount()
+	  + child2->GetEstimatedObjectCount();
       }
       else
       {
 	// bad split, block distribution
-	disallowDistribute = DISALLOW_DISTRIBUTE_TIME;
+	block = blockTime;
       }
-    }
-  }
-
-  /**
-   * Do a full distribution of this node and all children.
-   */
-  void FullDistribute ()
-  {
-    // distribute our objects
-    Distribute ();
-
-    // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
-
-    // check whether we have children
-    if (child1)
-    {
-      // distribute the objects for the children as well
-      child1->FullDistribute ();
-      child2->FullDistribute ();
-    }
-  }
-
-  /**
-   * Do a full flatten of this node. This means that all
-   * objects are put back in the object list of this node and
-   * the KD-tree children are removed.
-   */
-  void Flatten ()
-  {
-    // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
-
-    // check whether we have children
-    if (child1)
-    {
-      // we do, flatten them to ourself
-      FlattenTo (this);
-
-      // remove distribution block if there is one.
-      disallowDistribute = 0;
     }
   }
 
@@ -1235,11 +669,10 @@ public:
    * The mask parameter is optionally used for frustum checking.
    * TraverseRandom will pass it to the tree nodes.
    */
-  void TraverseRandom (VisitFunc* func,
-        void* userdata, uint32 frustum_mask)
+  void TraverseRandom(VisitFunc* func, void* userdata, uint32 frustum_mask)
   {
-    NewTraversal ();
-    TraverseRandom (func, userdata, globalTimestamp, frustum_mask);
+    NewTraversal();
+    TraverseRandom(func, userdata, globalTimestamp, frustum_mask);
   }
 
   /**
@@ -1248,11 +681,10 @@ public:
    * The mask parameter is optionally used for frustum checking.
    * Front2Back will pass it to the tree nodes.
    */
-  void Front2Back (const csVector3& pos, VisitFunc* func,
-        void* userdata, uint32 frustum_mask)
+  void Front2Back(const csVector3& pos, VisitFunc* func, void* userdata, uint32 frustum_mask)
   {
-    NewTraversal ();
-    Front2Back (pos, func, userdata, globalTimestamp, frustum_mask);
+    NewTraversal();
+    Front2Back(pos, func, userdata, globalTimestamp, frustum_mask);
   }
 
   /**
@@ -1262,79 +694,27 @@ public:
    * is automatically called by Front2Back() but it can be useful
    * to call this if you plan to do a manual traversal of the tree.
    */
-  uint32 NewTraversal ()
+  uint32 NewTraversal()
   {
     // use the parent timestamp if we have a parent
-    if (parent)
+    if(parent)
     {
-      return parent->NewTraversal ();
+      return parent->NewTraversal();
     }
 
     // For safety reasons we will reset all timestamps to 0
     // for all objects in the tree and also set the global
     // timestamp to 1 again every 4.000.000.000 calls of Front2Back
-    if (globalTimestamp > 4000000000u)
+    if(globalTimestamp > 4000000000u)
     {
-      ResetTimestamps ();
+      ResetTimestamps();
       globalTimestamp = 1;
     }
     else
     {
-      globalTimestamp++;
+      ++globalTimestamp;
     }
     return globalTimestamp;
-  }
-
-  /**
-   * Get left child.
-   */
-  inline Self* GetChild1 () const
-  {
-    return child1;
-  }
-
-  /**
-   * Get right child.
-   */
-  inline Self* GetChild2 () const
-  {
-    return child2;
-  }
-
-  /**
-   * Return the number of objects in this node.
-   */
-  inline int GetObjectCount () const
-  {
-    return numObjects;
-  }
-
-  /**
-   * Get the estimated total number of objects in this node and
-   * all children. This is only an estimate as it isn't kept up-to-date
-   * constantly but it should give a rough idea about the complexity
-   * of this node.
-   */
-  inline int GetEstimatedObjectCount ()
-  {
-    return estimateTotalObjects;
-  }
-
-  /**
-   * Return the array of objects in this node.
-   */
-  inline Child** GetObjects () const
-  {
-    return objects;
-  }
-
-  /**
-   * Return the bounding box of the node itself (does not always contain
-   * all children since children are not split by the tree).
-   */
-  inline const csBox3& GetNodeBBox () const
-  {
-    return node_bbox;
   }
 
 private:
@@ -1366,18 +746,18 @@ private:
       KDT_ASSERT_BOOL (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ, "axis");
 
       // ensure the node bounding box contains the bounding boxes of the children
-      KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child1->GetNodeBBox ()), "node_bbox mismatch");
-      KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child2->GetNodeBBox ()), "node_bbox mismatch");
+      KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child1->GetNodeBBox ()), "box mismatch");
+      KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child2->GetNodeBBox ()), "box mismatch");
 
       // ensure the split location is contained in the node bounding box
       KDT_ASSERT_BOOL (splitLocation >= GetNodeBBox ().Min (splitAxis), "split/node");
       KDT_ASSERT_BOOL (splitLocation <= GetNodeBBox ().Max (splitAxis), "split/node");
 
       // compute union of child bounding boxes
-      csBox3 new_node_bbox = child1->GetNodeBBox () + child2->GetNodeBBox ();
+      csBox3 new_box = child1->GetNodeBBox () + child2->GetNodeBBox ();
 
       // enure the node bounding box is the union of the child bounding boxes
-      KDT_ASSERT_BOOL (new_node_bbox == GetNodeBBox (), "node_bbox mismatch");
+      KDT_ASSERT_BOOL (new_box == GetNodeBBox (), "box mismatch");
 
       // ensure we're set as parent for our children
       KDT_ASSERT_BOOL (child1->parent == this, "parent check");
@@ -1440,8 +820,8 @@ private:
     csRef<iString> stats = DebugStatisticsTraversal ();
 
     // append our data to the dump
-    str.AppendFmt ("%s KDT disallow_dist=%d\n%s     node_bbox=%s\n%s %s",
-	  ind.GetData (), disallowDistribute,
+    str.AppendFmt ("%s KDT disallow_dist=%d\n%s     box=%s\n%s %s",
+	  ind.GetData (), block,
 	  ind.GetData (), GetNodeBBox ().Description ().GetData (),
 	  ind.GetData (), stats->GetData ());
 
@@ -1709,6 +1089,7 @@ public:
 } // namespace Geometry
 } // namespace CS
 
+typedef CS::Geometry::SpatialTreeChild::BoxChild<true> csKDTreeChild;
 typedef CS::Geometry::KDTree<csKDTreeChild> csKDTree;
 typedef csKDTree::VisitFunc csKDTreeVisitFunc;
 typedef csKDTree::iObjectDescriptor iKDTreeObjectDescriptor;

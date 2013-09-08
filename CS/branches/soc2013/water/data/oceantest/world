@@ -71,9 +71,7 @@
       <shader type="standard">water</shader>
 	  <shadervar name="tex normal" type="texture">normal map 1</shadervar>
       <shadervar name="tex height" type="texture">normal map 3</shadervar>
-	  
 	  <shadervar name="tex foam" type="texture">foam</shadervar>
-	  
 	  <shadervar name="specular" type="vector4">0.4,0.7,0.9,1</shadervar>
     </material>
     
@@ -379,30 +377,13 @@
         <priority>sky</priority>
     </meshobj>
     <key name="cmd_AnimateSky" value="clouds,y,.005" />
-    
-    <light>
-    	<center x="1" y="3" z="1"/>
-    	<radius>10</radius>
-    	<color red="1" green="0" blue="0"/>
+	
+	<light name="sun">
+            <center x="00" y="10" z="1000" />
+            <color red="1.25903" green="1.20995" blue="1.10420" />
+            <radius>1000</radius>
     </light>
-    
-    <light>
-    	<center x="1" y="3" z="9"/>
-    	<radius>10</radius>
-    	<color red="0" green="0" blue="1"/>
-    </light>
-    
-    <light>
-    	<center x="19" y="3" z="1"/>
-    	<radius>10</radius>
-    	<color red="0" green="1" blue="0"/>
-    </light>
-    
-    <light>
-    	<center x="19" y="3" z="9"/>
-    	<radius>10</radius>
-    	<color red="1" green="1" blue="1"/>
-    </light>
+	
   </sector>
   <start>
   	<sector>room</sector>

@@ -62,7 +62,7 @@
 	<input name="maxLights" type="int" default="value" defval="3"/>
 	<input name="minLights" type="int" default="value" defval="0"/>
 	<!-- Shininess value for specular reflection -->
-	<input name="shininess" type="float" default="value" defval="32" />
+	<input name="shininess" type="float" default="value" defval="32.0" />
 	
 	<block location="pass">
 	  <?Include /shader-snippets/lighting/lighting-tools.inc ?>

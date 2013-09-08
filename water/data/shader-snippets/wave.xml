@@ -22,13 +22,13 @@
 	
 		<input name="texHeight" type="tex2d" default="complex">
 			<block location="cg:pass">
-				<texture name="tex height" destination="fragmentIn.texHeight" />
+				<texture name="tex height" destination="vertexIn.texHeight" />
 			</block>
 			<block location="glsl:pass">
 				<texture name="tex height" destination="in_texHeight" />
 			</block>
       
-			<block location="cg:fragmentIn">
+			<block location="cg:vertexIn">
 				<uniform type="tex2d" name="texHeight" />
 			</block>
 
@@ -37,7 +37,7 @@
 			</block>
 
 			<block location="cg:vertexMain">
-				texHeight = fragmentIn.texHeight;
+				texHeight = vertexIn.texHeight;
 			</block>
 
 			<block location="glsl:vertexMain">
@@ -106,7 +106,7 @@
 		
 		<block location="cg:clips">
 			<!-- Clip for reflection/refraction rendering -->
-			<clip space="object">
+			<clip space="world">
 				<plane type="shadervar">clip plane reflection</plane>
 			</clip>
 		</block>
@@ -198,16 +198,22 @@
 			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
 			//position_object.y = wdy1 + wdy2 + wdy3; 
 			
-			float2 Texcord = texCoord + waveInput.time;
-			position_object.y +=  tex2D(texHeight, texCoord/256).r * 10.0  ;
+			float2 Texcord = texCoord + waveInput.time * 10.0;
+			position_object.y +=  tex2D(texHeight, Texcord/256).r * 10.0  ;
 			
 			position_screen = position = mul (ModelViewProj, position_object);
 			position_camera = mul (ModelView, position_object);
 			position_world = mul (objectToWorld, position_object);
 			
-			_v2f_Normal_1_ = float3(0.0,1.0,0.0);
-			_v2f_Tangent_2_ = float3(0.0,0.0,1.0);
-			_v2f_Bitangent_3_ = float3(1.0,0.0,0.0);
+#ifndef PARAM_vertexToFragment_Normal_1_UNUSED
+			vertexToFragment.Normal_1 = vec3(0.0,1.0,0.0);
+#endif
+#ifndef PARAM_vertexToFragment_Tangent_2_UNUSED
+			vertexToFragment.Tangent_2 = vec3(0.0,0.0,1.0);
+#endif
+#ifndef PARAM_vertexToFragment_Bitangent_3_UNUSED
+			vertexToFragment.Bitangent_3 = vec3(1.0,0.0,0.0);
+#endif
 			
 			APPLY_CLIPPING_VP_POSINV(position_camera, position_world, position_object);
 		
@@ -242,16 +248,16 @@
 			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
 			//position_object.y = wdy1 + wdy2 + wdy3; 
 			
-			vec2 Texcord = texCoord + waveInput.time*10;
-			position_object.y +=  texture2D(texHeight, Texcord/256.0).g * 5.0  ;
+			vec2 Texcord = texCoord + waveInput.time*10.0;
+			position_object.y +=  texture2D(texHeight, Texcord/256.0).g * 10.0  ;
 			
 			gl_Position = position_screen = position = (ModelViewProj * position_object);
 			position_camera = ModelView * position_object;
 			position_world = objectToWorld * position_object;
 			
-			_v2f_Normal_1_ = vec3(0.0,1.0,0.0);
-			_v2f_Tangent_2_ = vec3(0.0,0.0,1.0);
-			_v2f_Bitangent_3_ = vec3(1.0,0.0,0.0);
+			_v2f_Normal_1_ = float3(0.0,1.0,0.0);
+			_v2f_Tangent_2_ = float3(0.0,0.0,1.0);
+			_v2f_Bitangent_3_ = float3(1.0,0.0,0.0);
 			
 			//APPLY_CLIPPING_VP_POSINV(position_camera, position_world, position_object);
 		

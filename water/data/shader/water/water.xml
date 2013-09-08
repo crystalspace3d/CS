@@ -1,32 +1,83 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <shader compiler="shaderweaver" name="water">
-<shadervar name="water perturb scale" type="vector4">0.5,0.5,0,0</shadervar>
-<shadervar name="water perturb fade" type="float">1</shadervar>
-<shadervar name="normal map scale" type="vector2">0.00390625,0.00390625</shadervar>
 
+<shadervar name="water perturb scale" type="vector4">0.5,0.5,0.0,0.0</shadervar>
+<shadervar name="ambient color" type="vector3">0.0,0.65,0.75</shadervar>
+<shadervar name="water perturb fade" type="float">1.0</shadervar>
+<shadervar name="normal map scale" type="vector2">0.00390625,0.00390625</shadervar>
+<shadervar name="specular" type="vector4">0.4,0.7,0.9,1</shadervar>
   
 	<technique priority="200">
 		<pass>		
-			<combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
+			<combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
 	 
 			<snippet id="wave" file="/shader/snippets/wave.xml" />
 			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
 			<snippet id="normalmap" file="/shader-snippets/surface/normalmap-tiled.xml" />
 			<snippet id="perturb_norm_refl" file="/shader-snippets/tcoffset2-perturb-normal-cam.xml" />
+			<snippet id="lighting" file="/shader/snippets/lighting/lighting-ppl.xml" />
+			<snippet id="apply_lighting" file="/shader/snippets/lighting/apply-lighting.xml" />
+			<snippet id="specular_limit" file="/shader-snippets/modulate_rgb.xml" />
+			<snippet id="specular" file="/shader-snippets/surface/specular-default-nodiffuse.xml" />
+			<snippet id="staticspecular" file="/shader-snippets/lighting/staticspec-default.xml" />
+			<snippet id="add_specular" file="/shader-snippets/add.xml" />
+			
+			<connection from="wave" to="reflection" />
+			<connection from="wave" to="lighting" />
+			<connection from="wave" to="staticspecular" />
+			
+			<connection from="reflection" to="apply_lighting">
+				<explicit from="surfaceColor" to="surfaceDiffuse" />
+			</connection>
+		
+			<connection from="lighting" to="apply_lighting">
+				<explicit from="result" to="lightDiffuse" />
+			</connection>
+			
+			<connection from="normalmap" to="perturb_norm_refl" />
+			<connection from="normalmap" to="lighting" />
+			<connection from="normalmap" to="staticspecular" />
+			
+			<connection from="lighting" to="add_specular">
+				<explicit from="specularColor" to="a" />
+			</connection>
+			
+			<connection from="staticspecular" to="add_specular">
+				<explicit from="specular" to="b" />
+			</connection>
+			
+			<connection from="add_specular" to="specular_limit">
+				<explicit from="result" to="a" />
+			</connection>
+			
+			<connection from="reflection" to="specular_limit">
+				<explicit from="mirroredPointDistSat" to="b" />
+			</connection>
+			
+			<connection from="specular_limit" to="apply_lighting">
+				<explicit from="result" to="lightSpecular" />
+			</connection>
+			
+			<connection from="specular" to="apply_lighting">
+				<explicit from="specularColor" to="surfaceSpecular" />
+			</connection>
+			
+			<connection from="perturb_norm_refl" to="reflection" />
 			
 			<parameter id="perturbscale" type="shadervar" weavertype="float4">water perturb scale</parameter>
 			<connection from="perturbscale" to="perturb_norm_refl" />
-
+			
 			<parameter id="perturbfade" type="shadervar" weavertype="float">water perturb fade</parameter>
 			<connection from="perturbfade" to="reflection" />
 			
 			<parameter id="normalscale" type="shadervar" weavertype="float2">normal map scale</parameter>
 			<connection from="normalscale" to="normalmap" />
 			
-			<connection from="normalmap" to="perturb_norm_refl" />
-			<connection from="perturb_norm_refl" to="reflection" />
+			<parameter id="lightOffset" type="int">2</parameter>
+			<parameter id="maxLights" type="int">3</parameter>
+			<connection from="lightOffset" to="apply_lighting" />
+			<connection from="maxLights" to="apply_lighting" />
 			
-			<connection from="wave" to="reflection" />
 		</pass>
 	</technique>
 	

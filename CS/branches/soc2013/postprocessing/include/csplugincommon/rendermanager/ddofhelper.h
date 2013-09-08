@@ -53,12 +53,15 @@ namespace CS
      * Thus the system is recursively reduced until is reached a 2 or 3 variable
      * system that can be solved fast. Then we recursively perform the
      * backsubtitution. This algorithm is known as Cyclic Reduction.
+     *
+		 * Notice that the DDOFHelper must be created on heap due to it being
+		 * referenced by the PostEffect (if used the setup view callback).
      */
     class CS_CRYSTALSPACE_EXPORT DDOFHelper : public scfImplementation0<DDOFHelper>
     {
       csRef<iLoader> loader;
       csHash<csRef<iShader>, csString> shaders;
-      static char * messageID;
+      static const char * messageID;
 
       csRef<iObjectRegistry> objReg;
       /**

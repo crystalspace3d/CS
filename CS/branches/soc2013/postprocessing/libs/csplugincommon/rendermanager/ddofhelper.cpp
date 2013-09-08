@@ -40,7 +40,7 @@ namespace CS
 #define BUILD_ABC_Y  9
 
 
-    char * shaderPath[] = {
+    const char * const shaderPath[] = {
       "/shader/postproc/DDOF/reduce_x.xml",
       "/shader/postproc/DDOF/reduce_y.xml",
       "/shader/postproc/DDOF/resolve_x.xml",
@@ -53,13 +53,13 @@ namespace CS
       "/shader/postproc/DDOF/build_abc_y.xml"
     };
 
-    char * DDOFHelper::messageID = "crystalspace.rendermanager.posteffect.ddofhelper";
+    const char * DDOFHelper::messageID = "crystalspace.rendermanager.posteffect.ddofhelper";
 
     
     class DDOFSetupView : public scfImplementation1<DDOFSetupView, iSetupViewCallback>
     {
       csRef<DDOFHelper> helper;
-      csRef<iPostEffect> effect;
+      csWeakRef<iPostEffect> effect;
       int w, h;
     public:
       DDOFSetupView (DDOFHelper *pHelper, iPostEffect * pEffect) : scfImplementationType (this), 
@@ -129,11 +129,9 @@ namespace CS
 
       csString name,
         colorName,
-        abcName,
-        name_fmt,
-        shaderName;
-      name_fmt = axis == AXIS_X ? "reduce_%d_x" : "reduce_%d_y";
-      shaderName = axis == AXIS_X ? shaderPath[REDUCE_X] : shaderPath[REDUCE_Y];
+        abcName;
+      const char * name_fmt = axis == AXIS_X ? "reduce_%d_x" : "reduce_%d_y";
+      const char * shaderName = axis == AXIS_X ? shaderPath[REDUCE_X] : shaderPath[REDUCE_Y];
 
       name.Format(name_fmt, num);
 
@@ -162,11 +160,9 @@ namespace CS
       csString name,
         colorName,
         abcName,
-        solution,
-        name_fmt,
-        shaderName;
-      name_fmt = axis == AXIS_X ? "resolve_%d_x" : "resolve_%d_y";
-      shaderName = axis == AXIS_X ? shaderPath[RESOLVE_X] : shaderPath[RESOLVE_Y];
+        solution;
+      const char * name_fmt = axis == AXIS_X ? "resolve_%d_x" : "resolve_%d_y";
+      const char * shaderName = axis == AXIS_X ? shaderPath[RESOLVE_X] : shaderPath[RESOLVE_Y];
 
       name.Format(name_fmt, num);
       solution.Format(name_fmt, num+1);
@@ -195,13 +191,12 @@ namespace CS
       *desc = LayerDesc();
 
       csString name,
-        name_fmt,
-        input_fmt,
         inputColor,
-        inputAbc,
-        shader;
-      name_fmt = axis == AXIS_X ? "resolve_%d_x" : "resolve_%d_y";
-      input_fmt = axis == AXIS_X ? "reduce_%d_x" : "reduce_%d_y";
+        inputAbc;
+
+      const char * shader;
+      const char * name_fmt = axis == AXIS_X ? "resolve_%d_x" : "resolve_%d_y";
+      const char * input_fmt = axis == AXIS_X ? "reduce_%d_x" : "reduce_%d_y";
       name.Format(name_fmt, num);
       inputColor.Format(input_fmt, num); inputColor.Append(".color");
       inputAbc.Format(input_fmt, num); inputAbc.Append(".abc");
@@ -223,11 +218,8 @@ namespace CS
     {
       *desc = LayerDesc();
 
-      csString name,
-        shader;
-
-      name = axis == AXIS_X ? "build_abc_x" : "build_abc_y";
-      shader = axis == AXIS_X ? shaderPath[BUILD_ABC_X] : shaderPath[BUILD_ABC_Y];
+      const char * name = axis == AXIS_X ? "build_abc_x" : "build_abc_y";
+      const char * shader = axis == AXIS_X ? shaderPath[BUILD_ABC_X] : shaderPath[BUILD_ABC_Y];
       if (!MakeDesc(desc, shader, name)) return false;
       AddOutput(desc, "out", "argb32_f");
 
@@ -426,11 +418,13 @@ namespace CS
       return true;
     }
 
-    bool DDOFHelper::Setup(iPostEffect * pEffect)
+    bool DDOFHelper::Setup (iPostEffect * pEffect)
     {
       if (pEffect)
       {
-        pEffect->SetSetupViewCallback (new DDOFSetupView (this, pEffect));
+				csRef<DDOFSetupView> setupView;
+				setupView.AttachNew (new DDOFSetupView (this, pEffect));
+        pEffect->SetSetupViewCallback (setupView);
         return true;
       }
       return false;

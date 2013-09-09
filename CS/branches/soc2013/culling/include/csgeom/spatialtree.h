@@ -630,7 +630,15 @@ namespace Geometry
 	childAlloc = nullptr;
       }
 
+      // clear split info
       static_cast<Self*>(this)->ClearSplit();
+
+      // flatten parent if we have one as we don't
+      // want empty leaves
+      if(parent)
+      {
+	parent->Flatten();
+      }
     }
 
     /// Get the user object attached to this node.

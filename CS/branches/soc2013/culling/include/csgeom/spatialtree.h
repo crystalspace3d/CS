@@ -476,16 +476,15 @@ namespace Geometry
       CS_ASSERT(objects);
       CS_ASSERT(idx >= 0 && idx < numObjects);
 
-      // check whether we have to move objects
-      bool move = idx != numObjects;
-
       // update object counts
       --numObjects;
       --estimateObjects;
 
-      if(move)
+      // if the element to remove is not the last element
+      // put the last element where the one to remove was
+      if(idx < numObjects)
       {
-	memmove(&objects[idx], &objects[idx+1], sizeof(Child*)*(numObjects-idx));
+	objects[idx] = objects[numObjects];
       }
     }
 

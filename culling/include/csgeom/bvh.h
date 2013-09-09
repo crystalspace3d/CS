@@ -34,14 +34,6 @@ namespace CS
 {
 namespace Geometry
 {
-enum
-{
-  CS_BVH_AXISINVALID = -1,
-  CS_BVH_AXISX = 0,
-  CS_BVH_AXISY = 1,
-  CS_BVH_AXISZ = 2
-};
-
 /**
  * A Bounding Volume Hierachy (BVH).
  * A BVH is a binary tree that organizes 3D space.
@@ -64,8 +56,7 @@ enum
  */
 template<class Child>
 class BVH :
-  public scfImplementation<BVH<Child> >,
-  public SpatialTree<BVH<Child>, Child>
+  public SpatialTree<BVH<Child>
 {
   friend class SpatialTreeType;
 public:
@@ -201,11 +192,8 @@ private:
 public:
   /// Create a new empty BVH.
   BVH() :
-    // scf initialization
-    scfImplementation(this),
-
     // split initialization
-    blockThreshold(0.0f),
+    blockThreshold(0.0f)
   {
   }
 
@@ -493,6 +481,17 @@ public:
 	child1->Front2Back(pos, func, data, frustumMask);
       }
     }
+  }
+
+private:
+  // debugging functions
+  bool DebugCheckSplit(csString& str)
+  {
+    return true;
+  }
+
+  void DebugDumpSplit(csString& str, csString const& indent)
+  {
   }
 };
 

@@ -82,6 +82,24 @@ namespace Geometry
       {
 	leaf = l;
       }
+
+      inline void ReplaceLeaf(void* oldLeaf, void* newLeaf)
+      {
+	CS_ASSERT(leaf == oldLeaf);
+
+	leaf = newLeaf;
+      }
+
+      bool DebugCheck(csString& str, void* parent)
+      {
+	if(leaf != parent)
+	{
+	  str.AppendFmt("SingleLeafChild failure: (%d,%s)\n", int(__LINE__),
+	    "leaf doesn't match parent");
+	  return false;
+	}
+	return true;
+      }
     };
 
     class MultiLeafChild : public ChildBase
@@ -110,7 +128,7 @@ namespace Geometry
       }
 
       /// Physically add a leaf to this child.
-      void AddLeaf(void* leaf)
+      inline void AddLeaf(void* leaf)
       {
 	// validate storage
 	CS_ASSERT((maxLeafCount == 0) == (leaves == nullptr));
@@ -136,7 +154,7 @@ namespace Geometry
       }
 
       /// Physically remove a leaf from this child.
-      void RemoveLeaf(int idx)
+      inline void RemoveLeaf(int idx)
       {
 	// ensure index is valid
 	CS_ASSERT(idx >= 0 && idx < leafCount);
@@ -156,13 +174,13 @@ namespace Geometry
       }
 
       /// Physically remove a leaf from this child.
-      void RemoveLeaf(void* leaf)
+      inline void RemoveLeaf(void* leaf)
       {
 	RemoveLeaf(FindLeaf(leaf));
       }
 
       /// Remove all leaves from this child.
-      void RemoveLeaves()
+      inline void RemoveLeaves()
       {
 	// simply truncate leaves
 	leafCount = 0;
@@ -174,13 +192,13 @@ namespace Geometry
        * useful in many cases where you want to move a child
        * in the tree.
        */
-      void ReplaceLeaf(void* oldLeaf, void* newLeaf)
+      inline void ReplaceLeaf(void* oldLeaf, void* newLeaf)
       {
 	// find the leaf to replace
 	int idx = FindLeaf(oldLeaf);
 
 	// ensure it was found
-	CS_ASSERT(idx > 0);
+	CS_ASSERT(idx >= 0);
 
 	// replace it
 	leaves[idx] = newLeaf;
@@ -189,7 +207,7 @@ namespace Geometry
       /**
        * Find leaf.
        */
-      int FindLeaf(void* leaf)
+      inline int FindLeaf(void* leaf)
       {
 	// validate storage
 	CS_ASSERT((maxLeafCount == 0) == (leaves == nullptr));
@@ -226,6 +244,37 @@ namespace Geometry
 
 	// return requested leaf
 	return leaves[idx];
+      }
+
+      bool DebugCheck(csString& str, void* leaf)
+      {
+	// ensure the parent only occurs once in the list
+	int count = 0;
+	// check all leaves this object is associated with
+	for(int i = 0; i < leafCount; ++i)
+	{
+	  // check whether this is the parent
+	  if(leaves[i] == leaf)
+	  {
+	    // we are in the leaf list
+	    ++count;
+
+	    // ensure we didn't already occur earlier in the list
+	    if(count > 1)
+	    {
+	      str.AppendFmt("MultiLeafChild failure: (%d,%s)\n", int(__LINE__),
+		"parent occured multiple times");
+	      return false;
+	    }
+	  }
+	}
+	if(count < 1)
+	{
+	  str.AppendFmt("MultiLeafChild failure: (%d,%s)\n", int(__LINE__),
+	    "leaf list doesn't contain parent");
+	  return false;
+	}
+	return true;
       }
     };
 
@@ -308,7 +357,8 @@ namespace Geometry
   }
 
   template<class Self, class Child>
-  class SpatialTree
+  class SpatialTree :
+    public scfImplementation1<SpatialTree<Self, Child>, iDebugHelper>
   {
   public:
     typedef typename Child::BoundType BoundType;
@@ -462,9 +512,6 @@ namespace Geometry
       // add object
       objects[numObjects] = obj;
 
-      // let it know we're it's leaf now
-      obj->AddLeaf(static_cast<void*>(static_cast<Self*>(this)));
-
       // update object counts
       ++numObjects;
       ++estimateObjects;
@@ -536,7 +583,14 @@ namespace Geometry
       // add our own (undistributed) objects to the target
       for(int i = 0; i < numObjects; ++i)
       {
-	node->AddObject(objects[i]);
+	// get object
+	Child* object = objects[i];
+
+	// add object to target
+	node->AddObject(object);
+
+	// change leaf accordingly
+	object->ReplaceLeaf(static_cast<Self*>(this), node);
       }
 
       // free our storage
@@ -549,6 +603,9 @@ namespace Geometry
   public:
     /// Create empty spatial tree.
     SpatialTree() :
+      // scf initialization
+      scfImplementationType(this),
+
       // allocator initialization
       childAlloc(nullptr), treeAlloc(nullptr),
 
@@ -697,6 +754,9 @@ namespace Geometry
       // add child to the tree
       AddObjectInternal(obj);
 
+      // let it know we're it's leaf
+      obj->AddLeaf(static_cast<Self*>(this));
+
       return obj;
     }
 
@@ -809,6 +869,377 @@ namespace Geometry
     inline csBox3 const& GetNodeBBox() const
     {
       return box;
+    }
+
+    // debugging functions
+  private:
+      // debugging functions
+    // perform various sanity checks on the tree for validation
+    bool DebugCheckTreeTraversal (csString& str)
+    {
+#     define SPATIALTREE_TEST(test,msg) \
+      if(!(test)) \
+      { \
+	str.AppendFmt("SpatialTree failure (%d,%s): %s\n", int(__LINE__), \
+	    #msg, #test); \
+	return false; \
+      }
+
+      // ensure we have either none or two children
+      SPATIALTREE_TEST ((child1 == nullptr) == (child2 == nullptr), "child consistency");
+
+      // check whether we have children
+      if(child1)
+      {
+	//-------
+	// Test-cases in case this is a node.
+	//-------
+
+	// ensure the node bounding box contains the bounding boxes of the children
+	SPATIALTREE_TEST(GetNodeBBox().Contains(child1->GetNodeBBox()), "box mismatch");
+	SPATIALTREE_TEST(GetNodeBBox().Contains(child2->GetNodeBBox()), "box mismatch");
+
+	// compute union of child bounding boxes
+	csBox3 new_box = child1->GetNodeBBox() + child2->GetNodeBBox();
+
+	// enure the node bounding box is the union of the child bounding boxes
+	SPATIALTREE_TEST(new_box == GetNodeBBox(), "box mismatch");
+
+	// ensure we're set as parent for our children
+	SPATIALTREE_TEST(child1->parent == this, "parent check");
+	SPATIALTREE_TEST(child2->parent == this, "parent check");
+
+	// validate split
+	if(!static_cast<Self*>(this)->DebugCheckSplit(str))
+	{
+	  return false;
+	}
+
+	// perform checks for our children
+	if(!child1->DebugCheckTreeTraversal(str))
+	{
+	  return false;
+	}
+	if(!child2->DebugCheckTreeTraversal(str))
+	{
+	  return false;
+	}
+      }
+
+      //-------
+      // Test-cases in case this is a leaf (or not a leaf but has
+      // objects waiting for distribution).
+      //-------
+
+      // ensure we have a storage if we should be able to hold objects
+      SPATIALTREE_TEST((maxObjects == 0) == (objects == nullptr), "object list");
+
+      // ensure we don't have more objects than our storage can hold
+      SPATIALTREE_TEST(numObjects <= maxObjects, "object list");
+
+      // check all objects for validity
+      for(int i = 0; i < numObjects; ++i)
+      {
+	// get the current object
+	Child* o = objects[i];
+
+	// check object
+	if(!o->DebugCheck(str, static_cast<Self*>(this)))
+	{
+	  return false;
+	}
+      }
+
+      // all checks passed
+      return true;
+
+#     undef SPATIALTREE_TEST
+    }
+
+    void DebugStatisticsTraversal(int& totalObjects,
+	  int& totalNodes, int& totalLeaves, int depth, int& maxDepth,
+	  float& balanceQuality)
+    {
+      // keep track of the total amount of objects
+      totalObjects += numObjects;
+
+      CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
+
+      // check what kind of node we have
+      if(child1)
+      {
+	// we got a branch (it has children)
+	++totalNodes;
+      }
+      else
+      {
+	// no children, we have a leaf
+	++totalLeaves;
+      }
+
+      // we are one level deeper than our parent
+      ++depth;
+
+      // update maxDepth if this is deeper than the deepest
+      // branch found so far
+      if(depth > maxDepth)
+      {
+	maxDepth = depth;
+      }
+
+      // check whether we have children
+      if(child1)
+      {
+	// we do, check how many objects are in each of them
+	// so we can evaluate balancing
+
+	// grab statistics for left child
+	int left = 0;
+	child1->DebugStatisticsTraversal(left, totalNodes,
+	    totalLeaves, depth, maxDepth, balanceQuality);
+
+	// grab statistics for right child
+	int right = 0;
+	child2->DebugStatisticsTraversal(right, totalNodes,
+	    totalLeaves, depth, maxDepth, balanceQuality);
+
+	// add the objects of the child to the total amount of objects
+	totalObjects += left;
+	totalObjects += right;
+
+	// calculate balance
+	balanceQuality += 2.0 * float(left) / float(left+right);
+      }
+    }
+
+    csPtr<iString> DebugStatisticsTraversal()
+    {
+      // get a scf string to output our results to
+      scfString* rc = new scfString();
+
+      // get it's associated cs string so we can work with it more easily
+      csString& str = rc->GetCsString();
+
+      // place holders for results
+      // total amount of objects in the tree
+      int totalObjects = 0;
+      // total amount of nodes in the tree
+      int totalNodes = 0;
+      // total amount of leaves in the tree
+      int totalLeaves = 0;
+      // highest depth level reached
+      int maxDepth = 0;
+
+      // overall quality of the tree
+      float balanceQuality = 0;
+
+      // collect the statictics by traversing the tree
+      DebugStatisticsTraversal(totalObjects, totalNodes, totalLeaves,
+	    0, maxDepth, balanceQuality);
+
+      // format our output
+      str.Format("#o=%d #n=%d #l=%d maxd=%d balqual=%g\n",
+	    totalObjects, totalNodes, totalLeaves, maxDepth,
+	    balanceQuality / float(totalNodes));
+
+      // return output
+      return csPtr<iString>((iString*)rc);
+    }
+
+    csTicks DebugBenchmark(int numIterations)
+    {
+      // start of first benchmark
+      csTicks pass0 = csGetTicks();
+
+      // tree building benchmark:
+      // build numIterations random trees
+      for(int i = 0 ; i < numIterations; ++i)
+      {
+	// clear the tree
+	Clear();
+
+	// build a random one
+	for(int j = 0; j < 500; ++j)
+	{
+	  // add a random object
+	  AddObject(Child::RandomBound(), (void*)0);
+
+	  // distribute after 20 insertions
+	  if(i % 20 == 0)
+	  {
+	    FullDistribute();
+	  }
+	}
+      }
+
+      // end of first/start of second benchmark
+      csTicks pass1 = csGetTicks();
+
+      // unoptimized tree traversal benchmark:
+      // perform numIterations traversals in approximate
+      // front to back order on an incremently built tree
+      for(int i = 0; i < numIterations; ++i)
+      {
+	static_cast<Self*>(this)->Front2Back(csVector3(0, 0, 0),
+			    DebugBenchmarkTraversal, nullptr, 0);
+      }
+
+      // end of second/start of third benchmark
+      csTicks pass2 = csGetTicks();
+
+      // tree distribution benchmark:
+      // flatten the tree completely and completely
+      // distribute it numIterations times
+      for(int i = 0 ; i < numIterations; ++i)
+      {
+	Flatten();
+	FullDistribute();
+      }
+
+      // end of third/start of last benchmark
+      csTicks pass3 = csGetTicks();
+
+      // optimized tree traversal benchmark:
+      // perform numIterations traversals in approximate
+      // front to back order on a tree that was distributed
+      // with all information available
+      for(int i = 0; i < numIterations; ++i)
+      {
+	static_cast<Self*>(this)->Front2Back(csVector3(0, 0, 0),
+			    DebugBenchmarkTraversal, nullptr, 0);
+      }
+
+      // end of last benchmark
+      csTicks pass4 = csGetTicks();
+
+      // output results
+      csPrintf ("Creating the tree:        %u ms\n", pass1-pass0);
+      csPrintf ("Unoptimized Front2Back:   %u ms\n", pass2-pass1);
+      csPrintf ("Flatten + FullDistribute: %u ms\n", pass3-pass2);
+      csPrintf ("Optimized Front2Back:     %u ms\n", pass4-pass3);
+
+      return pass4-pass0;
+    }
+
+    static bool DebugBenchmarkTraversal(Self* treenode, void*, uint32&)
+    {
+      treenode->Distribute();
+
+      int numObjects = treenode->GetObjectCount();
+      Child** objects = treenode->GetObjects();
+      for(int i = 0; i < numObjects; ++i)
+      {
+	objects[i]->SetObject(nullptr);
+      }
+
+      return true;
+    }
+
+    static bool DebugBenchmarkTraversal(Self* treenode,
+		  void*, uint32 timestamp, uint32&)
+    {
+      treenode->Distribute ();
+
+      int numObjects = treenode->GetObjectCount();
+      Child** objects = treenode->GetObjects();
+      for(int i = 0; i < numObjects; ++i)
+      {
+	if(objects[i]->timestamp != timestamp)
+	{
+	  objects[i]->timestamp = timestamp;
+	  objects[i]->SetObject(nullptr);
+	}
+      }
+
+      return true;
+    }
+
+  void DebugDumpTraversal(csString& str, int indent)
+  {
+    // get a string for indentation
+    csString ind("");
+    ind.PadLeft(indent);
+
+    // get debug statistics for this node
+    csRef<iString> stats = DebugStatisticsTraversal();
+
+    // append our data to the dump
+    str.AppendFmt ("%s SpatialTree block=%d\n%s     box=%s\n%s %s",
+	  ind.GetData(), block,
+	  ind.GetData(), GetNodeBBox().Description().GetData(),
+	  ind.GetData(), stats->GetData());
+
+    // append object count
+    str.AppendFmt("%s   %d objects\n", ind.GetData(), numObjects);
+
+    // ensure we have either two or no children
+    CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
+
+    // check whether we have children
+    if(child1)
+    {
+      // dump split data
+      static_cast<Self*>(this)->DebugDumpSplit(str, ind);
+
+      // dump our children
+      child1->DebugDumpTraversal(str, indent+2);
+      child2->DebugDumpTraversal(str, indent+2);
+    }
+  }
+
+  public:
+    // iDebugHelper
+    // indicate that we support statetest, text dump and benchmark
+    virtual int GetSupportedTests () const
+    {
+      return CS_DBGHELP_STATETEST |
+	CS_DBGHELP_TXTDUMP | CS_DBGHELP_BENCHMARK;
+    }
+
+    // performs a state test
+    virtual csPtr<iString> StateTest()
+    {
+      // allocate output
+      scfString* rc = new scfString();
+
+      // perform check
+      if(!DebugCheckTreeTraversal(rc->GetCsString()))
+      {
+	// return error if it failed
+	return csPtr<iString>(rc);
+      }
+
+      // free output as there is none
+      delete rc;
+
+      // return empty result to indicate no error occured
+      return nullptr;
+    }
+
+    // performs a benchmark and returns the time it took
+    virtual csTicks Benchmark(int numIterations)
+    {
+      return DebugBenchmark(numIterations);
+    }
+
+    // performs a text dump of the tree
+    virtual csPtr<iString> Dump()
+    {
+      scfString* rc = new scfString();
+      DebugDumpTraversal(rc->GetCsString(), 0);
+      return csPtr<iString>(rc);
+    }
+
+    // we don't support graphical dumping
+    virtual void Dump(iGraphics3D* /*g3d*/)
+    {
+    }
+
+    // handles debug commands - as we don't have any
+    // simply indicate we didn't handle that command
+    virtual bool DebugCommand(const char*)
+    {
+      return false;
     }
   };
 } // Geometry

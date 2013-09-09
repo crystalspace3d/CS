@@ -64,7 +64,6 @@ enum
  */
 template<class Child>
 class BIH :
-  public scfImplementation<BIH<Child> >,
   public SpatialTree<BIH<Child>, Child>
 {
   friend class SpatialTreeType;
@@ -278,13 +277,20 @@ private:
       // check whether it belongs to child1
       if(min >= split[0] && max <= split[1])
       {
+	// add object to child1
 	child1->AddObject(obj);
+
+	// change leaf
+	obj->ReplaceLeaf(this, child1);
       }
       // else it belongs to child2
       else if(min >= split[2] && max <= split[3])
       {
 	// add object to child2
 	child2->AddObject(obj);
+
+	// change leaf
+	obj->ReplaceLeaf(this, child2);
       }
       else
       {
@@ -341,9 +347,6 @@ private:
 public:
   /// Create a new empty BIH.
   BIH() :
-    // scf initialization
-    scfImplementation(this),
-
     // split initialization
     splitAxis(CS_BIH_AXISINVALID), blockThreshold(0.0f)
   {
@@ -416,6 +419,9 @@ public:
 
       // add the object to the ancestor we found
       tree->AddObjectInternal(obj);
+
+      // add ancestor as leaf to the object
+      obj->AddLeaf(tree);
     }
   }
 
@@ -501,13 +507,27 @@ public:
 	  // first child gets lower half
 	  for(int i = 0; i < (numObjects >> 1); ++i)
 	  {
-	    child1->AddObject(objects[buffers[1][i].idx]);
+	    // get object
+	    Child* object = objects[buffers[1][i].idx];
+
+	    // add object to child
+	    child1->AddObject(object);
+
+	    // replace leaf
+	    object->ReplaceLeaf(this, child1);
 	  }
 
 	  // second child gets upper half
 	  for(int i = numObjects >> 1; i < numObjects; ++i)
 	  {
-	    child2->AddObject(objects[buffers[1][i].idx]);
+	    // get object
+	    Child* object = objects[buffers[1][i].idx];
+
+	    // add object to child
+	    child2->AddObject(object);
+
+	    // replace leaf
+	    object->ReplaceLeaf(this, child2);
 	  }
 
 	  // free our buffers as we don't need them anymore
@@ -627,6 +647,61 @@ public:
 	child1->Front2Back(pos, func, data, frustumMask);
       }
     }
+  }
+
+private:
+  // debugging functions
+  bool DebugCheckSplit(csString& str)
+  {
+    // ensure the split axis is valid
+    if(!(splitAxis >= CS_BIH_AXISX && splitAxis <= CS_BIH_AXISZ))
+    {
+      str.AppendFmt("BIH failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split axis", "splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ");
+    }
+    // ensure the split location is contained in the node bounding box
+    else if(!(
+      split[0] >= GetNodeBBox().Min(splitAxis) &&
+      split[1] >= GetNodeBBox().Min(splitAxis) &&
+      split[2] >= GetNodeBBox().Min(splitAxis) &&
+      split[3] >= GetNodeBBox().Min(splitAxis) 
+      ))
+    {
+      str.AppendFmt("BIH failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split", "split >= GetNodeBBox().Min(splitAxis)");
+    }
+    // ensure the split location is contained in the node bounding box
+    else if(!(
+      split[0] <= GetNodeBBox().Max(splitAxis) &&
+      split[1] <= GetNodeBBox().Max(splitAxis) &&
+      split[2] <= GetNodeBBox().Max(splitAxis) &&
+      split[3] <= GetNodeBBox().Max(splitAxis) 
+      ))
+    {
+      str.AppendFmt("BIH failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split", "splitLocation <= GetNodeBBox().Max(splitAxis)");
+    }
+    else if(!(split[0] <= split[1] && split[2] <= split[3]))
+    {
+      str.AppendFmt("BIH failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split", "split[0] <= split[1] && split[2] <= split[3]");
+    }
+    else
+    {
+      return true;
+    }
+    return false;
+  }
+
+  void DebugDumpSplit(csString& str, csString const& indent)
+  {
+    // ensure axis is valid
+    CS_ASSERT(splitAxis >= CS_BIH_AXISX && splitAxis <= CS_BIH_AXISZ);
+
+    // append our split split data
+    char axis[3] = {'x','y','z'};
+    str.AppendFmt("%s   axis=%c left=(%g - %g) right=(%g - %g)\n",
+	indent.GetData(), axis[splitAxis], split[0], split[1], split[2], split[3]);
   }
 };
 

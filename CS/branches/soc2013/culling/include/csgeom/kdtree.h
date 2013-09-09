@@ -63,7 +63,6 @@ enum
  */
 template<class Child>
 class KDTree :
-  public scfImplementation1<KDTree<Child>, iDebugHelper>,
   public SpatialTree<KDTree<Child>, Child>
 {
   friend class SpatialTreeType;
@@ -480,9 +479,6 @@ private:
 public:
   /// Create a new empty KD-tree.
   KDTree() :
-    // scf initialization
-    scfImplementationType(this),
-
     // split initialization
     splitAxis(CS_KDTREE_AXISINVALID),
 
@@ -497,34 +493,34 @@ public:
   void MoveObject(Child* object, BoundType const& bounds)
   {
     // ensure the object actually belongs somewhere
-    CS_ASSERT(object->GetLeafCount () > 0);
+    CS_ASSERT(object->GetLeafCount() > 0);
 
     // get old box
-    csBox3 old_bbox(object->GetBBox ());
+    csBox3 oldBBox(object->GetBBox());
 
     // update bounds for the object
     object->SetBounds(bounds);
 
     // get new box
-    csBox3 const& new_bbox = object->GetBBox();
+    csBox3 const& newBBox = object->GetBBox();
 
     // First check if the bounding box actually changed.
-    csVector3 dmin = old_bbox.Min() - new_bbox.Min();
-    csVector3 dmax = old_bbox.Max() - new_bbox.Max();
+    csVector3 dmin = oldBBox.Min() - newBBox.Min();
+    csVector3 dmax = oldBBox.Max() - newBBox.Max();
     if((dmin < .00001f) && (dmax < .00001f))
     {
       return;
     }
 
     // get the first leaf for the object
-    Self* leaf = static_cast<Self*>(object->GetLeaf (0));
+    Self* leaf = static_cast<Self*>(object->GetLeaf(0));
 
     // if the object only belongs to one leaf check whether the leaf still
     // contains the whole bounding box of the object - if yes we don't have
     // to do anything
     if(object->GetLeafCount() == 1)
     {
-      if(leaf->GetNodeBBox().Contains(new_bbox))
+      if(leaf->GetNodeBBox().Contains(newBBox))
       {
 	// Even after moving we are still completely inside the bounding box
 	// of the current leaf.
@@ -538,13 +534,16 @@ public:
     UnlinkObject(object);
 
     // find the first parent of an old leaf that contains the new bounding box
-    while(leaf->parent && !leaf->GetNodeBBox ().Contains(new_bbox))
+    while(leaf->parent && !leaf->GetNodeBBox().Contains(newBBox))
     {
       leaf = leaf->parent;
     }
 
     // add the object to it
     leaf->AddObjectInternal(object);
+
+    // add the target as leaf
+    object->AddLeaf(leaf);
   }
 
   /**
@@ -718,371 +717,42 @@ public:
   }
 
 private:
-  // debugging functions
-  // perform various sanity checks on the tree for validation
-  bool DebugCheckTreeTraversal (csString& str)
+  bool DebugCheckSplit(csString& str)
   {
-#   define KDT_ASSERT_BOOL(test,msg) \
-    if (!(test)) \
-    { \
-      csString ss; \
-      ss.Format ("csKDTree failure (%d,%s): %s\n", int(__LINE__), \
-	  #msg, #test); \
-      str.Append (ss); \
-      return false; \
-    }
-
-    // ensure we have either none or two children
-    KDT_ASSERT_BOOL ((child1 == nullptr) == (child2 == nullptr), "child consistency");
-
-    // check whether we have children
-    if (child1)
+    // ensure the split axis is valid
+    if(!(splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ))
     {
-      //-------
-      // Test-cases in case this is a node.
-      //-------
-
-      // ensure we have a valid split axis
-      KDT_ASSERT_BOOL (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ, "axis");
-
-      // ensure the node bounding box contains the bounding boxes of the children
-      KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child1->GetNodeBBox ()), "box mismatch");
-      KDT_ASSERT_BOOL (GetNodeBBox ().Contains (child2->GetNodeBBox ()), "box mismatch");
-
-      // ensure the split location is contained in the node bounding box
-      KDT_ASSERT_BOOL (splitLocation >= GetNodeBBox ().Min (splitAxis), "split/node");
-      KDT_ASSERT_BOOL (splitLocation <= GetNodeBBox ().Max (splitAxis), "split/node");
-
-      // compute union of child bounding boxes
-      csBox3 new_box = child1->GetNodeBBox () + child2->GetNodeBBox ();
-
-      // enure the node bounding box is the union of the child bounding boxes
-      KDT_ASSERT_BOOL (new_box == GetNodeBBox (), "box mismatch");
-
-      // ensure we're set as parent for our children
-      KDT_ASSERT_BOOL (child1->parent == this, "parent check");
-      KDT_ASSERT_BOOL (child2->parent == this, "parent check");
-
-      // perform checks for our children
-      if (!child1->DebugCheckTreeTraversal (str))
-	return false;
-      if (!child2->DebugCheckTreeTraversal (str))
-	return false;
+      str.AppendFmt("KDTree failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split axis", "splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ");
     }
-
-    //-------
-    // Test-cases in case this is a leaf (or not a leaf but has
-    // objects waiting for distribution).
-    //-------
-
-    // ensure we don't have more objects than our storage can hold
-    KDT_ASSERT_BOOL (numObjects <= maxObjects, "object list");
-
-    // check all objects for validity
-    for (int i = 0 ; i < numObjects ; i++)
+    // ensure the split location is contained in the node bounding box
+    else if(!(splitLocation >= GetNodeBBox().Min(splitAxis)))
     {
-      // get the current object
-      Child* o = objects[i];
-
-      // ensure we only occur as parent once in the list
-      int parcnt = 0;
-      // check all leaves this object is associated with
-      for (int j = 0 ; j < o->GetLeafCount () ; j++)
-      {
-	// check whether we are this leaf
-	if (static_cast<Self*> (o->GetLeaf (j)) == this)
-	{
-	  // we are in the leaf list
-	  parcnt++;
-
-	  // ensure we didn't already occur earlier in the list
-	  KDT_ASSERT_BOOL (parcnt <= 1, "parent occurs multiple times");
-	}
-      }
-
-      // ensure we occured at least once in the list
-      KDT_ASSERT_BOOL (parcnt == 1, "leaf list doesn't contain parent");
+      str.AppendFmt("KDTree failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split", "splitLocation >= GetNodeBBox().Min(splitAxis)");
     }
-
-    // all checks passed
-    return true;
-
-#   undef KDT_ASSERT_BOOL
-  }
-
-  void DebugDumpTraversal (csString& str, int indent)
-  {
-    // get a string for indentation
-    csString ind("");
-    ind.PadLeft(indent);
-
-    // get debug statistics for this node
-    csRef<iString> stats = DebugStatisticsTraversal ();
-
-    // append our data to the dump
-    str.AppendFmt ("%s KDT disallow_dist=%d\n%s     box=%s\n%s %s",
-	  ind.GetData (), block,
-	  ind.GetData (), GetNodeBBox ().Description ().GetData (),
-	  ind.GetData (), stats->GetData ());
-
-    // append object count
-    str.AppendFmt ("%s   %d objects\n", ind.GetData (), numObjects);
-
-    // ensure we have either two or no children
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
-
-    // check whether we have children
-    if (child1)
+    // ensure the split location is contained in the node bounding box
+    else if(!(splitLocation <= GetNodeBBox().Max(splitAxis)))
     {
-      // ensure axis is valid
-      CS_ASSERT (splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISY);
-
-      // append our split split data
-      char axis[3] = {'x','y','z'};
-      str.AppendFmt ("%s   axis=%c loc=%g\n",
-	  ind.GetData (), axis[splitAxis], splitLocation);
-
-      // dump our children
-      child1->DebugDumpTraversal (str, indent+2);
-      child2->DebugDumpTraversal (str, indent+2);
-    }
-  }
-
-  void DebugStatisticsTraversal (int& tot_objects,
-        int& tot_nodes, int& tot_leaves, int depth, int& max_depth,
-        float& balance_quality)
-  {
-    // keep track of the total amount of objects
-    tot_objects += numObjects;
-
-    CS_ASSERT ((child1 == nullptr) == (child2 == nullptr));
-
-    // check what kind of node we have
-    if (child1)
-    {
-      // we got a branch (it has children)
-      tot_nodes++;
+      str.AppendFmt("KDTree failure: (%d,%s): %s\n", int(__LINE__),
+	"invalid split", "splitLocation <= GetNodeBBox().Max(splitAxis)");
     }
     else
     {
-      // no children, we have a leaf
-      tot_leaves++;
+      return true;
     }
-
-    // we are one level deeper than our parent
-    depth++;
-
-    // update max_depth if this is deeper than the deepest
-    // branch found so far
-    if (depth > max_depth)
-    {
-      max_depth = depth;
-    }
-
-    // check whether we have children
-    if (child1)
-    {
-      // we do, check how many objects are in each of them
-      // so we can evaluate balancing
-
-      // grab statistics for left child
-      int left = 0;
-      child1->DebugStatisticsTraversal (left, tot_nodes,
-	  tot_leaves, depth, max_depth, balance_quality);
-
-      // grab statistics for right child
-      int right = 0;
-      child2->DebugStatisticsTraversal (right, tot_nodes,
-	  tot_leaves, depth, max_depth, balance_quality);
-
-      // add the objects of the child to the total amount of objects
-      tot_objects += left;
-      tot_objects += right;
-
-      // calculate balance
-      float qual_balance = 2.0 * float (left) / float (left+right);
-      balance_quality += qual_balance;
-    }
-  }
-
-  csPtr<iString> DebugStatisticsTraversal ()
-  {
-    // get a scf string to output our results to
-    scfString* rc = new scfString ();
-
-    // get it's associated cs string so we can work with it more easily
-    csString& str = rc->GetCsString ();
-
-    // place holders for results
-    // total amount of objects in the tree
-    int tot_objects = 0;
-    // total amount of nodes in the tree
-    int tot_nodes = 0;
-    // total amount of leaves in the tree
-    int tot_leaves = 0;
-    // highest depth level reached
-    int max_depth = 0;
-
-    // overall quality of the tree
-    float balance_quality = 0;
-
-    // collect the statictics by traversing the tree
-    DebugStatisticsTraversal (tot_objects, tot_nodes, tot_leaves, 0, max_depth,
-	  balance_quality);
-
-    // format our output
-    str.Format ("#o=%d #n=%d #l=%d maxd=%d balqual=%g\n",
-	  tot_objects, tot_nodes, tot_leaves, max_depth,
-	  balance_quality / float (tot_nodes));
-
-    // return output
-    return csPtr<iString> ((iString*)rc);
-  }
-
-  csTicks DebugBenchmark (int num_iterations)
-  {
-    // start of first benchmark
-    csTicks pass0 = csGetTicks ();
-
-    // tree building benchmark:
-    // build num_iterations random trees
-    for (int i = 0 ; i < num_iterations ; i++)
-    {
-      // clear the tree
-      Clear ();
-
-      // build a random one
-      for (int j = 0 ; j < 500 ; j++)
-      {
-	// add a random object
-	AddObject (Child::RandomBound (), (void*)0);
-
-	// distribute after 20 insertions
-	if (i % 20 == 0)
-	{
-	  FullDistribute ();
-	}
-      }
-    }
-
-    // end of first/start of second benchmark
-    csTicks pass1 = csGetTicks ();
-
-    // unoptimized tree traversal benchmark:
-    // perform num_iterations traversals in approximate
-    // front to back order on an incremently built tree
-    for (int i = 0 ; i < num_iterations ; i++)
-    {
-      Front2Back (csVector3 (0, 0, 0), DebugBenchmarkTraversal, 0, 0);
-    }
-
-    // end of second/start of third benchmark
-    csTicks pass2 = csGetTicks ();
-
-    // tree distribution benchmark:
-    // flatten the tree completely and completely
-    // distribute it num_iterations times
-    for (int i = 0 ; i < num_iterations ; i++)
-    {
-      Flatten ();
-      FullDistribute ();
-    }
-
-    // end of third/start of last benchmark
-    csTicks pass3 = csGetTicks ();
-
-    // optimized tree traversal benchmark:
-    // perform num_iterations traversals in approximate
-    // front to back order on a tree that was distributed
-    // with all information available
-    for (int i = 0 ; i < num_iterations ; i++)
-    {
-      Front2Back (csVector3 (0, 0, 0), DebugBenchmarkTraversal, 0, 0);
-    }
-
-    // end of last benchmark
-    csTicks pass4 = csGetTicks ();
-
-    // output results
-    csPrintf ("Creating the tree:        %u ms\n", pass1-pass0);
-    csPrintf ("Unoptimized Front2Back:   %u ms\n", pass2-pass1);
-    csPrintf ("Flatten + FullDistribute: %u ms\n", pass3-pass2);
-    csPrintf ("Optimized Front2Back:     %u ms\n", pass4-pass3);
-
-    return pass4-pass0;
-  }
-
-  static bool DebugBenchmarkTraversal (Self* treenode, void*,
-	  uint32 cur_timestamp, uint32&)
-  {
-    treenode->Distribute ();
-
-    int numObjects = treenode->GetObjectCount ();
-    Child** objects = treenode->GetObjects ();
-    for (int i = 0 ; i < numObjects ; i++)
-    {
-      if (objects[i]->timestamp != cur_timestamp)
-	objects[i]->timestamp = cur_timestamp;
-    }
-
-    return true;
-  }
-
-
-public:
-  // iDebugHelper
-
-  // indicate that we support statetest, text dump and benchmark
-  virtual int GetSupportedTests () const
-  {
-    return CS_DBGHELP_STATETEST |
-      CS_DBGHELP_TXTDUMP | CS_DBGHELP_BENCHMARK;
-  }
-
-  // performs a state test
-  virtual csPtr<iString> StateTest ()
-  {
-    // allocate output
-    scfString* rc = new scfString ();
-
-    // perform check
-    if (!DebugCheckTreeTraversal (rc->GetCsString ()))
-    {
-      // return error if it failed
-      return csPtr<iString> (rc);
-    }
-
-    // free output as there is none
-    delete rc;
-
-    // return empty result to indicate no error occured
-    return nullptr;
-  }
-
-  // performs a benchmark and returns the time it took
-  virtual csTicks Benchmark (int num_iterations)
-  {
-    return DebugBenchmark (num_iterations);
-  }
-
-  // performs a text dump of the tree
-  virtual csPtr<iString> Dump ()
-  {
-    scfString* rc = new scfString ();
-    DebugDumpTraversal (rc->GetCsString (), 0);
-    return csPtr<iString> (rc);
-  }
-
-  // we don't support graphical dumping
-  virtual void Dump (iGraphics3D* /*g3d*/)
-  {
-  }
-
-  // handles debug commands - as we don't have any
-  // simply indicate we didn't handle that command
-  virtual bool DebugCommand (const char*)
-  {
     return false;
+  }
+
+  void DebugDumpSplit(csString& str, csString const& indent)
+  {
+    // ensure axis is valid
+    CS_ASSERT(splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ);
+
+    // append our split split data
+    char axis[3] = {'x','y','z'};
+    str.AppendFmt("%s   axis=%c loc=%g\n",
+	indent.GetData(), axis[splitAxis], splitLocation);
   }
 };
 

@@ -1,17 +1,21 @@
 import bpy
 from mathutils import *
 
+import os
+
 from .util import *
 from .transform import *
 from .renderbuffer import *
 from .morphtarget import *
 from .material import *
-from io_scene_cs.utilities import B2CS
+from io_scene_cs.utilities import GetPreferences
 
 
 class Hierarchy:
   OBJECTS = {}
   exportedFactories = []
+  libraryReferences = []
+
   def __init__(self, anObject, anEmpty):
     self.object = anObject
     self.empty = anEmpty
@@ -34,7 +38,15 @@ class Hierarchy:
     return "hier" + str(self.id)
 
   def AsCSRef(self, func, depth=0, dirName='factories/', animesh=False):
-    if self.object.parent_type != 'BONE' and self.object.data.name not in Hierarchy.exportedFactories:
+    if self.object.b2cs.csFactRef:
+      if self.object.b2cs.csFactoryName != '' and self.object.b2cs.csFactoryVfs != '':
+        if self.object.b2cs.csFactoryVfs not in Hierarchy.libraryReferences:
+          Hierarchy.libraryReferences.append(self.object.b2cs.csFactoryVfs)
+          func(' '*depth +'<library>%s</library>'%(self.object.b2cs.csFactoryVfs))
+      else:
+        print("WARNING: Object '%s' references an invalid CS factory"%(self.object.uname))
+    elif self.object.parent_type != 'BONE' \
+          and self.object.data.name not in Hierarchy.exportedFactories:
       if animesh:
         func(' '*depth +'<library>%s%s</library>'%(dirName,self.object.uname))
       else:
@@ -67,7 +79,7 @@ class Hierarchy:
         param animesh: indicates if the library decribes an animesh
     """
     func('<?xml version="1.0" encoding="UTF-8"?>')
-    func("<library xmlns=\"http://crystalspace3d.org/xml/library\">")
+    func("<library xmlns=\"http://crystalspace3d.org/xml/library\" changeToken=\"%s\">"%(self.object.data.get('changeToken', 0)))
 
     if animesh:
       func('  <plugins>')
@@ -92,20 +104,21 @@ class Hierarchy:
 
     # Render priority and Z-mode properties
     mat = self.object.GetDefaultMaterial()
-    if mat != None and mat.priority != 'object':
-      func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
-    if mat != None and mat.zbuf_mode != 'zuse':
-      func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
+    if mat != None:
+      if mat.b2cs.priority != 'object':
+        func(' '*depth + '  <priority>%s</priority>'%(mat.b2cs.priority))
+      if mat.b2cs.zbuf_mode != 'zuse':
+        func(' '*depth + '  <%s/>'%(mat.b2cs.zbuf_mode))
 
     # Shadow properties
     noshadowreceive = noshadowcast = limitedshadowcast = False
     for child in self.object.children:
       if child.type == 'MESH' and child.parent_type != 'BONE':
-        if child.data.no_shadow_receive:
+        if child.data.b2cs.no_shadow_receive:
           noshadowreceive = True
-        if child.data.no_shadow_cast:
+        if child.data.b2cs.no_shadow_cast:
           noshadowcast = True
-        if child.data.limited_shadow_cast:
+        if child.data.b2cs.limited_shadow_cast:
           limitedshadowcast = True
     if noshadowreceive:
       func(' '*depth + '  <noshadowreceive />')
@@ -131,16 +144,32 @@ class Hierarchy:
     if self.object.data.name in Hierarchy.exportedFactories:
       print('Skipping "%s" factory export, already done' % (self.object.data.uname))
       return
+    
+    if animesh:
+      filePath = Join(path, 'factories/', self.object.uname)
+    else:
+      filePath = Join(path, 'factories/', self.object.data.uname)
+      
+    if os.path.exists(filePath):
+      print('Export exists %s (%s)'%(self.object.uname, filePath))
+      fafi = open(filePath, 'r')
+      fafi.readline() #Discard first line
+      line = fafi.readline().strip()
+      fafi.close()
+      if line == "<library xmlns=\"http://crystalspace3d.org/xml/library\" changeToken=\"%s\">"%(self.object.data.get('changeToken', 0)):
+        print(' No change')
+        return
+      else:
+        print(' Updating')
+      
 
     # Export mesh
-    if animesh:
-      fa = open(Join(path, 'factories/', self.object.uname), 'w')
-    else:
-      fa = open(Join(path, 'factories/', self.object.data.uname), 'w')
+    fa = open(filePath, 'w')
+    
     self.WriteCSLibHeader(Write(fa), animesh)
-    if not B2CS.properties.sharedMaterial:
+    if not GetPreferences().sharedMaterial:
       objectDeps = self.object.GetDependencies()
-      use_imposter = not animesh and self.object.data.use_imposter
+      use_imposter = not animesh and self.object.data.b2cs.use_imposter
       ExportMaterials(Write(fa), 2, objectDeps, use_imposter)
     if animesh:
       self.WriteCSAnimeshHeader(Write(fa), 2)
@@ -164,6 +193,10 @@ class Hierarchy:
         - animesh=True: mesh and children with armature and/or morph targets 
           are exported as a Crystal Space animated mesh factory
     """
+
+    if dontClose and self.object.data.name in Hierarchy.exportedFactories:
+      print('Skipping "%s" factory export, already done' % (self.object.data.uname))
+      return
 
     # Build CS mapping buffers and submeshes for this object
     print("Building CS mapping buffers...")
@@ -195,7 +228,7 @@ class Hierarchy:
               # If the mesh is child of another object (i.e. an armature in case of 
               # animesh export and a mesh in case of genmesh export), transform the 
               # copied object relatively to its parent
-              obCpy = ob.GetTransformedCopy(ob.relative_matrix)
+              obCpy = ob.GetTransformedCopy(ob.relative_matrix, True)
             else:
               obCpy = ob.GetTransformedCopy()
 
@@ -205,7 +238,7 @@ class Hierarchy:
             # Generate mapping buffers
             mapVert, mapBuf, norBuf = obCpy.data.GetCSMappingBuffers()
             numCSVertices = len(mapVert)
-            if B2CS.properties.enableDoublesided and obCpy.data.show_double_sided:
+            if GetPreferences().enableDoublesided and obCpy.data.show_double_sided:
               numCSVertices = 2*len(mapVert)
             # Generate submeshes
             subMeshess.append(obCpy.data.GetSubMeshes(obCpy.name,mapBuf,indexV))
@@ -216,7 +249,7 @@ class Hierarchy:
               indexV += numCSVertices
 
             warning = "(WARNING: double sided mesh implies duplication of its vertices)" \
-                if B2CS.properties.enableDoublesided and obCpy.data.show_double_sided else ""
+                if GetPreferences().enableDoublesided and obCpy.data.show_double_sided else ""
             print('number of CS vertices for mesh "%s" = %s  %s'%(obCpy.name,numCSVertices,warning))
 
         total += numCSVertices + Gets(children, indexV)
@@ -244,6 +277,9 @@ class Hierarchy:
             args['scales'] = [scales[indexObject]]
             args['dontClose'] = True
             ob.AsCSGenmeshLib(func, d, **args)
+            if dontClose:
+              Hierarchy.exportedFactories.append(self.object.data.name)
+
           Export(children, d+2)
           if export:
             func(" "*d + "</meshfact>")
@@ -260,6 +296,8 @@ class Hierarchy:
       args['mappingNormals'] = mappingNormals
       args['scales'] = scales
       self.AsCSAnimeshLib(func, depth, totalVertices, dontClose, **args)
+      if dontClose:
+        Hierarchy.exportedFactories.append(self.object.data.name)
 
     if not dontClose:
       func("</library>")
@@ -286,7 +324,8 @@ class Hierarchy:
     # Take the first found material as default object material
     mat = self.object.GetDefaultMaterial()
     if mat != None:
-      func(" "*depth + "    <material>%s</material>"%(mat.uname))
+      mat_name = mat.b2cs.csMaterialName if mat.b2cs.csMatRef else mat.uname
+      func(" "*depth + "    <material>%s</material>"%(mat_name))
     else:
       func(" "*depth + "    <material>%s</material>"%(self.uv_texture if self.uv_texture!=None else 'None'))
 
@@ -338,6 +377,116 @@ class Hierarchy:
 
 
 #======== Genmesh ==============================================================
+def ExportCollisionBoundTransform(object, func, depth=0):
+  #func(' '*depth + '<move x="0.0" y="0.065" z="0.0" />')
+  #func(' '*depth + '<rotate rotx="0.44879896" />')
+  pass
+
+def ExportCollisionBounds(object, func, depth=0):
+  '''
+  #http://wiki.blender.org/index.php/User:Sculptorjim/Game_Engine/Physics/Collision_Bounds
+  (Default)
+    For Dynamic and Static objects, it is a Triangle Mesh (see below).
+    For everything else, it is a Sphere (see below).
+  Capsule - A cylinder with hemispherical caps, like a pill.
+    Radius of the hemispheres is the greater of the x or y extent.
+    Height is the z bounds
+  Box - The x,y,z bounding box, as defined above.
+  Sphere -
+    Radius is defined by the object's scale (visible in the N properties panel) times the physics radius (can be found in Physics » Attributes » Radius.
+    Note: This is the only bounds that respects the Radius option.
+  Cylinder
+    Radius is the greater of the x or y extent.
+    Height is the z bounds.
+  Cone
+    Base radius is the greater of the x or y extent.
+    Height is the z bounds.
+  Convex Hull - Forms a shrink-wrapped, simplified geometry around the object.
+    For the math, see Wikipedia's entry on Convex Hull or Wolfram's entry on Convex Hull.
+    For a demo, see the image to the right, where we have sketched a hull around Suzanne's profile:
+  Triangle mesh - Most expensive, but most precise. Collision will happen with all of triangulated polygons, instead of using a virtual mesh to approximate that collision.
+  '''
+  
+  TYPE = 'TRIANGLE_MESH' if object.game.physics_type in ['DYNAMIC', 'STATIC'] else 'SPHERE'
+  if object.game.use_collision_bounds:
+    TYPE = object.game.collision_bounds_type
+  
+  bbox = [Vector(b) for b in object.bound_box] 
+  max_x = max_y = max_z = -9999999
+  min_x = min_y = min_z = 99999999
+  for v in bbox:
+    if max_x < v.x:
+      max_x = v.x
+    if max_y < v.y:
+      max_y = v.y
+    if max_z < v.z:
+      max_z = v.z
+    
+    if min_x > v.x:
+      min_x = v.x
+    if min_y > v.y:
+      min_y = v.y
+    if min_z > v.z:
+      min_z = v.z
+  
+  #TODO: why do i suck at math!?
+  #cone and cylinder bottoms do not align with actual object bottoms in CS
+  #needs some offset, min_z - object_origin??
+  old = object.location
+  offset = [(min_x+max_x)*0.5, (min_y+max_y)*0.5, (min_z+max_z)*0.5]
+  
+  dimensions = [max_x-min_x, max_y-min_y, max_z-min_z]
+  print(dimensions)
+  print(old)
+  print(offset)
+  print(min_z)
+  #dimensions = object.dimensions
+  
+  func(' '*depth + '<collider>')  
+  depth = depth +2
+  func(' '*depth + '<!-- dimensions: %s %s  %s -->'%(TYPE, str(dimensions), str(offset)))
+  if TYPE == 'CAPSULE':
+    rad = max(dimensions[0], dimensions[1])/2.0
+    height = dimensions[2]
+    func(' '*depth + '<capsule length="%f" radius="%f">'%(height, rad))
+    #ExportCollisionBoundTransform(object, func, depth+1)
+    func(' '*depth + '<move x="%f" y="%f" z="%f" />'%(offset[0], offset[2], offset[1]))
+    func(' '*depth + '</capsule>')
+  elif TYPE == 'BOX':
+    func(' '*depth + '<box x="%f" y="%f" z="%f">'%(dimensions[0], dimensions[2], dimensions[1]))
+    #ExportCollisionBoundTransform(object, func, depth+1)
+    func(' '*depth + '<move x="%f" y="%f" z="%f" />'%(offset[0], offset[2], offset[1]))
+    func(' '*depth + '</box>')
+  elif TYPE == 'SPHERE':
+    #TODO: does not do what it says above
+    rad = max(max(dimensions[0], dimensions[1]), dimensions[2])/2.0
+    func(' '*depth + '<sphere radius="%f">'%(rad))
+    #ExportCollisionBoundTransform(object, func, depth+1)
+    func(' '*depth + '<move x="%f" y="%f" z="%f" />'%(offset[0], offset[2], offset[1]))
+    func(' '*depth + '</sphere>')
+  elif TYPE == 'CYLINDER':
+    rad = max(dimensions[0], dimensions[1])/2.0
+    height = dimensions[2]
+    func(' '*depth + '<cylinder length="%f" radius="%f">'%(height, rad))
+    #ExportCollisionBoundTransform(object, func, depth+1)
+    func(' '*depth + '<move x="%f" y="%f" z="%f" />'%(offset[0], offset[2], offset[1]))
+    func(' '*depth + '</cylinder>')
+  elif TYPE == 'CONE':
+    rad = max(dimensions[0], dimensions[1])/2.0
+    height = dimensions[2]
+    func(' '*depth + '<cone length="%f" radius="%f">'%(height, rad))
+    #ExportCollisionBoundTransform(object, func, depth+1)
+    func(' '*depth + '<move x="%f" y="%f" z="%f" />'%(offset[0], offset[2], offset[1]))
+    func(' '*depth + '<rotate><rotx>1.57</rotx></rotate>')
+    func(' '*depth + '</cone>')
+  elif TYPE == 'CONVEX_HULL':
+    func(' '*depth + '<convexmesh />')
+  elif TYPE == 'TRIANGLE_MESH':
+    func(' '*depth + '<concave />')
+
+  depth = depth -2
+  func(' '*depth + '</collider>')
+
 
 def AsCSGenmeshLib(self, func, depth=0, **kwargs):
   """ Write an xml description of this mesh as a CS general mesh factory
@@ -347,25 +496,26 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
   # Write genmesh header
   func(' '*depth + '<meshfact name=\"%s\">'%(self.data.uname))
   func(' '*depth + '  <plugin>crystalspace.mesh.loader.factory.genmesh</plugin>')
-  if self.data.use_imposter:
+  if self.data.b2cs.use_imposter:
     func(' '*depth + '  <imposter range="100.0" tolerance="0.4" camera_tolerance="0.4" shader="lighting_imposter"/>')
   mat = self.GetDefaultMaterial()
-  if mat != None and mat.priority != 'object':
-    func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
-  if mat != None and mat.zbuf_mode != 'zuse':
-    func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
-  if self.data.no_shadow_receive:
+  if mat != None:
+    if mat.b2cs.priority != 'object':
+      func(' '*depth + '  <priority>%s</priority>'%(mat.priority))
+    if mat.b2cs.zbuf_mode != 'zuse':
+      func(' '*depth + '  <%s/>'%(mat.zbuf_mode))
+  if self.data.b2cs.no_shadow_receive:
     func(' '*depth + '  <noshadowreceive />')
-  if self.data.no_shadow_cast:
+  if self.data.b2cs.no_shadow_cast:
     func(' '*depth + '  <noshadowcast />')
-  if self.data.limited_shadow_cast:
+  if self.data.b2cs.limited_shadow_cast:
     func(' '*depth + '  <limitedshadowcast />')
-  if self.data.lighter2_vertexlight:
+  if self.data.b2cs.lighter2_vertexlight:
     func(' '*depth + '  <key name="lighter2" editoronly="yes" vertexlight="yes" />')
-  if not self.data.lighter2_selfshadow:
+  if not self.data.b2cs.lighter2_selfshadow:
     func(' '*depth + '  <key name="lighter2" editoronly="yes" noselfshadow="yes" />')
-  if self.data.lighter2_lmscale > 0.0:
-    func(' '*depth + '  <key name="lighter2" editoronly="yes" lmscale="%f" />'%(self.data.lighter2_lmscale))
+  if self.data.b2cs.lighter2_lmscale > 0.0:
+    func(' '*depth + '  <key name="lighter2" editoronly="yes" lmscale="%f" />'%(self.data.b2cs.lighter2_lmscale))
   func(' '*depth + '  <params>')
 
   # Recover submeshes from kwargs
@@ -373,11 +523,16 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
 
   # Take the first found material as default object material
   if mat != None:
-    func(" "*depth + "    <material>%s</material>"%(mat.uname))
+    if mat.b2cs.csMatRef:
+      func(" "*depth + "    <material>%s</material>"%(mat.b2cs.csMaterialName))
+    else:
+      func(" "*depth + "    <material>%s</material>"%(mat.uname))
+
+      if not mat.HasDiffuseTexture() and mat.uv_texture != 'None':
+        func(' '*depth + '    <shadervar type="texture" name="tex diffuse">%s</shadervar>'%(mat.uv_texture))
+
   else:
     func(" "*depth + "    <material>%s</material>"%(self.uv_texture if self.uv_texture!=None else 'None'))
-  if mat != None and not mat.HasDiffuseTexture() and mat.uv_texture != 'None':
-    func(' '*depth + '    <shadervar type="texture" name="tex diffuse">%s</shadervar>'%(mat.uv_texture))
 
   # Export mesh's render buffers
   for buf in GetRenderBuffers(**kwargs):
@@ -397,6 +552,27 @@ def AsCSGenmeshLib(self, func, depth=0, **kwargs):
       func(" "*depth + "    <autonormals/>")
 
   func(' '*depth + '  </params>')
+  
+  #physics
+  print("physics %s"%(self.game.physics_type))
+  if self.game.physics_type in ['RIGID_BODY', 'SOFT_BODY']:
+    func(' '*depth + ' <addon plugin="crystalspace.physics.loader">')
+    if self.game.physics_type=='RIGID_BODY':
+      mass = self.game.mass
+      func(' '*depth + '   <rigidbody mass="%f" friction="1.0" elasticity="0.8">'%(mass)) #TODO
+      ExportCollisionBounds(self, func, depth+5)
+      func(' '*depth + '   </rigidbody>')
+      
+    elif self.game.physics_type=='SOFT_BODY':
+      mass = self.game.mass
+      friction = self.game.soft_body.dynamic_friction
+      stiffness = self.game.soft_body.linear_stiffness
+      func(' '*depth + '   <softbody mass="%f" friction="%f">'%(mass, friction))
+      func(' '*depth + '     <meshfact duplication="none" />')
+      func(' '*depth + '     <stiffness linear="%f" angular="1.0" volume="1.0" />'%(stiffness)) #TODO
+      func(' '*depth + '   </softbody>')
+      
+    func(' '*depth + ' </addon>')
 
   # Don't close 'meshfact' flag if another mesh object is defined as 
   # an imbricated genmesh factory of this factory
@@ -409,7 +585,7 @@ bpy.types.Object.AsCSGenmeshLib = AsCSGenmeshLib
 #======== Object ====================================================================
 
 # Property defining an UV texture's name for a mesh ('None' if not defined)
-StringProperty(['Object'], attr="uv_texture", name="UV texture", default='None')
+bpy.types.Object.uv_texture = bpy.props.StringProperty(default='None')
 
 
 def ObjectAsCS(self, func, depth=0, **kwargs):
@@ -419,24 +595,34 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
   name = self.uname
   if 'name' in kwargs:
     name = kwargs['name']+':'+name
+    
+  if self.type == 'MESH' and self.portal.enabled:
+    self.PortalsAsCS(func, depth)
 
-  if self.type == 'MESH':
-    if len(self.data.vertices)!=0 and len(self.data.all_faces)!=0:
+  elif self.type == 'MESH':
+    isValidRef = self.b2cs.csFactRef and self.b2cs.csFactoryName != '' and self.b2cs.csFactoryVfs != ''
+    if self.b2cs.csFactRef and not isValidRef:
+      return
+
+    if isValidRef or (len(self.data.vertices)!=0 and len(self.data.all_faces)!=0):
       # Temporary disable of meshref support because of incompatibility
       # issues with lighter2 that needs to be genmesh aware in order to
       # pack the lightmaps per submeshes
       #func(' '*depth +'<meshref name="%s_object">'%(self.uname))
       #func(' '*depth +'  <factory>%s</factory>'%(self.data.uname))
-
-      func(' '*depth +'<meshobj name="%s_object">'%(name))
-
-      if self.parent and self.parent.type == 'ARMATURE':
-        func(' '*depth +'  <plugin>crystalspace.mesh.loader.animesh</plugin>')
+      if isValidRef:
+        # Only use meshref when object is defined as a reference to a CS factory
+        func(' '*depth +'<meshref name="%s_object">'%(name))
+        func(' '*depth +'  <factory>%s</factory>'%(self.b2cs.csFactoryName))
       else:
-        func(' '*depth +'  <plugin>crystalspace.mesh.loader.genmesh</plugin>')
-      func(' '*depth +'  <params>')
-      func(' '*depth +'    <factory>%s</factory>'%(self.data.uname))
-      func(' '*depth +'  </params>')
+        func(' '*depth +'<meshobj name="%s_object">'%(name))
+        if self.parent and self.parent.type == 'ARMATURE':
+          func(' '*depth +'  <plugin>crystalspace.mesh.loader.animesh</plugin>')
+        else:
+          func(' '*depth +'  <plugin>crystalspace.mesh.loader.genmesh</plugin>')
+        func(' '*depth +'  <params>')
+        func(' '*depth +'    <factory>%s</factory>'%(self.data.uname))
+        func(' '*depth +'  </params>')
 
       if self.parent and self.parent_type == 'BONE':
         matrix = self.matrix_world
@@ -444,10 +630,12 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
         matrix = self.relative_matrix
         if 'transform' in kwargs:
           matrix =  kwargs['transform'] * matrix
-      MatrixAsCS(matrix, func, depth+2)
+      MatrixAsCS(matrix, func, depth+2, noScale=not isValidRef)
 
-      #func(' '*depth +'</meshref>')
-      func(' '*depth +'</meshobj>')
+      if isValidRef:
+        func(' '*depth +'</meshref>')
+      else:
+        func(' '*depth +'</meshobj>')
 
       # Process array modifiers
       self.ExportArrayModifier (func, depth, **kwargs)
@@ -480,18 +668,72 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
       matrix = kwargs['transform'] * matrix
 
     func(' '*depth +'<light name="%s">'%(name))
-    # Flip Y and Z axis.
-    func(' '*depth +'  <center x="%f" z="%f" y="%f" />'% tuple(matrix.to_translation()))
     func(' '*depth +'  <color red="%f" green="%f" blue="%f" />'% tuple(self.data.color))
-    func(' '*depth +'  <radius>%f</radius>'%(self.data.distance))
-    func(' '*depth +'  <attenuation>linear</attenuation>')
-    if self.data.no_shadows:
+    func(' '*depth +'  <radius>%f</radius>'%(self.data.distance*2))
+    func(' '*depth +'  <attenuation>linear</attenuation>') #TODO
+    
+    # Conversion of the light transform from Blender to CS:
+    # - In Blender, a light with an identity transform will look down although
+    #   it will look backward in CS (hence a rotation of 90 degree).
+    # - In Blender, the rotation part of the transform appears to be from lamp to
+    #   world, although the translation is from world to lamp. Hence an inversion
+    #   of the rotation part.
+    import mathutils
+    import math
+    rotationX = mathutils.Matrix.Rotation(math.radians(90.0), 4, 'X')
+    origin = matrix.to_translation()
+    matrix = rotationX * matrix.inverted()
+    matrix.translation = origin
+
+    if not self.data.use_shadow:
       func(' '*depth +'  <noshadows />')
+      
+    if self.data.type=='SPOT':
+      func(' '*depth +'  <type>spot</type>')
+      
+      MatrixAsCS(matrix, func, depth+2, noScale=True, noTranslation=False)
+      
+      import math #math.radians(90), math.degrees(1.5707963)
+      outer = math.degrees(self.data.spot_size) / 2 #Blender specifies the lit angle, CS has outer to center as angle
+      inner =  outer - (outer * self.data.spot_blend)
+      func(' '*depth +' <spotlightfalloff inner="%f" outer="%f" />'%(inner, outer))
+    
+    elif self.data.type=='SUN':
+      func(' '*depth +'  <type>directional</type>')
+      MatrixAsCS(matrix, func, depth+2, noScale=True, noTranslation=False)
+
+    else:
+      # Flip Y and Z axis.
+      func(' '*depth +'  <center x="%f" z="%f" y="%f" />'% tuple(matrix.to_translation()))
+     
+    if len(self.children):  #TODO: only support first child, perhaps merge the meshes?
+      data = self.children[0].data
+      data.calc_tessface() # Compute and update the list of tessellated faces (faces of 3 or 4 vertices) 
+      func(' '*depth +'<trimesh>')
+      func(' '*depth +' <id>clip</id>')
+      func(' '*depth +' <mesh>')
+      for v in data.vertices:
+        pos = v.co
+        # Flip Y and Z axis.
+        func(' '*depth +'   <v x="%f" y="%f" z="%f" />'%(pos.x, pos.z, pos.y))
+        
+      for face_num, face in enumerate(data.tessfaces):
+        indices = [v for v in face.vertices]
+        if len(indices)==3:
+          func(' '*depth +'   <t v1="%d" v2="%d" v3="%d" />'%(indices[2], indices[1],indices[0],))
+        else:
+          func(' '*depth +'   <t v1="%d" v2="%d" v3="%d" />'%(indices[2], indices[1],indices[0],))
+          func(' '*depth +'   <t v1="%d" v2="%d" v3="%d" />'%(indices[3], indices[2],indices[0],))
+           
+           
+      func(' '*depth +' </mesh>')
+      func(' '*depth +'</trimesh>')
+        
     func(' '*depth +'</light>')
 
   elif self.type == 'EMPTY':
     if self.dupli_type=='GROUP' and self.dupli_group:
-      if self.dupli_group.doMerge:
+      if self.dupli_group.b2cs.doMerge:
         self.dupli_group.AsCS(func, depth, transform=self.relative_matrix)
       else:
         for ob in self.dupli_group.objects:
@@ -502,9 +744,10 @@ def ObjectAsCS(self, func, depth=0, **kwargs):
       func(' '*depth +'  <position x="%f" z="%f" y="%f" />'% tuple(self.relative_matrix.to_translation()))
       func(' '*depth +'</node>')
 
+    #TODO: really put everything on the top level??
     #Handle children: translate to top level.
     for obj in self.children:
-      if not obj.hide:
+      if obj.IsExportable():
         obj.AsCS(func, depth, transform=self.relative_matrix, name=self.uname)
 
   elif self.type != 'CAMERA' and self.type != 'CURVE':
@@ -521,6 +764,7 @@ def IsExportable(self):
   if self.hide and self.type != 'EMPTY':
     return False
 
+
   # Armature objects are exported if at least one of 
   # its child meshes is visible
   if self.type == 'ARMATURE':
@@ -532,7 +776,7 @@ def IsExportable(self):
   # Mesh objects are exported as individual mesh factories if 
   # - they are not submeshes of a visible armature,
   # - they are not submeshes of a visible mesh,
-  # - they are not portals, 
+  # - they are not a special mesh (viscull, shadow, collission)
   # - they have a non null number of vertices and faces,
   # - they are socket objects
   if self.type == 'MESH':
@@ -547,10 +791,11 @@ def IsExportable(self):
                (ob.parent.type=='MESH' and not ob.parent.hide)
       return False
 
-    if not IsChildOfExportedFactory(self) and not self.data.portal \
+    if not IsChildOfExportedFactory(self) and not self.IsTriangleMesh() \
           and len(self.data.vertices)!=0 and len(self.data.all_faces)!=0:
       return True
     return False      
+    
 
   # The export of Empty objects depends of their components
   if self.type == 'EMPTY':
@@ -575,6 +820,7 @@ def IsExportable(self):
       # Empty objects which are not groups are exported as map nodes
       # (notice that each of their components can be individually exported)
       return True
+
 
   # All other types of objects are always exportable (if they are visible)
   return True
@@ -616,7 +862,7 @@ def ObjectDependencies(self, empty=None):
   elif self.type == 'EMPTY':
     if self.dupli_type=='GROUP' and self.dupli_group:
       # Group of objects ==> 'G' type
-      if self.dupli_group.doMerge:
+      if self.dupli_group.b2cs.doMerge:
         dependencies['G'][self.dupli_group.uname] = self.dupli_group
         MergeDependencies(dependencies, self.dupli_group.GetDependencies())
       else:
@@ -648,7 +894,7 @@ def GetDefaultMaterial (self, notifications = True):
       print('WARNING: armature object "%s" has no child with texture coordinates'%(self.uname))
   elif self.type == 'MESH':
     # Mesh object
-    if len(self.data.uv_textures) != 0 and self.data.GetFirstMaterial():
+    if self.data.GetFirstMaterial():
       # Take the first defined material as default object material
       mat = self.data.GetFirstMaterial()
     elif notifications:
@@ -665,28 +911,29 @@ def GetMaterialDeps(self):
   """
   dependencies = EmptyDependencies()
   if self.type == 'MESH':
-    foundDiffuseTexture = False
     # Material of the mesh ==> 'M' type
     # and associated textures ==> 'T' type
     for mat in self.materials:
       dependencies['M'][mat.uname] = mat
       MergeDependencies(dependencies, mat.GetDependencies())
-      foundDiffuseTexture = foundDiffuseTexture or mat.HasDiffuseTexture() 
-    # Search for a diffuse texture if none is defined among the materials
-    if not foundDiffuseTexture:
-      if self.data and self.data.uv_textures and self.data.uv_textures.active:
-        # UV texture of the mesh ==> 'T' type
-        for index, facedata in enumerate(self.data.uv_textures.active.data):
-          if facedata.image and facedata.image.uname not in dependencies['T'].keys():
+
+    # Search for a possible diffuse texture that overlays underlying materials
+    if self.data and self.data.uv_textures and self.data.uv_textures.active:
+      # UV texture of the mesh ==> 'T' type
+      for index, facedata in enumerate(self.data.uv_textures.active.data):
+        if facedata.image:
+          if facedata.image.uname not in dependencies['T'].keys():
             dependencies['T'][facedata.image.uname] = facedata.image
-            material = self.data.GetMaterial(self.data.all_faces[index].material_index)
-            if material:
-              material.uv_texture = facedata.image.uname
-            else:
-              # Create a material if the mesh has a texture but no material
-              dependencies['TM'][facedata.image.uname] = facedata.image
-              if self.uv_texture == 'None':
-                self.uv_texture = facedata.image.uname
+
+          material = self.data.GetMaterial(self.data.all_faces[index].material_index)
+          if material:
+            material.uv_texture = facedata.image.uname
+          else:
+            # Create a material if the mesh has a texture but no material
+            dependencies['TM'][facedata.image.uname] = facedata.image
+            if self.uv_texture == 'None':
+              self.uv_texture = facedata.image.uname
+
   return dependencies
 
 bpy.types.Object.GetMaterialDeps = GetMaterialDeps
@@ -709,7 +956,7 @@ def HasImposter(self):
   """ Indicates if this object uses an imposter
   """
   if self.type == 'MESH':
-    if self.data and self.data.use_imposter:
+    if self.data and self.data.b2cs.use_imposter:
       return True
   elif self.type == 'EMPTY':
     if self.dupli_type=='GROUP' and self.dupli_group:
@@ -737,7 +984,7 @@ def GetScale(self):
 bpy.types.Object.GetScale = GetScale
 
 
-def GetTransformedCopy(self, matrix = None):
+def GetTransformedCopy(self, matrix = None, animesh = False):
   """ Get a deep copy of this object, transformed by matrix,
       with applied modifiers
   """
@@ -750,19 +997,20 @@ def GetTransformedCopy(self, matrix = None):
     obCpy.data.transform(matrix)
     obCpy.data.calc_normals()
 
+  if animesh or len(self.users_scene) == 0 or self.type != 'MESH':
+    return obCpy
+
   # Don't apply modifiers if the CS property 'array_as_meshobj' is set and 
   # the object contains only 'FIXED_COUNT' array modifiers:
   # this type of modifier is exported as instances of object factory in 'world' file
   # (cfr. ExportArrayModifier() )
-  if self.data.array_as_meshobj:
+  if self.data.b2cs.array_as_meshobj:
     arrays = [mod for mod in obCpy.modifiers \
                 if mod.type=='ARRAY' and mod.fit_type=='FIXED_COUNT'] 
     if len(arrays) == len(obCpy.modifiers):
       return obCpy 
 
   # Arbitrary take the first scene containing current object
-  if len(self.users_scene) == 0:
-    return obCpy
   scene = self.users_scene[0]
   # Create a deep copy of mesh data block with applied modifiers
   modifiedObject = obCpy.copy()
@@ -777,72 +1025,146 @@ def ExportArrayModifier(self, func, depth, **kwargs):
       export each object copy as a factory instance ('meshobj')
   """
   # Don't export array copies of this mesh if CS property 'array_as_meshobj' is not set
-  if not self.data.array_as_meshobj:
+  if not self.data.b2cs.array_as_meshobj:
     return
 
   # If stack contains other modifiers than arrays with fixed number of copies,
   # don't export the array copies (they have been already applied to the mesh
   # by method GetTransformedCopy() )
   arrays = [mod for mod in self.modifiers \
-              if mod.type=='ARRAY' and mod.fit_type=='FIXED_COUNT'] 
+              if mod.type=='ARRAY' and mod.fit_type=='FIXED_COUNT' and mod.count>1] 
   if len(arrays) != len(self.modifiers):
     return
 
   # Export all array modifiers of the stack
   for modifier in self.modifiers:
-    # Disable the array modifier
-    viewstate = modifier.show_viewport
-    modifier.show_viewport = False
-    bpy.ops.object.mode_set(mode='EDIT')
 
-    # Get transformation matrix and bounding box of base object
+    # Get transformation matrix of base object
     matrix = self.relative_matrix
     if 'transform' in kwargs:
       matrix =  kwargs['transform'] * matrix
-    bbsize = Vector((abs(self.bound_box[6][0] - self.bound_box[0][0]),
-                     abs(self.bound_box[6][1] - self.bound_box[0][1]),
-                     abs(self.bound_box[6][2] - self.bound_box[0][2])))
 
-    # Restore object mode and modifier
-    modifier.show_viewport = viewstate
-    bpy.ops.object.mode_set(mode='OBJECT')
-
-    # Calculate array transformation
-    transform = Matrix.Identity(4)
+    # Calculate array transformation:
+    # - object offset
+    objoffset = Matrix.Identity(4)
     if modifier.use_object_offset:
-      transform = modifier.offset_object.relative_matrix * matrix.inverted()
+      objoffset = modifier.offset_object.relative_matrix * matrix.inverted()
 
+    # - constant offset
+    offset = Matrix.Identity(4)
     if modifier.use_constant_offset:
-      offset = modifier.constant_offset_displace
-      m = Matrix.Identity(4)
-      for i in range(3):
-        if offset[i] != 0.0:
-          m[i][3] = offset[i]
-      transform = m * transform
+      cstoffset = modifier.constant_offset_displace
+      m = Matrix.Translation(cstoffset)
+      offset = m * offset
 
+    # - relative offset
     if modifier.use_relative_offset:
       scaling = modifier.relative_offset_displace
       if scaling != [-1.0,-1.0,-1.0]:
+        # get bounding box of base object
+        bbsize = self.GetBBoxSize()
         m = Matrix.Identity(4)
         for i in range(3):
-          if modifier.count != 0 and scaling[i] != 0.0:
+          if scaling[i] != 0.0:
             m[i][3] = scaling[i] * bbsize[i]
-        transform = m * transform
+        offset = m * offset
 
     # Create instances of base object respecting the array modifier
     # (since an instance of mesh factory has already been exported,
     # only N-1 copies of the mesh are generated)
+    tt = Matrix.Identity(4)
+    ot = matrix
+    mtot = matrix
+
     for cnt in range(modifier.count - 1):
       func(' '*depth +'<meshobj name="%s_array_object_%i">'%(self.uname,cnt+1))
       func(' '*depth +'  <plugin>crystalspace.mesh.loader.genmesh</plugin>')
       func(' '*depth +'  <params>')
       func(' '*depth +'    <factory>%s</factory>'%(self.data.uname))
       func(' '*depth +'  </params>')
-      matrix = transform * matrix
-      MatrixAsCS(matrix, func, depth+2)
+
+      # Calculate transformation matrix of mesh factory instance
+      loc, rot, scale = DecomposeMatrix(mtot)
+      roffset = Matrix.Translation((rot*offset).to_translation())
+      tt = roffset * tt
+      ot = objoffset * ot
+      mtot = tt * ot
+
+      MatrixAsCS(mtot, func, depth+2)
       func(' '*depth +'</meshobj>')
 
   # TODO: process other types of ARRAY modifiers (fit_type = 'FIT_LENGTH' or 'FIT_CURVE')
   # and other ARRAY options
 
 bpy.types.Object.ExportArrayModifier = ExportArrayModifier
+
+
+def GetBBoxSize (self):
+  """ Return the size of object bounding box in a 3 dimensional vector
+      (no modifier is applied to the object)
+  """
+
+  if not self.type == 'MESH' or not self.data or len(self.data.vertices) == 0:
+    return
+
+  posmin = Vector(self.data.vertices[0].co)
+  posmax = Vector(self.data.vertices[0].co)
+  for vi in self.data.vertices:
+    for i in range (3):
+      if vi.co[i] < posmin[i]:
+        posmin[i] = vi.co[i]
+      if vi.co[i] > posmax[i]:
+        posmax[i] = vi.co[i]
+  BBsize = [abs(posmax[0]-posmin[0]),abs(posmax[1]-posmin[1]),abs(posmax[2]-posmin[2])]
+  return BBsize
+
+bpy.types.Object.GetBBoxSize = GetBBoxSize
+
+
+
+
+def GetTriangleMesh (self, id):
+  '''
+  id is one of
+  - viscull
+  - collission
+  - shadow
+  '''
+  for ob in bpy.data.objects:
+    for contraint in ob.constraints:
+      if contraint.GetConstraintType() == id and contraint.target==self:
+        return ob
+        
+  return None
+
+bpy.types.Object.GetTriangleMesh = GetTriangleMesh
+
+
+def IsTriangleMesh (self):
+  for contraint in self.constraints:
+    if contraint.GetConstraintType():
+      return True
+  return False
+  
+bpy.types.Object.IsTriangleMesh = IsTriangleMesh
+
+
+def MakeThisATriangleMesh (self, id, target):
+  constraint = self.constraints.new('COPY_TRANSFORMS')
+  constraint.name = id
+  constraint.target = target
+  self.draw_type = 'WIRE'
+        
+  return None
+
+bpy.types.Object.MakeThisATriangleMesh = MakeThisATriangleMesh
+
+def UnMakeThisATriangleMesh (self, id):
+  for constraint in self.constraints:
+    if constraint.GetConstraintType() == id:
+      self.constraints.remove(constraint)
+  self.draw_type = 'TEXTURED'
+        
+  return None
+
+bpy.types.Object.UnMakeThisATriangleMesh = UnMakeThisATriangleMesh

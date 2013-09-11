@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2011-2012 Christian Van Brussel, Institute of Information
+    Copyright (C) 2011-2013 Christian Van Brussel, Institute of Information
       and Communication Technologies, Electronics and Applied Mathematics
       at Universite catholique de Louvain, Belgium
       http://www.uclouvain.be/en-icteam.html
@@ -39,7 +39,6 @@
 namespace CS { 
 namespace Physics {
 
-struct iDynamicActor;
 struct iJoint;
 struct iKinematicCallback;
 struct iPhysicalSystem;
@@ -65,9 +64,8 @@ enum RigidBodyState
  */
 enum PhysicalObjectType
 {
-  PHYSICAL_OBJECT_RIGIDBODY = 0,
-  PHYSICAL_OBJECT_SOFTBODY,
-  PHYSICAL_OBJECT_DYNAMICACTOR
+  PHYSICAL_OBJECT_RIGIDBODY = 0,  /*!< The physical object is a rigid body. */
+  PHYSICAL_OBJECT_SOFTBODY       /*!< The physical object is a soft body. */
 };
 
 /**
@@ -88,15 +86,15 @@ enum DebugMode
  */
 enum MeshDuplicationMode
 {
+  MESH_DUPLICATION_NONE = 0,
   /*!< The faces of the mesh are not double sided, i.e. the vertices and
 	triangles are not duplicated. */
-  MESH_DUPLICATION_NONE = 0,
+  MESH_DUPLICATION_INTERLEAVED,
   /*!< The faces of the mesh are double sided, and the duplicated vertices
 	and triangles are interleaved with the original ones. */
-  MESH_DUPLICATION_INTERLEAVED,
-    /*!< The faces of the mesh are double sided, and the duplicated vertices
-	and triangles are packed contiguously at the end of their buffer. */
   MESH_DUPLICATION_CONTIGUOUS
+  /*!< The faces of the mesh are double sided, and the duplicated vertices
+    and triangles are packed contiguously at the end of their buffer. */
 };
 
 /**
@@ -216,8 +214,6 @@ struct iPhysicalBody : public virtual CS::Collisions::iCollisionObject
 
 // TODO: There are a lot more configurable parameters - See btRigidBodyConstructionInfo:
 /*
-  btVector3			m_localInertia;
-
   ///best simulation results using zero restitution.
   btScalar			m_restitution;
 
@@ -436,6 +432,8 @@ struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
   /// Create a soft body
   virtual csPtr<iSoftBody> CreateSoftBody () = 0;
 
+  // TODO: Re-select an interesting set of soft body parameters
+
   /// Set linear stiffness coefficient [0,1]. The default value is 1.0f.
   virtual void SetLinearStiffness (float stiffness) = 0;
 
@@ -446,22 +444,22 @@ struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
   virtual void SetVolumeStiffness (float stiffness) = 0;
 
   /// Set soft vs rigid hardness [0,1] (cluster only). The default value is 0.1f.
-  virtual void SetSRHardness (float hardness) = 0;
+  //virtual void SetSRHardness (float hardness) = 0;
 
   /// Set soft vs kinetic hardness [0,1] (cluster only). The default value is 1.0f.
-  virtual void SetSKHardness (float hardness) = 0;
+  //virtual void SetSKHardness (float hardness) = 0;
 
   /// Set soft vs soft hardness [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSSHardness (float hardness) = 0;
+  //virtual void SetSSHardness (float hardness) = 0;
 
   /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSRImpulse (float impulse) = 0;
+  //virtual void SetSRImpulse (float impulse) = 0;
 
   /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSKImpulse (float impulse) = 0;
+  //virtual void SetSKImpulse (float impulse) = 0;
 
   /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSSImpulse (float impulse) = 0;
+  //virtual void SetSSImpulse (float impulse) = 0;
 
   /// Set damping coefficient [0,1]. The default value is 0.0f.
   virtual void SetDamping (float damping) = 0;
@@ -482,18 +480,18 @@ struct iSoftBodyFactory : public virtual iPhysicalObjectFactory
   virtual void SetShapeMatchThreshold (float matching) = 0;
 
   /// Set rigid contacts hardness [0,1]. The default value is 1.0f.
-  virtual void SetRContactsHardness (float hardness) = 0;
+  //virtual void SetRContactsHardness (float hardness) = 0;
 
   /// Set kinetic contacts hardness [0,1]. The default value is 0.1f.
-  virtual void SetKContactsHardness (float hardness) = 0;
+  //virtual void SetKContactsHardness (float hardness) = 0;
 
   /// Set soft contacts hardness [0,1]. The default value is 1.0f.
-  virtual void SetSContactsHardness (float hardness) = 0;
+  //virtual void SetSContactsHardness (float hardness) = 0;
 
   /// Set anchors hardness [0,1]. The default value is 0.7f.
-  virtual void SetAnchorsHardness (float hardness) = 0;
+  //virtual void SetAnchorsHardness (float hardness) = 0;
 
-  /// Set true in order to use pose matching. The default value is \false
+  /// Set true in order to use pose matching. The default value is \a false
   virtual void SetShapeMatching (bool match) = 0;
 
   /**
@@ -703,22 +701,22 @@ struct iSoftBody : public virtual iPhysicalBody
   //virtual bool GetClusterCollisionSS () = 0;
 
   /// Set soft vs rigid hardness [0,1] (cluster only). The default value is 0.1f.
-  virtual void SetSRHardness (float hardness) = 0;
+  //virtual void SetSRHardness (float hardness) = 0;
 
   /// Set soft vs kinetic hardness [0,1] (cluster only). The default value is 1.0f.
-  virtual void SetSKHardness (float hardness) = 0;
+  //virtual void SetSKHardness (float hardness) = 0;
 
   /// Set soft vs soft hardness [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSSHardness (float hardness) = 0;
+  //virtual void SetSSHardness (float hardness) = 0;
 
   /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSRImpulse (float impulse) = 0;
+  //virtual void SetSRImpulse (float impulse) = 0;
 
   /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSKImpulse (float impulse) = 0;
+  //virtual void SetSKImpulse (float impulse) = 0;
 
   /// Set soft vs rigid impulse split [0,1] (cluster only). The default value is 0.5f.
-  virtual void SetSSImpulse (float impulse) = 0;
+  //virtual void SetSSImpulse (float impulse) = 0;
 
   /// Set velocities correction factor (Baumgarte).
   //virtual void SetVeloCorrectionFactor (float factor) = 0;
@@ -742,16 +740,17 @@ struct iSoftBody : public virtual iPhysicalBody
   virtual void SetShapeMatchThreshold (float matching) = 0;
 
   /// Set rigid contacts hardness [0,1]. The default value is 1.0f.
-  virtual void SetRContactsHardness (float hardness) = 0;
+  //virtual void SetRContactsHardness (float hardness) = 0;
 
   /// Set kinetic contacts hardness [0,1]. The default value is 0.1f.
-  virtual void SetKContactsHardness (float hardness) = 0;
+  //virtual void SetKContactsHardness (float hardness) = 0;
 
   /// Set soft contacts hardness [0,1]. The default value is 1.0f.
-  virtual void SetSContactsHardness (float hardness) = 0;
+  //virtual void SetSContactsHardness (float hardness) = 0;
 
   /// Set anchors hardness [0,1]. The default value is 0.7f.
-  virtual void SetAnchorsHardness (float hardness) = 0;
+  // TODO: use specific values per anchors instead?
+  //virtual void SetAnchorsHardness (float hardness) = 0;
 
   /// Set velocities solver iterations.
   //virtual void SetVeloSolverIterations (int iter) = 0;
@@ -892,51 +891,6 @@ static csPtr<iMeshFactoryWrapper> CreateClothGenMeshFactory
 
     return csPtr<iMeshFactoryWrapper> (clothFact);
   }
-};
-
-/**
- * Factory to create instances of iDynamicActor.
- */
-struct iDynamicActorFactory : public virtual iRigidBodyFactory,
-  public virtual CS::Collisions::iActorFactory
-{
-  SCF_INTERFACE (CS::Physics::iDynamicActorFactory, 1, 0, 0);
-
-  /// Create a dynamic actor
-  virtual csPtr<iDynamicActor> CreateDynamicActor () = 0;
-
-  /// Get whether to use a kinematic method for smooth steps
-  virtual bool GetKinematicStepsEnabled () const = 0;
-  /// Set whether to use a kinematic method for smooth steps
-  virtual void SetKinematicStepsEnabled (bool u) = 0;
-};
-
-/**
- * A dynamic actor allows the user to easily navigate a physical object on
- * ground, and to interact with the dynamic objects that are colliding with it
- * by pushing away the objects that are hit.
- *
- * The actual collider that represents the actor always floats <step height>
- * above the ground to be able to move smoothly over terrain and small obstacles.
- *
- * The air control factor determines whether and how well the actor can be
- * controlled while not touching the ground. Air control is always 100% when gravity
- * is off.
- *
- * Main creators of instances implementing this interface:
- * - iPhysicalSystem::CreateDynamicActor()
- * 
- * Main users of this interface:
- * - iPhysicalSector
- */
-struct iDynamicActor : public virtual iRigidBody, public virtual CS::Collisions::iActor
-{
-  SCF_INTERFACE (CS::Physics::iDynamicActor, 1, 0, 0);
-
-  /// Get whether to use a kinematic method for smooth steps
-  virtual bool GetKinematicStepsEnabled () const = 0;
-  /// Set whether to use a kinematic method for smooth steps
-  virtual void SetKinematicStepsEnabled (bool u) = 0;
 };
 
 /**
@@ -1437,9 +1391,9 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   virtual void SetStepParameters (float timeStep, size_t maxSteps,
     size_t iterations) = 0;  
 
-  /// Step the simulation forward by the given duration (csTicks are in millisecond).
+  /// Step the simulation forward by the given duration, in second.
   // TODO: auto-step
-  virtual void Step (csTicks duration) = 0;
+  virtual void Step (float duration) = 0;
 
   /**
    * Set whether or not this physical system can handle soft bodies. The default
@@ -1583,10 +1537,6 @@ struct iPhysicalSystem : public virtual CS::Collisions::iCollisionSystem
   
   /// Create a rigid body factory
   virtual csPtr<iRigidBodyFactory> CreateRigidBodyFactory
-    (CS::Collisions::iCollider* collider = nullptr) = 0;
-
-  /// Create a dynamic actor factory
-  virtual csPtr<iDynamicActorFactory> CreateDynamicActorFactory
     (CS::Collisions::iCollider* collider = nullptr) = 0;
 
   /// Create a soft rope factory

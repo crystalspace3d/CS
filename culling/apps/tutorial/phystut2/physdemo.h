@@ -53,10 +53,11 @@ static const csVector3 UpVector (0, 1, 0);
 enum ActorMode
 {
   ActorModeNone,
-  ActorModeDynamic,
-  ActorModeKinematic,
+  ActorModePhysical,
   ActorModeNoclip
 };
+
+static const csVector3 ActorDimensions (0.5f, 1.8f, 0.5f);
 
 // Levels
 enum PhysDemoLevel
@@ -76,24 +77,25 @@ enum CameraMode
   CameraModeCount
 };
 
-// Navigation input (use WASD controls)
+// Navigation input keys
 static const int KeyUp = CSKEY_PGUP;
 static const int KeyDown = CSKEY_PGDN;
-//static const int KeyLeft = CSKEY_LEFT;
-//static const int KeyRight = CSKEY_RIGHT;
-//static const int KeyForward = CSKEY_UP;
-//static const int KeyBack = CSKEY_DOWN;
-static const int KeyLeft = 'q';
-static const int KeyRight = 'e';
-static const int KeyForward = 'w';
-static const int KeyBack = 's';
-static const int KeyStrafeLeft = 'a';
-static const int KeyStrafeRight = 'd';
 static const int KeyJump = CSKEY_SPACE;
 static const int KeyHandbrake = CSKEY_SPACE;
 
-
-class PhysDemo;
+#if 1
+// For QWERTY keyboards:
+static const int KeyForward = 'w';
+static const int KeyBackward = 's';
+static const int KeyLeft = 'a';
+static const int KeyRight = 'd';
+#else
+// For AZERTY keyboards:
+static const int KeyForward = 'z';
+static const int KeyBackward = 's';
+static const int KeyLeft = 'q';
+static const int KeyRight = 'd';
+#endif
 
 /// Retreives folder and file information from a full (unix-style) path
 inline void GetFolderAndFile (const char* _path, csString& folder, csString& filename)
@@ -128,10 +130,6 @@ public:
     (const csOrthoTransform& trans, float friction = 1, float density = 30);
 };
 
-//static const csVector3 ActorDimensions (0.8);
-//static const csVector3 ActorDimensions (0.1f, 0.6f, 0.1f);
-static const csVector3 ActorDimensions (0.3f, 1.8f, 0.3f);
-
 class PhysDemo : public CS::Utility::DemoApplication
 {
   friend class RenderMeshColliderPair;
@@ -156,7 +154,6 @@ public:
   int phys_engine_id;
   bool do_bullet_debug;
   bool do_soft_debug;
-  //float remainingStepDuration;
 
   // Dynamic simulation related
   bool allStatic;
@@ -175,15 +172,13 @@ public:
 
   // Camera & actors
   CS::Physics::DebugMode debugMode;
-  float actorAirControl;
   float moveSpeed, turnSpeed;
   ActorMode actorMode;
   CameraMode cameraMode;
 
   Agent player;
   Item* selectedItem;
-  csRef<CS::Physics::iDynamicActor> dynamicActor;
-  csRef<CS::Collisions::iCollisionActor> kinematicActor;
+  csRef<CS::Collisions::iCollisionActor> actor;
 
   // Ragdoll related
   csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
@@ -203,8 +198,6 @@ public:
   csRef<iModifiableDataFeeder> moddedTerrainFeeder;
   /// The currently applied terrain mode (if any)
   csRef<iTerrainModifier> terrainMod;
-
-  csHash<int, csString> debugNameMap;
 
   // Vehicles
   csRef<CS::Physics::iVehicle> actorVehicle;
@@ -407,33 +400,12 @@ public:
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Input Tools
-
-  csVector3 GetInputDirection ();
-
-  /// 0 or 1, depending on whether the forward key is currently pressed (possibly values in between, depending on input device)
-  float GetForward ();
-  
-  /// 0 or 1, depending on whether the backward key is currently pressed (possibly values in between, depending on input device)
-  float GetBackward ();
-  
-  /// 0 or 1, depending on whether the left/right keys are currently pressed (possibly values in between, depending on input device)
-  float GetLeftRight ();
-
-  
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Frame
-
-  void DoStep ();
 
   void MoveActor ();
   void MoveActorVehicle ();
 
   void UpdateVehiclePassengers ();
-
-  void RotateActor ();
-
-  void MoveCamera ();
 
   void UpdateDragging ();
 

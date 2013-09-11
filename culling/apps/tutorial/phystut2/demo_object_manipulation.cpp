@@ -38,7 +38,6 @@ using namespace CS::Collisions;
 using namespace CS::Physics;
 using namespace CS::Geometry;
 
-
 bool PhysDemo::PickCursorObject (CS::Collisions::HitBeamResult& result)
 { 
   // Find the object under the cursor:
@@ -92,9 +91,9 @@ bool PhysDemo::PickCursorObject (CS::Collisions::HitBeamResult& result)
   // TODO: Need a generic mechanism to determine ownership of objects
 
   // check for actor
-  if (obj->QueryActor ())
+  if (obj->QueryCollisionActor ())
   {
-    return obj->QueryActor ();
+    return obj->QueryCollisionActor ();
   }
 
   // check for vehicle
@@ -212,17 +211,21 @@ void PhysDemo::ToggleObjectDynamic (CS::Collisions::iCollisionObject* obj)
   }
 }
 
-
 void PhysDemo::TeleportObject (CS::Collisions::iCollisionObject* obj, iCameraPosition* pos)
 {
   // set transform
   csOrthoTransform trans (csMatrix3 (), pos->GetPosition ());
   trans.LookAt (pos->GetForwardVector (), pos->GetUpwardVector ());
-  obj->SetTransform (trans);
-  
+  if (obj) obj->SetTransform (trans);
+  else view->GetCamera ()->SetTransform (trans);
+
   // set sector
   iSector* isector = engine->FindSector (pos->GetSector ());
-  iCollisionSector* collSector = physicalSystem->FindCollisionSector (isector);
-  CS_ASSERT (collSector);
-  collSector->AddCollisionObject (obj);
+  if (obj)
+  {
+    iCollisionSector* collSector = physicalSystem->FindCollisionSector (isector);
+    CS_ASSERT (collSector);
+    collSector->AddCollisionObject (obj);
+  }
+  else view->GetCamera ()->SetSector (isector);
 }

@@ -1,28 +1,24 @@
 import bpy
 
 from .util import *
-from io_scene_cs.utilities import BoolProperty
-
-
-# Property indicating if a texture ('Image' type) is a normal map
-BoolProperty(['Image'], attr="isNormalMap", name="isNormalMap", default=False)
-
 
 def IdentifyNormalMap(self, material):
   """ Test if this texture is a normal map
   """
-  self.isNormalMap = False
+  self["isNormalMap"] = False
   for slot in material.texture_slots:
     if slot and slot.use_map_normal and slot.texture and slot.texture.type =='IMAGE' \
           and slot.texture.image and slot.texture.image.uname == self.uname :
-      self.isNormalMap = True   
-  return self.isNormalMap
+      self["isNormalMap"] = True   
+  return self["isNormalMap"]
 
 bpy.types.Image.IdentifyNormalMap = IdentifyNormalMap
 
+bpy.types.Image.isNormalMap = property(lambda self: self.get("isNormalMap", False))
+
 
 def TextureIsBinAlpha(self):
-  return self.type == 'IMAGE' and self.binAlpha
+  return self.type == 'IMAGE' and self.b2cs.binAlpha
  
 bpy.types.Image.IsBinAlpha = TextureIsBinAlpha
 

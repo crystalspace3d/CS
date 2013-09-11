@@ -51,7 +51,6 @@
 #include "collisionactor.h"
 #include "collisiondata.h"
 #include "common2.h"
-#include "dynamicactor.h"
 #include "joint2.h"
 #include "portal.h"
 #include "rigidbody2.h"
@@ -230,7 +229,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // remove actors
     for (size_t i = 0; i < actors.GetSize (); ++i)
     {
-      //actors[i]->RemoveBulletObject ();
+      actors[i]->RemoveBulletObject ();
     }
 
     // remove portals
@@ -276,6 +275,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
     if (softWorldInfo)
       softWorldInfo->m_gravity = gravity;
+
+    // Update the gravity of the actors
+    for (size_t i = 0; i < actors.GetSize (); i++)
+      actors[i]->SetGravity (gravity[1]);
   }
 
   csVector3 csBulletSector::GetGravity () const
@@ -290,38 +293,14 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     
     this->sector = sector;
 
-    if (sector)
+    // Update the engine sector of the attached objects
+    for (size_t i = 0; i < collisionObjects.GetSize (); i++)
     {
-      // sector is set
-
-      // add portal meshes
-      /*const csSet<csPtrKey<iMeshWrapper> >& portal_meshes = 
-        sector->GetPortalMeshes ();
-      csSet<csPtrKey<iMeshWrapper> >::GlobalIterator it = 
-        portal_meshes.GetIterator ();
-      while (it.HasNext ())
-      {
-        iMeshWrapper* portalMesh = it.Next ();
-        iPortalContainer* portalContainer = portalMesh->GetPortalContainer ();
-        int i; 
-        for (i = 0; i < portalContainer->GetPortalCount (); i++)
-        {
-          iPortal* portal = portalContainer->GetPortal (i);
-          AddPortal (portal, portalMesh->GetMovable ()->GetFullTransform ());
-        }
-      }*/
-
-      // add object meshes
-      for (size_t i = 0; i < collisionObjects.GetSize (); i++)
-      {
-        iCollisionObject* obj = collisionObjects[i];
-        AddSceneNodeToSector (obj->GetAttachedSceneNode ());
-      }
-    }
-    else
-    {
-      // sector is unset
-      // TODO: Remove meshes
+      iCollisionObject* object = collisionObjects[i];
+      if (object->GetAttachedSceneNode ())
+	object->GetAttachedSceneNode ()->GetMovable ()->SetSector (sector);
+      if (object->GetAttachedCamera ())
+	object->GetAttachedCamera ()->SetSector (sector);
     }
   }
 
@@ -345,15 +324,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 
   void csBulletSector::Step (float duration)
   {
-    // Call updatable steps
+    // Call updatable pre-steps
     for (size_t i = 0; i < updatables.GetSize (); i++)
-    {
       updatables[i]->PreStep (duration);
-    }
-
-    // Execute the pre-step of the actors
-    for (size_t i = 0; i < actors.GetSize (); ++i)
-      actors[i]->UpdatePreStep (duration);
 
     // Update traversing objects before simulation
     UpdateCollisionPortalsPreStep ();
@@ -367,14 +340,9 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     // Check for collisions
     //CheckCollisions ();
 
-    // Execute the post-step of the actors
-    for (size_t i = 0; i < actors.GetSize (); ++i)
-      actors[i]->UpdatePostStep (duration);
-
+    // Call updatable post-steps
     for (size_t i = 0; i < updatables.GetSize (); i++)
-    {
       updatables[i]->PostStep (duration);
-    }
   }
 
   void csBulletSector::UpdateCollisionPortalsPreStep ()
@@ -445,12 +413,15 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         scfQueryInterface<iGeneralMeshState> (mesh->GetMeshObject ());
       if (!meshState) return;
 
-      csRef<CS::Animation::iSoftBodyAnimationControl2> animationControl =
-        scfQueryInterface<CS::Animation::iSoftBodyAnimationControl2> (meshState->GetAnimationControl ());
+      iGenMeshAnimationControl* animationControl = meshState->GetAnimationControl ();
       if (!animationControl) return;
 
-      if (!animationControl->GetSoftBody ())
-        animationControl->SetSoftBody (body);
+      csRef<CS::Animation::iSoftBodyAnimationControl2> softAnimationControl =
+        scfQueryInterface<CS::Animation::iSoftBodyAnimationControl2> (animationControl);
+      if (!softAnimationControl) return;
+
+      if (!softAnimationControl->GetSoftBody ())
+        softAnimationControl->SetSoftBody (body);
     }
   }
 
@@ -488,39 +459,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     joints.Delete (csJoint);
   }
 
-  void csBulletSector::AddSceneNodeToSector (iSceneNode* sceneNode)
-  {
-    // TODO: use iMovable::SetSector () instead (same everywhere)
-    if (sceneNode && sector)
-    {
-      iMeshWrapper* mesh = sceneNode->QueryMesh ();
-      iLight* light = sceneNode->QueryLight ();
-
-      if (mesh && size_t (sector->GetMeshes ()->Find (mesh)) == csArrayItemNotFound)
-      {
-        sector->GetMeshes ()->Add (mesh);
-      }
-
-      if (light && size_t (sector->GetLights ()->Find (light)) == csArrayItemNotFound)
-      {
-        sector->GetLights ()->Add (light);
-      }
-    }
-  }
-
-  void csBulletSector::RemoveSceneNodeFromSector (iSceneNode* sceneNode)
-  {
-    if (sceneNode && sector)
-    {
-      iMeshWrapper* mesh = sceneNode->QueryMesh ();
-      iLight* light = sceneNode->QueryLight ();
-      if (mesh)
-        sector->GetMeshes ()->Remove (mesh);
-      if (light)
-        sector->GetLights ()->Remove (light);
-    }
-  }
-
   void csBulletSector::AddCollisionObject (CS::Collisions::iCollisionObject* object)
   {
     if (object->GetSector ())
@@ -539,7 +477,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     {
     case CS::Collisions::COLLISION_OBJECT_ACTOR:
       {
-	csRef<csBulletCollisionActor> actor (dynamic_cast<csBulletCollisionActor*> (obj));
+	csRef<BulletCollisionActor> actor (dynamic_cast<BulletCollisionActor*> (obj));
 	actors.Push (actor);
 	actor->sector = this;
 	actor->AddBulletObject ();
@@ -548,9 +486,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     case CS::Collisions::COLLISION_OBJECT_PHYSICAL:
       {
         iPhysicalBody* phyBody = obj->QueryPhysicalBody ();
-
-	if (phyBody->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR)
-	  actors.Push (dynamic_cast<csBulletDynamicActor*> (phyBody->QueryRigidBody ()));
 
         if (phyBody->QueryRigidBody ())
         {
@@ -574,9 +509,16 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       break;
     }
 
-    AddSceneNodeToSector (object->GetAttachedSceneNode ());
+    // Update the engine sector of the attached objects
+    if (object->GetAttachedSceneNode () && sector)
+    {
+      object->GetAttachedSceneNode ()->GetMovable ()->SetSector (sector);
+      object->GetAttachedSceneNode ()->GetMovable ()->UpdateMove ();
+    }
+    if (object->GetAttachedCamera () && sector)
+      object->GetAttachedCamera ()->SetSector (sector);
 
-    // add all objects to the collisionObjects list
+    // Add all objects to the collisionObjects list
     collisionObjects.Push (obj);
   }
 
@@ -590,21 +532,25 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
     if (removed)
     {
       collisionObjects.Delete (collObject);
-      RemoveSceneNodeFromSector (object->GetAttachedSceneNode ());
+
+      // Update the engine sector of the attached objects
+      if (object->GetAttachedSceneNode () && sector)
+      {
+	object->GetAttachedSceneNode ()->GetMovable ()->SetSector (nullptr);
+	object->GetAttachedSceneNode ()->GetMovable ()->UpdateMove ();
+      }
+      if (object->GetAttachedCamera ())
+	object->GetAttachedCamera ()->SetSector (nullptr);
 
       if (collObject->GetObjectType () == CS::Collisions::COLLISION_OBJECT_ACTOR)
-	actors.Delete (static_cast<csBulletCollisionActor*> (collObject));
+	actors.Delete (static_cast<BulletCollisionActor*> (collObject));
 
       iPhysicalBody* phyBody = dynamic_cast<iPhysicalBody*> (object);
       if (phyBody)
       {
 	if (phyBody->QueryRigidBody ())
-	{
-	  if (phyBody->GetPhysicalObjectType () == CS::Physics::PHYSICAL_OBJECT_DYNAMICACTOR)
-	    actors.Delete (dynamic_cast<csBulletDynamicActor*> (phyBody->QueryRigidBody ()));
-
 	  rigidBodies.Delete (dynamic_cast<csBulletRigidBody*> (phyBody->QueryRigidBody ()));
-	}
+
 	else
 	{
 	  csBulletSoftBody* btBody = dynamic_cast<csBulletSoftBody*> (phyBody->QuerySoftBody ());

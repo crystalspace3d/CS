@@ -381,6 +381,7 @@ void csGLBasicTextureHandle::Blit (int x, int y, int width,
   // Activate the texture.
   Precache ();
   G3D->ActivateTexture (this);
+  G3D->ApplyTextureChange (0);
   GLuint textureFormat = (format == RGBA8888) ? GL_RGBA : GL_BGRA;
   // Make sure mipmapping is ok.
   if (!IsWasRenderTarget() || (texFormat != format))
@@ -449,6 +450,7 @@ void csGLBasicTextureHandle::RegenerateMipmaps()
     && !txtmgr->tweaks.disableGenerateMipmap)
   {
     G3D->ActivateTexture (this);
+    G3D->ApplyTextureChange (0);
     G3D->ext->glGenerateMipmapEXT (GetGLTextureTarget());
   }
 }
@@ -495,6 +497,8 @@ void csGLBasicTextureHandle::Load ()
     }
 
     // @@@ Implement upload!
+
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_1D, Handle);
   }
   else if (texType == texType2D)
   {
@@ -530,6 +534,8 @@ void csGLBasicTextureHandle::Load ()
 	  uploadData.sourceFormat.type, uploadData.image_data);
       }
     }
+
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_2D, Handle);
   }
   else if (texType == texType3D)
   {
@@ -569,6 +575,8 @@ void csGLBasicTextureHandle::Load ()
           uploadData.sourceFormat.type, uploadData.image_data);
       }
     }
+
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_3D, Handle);
   }
   else if (texType == texTypeCube)
   {
@@ -592,7 +600,8 @@ void csGLBasicTextureHandle::Load ()
       glTexParameterf (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,
         txtmgr->texture_filter_anisotropy);
     }
-    if (G3D->ext->CS_GL_AMD_seamless_cubemap_per_texture)
+    if (G3D->ext->CS_GL_ARB_seamless_cubemap_per_texture
+      || G3D->ext->CS_GL_AMD_seamless_cubemap_per_texture)
     {
       bool seamless = !texFlags.Check (CS_TEXTURE_CUBEMAP_DISABLE_SEAMLESS);
       glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_CUBE_MAP_SEAMLESS,
@@ -621,6 +630,8 @@ void csGLBasicTextureHandle::Load ()
 	  uploadData.image_data);
       }
     }
+
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_CUBE_MAP, Handle);
   }
   else if (texType == texTypeRect)
   {
@@ -657,6 +668,7 @@ void csGLBasicTextureHandle::Load ()
 	  uploadData.sourceFormat.type, uploadData.image_data);
       }
     }
+    csGLTextureManager::UnsetTexture (GL_TEXTURE_RECTANGLE_ARB, Handle);
   }
 
   uploadData.Reset();
@@ -900,6 +912,7 @@ uint8* csGLBasicTextureHandle::QueryBlitBufferPBO (int x, int y,
     csGLGraphics3D::statecache->SetBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB, 0, true);
     Precache ();
     G3D->ActivateTexture (this);
+    G3D->ApplyTextureChange (0);
 
     G3D->ext->glGenBuffersARB (1, &pbo);
     csGLGraphics3D::statecache->SetBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB, pbo, true);
@@ -942,6 +955,7 @@ void csGLBasicTextureHandle::ApplyBlitBufferPBO (uint8* buf)
     csGLGraphics3D::statecache->SetBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB, pbo, true);
     G3D->ext->glUnmapBufferARB (GL_PIXEL_UNPACK_BUFFER_ARB);
     G3D->ActivateTexture (this);
+    G3D->ApplyTextureChange (0);
     if (!IsWasRenderTarget())
     {
       SetWasRenderTarget (true);

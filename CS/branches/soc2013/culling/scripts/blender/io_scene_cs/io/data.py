@@ -7,8 +7,7 @@ from .util import *
 from .transform import *
 from .renderbuffer import *
 from .submesh import *
-from io_scene_cs.utilities import B2CS
-from io_scene_cs.utilities import StringProperty
+from io_scene_cs.utilities import GetPreferences
 
 
 def GetMaterial(self, index):
@@ -60,7 +59,7 @@ def GetSubMeshesRaw(self, name, indexV, indexGroups, mappingBuffer = []):
         indexV += 1
     else:
       # Mapping buffer => use the corresponding cs index of these vertices
-      if not B2CS.properties.enableDoublesided or not self.show_double_sided:
+      if not GetPreferences().enableDoublesided or not self.show_double_sided:
         # Single sided mesh
         for i in tt:
           # Add vertices composing the triangle to submesh
@@ -127,12 +126,6 @@ def GetSubMeshes(self, name = '', mappingBuffer = None, numVertices = 0):
   return [SubMesh(group[0], group[1], group[2], indexGroups[group]) for group in indexGroups]
 
 bpy.types.Mesh.GetSubMeshes = GetSubMeshes
-
-
-def MeshAsCSRef(self, func, depth=0, dirName='factories/'):
-  func(' '*depth +'<library>%s%s</library>'%(dirName,self.uname))
-
-bpy.types.Mesh.AsCSRef = MeshAsCSRef
 
 
 #======= Mapping buffers ===========================================
@@ -494,7 +487,7 @@ def GetBoneInfluences (self, **kwargs):
       # Add bone influences to the list
       for i in range(4):
         influences.append(vertexInfluence[i])
-      if B2CS.properties.enableDoublesided and ob.data.show_double_sided:
+      if GetPreferences().enableDoublesided and ob.data.show_double_sided:
         # Duplicate the influences in case of a double sided mesh
         for i in range(4):
           influences.append(vertexInfluence[i])

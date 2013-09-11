@@ -11,8 +11,14 @@ from .data import *
 from .object import *
 from .group import *
 from .scene import *
+from .world import *
+from .constraint import *
 from .material import ExportMaterials
-from io_scene_cs.utilities import B2CS
+from io_scene_cs.utilities import GetPreferences
+
+from . import blenddata
+from . import object_portal
+from . import object_camera
 
 
 def Write(fi):
@@ -22,6 +28,9 @@ def Write(fi):
 
 
 def Export(path):
+  
+  # Clean cached data
+  Hierarchy.exportedFactories = []
 
   # Set interaction mode to 'OBJECT' mode
   editMode = False
@@ -33,7 +42,7 @@ def Export(path):
         break
 
   # Export Blender data to Crystal Space format
-  exportAsLibrary = B2CS.properties.library
+  exportAsLibrary = GetPreferences().library
   if exportAsLibrary:
     print("\nEXPORTING: "+Join(path, 'library')+" ====================================")
     print("  All objects of the world are exported as factories in 'library' file.\n")
@@ -64,11 +73,13 @@ def ExportWorld(path):
   # Create the export directory for factories
   if not os.path.exists(Join(path, 'factories/')):
     os.makedirs(Join(path, 'factories/'))
+    
+  scenes = bpy.data.exportable_scenes
 
   # Get data about all objects composing this world
   deps = util.EmptyDependencies()
   cameras = {}
-  for scene in bpy.data.scenes:
+  for scene in scenes:
     MergeDependencies(deps, scene.GetDependencies())
     cameras.update(scene.GetCameras())
 
@@ -76,6 +87,24 @@ def ExportWorld(path):
   f = open(Join(path, 'world'), 'w')
   Write(f)('<?xml version="1.0" encoding="UTF-8"?>')
   Write(f)('<world xmlns=\"http://crystalspace3d.org/xml/library\">')
+  
+  bpy.context.scene.world.AsCS(Write(f), 2)
+  
+  # Export shared materials and textures in world file
+  if GetPreferences().sharedMaterial:
+    fmt = open(Join(path, 'materials'), 'w')
+    Write(fmt)('<?xml version="1.0" encoding="UTF-8"?>')
+    Write(fmt)('<library xmlns=\"http://crystalspace3d.org/xml/library\">')
+    use_imposter = False
+    for scene in scenes:
+      for ob in scene.objects:
+        if ob.HasImposter():
+          use_imposter = True
+          break
+    ExportMaterials(Write(fmt), 2, deps, use_imposter)
+    Write(fmt)('</library>')
+    fmt.close()
+    Write(f)(' '*2 +'<library>%s</library>'%('materials'))
 
   # Export the objects composing the world
   for typ in deps:
@@ -94,7 +123,8 @@ def ExportWorld(path):
         print('Writing fact',fact.uname,':', Join(path, 'factories/', fact.object.uname))
         fact.AsCSRef(Write(f), 2, 'factories/', animesh=False)
         # Export genmesh factory
-        fact.AsCSLib(path, animesh=False)
+        if not fact.object.b2cs.csFactRef:
+          fact.AsCSLib(path, animesh=False)
     elif typ == 'G':
       # Groups of objects
       for name, group in deps[typ].items():
@@ -103,33 +133,32 @@ def ExportWorld(path):
         group.AsCSRef(Write(f), 2, 'factories/')
         # Export group of genmeshes
         group.AsCSLib(path)
+    elif typ == 'M':
+      # Materials
+      for name, mat in deps[typ].items():
+        if mat.b2cs.csMatRef and mat.b2cs.csMaterialName != 'None' and mat.b2cs.csMaterialVfs != '':
+          if mat.b2cs.csMaterialVfs not in Hierarchy.libraryReferences:
+            # Export references to CS libraries defining materials
+            Hierarchy.libraryReferences.append(mat.b2cs.csMaterialVfs)
+            Write(f)(' '*2 +'<library>%s</library>'%(mat.b2cs.csMaterialVfs))
 
   # Export cameras
   if cameras:
     ExportCameras(Write(f), 2, cameras)
   else:
     # Set a default camera if none is defined
-    bpy.context.scene.CameraAsCS(Write(f), 2)
-
-  # Export shared materials and textures in world file
-  if B2CS.properties.sharedMaterial:
-    use_imposter = False
-    for scene in bpy.data.scenes:
-      for ob in scene.objects:
-        if ob.HasImposter():
-          use_imposter = True
-          break
-    ExportMaterials(Write(f), 2, deps, use_imposter)
+    bpy.types.Object.CameraAsCS(Write(f), 2)
 
   # Export scenes as CS sectors in the 'world' file
   print("\nEXPORT SCENES:")
-  for scene in bpy.data.scenes:
+  for scene in scenes:
     scene.AsCS(Write(f), 2)
 
   Write(f)('</world>')
   f.close()
 
   Hierarchy.exportedFactories = []
+  Hierarchy.libraryReferences = []
 
   print("\nEXPORTING complete ==================================================")
 
@@ -153,9 +182,16 @@ def ExportLibrary(path):
   Write(f)('<?xml version="1.0" encoding="UTF-8"?>')
   Write(f)('<library xmlns=\"http://crystalspace3d.org/xml/library\">')
 
+  # Export references to CS libraries defining materials
+  for name, mat in deps['M'].items():
+    if mat.b2cs.csMatRef and mat.b2cs.csMaterialName != 'None' and mat.b2cs.csMaterialVfs != '':
+      if mat.b2cs.csMaterialVfs not in Hierarchy.libraryReferences:
+        Hierarchy.libraryReferences.append(mat.b2cs.csMaterialVfs)
+        Write(f)(' '*2 +'<library>%s</library>'%(mat.b2cs.csMaterialVfs))
+
   # Export the textures/materials/shaders of the objects
   use_imposter = False
-  for scene in bpy.data.scenes:
+  for scene in bpy.data.exportable_scenes:
     for ob in scene.objects:
       if ob.HasImposter():
         use_imposter = True
@@ -186,7 +222,8 @@ def ExportLibrary(path):
         print('\nEXPORT OBJECT "%s" AS A CS GENERAL MESH\n'%(ob.name))
         print('Writing fact',fact.uname,'in', Join(path, 'library'))
         # Export genmesh factory
-        fact.WriteCSMeshBuffers(Write(f), 2, path, animesh=False, dontClose=True)
+        if not fact.object.b2cs.csFactRef:
+          fact.WriteCSMeshBuffers(Write(f), 2, path, animesh=False, dontClose=True)
     elif typ == 'G':
       # Groups of objects
       for name, group in deps[typ].items():
@@ -199,4 +236,19 @@ def ExportLibrary(path):
   Write(f)('</library>')
   f.close()
 
+  Hierarchy.libraryReferences = []
+
   print("\nEXPORTING complete ==================================================")
+  
+  
+#===== static method ExportCameras ==============================
+
+def ExportCameras (func, depth, cameras):
+  """ Export cameras sorted by names; each camera is described 
+      as a CS start location for the scene it belongs to
+      param cameras: list of cameras and their associated scene
+  """
+  keylist = cameras.keys()
+  for camName in sorted(keylist, key=str.lower):
+    cam = cameras[camName]
+    cam['camera'].CameraAsCS(func, depth, cam['scene'])

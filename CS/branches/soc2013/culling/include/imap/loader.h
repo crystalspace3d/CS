@@ -373,7 +373,7 @@ struct iSharedVarLoaderIterator : public virtual iBase
 */
 struct iThreadedLoader : public virtual iBase
 {
-  SCF_INTERFACE (iThreadedLoader, 2, 3, 1);
+  SCF_INTERFACE (iThreadedLoader, 2, 3, 3);
 
   /**
    * Get the loader sector list.
@@ -433,7 +433,9 @@ struct iThreadedLoader : public virtual iBase
    * renderer. If no video renderer exists, this function fails. You may also
    * request an alternate format to override the above sequence.
    * This version reads the image from a data buffer.
+   * \deprecated Deprecated in 2.1. Use variant without \a cwd argument.
    */
+  CS_DEPRECATED_METHOD_MSG("Use variant without 'cwd' argument")
   THREADED_INTERFACE4(LoadImage, const char* cwd, csRef<iDataBuffer> buf, int Format = CS_IMGFMT_INVALID,
   bool do_verbose = false);
 
@@ -466,6 +468,7 @@ struct iThreadedLoader : public virtual iBase
    *   specified).
    * \param image Optionally returns a reference to the loaded image.
    */
+  CS_DEPRECATED_METHOD_MSG("Use variant without 'cwd' argument")
   THREADED_INTERFACE6(LoadTexture, const char* cwd, csRef<iDataBuffer> buf, int Flags = CS_TEXTURE_3D,
   csRef<iTextureManager> texman = 0, csRef<iImage>* image = 0, bool do_verbose = false);
 
@@ -492,6 +495,7 @@ struct iThreadedLoader : public virtual iBase
    * will be removed immediatelly. This saves some memory. Set to false
    * if you want to keep it. free_image is ignored if reg is false.
    */
+  CS_DEPRECATED_METHOD_MSG("Use variant without 'cwd' argument")
   THREADED_INTERFACE9(LoadTexture, const char* cwd, const char *Name, csRef<iDataBuffer> buf,
     int Flags = CS_TEXTURE_3D, csRef<iTextureManager> texman = 0, bool reg = true,
     bool create_material = true, bool free_image = true, bool do_verbose = false);
@@ -583,7 +587,7 @@ struct iThreadedLoader : public virtual iBase
   THREADED_INTERFACE4(LoadShader, const char* cwd, const char* filename, bool registerShader = true,
   bool do_verbose = false);
 
-  //@}
+  //@{
   /**
    * Load a map file. If 'clearEngine' is true then the current contents
    * of the engine will be deleted before loading.
@@ -722,7 +726,7 @@ struct iThreadedLoader : public virtual iBase
   THREADED_INTERFACE7(LoadLibrary, const char* cwd, csRef<iDocumentNode> lib_node, csRef<iCollection> collection = 0,
   csRef<iStreamSource> ssource = 0, csRef<iMissingLoaderData> missingdata = 0, uint keepFlags = KEEP_ALL,
   bool do_verbose = false);
-  //@)
+  //@}
 
   //@{
   /**
@@ -884,6 +888,48 @@ struct iThreadedLoader : public virtual iBase
   // Get/Set loader flags.
   virtual const int& GetFlags () const = 0;
   virtual void SetFlags (int flags) = 0;
+
+  /**
+   * Load an image file. The image will be loaded in the format requested by
+   * the engine. If no engine exists, the format is taken from the video
+   * renderer. If no video renderer exists, this function fails. You may also
+   * request an alternate format to override the above sequence.
+   * This version reads the image from a data buffer.
+   * \deprecated Deprecated in 2.1. Use variant without \a cwd argument.
+   */
+  THREADED_INTERFACE3(LoadImage, csRef<iDataBuffer> buf, int Format = CS_IMGFMT_INVALID,
+    bool do_verbose = false);
+  /**
+   * Load an image as with LoadImage() and create a texture handle from it.
+   * This version reads the image from a data buffer.
+   * \param buf Buffer containing the image file data.
+   * \param Flags Accepts the flags described in ivideo/txtmgr.h.
+   *   The texture manager determines the format, so choosing an alternate 
+   *   format doesn't make sense here. Instead you may choose an alternate 
+   *   texture manager.
+   * \param tm Texture manager, used to determine the format the image is to
+   *   be loaded in (defaults to CS_IMGFMT_TRUECOLOR if no texture manager is
+   *   specified).
+   * \param image Optionally returns a reference to the loaded image.
+   */
+  THREADED_INTERFACE5(LoadTexture, csRef<iDataBuffer> buf, int Flags = CS_TEXTURE_3D,
+    csRef<iTextureManager> texman = 0, csRef<iImage>* image = 0, bool do_verbose = false);
+  /**
+   * Load an image as with LoadImage() and create a texture handle from it.
+   * This version reads the image from a data buffer.
+   * \param buf Buffer containing the image file data.
+   * \param Flags Accepts the flags described in ivideo/txtmgr.h.
+   *   The texture manager determines the format, so choosing an alternate 
+   *   format doesn't make sense here. Instead you may choose an alternate 
+   *   texture manager.
+   * \param tm Texture manager, used to determine the format the image is to
+   *   be loaded in (defaults to CS_IMGFMT_TRUECOLOR if no texture manager is
+   *   specified).
+   * \param image Optionally returns a reference to the loaded image.
+   */
+  THREADED_INTERFACE8(LoadTexture, csRef<iDataBuffer> buf, const char *Name,
+    int Flags = CS_TEXTURE_3D, csRef<iTextureManager> texman = 0, bool reg = true,
+    bool create_material = true, bool free_image = true, bool do_verbose = false);
 };
 
 /**
@@ -1055,7 +1101,7 @@ struct iLoader : public virtual iBase
     iCollection* Collection = 0, uint keepFlags = KEEP_ALL) = 0;
   //@}
 
-  //@}
+  //@{
   /**
    * Load a map file. If 'clearEngine' is true then the current contents
    * of the engine will be deleted before loading.
@@ -1196,7 +1242,7 @@ struct iLoader : public virtual iBase
   virtual bool LoadLibrary (iDocumentNode* lib_node, iCollection* collection = 0,
     bool searchCollectionOnly = true, bool checkDupes = false, iStreamSource* ssource = 0,
     iMissingLoaderData* missingdata = 0, uint keepFlags = KEEP_ALL) = 0;
-  //@)
+  //@}
 
   //@{
   /**

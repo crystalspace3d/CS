@@ -1,8 +1,8 @@
 import bpy
 
-from io_scene_cs.utilities import rnaType, rnaOperator, B2CS, BoolProperty
+from io_scene_cs.utilities import rnaType, settings
+from bpy.types import PropertyGroup
 
-from io_scene_cs.utilities import RemovePanels, RestorePanels 
 
 def active_node_mat(mat):
   if mat is not None:
@@ -13,6 +13,7 @@ def active_node_mat(mat):
           return mat
 
   return None
+
 
 def context_tex_datablock(context):
   idblock = context.material
@@ -30,47 +31,25 @@ def context_tex_datablock(context):
   idblock = context.brush
   return idblock
 
+
 class csTexturePanel():
   bl_space_type = 'PROPERTIES'
   bl_region_type = 'WINDOW'
   bl_context = "texture"
-  b2cs_context = "texture"
-  REMOVED = []
+  # COMPAT_ENGINES must be defined in each subclass, external engines can add themselves here
   
   @classmethod
   def poll(cls, context):
     tex = context.texture
     r = (tex and tex.type == 'IMAGE')
-    if r:
-      csTexturePanel.REMOVED = RemovePanels("texture", ["TEXTURE_PT_preview", "TEXTURE_PT_context_texture", "TEXTURE_PT_image1"])
-    else:
-      RestorePanels(csTexturePanel.REMOVED)
-      csTexturePanel.REMOVED = []
-    return r    
-
-
-@rnaType
-class TEXTURE_PT_B2CS_image(csTexturePanel, bpy.types.Panel):
-  bl_label = "Image"
-
-  def draw(self, context):
-    layout = self.layout
-
-    tex = context.texture
-
-    #layout.template_image(tex, "image", tex.image_user, True)
-    
-    row = layout.row(align=True)
-    row.template_ID(tex, "image", new='image.new', open='image.open', unlink='image.unlink')
-    row = layout.row(align=True)
-    row.prop(tex.image, "filepath")
-    row.operator("image.reload", icon='FILE_REFRESH', text='')
-
+    rd = context.scene.render
+    return r and (rd.engine in cls.COMPAT_ENGINES)   
 
             
 @rnaType
 class TEXTURE_PT_B2CS_texture(csTexturePanel, bpy.types.Panel):
   bl_label = "Crystal Space Texture"
+  COMPAT_ENGINES = {'CRYSTALSPACE'}
 
 
   def draw(self, context):
@@ -96,8 +75,13 @@ class TEXTURE_PT_B2CS_texture(csTexturePanel, bpy.types.Panel):
         layout.label(text="Properties:")
         row = layout.row(align=True)
         if tex.texture.image:
-          row.prop(tex.texture.image, "binAlpha")
+          row.prop(tex.texture.image.b2cs, "binAlpha")
 
 
+@settings(type='Image')
+class CrystalSpaceSettingsGroup(PropertyGroup):
+  binAlpha = bpy.props.BoolProperty(
+            name="Binary Alpha",
+            description="Use binary alpha for this texture",
+            default=False)
 
-BoolProperty(['Image'], attr="binAlpha", name="Binary Alpha", description="Use binary alpha for this texture")

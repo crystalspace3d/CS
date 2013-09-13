@@ -70,9 +70,9 @@ namespace CS
       bool operator () (int width, int height)
       {
         if (w == width && h == height) return true;
-         w = width;
-         h = height;
-         if (helper.IsValid() && effect.IsValid())
+        w = width;
+        h = height;
+        if (helper.IsValid() && effect.IsValid())
         {
           bool ret = helper->Setup(effect, width, height);
           ret &= effect->Construct(true);

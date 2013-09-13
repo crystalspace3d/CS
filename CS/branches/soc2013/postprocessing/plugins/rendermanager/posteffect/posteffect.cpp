@@ -499,7 +499,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
   iPostEffectLayer * PostEffect::GetLayer (int  num)
   {
-    if ((num > 0) && (num < postLayers.GetSize()))
+    if ((num >= 0) && (num < postLayers.GetSize()))
       return postLayers[num];
     return nullptr;
   }

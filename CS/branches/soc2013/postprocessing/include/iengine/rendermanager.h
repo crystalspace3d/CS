@@ -128,7 +128,7 @@ struct iRenderManagerPostEffects : public virtual iBase
    * Find the index of the post effect with the given name, or (size_t) ~0
    * if it is not found.
    */
-  size_t FindPostEffect (const char* name) const;
+  virtual size_t FindPostEffect (const char* name) const = 0;
 
   /// Get the total number of effects.
   virtual size_t GetPostEffectCount () const = 0;

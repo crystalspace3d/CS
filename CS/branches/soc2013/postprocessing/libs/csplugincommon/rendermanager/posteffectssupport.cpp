@@ -165,7 +165,7 @@ namespace CS
         postEffects.Get (i)->DrawPostEffect (renderTree);
       if (n>=0)
         postEffects.Get (n)->DrawPostEffect (renderTree, SCREEN);
-      if (0)
+      if (1)
       {
         renderTree.AddDebugTexture (pingPong[0]);
         renderTree.AddDebugTexture (pingPong[1]);

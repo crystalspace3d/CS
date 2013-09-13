@@ -380,6 +380,9 @@ private:
   // for pixmap drawing
   csRef<csRenderBufferHolder> pixmapBufferHolder;
 
+  // for stencil drawing
+  csRef<csRenderBufferHolder> stencilBufferHolder;
+
   // for simple mesh and pixmap drawing
   csRenderBufferName defaultBufferMapping[CS_VATTRIB_SPECIFIC_LAST+1];
 

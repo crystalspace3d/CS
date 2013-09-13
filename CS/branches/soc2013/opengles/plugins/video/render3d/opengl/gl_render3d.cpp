@@ -165,6 +165,45 @@ csGLGraphics3D::csGLGraphics3D (iBase *parent) :
     pixmapBufferHolder->SetRenderBuffer (CS_BUFFER_TEXCOORD0, buffer);
   }
 
+  // Create buffer set for stencil drawing
+  // Create buffer holder
+  stencilBufferHolder.AttachNew (new csRenderBufferHolder);
+
+  // create index buffer
+  {
+    csRef<iRenderBuffer> buffer = csRenderBuffer::CreateIndexRenderBuffer (4, CS_BUF_STATIC, CS_BUFCOMP_UNSIGNED_INT, 0, 3);
+    uint indices[] = {0,1,2,3};
+    buffer->CopyInto (indices, 4);
+    pixmapBufferHolder->SetRenderBuffer (CS_BUFFER_INDEX, buffer);
+  }
+
+  // create vertex buffer
+  {
+    csRef<iRenderBuffer> buffer = csRenderBuffer::CreateRenderBuffer (4, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 2);
+    float vertices[] = {
+     -1.0, 1.0,
+      1.0, 1.0,
+      1.0,-1.0,
+     -1.0,-1.0
+    };
+    buffer->CopyInto (vertices, 4);
+    stencilBufferHolder->SetRenderBuffer (CS_BUFFER_POSITION, buffer);
+  }
+
+  // create texture coordinate buffer
+  {
+    csRef<iRenderBuffer> buffer = csRenderBuffer::CreateRenderBuffer (4, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 2);
+    float tcs[] = {
+      0.0, 1.0,
+      1.0, 1.0,
+      1.0, 0.0,
+      0.0, 0.0
+    };
+    buffer->CopyInto (tcs, 4);
+    stencilBufferHolder->SetRenderBuffer (CS_BUFFER_TEXCOORD0, buffer);
+  }
+
+
   shadow_stencil_enabled = false;
   clipping_stencil_enabled = false;
   clipportal_dirty = true;

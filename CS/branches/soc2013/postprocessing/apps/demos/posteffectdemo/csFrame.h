@@ -64,6 +64,7 @@ protected:
   //--------------------------
   HBAOParams * hbaoParams;
   DDOFParams * ddofParams;
+  SSDOParams * ssdoParams;
 
   bool LoadWorld();
   bool LoadInterface();
@@ -115,6 +116,7 @@ public:
 
 
   void OnDDOFCoCSlider(wxCommandEvent& ev);
+
   void OnHBAOAngleBiasSlider(wxCommandEvent& ev);
   void OnHBAORadiusSlider(wxCommandEvent& ev);
   void OnHBAONumStepsSlider(wxCommandEvent& ev);
@@ -123,6 +125,18 @@ public:
   void OnHBAOAttenuationSlider(wxCommandEvent& ev);
   void OnHBAOBlurRadiusSlider(wxCommandEvent& ev);
   void OnHBAOBlurSharpnessSlider(wxCommandEvent& ev);
+  void OnCheckHBAODebug(wxCommandEvent& ev);
+
+  void OnSSDORadiusSlider(wxCommandEvent& ev);
+  void OnSSDODetailRadiusSlider(wxCommandEvent& ev);
+  void OnSSDONumPassesSlider(wxCommandEvent& ev);
+  void OnSSDOSelfOcclusionSlider(wxCommandEvent& ev);
+  void OnSSDOOcclusionStrengthSlider(wxCommandEvent& ev);
+  void OnSSDOMaxOcclusionDistSlider(wxCommandEvent& ev);
+  void OnSSDOBounceStrengthSlider(wxCommandEvent& ev);
+  void OnClickSSDONoDebug(wxCommandEvent& ev);
+  void OnClickSSDODebugAO(wxCommandEvent& ev);
+  void OnClickSSDODebugIL(wxCommandEvent& ev);
   //-----------------------------------
 
   DECLARE_EVENT_TABLE()

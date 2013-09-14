@@ -16,8 +16,12 @@
 			uniform sampler2D texDiff,
 			uniform sampler2D texAO) : COLOR
 	      {
-
 				float ao = tex2D (texAO, TexCoord).x;
+		]]>
+		<?if vars."debug show ao".int != 0 ?>
+			return float4 (ao);
+		<?endif?>
+		<![CDATA[
 				float3 color = tex2D (texDiff, TexCoord).xyz*ao;
 				return float4(color.x, color.y, color.z, 1.0);
 	      }

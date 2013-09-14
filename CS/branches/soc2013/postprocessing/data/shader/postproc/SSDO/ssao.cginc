@@ -41,8 +41,12 @@ uniform float g_IndirectLightStrength;
 #define NUM_PASSES  2
 <? elsif vars."num passes".int == 3 ?>
 #define NUM_PASSES  3
-<? else ?>
+<? elsif vars."num passes".int == 4 ?>
 #define NUM_PASSES  4
+<? elsif vars."num passes".int == 5 ?>
+#define NUM_PASSES  5
+<? else ?>
+#define NUM_PASSES  6
 <? endif ?>
 <![CDATA[
 

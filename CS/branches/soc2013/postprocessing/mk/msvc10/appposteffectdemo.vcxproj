@@ -1246,11 +1246,14 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\apps\demos\posteffectdemo\csFrame.cpp" />
     <ClCompile Include="..\..\apps\demos\posteffectdemo\PostEffectApp.cpp" />
+    <ClCompile Include="..\..\apps\demos\posteffectdemo\shaderParam.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\apps\demos\posteffectdemo\csFrame.h" />
     <ClInclude Include="..\..\apps\demos\posteffectdemo\PostEffectApp.h" />
+    <ClInclude Include="..\..\apps\demos\posteffectdemo\shaderParam.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\mk\msvc\appposteffectdemo.rc" />

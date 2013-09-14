@@ -3,7 +3,7 @@
     <pass>
       <buffer source="texture coordinate 0" destination="texture coordinate 0" />
 	  <texture destination="texAO" name="tex diffuse" />
-      <texture destination="texDepth" name="tex gbuffer depth" />
+      <texture destination="texDepth" name="tex depth" />
       <fp plugin="glcg">
 	<cgfp>
 	  <variablemap variable="inv resolution" destination="g_InvResolution" />

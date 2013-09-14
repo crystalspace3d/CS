@@ -12,6 +12,7 @@ BEGIN_EVENT_TABLE(csFrame, wxFrame)
   EVT_CHECKBOX(XRCID("DOFcbEnable"), csFrame::OnCheckDDOF)
 
   EVT_SLIDER(XRCID("sliderCoCScale"), OnDDOFCoCSlider)
+
   EVT_SLIDER(XRCID("sliderAngleBias"), OnHBAOAngleBiasSlider)
   EVT_SLIDER(XRCID("sliderHBAORadius"), OnHBAORadiusSlider)
   EVT_SLIDER(XRCID("sliderHBAOSteps"), OnHBAONumStepsSlider)
@@ -20,20 +21,39 @@ BEGIN_EVENT_TABLE(csFrame, wxFrame)
   EVT_SLIDER(XRCID("sliderHBAOAttenuation"), OnHBAOAttenuationSlider)
   EVT_SLIDER(XRCID("sliderHBAOBlurRadius"), OnHBAOBlurRadiusSlider)
   EVT_SLIDER(XRCID("sliderHBAOBlurSharpness"), OnHBAOBlurSharpnessSlider)
+  EVT_CHECKBOX(XRCID("HBAOcbDebugView"), csFrame::OnCheckHBAODebug)
+
+
+  EVT_SLIDER(XRCID("sliderSSDOsampleRadius"), OnSSDORadiusSlider)
+  EVT_SLIDER(XRCID("sliderSSDOdetailSampleRadius"), OnSSDODetailRadiusSlider)
+  EVT_SLIDER(XRCID("sliderSSDOnumPasses"), OnSSDONumPassesSlider)
+  EVT_SLIDER(XRCID("sliderSSDOselfOcclusion"), OnSSDOSelfOcclusionSlider)
+  EVT_SLIDER(XRCID("sliderSSDOocclusionStrength"), OnSSDOOcclusionStrengthSlider)
+  EVT_SLIDER(XRCID("sliderSSDOmaxOccluderDist"), OnSSDOMaxOcclusionDistSlider)
+  EVT_SLIDER(XRCID("sliderSSDObounceStrength"), OnSSDOBounceStrengthSlider)
+  EVT_SLIDER(XRCID("rbNoDebug"), OnClickSSDONoDebug)
+  EVT_SLIDER(XRCID("rbDebugAo"), OnClickSSDODebugAO)
+  EVT_SLIDER(XRCID("rbDebugIL"), OnClickSSDODebugIL)
 
 END_EVENT_TABLE()
 
 csFrame::csFrame(iObjectRegistry* reg, wxString& title) : wxFrame(NULL, -1, title), registry(reg), drawTick(this)
 {
+  rotX = rotY = 0.0f;
+  hbaoParams = NULL;
+  ddofParams = NULL;
+  ssdoParams = NULL;
   OnInitialize();
   m_pInstance = this;
-  rotX = rotY = 0.0f;
 }
 
 
 csFrame::~csFrame()
 {
-
+  if (hbaoParams) delete hbaoParams; hbaoParams = NULL;
+  if (ddofParams) delete ddofParams; ddofParams = NULL;
+  if (ssdoParams) delete ssdoParams; ssdoParams = NULL;
+  if (m_pInstance == this) m_pInstance = NULL;
 }
 
 bool csFrame::OnInitialize()
@@ -131,6 +151,7 @@ bool csFrame::OnInitialize()
     return false;
   }
 
+
   view.AttachNew(new csView (engine, g3d));
 
   iGraphics2D* g2d = g3d->GetDriver2D ();
@@ -172,6 +193,18 @@ bool csFrame::OnInitialize()
       "Could not load the world.");
     return false;
   }
+
+  csRef<iConfigManager> cfg = csQueryRegistry<iConfigManager> (registry);
+  cfg->AddDomain ("/config/engine.cfg", vfs, iConfigManager::ConfigPriorityPlugin);
+  csRef<iRenderManager> deferred_rm = csLoadPlugin<iRenderManager> (registry, "crystalspace.rendermanager.deferred");
+  if (deferred_rm == 0)
+  {
+    csReport (registry, CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.application.posteffectdemo",
+      "Failed to load deferred rm!");
+    return false;
+  }
+  engine->SetRenderManager(deferred_rm);
   
   if (!LoadEffects ())
   {
@@ -190,7 +223,11 @@ bool csFrame::OnInitialize()
   view->GetPerspectiveCamera ()->SetFOV ((float) (y) / (float) (x), y);
   view->SetRectangle (0, 0, x, y);
 
+  
+
   printer.AttachNew (new FramePrinter (registry));
+
+  return true;
 }
 
 bool csFrame::EventHandler (iEvent& ev)
@@ -359,6 +396,15 @@ bool csFrame::LoadEffects ()
     return false;
   }
 
+  ssdoParams = new SSDOParams(svStrings, ssdo);
+  if (!ssdoParams->SetPanel (SSDOPanel))
+  {
+    csReport (registry, CS_REPORTER_SEVERITY_ERROR,
+      "crystalspace.application.posteffectdemo",
+      "Error couldn't  setup ssdo parameters!");
+    return false;
+  }
+
   return true;
 }
 
@@ -473,25 +519,32 @@ void csFrame::OnCheckHBAO (wxCommandEvent& ev)
 }
 void csFrame::OnCheckSSDO_AO (wxCommandEvent& ev)
 {
-  /*size_t pos = postMgr->FindPostEffect(SSDO_EFFECT_NAME);
+  size_t pos = postMgr->FindPostEffect(SSDO_EFFECT_NAME);
+  bool b = ssdoParams->SetAOEnable (ev.IsChecked ());
   if (ev.IsChecked())
   {
     if (pos == -1)
       postMgr->InsertPostEffect(ssdo, 0);
   } else
-    postMgr->RemovePostEffect(pos);
-    */
+  {
+    if (b)
+      postMgr->RemovePostEffect(pos);
+  }
+    
 }
 void csFrame::OnCheckSSDO_IL (wxCommandEvent& ev)
 {
-  /*size_t pos = postMgr->FindPostEffect(SSDO_EFFECT_NAME);
+  size_t pos = postMgr->FindPostEffect(SSDO_EFFECT_NAME);
+  bool b = ssdoParams->SetILEnable (ev.IsChecked ());
   if (ev.IsChecked())
   {
     if (pos == -1)
       postMgr->InsertPostEffect(ssdo, 0);
   } else
-    postMgr->RemovePostEffect(pos);
-  */
+  {
+    if (b)
+      postMgr->RemovePostEffect(pos);
+  }
 }
 void csFrame::OnCheckDDOF (wxCommandEvent& ev)
 {
@@ -539,4 +592,51 @@ void csFrame::OnHBAOBlurRadiusSlider (wxCommandEvent& ev)
 void csFrame::OnHBAOBlurSharpnessSlider (wxCommandEvent& ev)
 {
   hbaoParams->SetBlurSharpness (ev.GetInt ());
+}
+
+void csFrame::OnSSDORadiusSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetRadius (ev.GetInt ());
+}
+void csFrame::OnSSDODetailRadiusSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetDetailRadius(ev.GetInt ());
+}
+void csFrame::OnSSDONumPassesSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetNumPasses (ev.GetInt ());
+}
+void csFrame::OnSSDOSelfOcclusionSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetSelfOcclusion (ev.GetInt ());
+}
+void csFrame::OnSSDOOcclusionStrengthSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetOcclusionStrength (ev.GetInt ());
+}
+void csFrame::OnSSDOMaxOcclusionDistSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetMaxOcclusionDist (ev.GetInt ());
+}
+void csFrame::OnSSDOBounceStrengthSlider (wxCommandEvent& ev)
+{
+  ssdoParams->SetBounceStrength (ev.GetInt ());
+}
+
+void csFrame::OnCheckHBAODebug(wxCommandEvent& ev)
+{
+  hbaoParams->SetDebugMode(ev.IsChecked());
+}
+
+void csFrame::OnClickSSDONoDebug(wxCommandEvent& ev)
+{
+  ssdoParams->SetDebugMode(SSDOParams::SSDO_NONE);
+}
+void csFrame::OnClickSSDODebugAO(wxCommandEvent& ev)
+{
+  ssdoParams->SetDebugMode(SSDOParams::SSDO_AO);
+}
+void csFrame::OnClickSSDODebugIL(wxCommandEvent& ev)
+{
+  ssdoParams->SetDebugMode(SSDOParams::SSDO_IL);
 }

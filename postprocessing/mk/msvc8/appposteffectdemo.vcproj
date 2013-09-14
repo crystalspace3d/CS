@@ -1589,7 +1589,13 @@
 			Name="Source Files"
 			Filter="">
 			<File
+				RelativePath="..\..\apps\demos\posteffectdemo\csFrame.cpp">
+			</File>
+			<File
 				RelativePath="..\..\apps\demos\posteffectdemo\PostEffectApp.cpp">
+			</File>
+			<File
+				RelativePath="..\..\apps\demos\posteffectdemo\shaderParam.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -1600,6 +1606,9 @@
 			</File>
 			<File
 				RelativePath="..\..\apps\demos\posteffectdemo\PostEffectApp.h">
+			</File>
+			<File
+				RelativePath="..\..\apps\demos\posteffectdemo\shaderParam.h">
 			</File>
 		</Filter>
 		<Filter

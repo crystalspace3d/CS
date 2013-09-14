@@ -32,12 +32,14 @@ class HBAOParams
   csRef<csShaderVariable> directions;
   csRef<csShaderVariable> contrast;
   csRef<csShaderVariable> attenuation;
+  csRef<csShaderVariable> svDebugMode;
 
   // blur variables
   csRef<csShaderVariable> blurRadius;
   csRef<csShaderVariable> blurFalloff;
   csRef<csShaderVariable> blurSharpness;
 
+  //wx Controls
   wxSlider * sliderAngleBias;
   wxSlider * sliderRadius;
   wxSlider * sliderNumSteps;
@@ -50,6 +52,8 @@ public:
   HBAOParams(iShaderVarStringSet * svStrings, iPostEffect * effect);
 
   bool SetPanel(wxPanel * panel);
+
+  void SetDebugMode(bool b);
 
   void SetAngleBias(float f);
   void SetAngleBias(int i, bool updateCtrl = false);
@@ -89,21 +93,29 @@ class SSDOParams
   csRef<csShaderVariable> occlusionStrength;
   csRef<csShaderVariable> maxDist;
   csRef<csShaderVariable> bounceStrength;
+  csRef<csShaderVariable> svDebugAO;
+  csRef<csShaderVariable> svDebugIL;
 
   wxSlider * sliderRadius;
   wxSlider * sliderDetailRadius;
   wxSlider * sliderNumPasses;
-  wxSlider * sliderSelfOcclusin;
+  wxSlider * sliderSelfOcclusion;
   wxSlider * sliderOcclusionStrength;
   wxSlider * sliderMaxDist;
   wxSlider * sliderBounceStrength;
+
 public:
+
+  enum ssdoDbgMode {SSDO_NONE, SSDO_AO, SSDO_IL};
+
   SSDOParams(iShaderVarStringSet * svStrings, iPostEffect * effect);
 
   bool SetPanel(wxPanel * panel);
 
-  void SetAOEnable(bool b);
-  void SetILEnable(bool b);
+  bool SetAOEnable(bool b);
+  bool SetILEnable(bool b);
+
+  void SetDebugMode(ssdoDbgMode mode);
 
   void SetRadius(float f);
   void SetRadius(int i, bool updateCtrl = false);

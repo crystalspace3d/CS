@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 
-					
-<object class="wxPanel" name="Canvas">
-	<size>478,478</size>
-	<pos>240,0</pos>
-</object>
+	<object class="wxPanel" name="Canvas">
+		<size>478,478</size>
+		<pos>240,0</pos>
+	</object>
 
 
   <object class="wxPanel" name="effectUI">
@@ -28,398 +27,424 @@
 		</content>
 	  </object>
   </object>
-
   
   <object class="wxPanel" name="SSDOPanel">
     <label></label>
-    <IDident>ID_WXPANEL1</IDident>
-    <ID>1000</ID>
-    <size>240,442</size>
+    <IDident>ID_SSDOPANEL</IDident>
+    <ID>1001</ID>
+    <size>240,500</size>
     <pos>0,40</pos>
     <style></style>
-      <object class="wxStaticBox" name="SSDOWxStaticBox1">
+      <object class="wxStaticBox" name="WxStaticBox1">
         <IDident>ID_WXSTATICBOX1</IDident>
-        <ID>1001</ID>
-        <size>226,430</size>
-        <pos>6,6</pos>
+        <ID>1012</ID>
+        <size>230,490</size>
+        <pos>6,4</pos>
       </object>
       <object class="wxCheckBox" name="SSDOcbEnableAO">
-        <IDident>ID_CBENABLE</IDident>
-        <ID>1002</ID>
+        <IDident>ID_SSDOCBENABLEAO</IDident>
+        <ID>1015</ID>
         <label>Enable Ambient Occlusion</label>
         <size>165,17</size>
-        <pos>21,28</pos>
+        <pos>15,25</pos>
         <checked>0</checked>
         <style></style>
       </object>
       <object class="wxCheckBox" name="SSDOcbIndirectLight">
-        <IDident>ID_WXCHECKBOX1</IDident>
-        <ID>1017</ID>
+        <IDident>ID_SSDOCBINDIRECTLIGHT</IDident>
+        <ID>1016</ID>
         <label>Enable Indirect Light</label>
-        <size>180,17</size>
-        <pos>21,55</pos>
+        <size>165,17</size>
+        <pos>15,50</pos>
         <checked>0</checked>
         <style></style>
       </object>
-      <object class="wxSlider" name="SSDOsliderAngleBias">
-        <IDident>ID_SLIDERANGLEBIAS</IDident>
-        <ID>1004</ID>
-        <size>190,33</size>
-        <pos>29,109</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>30</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-	  <object class="wxSlider" name="SSDOWxSlider1">
-        <IDident>ID_WXSLIDER1</IDident>
-        <ID>1011</ID>
-        <size>190,33</size>
-        <pos>29,154</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>30</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-      <object class="wxSlider" name="SSDOWxSlider2">
-        <IDident>ID_WXSLIDER2</IDident>
-        <ID>1012</ID>
-        <size>190,33</size>
-        <pos>29,199</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>32</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-      <object class="wxSlider" name="SSDOWxSlider3">
-        <IDident>ID_WXSLIDER3</IDident>
-        <ID>1013</ID>
-        <size>190,33</size>
-        <pos>29,244</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>32</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-      <object class="wxSlider" name="SSDOWxSlider4">
-        <IDident>ID_WXSLIDER4</IDident>
-        <ID>1014</ID>
-        <size>190,33</size>
-        <pos>29,289</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>30</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-      <object class="wxSlider" name="SSDOWxSlider5">
-        <IDident>ID_WXSLIDER5</IDident>
-        <ID>1015</ID>
-        <size>190,33</size>
-        <pos>29,334</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>30</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-      <object class="wxSlider" name="SSDOWxSlider6">
-        <IDident>ID_WXSLIDER6</IDident>
-        <ID>1016</ID>
-        <size>190,33</size>
-        <pos>29,379</pos>
-        <value>0</value>
-        <min>0</min>
-        <max>30</max>
-        <orient>wxSL_HORIZONTAL</orient>
-        <style></style>
-      </object>
-	  <object class="wxStaticText" name="SSDOWxStaticText1">
+      <object class="wxStaticText" name="WxStaticText1">
         <label>Sample Radius</label>
         <IDident>ID_WXSTATICTEXT1</IDident>
-        <ID>1003</ID>
+        <ID>1019</ID>
         <size>81,19</size>
-        <pos>19,92</pos>
+        <pos>15,100</pos>
         <style></style>
       </object>
-      <object class="wxStaticText" name="SSDOWxStaticText2">
+      <object class="wxSlider" name="sliderSSDOsampleRadius">
+        <IDident>ID_SLIDERSSDOSAMPLERADIUS</IDident>
+        <ID>1020</ID>
+        <size>180,35</size>
+        <pos>30,120</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText2">
         <label>Detail Sample Radius</label>
         <IDident>ID_WXSTATICTEXT2</IDident>
-        <ID>1005</ID>
+        <ID>1021</ID>
         <size>114,19</size>
-        <pos>18,137</pos>
+        <pos>15,155</pos>
         <style></style>
       </object>
-      <object class="wxStaticText" name="SSDOWxStaticText3">
-        <label>Number of passes</label>
+      <object class="wxSlider" name="sliderSSDOdetailSampleRadius">
+        <IDident>ID_SLIDERSSDODETAILSAMPLERADIUS</IDident>
+        <ID>1022</ID>
+        <size>180,35</size>
+        <pos>30,175</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText3">
+        <label>Number of Passes</label>
         <IDident>ID_WXSTATICTEXT3</IDident>
-        <ID>1006</ID>
+        <ID>1023</ID>
         <size>99,19</size>
-        <pos>18,182</pos>
+        <pos>15,210</pos>
         <style></style>
       </object>
-      <object class="wxStaticText" name="SSDOWxStaticText4">
+      <object class="wxSlider" name="sliderSSDOnumPasses">
+        <IDident>ID_SLIDERSSDONUMPASSES</IDident>
+        <ID>1024</ID>
+        <size>180,35</size>
+        <pos>30,230</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText4">
         <label>Self Occlusion</label>
         <IDident>ID_WXSTATICTEXT4</IDident>
-        <ID>1007</ID>
+        <ID>1025</ID>
         <size>79,19</size>
-        <pos>18,227</pos>
+        <pos>15,265</pos>
         <style></style>
       </object>
-      <object class="wxStaticText" name="SSDOWxStaticText5">
+      <object class="wxSlider" name="sliderSSDOselfOcclusion">
+        <IDident>ID_SLIDERSSDOSELFOCCLUSION</IDident>
+        <ID>1026</ID>
+        <size>180,35</size>
+        <pos>30,285</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText5">
         <label>Occlusion Strength</label>
         <IDident>ID_WXSTATICTEXT5</IDident>
-        <ID>1008</ID>
+        <ID>1027</ID>
         <size>105,19</size>
-        <pos>20,272</pos>
+        <pos>15,320</pos>
         <style></style>
       </object>
-      <object class="wxStaticText" name="SSDOmaxOccDistLabel">
-        <label>Max occluder distance</label>
-        <IDident>ID_ATTENUATION</IDident>
-        <ID>1009</ID>
-        <size>122,19</size>
-        <pos>19,317</pos>
+      <object class="wxSlider" name="sliderSSDOocclusionStrength">
+        <IDident>ID_SLIDERSSDOOCCLUSIONSTRENGTH</IDident>
+        <ID>1028</ID>
+        <size>180,35</size>
+        <pos>30,340</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
         <style></style>
       </object>
-      <object class="wxStaticText" name="SSDOWxStaticText6">
-        <label>Bounce Strength</label>
+      <object class="wxStaticText" name="WxStaticText6">
+        <label>Max Occlusion Distance</label>
         <IDident>ID_WXSTATICTEXT6</IDident>
-        <ID>1010</ID>
-        <size>92,17</size>
-        <pos>18,362</pos>
+        <ID>1029</ID>
+        <size>130,19</size>
+        <pos>15,375</pos>
         <style></style>
       </object>
-      
+      <object class="wxSlider" name="sliderSSDOmaxOccluderDist">
+        <IDident>ID_SLIDERSSDOMAXOCCLUDERDIST</IDident>
+        <ID>1030</ID>
+        <size>180,35</size>
+        <pos>30,395</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText7">
+        <label>Bounce Strength</label>
+        <IDident>ID_WXSTATICTEXT7</IDident>
+        <ID>1031</ID>
+        <size>92,19</size>
+        <pos>15,430</pos>
+        <style></style>
+      </object>
+      <object class="wxSlider" name="sliderSSDObounceStrength">
+        <IDident>ID_SLIDERSSDOBOUNCESTRENGTH</IDident>
+        <ID>1032</ID>
+        <size>180,35</size>
+        <pos>30,450</pos>
+        <value>0</value>
+        <min>0</min>
+        <max>10</max>
+        <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxRadioButton" name="rbNoDebug">
+        <label>No View</label>
+        <IDident>ID_RBNODEBUG</IDident>
+        <ID>1053</ID>
+        <size>67,17</size>
+        <pos>15,75</pos>
+        <style></style>
+        <value>0</value>
+      </object>
+      <object class="wxRadioButton" name="rbDebugAo">
+        <label>View AO</label>
+        <IDident>ID_RBDEBUGAO</IDident>
+        <ID>1054</ID>
+        <size>75,17</size>
+        <pos>85,75</pos>
+        <style></style>
+        <value>0</value>
+      </object>
+      <object class="wxRadioButton" name="rbDebugIL">
+        <label>View IL</label>
+        <IDident>ID_RBDEBUGIL</IDident>
+        <ID>1055</ID>
+        <size>61,17</size>
+        <pos>165,75</pos>
+        <style></style>
+        <value>0</value>
+      </object>
   </object>
-  
-  
-  
   <object class="wxPanel" name="HBAOPanel">
     <label></label>
-    <IDident>ID_WXPANEL1</IDident>
-    <ID>2000</ID>
-    <size>240,442</size>
+    <IDident>ID_HBAOPANEL</IDident>
+    <ID>1002</ID>
+    <size>240,500</size>
     <pos>0,40</pos>
     <style></style>
-      <object class="wxStaticBox" name="HBAOStaticBox">
-        <IDident>ID_WXSTATICBOX1</IDident>
-        <ID>2001</ID>
-        <size>226,430</size>
-        <pos>6,6</pos>
+      <object class="wxStaticBox" name="WxStaticBox2">
+        <IDident>ID_WXSTATICBOX2</IDident>
+        <ID>1013</ID>
+        <size>230,490</size>
+        <pos>5,5</pos>
       </object>
       <object class="wxCheckBox" name="HBAOcbEnable">
-        <IDident>ID_CBENABLE</IDident>
-        <ID>2002</ID>
+        <IDident>ID_HBAOCBENABLE</IDident>
+        <ID>1017</ID>
         <label>Enable</label>
         <size>97,17</size>
-        <pos>18,25</pos>
+        <pos>15,25</pos>
         <checked>0</checked>
         <style></style>
       </object>
-      <object class="wxStaticText" name="HBAOWxStaticText1">
-        <label>Angle bias</label>
-        <IDident>ID_WXSTATICTEXT1</IDident>
-        <ID>2003</ID>
+      <object class="wxCheckBox" name="HBAOcbDebugView">
+        <IDident>ID_HBAOCBDEBUGVIEW</IDident>
+        <ID>1035</ID>
+        <label>View AO</label>
+        <size>97,17</size>
+        <pos>125,25</pos>
+        <checked>0</checked>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText9">
+        <label>Angle Bias</label>
+        <IDident>ID_WXSTATICTEXT9</IDident>
+        <ID>1036</ID>
         <size>59,19</size>
-        <pos>19,55</pos>
+        <pos>15,60</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderAngleBias">
         <IDident>ID_SLIDERANGLEBIAS</IDident>
-        <ID>2004</ID>
-        <size>190,33</size>
-        <pos>29,70</pos>
+        <ID>1037</ID>
+        <size>180,30</size>
+        <pos>30,80</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
         <style></style>
       </object>
-      <object class="wxStaticText" name="HBAOWxStaticText2">
+      <object class="wxStaticText" name="WxStaticText10">
         <label>Radius</label>
-        <IDident>ID_WXSTATICTEXT2</IDident>
-        <ID>2005</ID>
+        <IDident>ID_WXSTATICTEXT10</IDident>
+        <ID>1038</ID>
         <size>39,19</size>
-        <pos>18,100</pos>
-        <style></style>
-      </object>
-      <object class="wxStaticText" name="HBAOWxStaticText3">
-        <label>Number of steps</label>
-        <IDident>ID_WXSTATICTEXT3</IDident>
-        <ID>2006</ID>
-        <size>92,19</size>
-        <pos>18,145</pos>
-        <style></style>
-      </object>
-      <object class="wxStaticText" name="HBAOWxStaticText4">
-        <label>Number of directions</label>
-        <IDident>ID_WXSTATICTEXT4</IDident>
-        <ID>2007</ID>
-        <size>117,19</size>
-        <pos>18,190</pos>
-        <style></style>
-      </object>
-      <object class="wxStaticText" name="HBAOWxStaticText5">
-        <label>Contrast</label>
-        <IDident>ID_WXSTATICTEXT5</IDident>
-        <ID>2008</ID>
-        <size>49,19</size>
-        <pos>18,235</pos>
-        <style></style>
-      </object>
-      <object class="wxStaticText" name="HBAOWxStaticText06">
-        <label>Attenuation</label>
-        <IDident>ID_ATTENUATION</IDident>
-        <ID>2009</ID>
-        <size>67,19</size>
-        <pos>18,280</pos>
-        <style></style>
-      </object>
-      <object class="wxStaticText" name="HBAOWxStaticText6">
-        <label>Blur radius</label>
-        <IDident>ID_WXSTATICTEXT6</IDident>
-        <ID>2010</ID>
-        <size>60,19</size>
-        <pos>18,325</pos>
-        <style></style>
-      </object>
-      <object class="wxStaticText" name="HBAOWxStaticText7">
-        <label>Blur sharpness</label>
-        <IDident>ID_WXSTATICTEXT7</IDident>
-        <ID>2011</ID>
-        <size>80,19</size>
-        <pos>18,370</pos>
+        <pos>15,113</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderHBAORadius">
-        <IDident>ID_WXSLIDER1</IDident>
-        <ID>2012</ID>
-        <size>190,33</size>
-        <pos>29,115</pos>
+        <IDident>ID_SLIDERHBAORADIUS</IDident>
+        <ID>1039</ID>
+        <size>180,35</size>
+        <pos>30,133</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText11">
+        <label>Number of Steps</label>
+        <IDident>ID_WXSTATICTEXT11</IDident>
+        <ID>1040</ID>
+        <size>93,19</size>
+        <pos>15,168</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderHBAOSteps">
-        <IDident>ID_WXSLIDER2</IDident>
-        <ID>2013</ID>
-        <size>190,33</size>
-        <pos>29,160</pos>
+        <IDident>ID_SLIDERHBAOSTEPS</IDident>
+        <ID>1041</ID>
+        <size>180,35</size>
+        <pos>30,187</pos>
         <value>0</value>
         <min>0</min>
-        <max>32</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText12">
+        <label>Number of Directions</label>
+        <IDident>ID_WXSTATICTEXT12</IDident>
+        <ID>1042</ID>
+        <size>118,19</size>
+        <pos>15,219</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderHBAODirs">
-        <IDident>ID_WXSLIDER3</IDident>
-        <ID>2014</ID>
-        <size>190,33</size>
-        <pos>29,205</pos>
+        <IDident>ID_SLIDERHBAODIRS</IDident>
+        <ID>1043</ID>
+        <size>180,35</size>
+        <pos>30,239</pos>
         <value>0</value>
         <min>0</min>
-        <max>32</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText13">
+        <label>Contrast</label>
+        <IDident>ID_WXSTATICTEXT13</IDident>
+        <ID>1044</ID>
+        <size>49,19</size>
+        <pos>15,272</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderHBAOContrast">
-        <IDident>ID_WXSLIDER4</IDident>
-        <ID>2015</ID>
-        <size>190,33</size>
-        <pos>29,249</pos>
+        <IDident>ID_SLIDERHBAOCONTRAST</IDident>
+        <ID>1045</ID>
+        <size>180,35</size>
+        <pos>30,292</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText14">
+        <label>Attenuation</label>
+        <IDident>ID_WXSTATICTEXT14</IDident>
+        <ID>1046</ID>
+        <size>67,19</size>
+        <pos>15,325</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderHBAOAttenuation">
-        <IDident>ID_WXSLIDER5</IDident>
-        <ID>2016</ID>
-        <size>190,33</size>
-        <pos>29,295</pos>
+        <IDident>ID_SLIDERHBAOATTENUATION</IDident>
+        <ID>1047</ID>
+        <size>180,35</size>
+        <pos>30,345</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
+        <style></style>
+      </object>
+      <object class="wxStaticText" name="WxStaticText15">
+        <label>Blur Radius</label>
+        <IDident>ID_WXSTATICTEXT15</IDident>
+        <ID>1048</ID>
+        <size>63,19</size>
+        <pos>15,378</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderHBAOBlurRadius">
-        <IDident>ID_WXSLIDER6</IDident>
-        <ID>2017</ID>
-        <size>190,33</size>
-        <pos>29,338</pos>
+        <IDident>ID_SLIDERHBAOBLURRADIUS</IDident>
+        <ID>1049</ID>
+        <size>180,35</size>
+        <pos>30,398</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
         <style></style>
       </object>
+      <object class="wxStaticText" name="WxStaticText16">
+        <label>Blur Sharpness</label>
+        <IDident>ID_WXSTATICTEXT16</IDident>
+        <ID>1050</ID>
+        <size>81,19</size>
+        <pos>15,431</pos>
+        <style></style>
+      </object>
       <object class="wxSlider" name="sliderHBAOBlurSharpness">
-        <IDident>ID_WXSLIDER7</IDident>
-        <ID>2018</ID>
-        <size>190,33</size>
-        <pos>30,385</pos>
+        <IDident>ID_SLIDERHBAOBLURSHARPNESS</IDident>
+        <ID>1051</ID>
+        <size>180,35</size>
+        <pos>30,451</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
         <style></style>
       </object>
   </object>
-  
-  
-  
-  
-  
   <object class="wxPanel" name="DOFPanel">
     <label></label>
-    <IDident>ID_WXPANEL1</IDident>
-    <ID>3000</ID>
-    <size>240,442</size>
+    <IDident>ID_DOFPANEL</IDident>
+    <ID>1003</ID>
+    <size>240,500</size>
     <pos>0,40</pos>
     <style></style>
-      <object class="wxStaticBox" name="DOFWxStaticBox1">
-        <IDident>ID_WXSTATICBOX1</IDident>
-        <ID>3001</ID>
-        <size>226,430</size>
-        <pos>6,6</pos>
+      <object class="wxStaticBox" name="WxStaticBox3">
+        <IDident>ID_WXSTATICBOX3</IDident>
+        <ID>1014</ID>
+        <size>230,490</size>
+        <pos>0,4</pos>
       </object>
       <object class="wxCheckBox" name="DOFcbEnable">
-        <IDident>ID_CBENABLE</IDident>
-        <ID>3002</ID>
+        <IDident>ID_DOFCBENABLE</IDident>
+        <ID>1018</ID>
         <label>Enable</label>
         <size>97,17</size>
-        <pos>14,25</pos>
+        <pos>15,25</pos>
         <checked>0</checked>
         <style></style>
       </object>
-      <object class="wxStaticText" name="DOFWxStaticText1">
-        <label>CoC Scale</label>
-        <IDident>ID_WXSTATICTEXT1</IDident>
-        <ID>3003</ID>
-        <size>57,19</size>
-        <pos>18,55</pos>
+      <object class="wxStaticText" name="WxStaticText8">
+        <label>Circle of Confusion Scale</label>
+        <IDident>ID_WXSTATICTEXT8</IDident>
+        <ID>1033</ID>
+        <size>136,19</size>
+        <pos>15,80</pos>
         <style></style>
       </object>
       <object class="wxSlider" name="sliderCoCScale">
         <IDident>ID_SLIDERCOCSCALE</IDident>
-        <ID>3004</ID>
-        <size>190,33</size>
-        <pos>28,70</pos>
+        <ID>1034</ID>
+        <size>180,35</size>
+        <pos>30,100</pos>
         <value>0</value>
         <min>0</min>
-        <max>30</max>
+        <max>10</max>
         <orient>wxSL_HORIZONTAL</orient>
         <style></style>
       </object>
   </object>
-  
+<!--/object-->
 </resource>

@@ -26,6 +26,8 @@ csVideoRecorder::csVideoRecorder (iBase* parent) :
   recording = false;
   recordSound = false;
 
+  currentMicroTicks = 0;
+ 
   encoder = NULL;
   fakeClock = NULL;
 }

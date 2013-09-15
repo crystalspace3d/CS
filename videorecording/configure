@@ -48369,12 +48369,11 @@ fi
 	LIBS="$cs_libs_test $cs_cv_libavcodec_libs $cs_cv_libavformat_libs $cs_libs_save"
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <libavformat/avformat.h>
-	      #include <libavutil/avutil.h>
+#include <libavutil/avutil.h>
 int
 main ()
 {
-av_register_all();
+avutil_version();
   ;
   return 0;
 }
@@ -48486,12 +48485,11 @@ fi
 	LIBS="$cs_libs_test $cs_cv_libavcodec_libs $cs_cv_libavformat_libs $cs_libs_save"
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <libavformat/avformat.h>
-	      #include <libavutil/avutil.h>
+#include <libavutil/avutil.h>
 int
 main ()
 {
-av_register_all();
+avutil_version();
   ;
   return 0;
 }

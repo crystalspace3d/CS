@@ -280,8 +280,8 @@ SSDOParams::SSDOParams(iShaderVarStringSet * svStrings, iPostEffect * effect)
   occlusionStrength.AttachNew (new csShaderVariable(svStrings->Request ("occlusion strength")));
   maxDist.AttachNew (new csShaderVariable(svStrings->Request ("max occluder distance")));
   bounceStrength.AttachNew (new csShaderVariable(svStrings->Request ("bounce strength")));
-  svDebugAO.AttachNew (new csShaderVariable(svStrings->Request ("bounce strength")));
-  svDebugIL.AttachNew (new csShaderVariable(svStrings->Request ("bounce strength")));
+  svDebugAO.AttachNew (new csShaderVariable(svStrings->Request ("debug show ambocc")));
+  svDebugIL.AttachNew (new csShaderVariable(svStrings->Request ("debug show indirect light")));
 
   effect->GetLayer (0)->GetSVContext ()->AddVariable(enableAO);
   effect->GetLayer (0)->GetSVContext ()->AddVariable(enableIL);

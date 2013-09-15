@@ -31,9 +31,9 @@ BEGIN_EVENT_TABLE(csFrame, wxFrame)
   EVT_SLIDER(XRCID("sliderSSDOocclusionStrength"), OnSSDOOcclusionStrengthSlider)
   EVT_SLIDER(XRCID("sliderSSDOmaxOccluderDist"), OnSSDOMaxOcclusionDistSlider)
   EVT_SLIDER(XRCID("sliderSSDObounceStrength"), OnSSDOBounceStrengthSlider)
-  EVT_SLIDER(XRCID("rbNoDebug"), OnClickSSDONoDebug)
-  EVT_SLIDER(XRCID("rbDebugAo"), OnClickSSDODebugAO)
-  EVT_SLIDER(XRCID("rbDebugIL"), OnClickSSDODebugIL)
+  EVT_RADIOBUTTON(XRCID("rbNoDebug"), OnClickSSDONoDebug)
+  EVT_RADIOBUTTON(XRCID("rbDebugAo"), OnClickSSDODebugAO)
+  EVT_RADIOBUTTON(XRCID("rbDebugIL"), OnClickSSDODebugIL)
 
 END_EVENT_TABLE()
 

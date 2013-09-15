@@ -199,7 +199,7 @@
         <size>67,17</size>
         <pos>15,75</pos>
         <style></style>
-        <value>0</value>
+        <value>1</value>
       </object>
       <object class="wxRadioButton" name="rbDebugAo">
         <label>View AO</label>

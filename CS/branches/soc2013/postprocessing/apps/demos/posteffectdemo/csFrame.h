@@ -3,17 +3,17 @@
 
 
 
-#include "csutil/custom_new_disable.h"
-#include <wx/wx.h>
-#include <wx/xrc/xmlres.h>
-#include "csutil/custom_new_enable.h"
-
 #include <crystalspace.h>
 #include "csplugincommon/rendermanager/posteffects.h"
 #include "csplugincommon/rendermanager/ddofhelper.h"
 #include "csutil/ref.h"
 #include "ivideo/wxwin.h"
 #include "shaderParam.h"
+
+#include "csutil/custom_new_disable.h"
+#include <wx/wx.h>
+#include <wx/xrc/xmlres.h>
+#include "csutil/custom_new_enable.h"
 
 #define DDOF_EFFECT_NAME "Diffusion DOF"
 #define HBAO_EFFECT_NAME "HBAO"

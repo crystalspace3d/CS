@@ -3734,7 +3734,10 @@ bool csGLGraphics3D::OQIsVisible(unsigned int occlusion_query, unsigned int samp
 void csGLGraphics3D::OQVisibleQueries(unsigned int* queries, bool* results, int num_queries)
 {
   // check for query buffer support and query all results at once if present
-  if (ext->CS_GL_ARB_query_buffer_object || ext->CS_GL_AMD_query_buffer_object)
+  // @@@TODO: while using a buffer works it's making everything slower instead of speeding
+  //          it up, so there's no point in using it for now
+  //if (ext->CS_GL_ARB_query_buffer_object || ext->CS_GL_AMD_query_buffer_object)
+  if (false)
   {
     // bind query buffer
     statecache->SetBufferARB(GL_QUERY_BUFFER_ARB, queryBuffer, true);

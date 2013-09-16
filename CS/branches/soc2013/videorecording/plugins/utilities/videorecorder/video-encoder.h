@@ -137,7 +137,12 @@ public:
   void AddFrame(csMicroTicks Time, csRef<csImageMemory> Frame);
   
   // function for sound recording (passed from iSndSysSoftwareOutputFilter)
+  // samples are in planar format
   void DeliverSoundData (const csSoundSample *SampleBuffer, size_t Frames);
+
+  // function for sound recording
+  // samples are interleaved
+  void DeliverSoundData (const uint16 *SampleBuffer, size_t Frames);
 
   // stop encoding and wait for it to finish
   void Stop();

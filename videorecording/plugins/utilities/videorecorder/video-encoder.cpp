@@ -706,3 +706,45 @@ void VideoEncoder::DeliverSoundData (const csSoundSample *SampleBuffer, size_t N
 	audioQueueWritten += channels*NumSamples;
   }
 }
+
+void VideoEncoder::DeliverSoundData (const uint16 *SampleBuffer, size_t NumSamples)
+{
+  // read current queue status
+  int read, written;  
+  {
+    if (!recordAudio)
+	  return;
+    MutexScopedLock lock (mutex);
+	read = audioQueueRead;
+	written = audioQueueWritten;
+  }
+
+  if (audio->sample_fmt == AV_SAMPLE_FMT_S16P || audio->sample_fmt == AV_SAMPLE_FMT_FLTP)
+  {
+	// codec wants data in planar format (that is - first numSamples for first channel, then for second)
+	// we need to do hard job for this conversion
+	for (uint i = 0; i < NumSamples; i++)
+	  for  (uint j = 0; j < channels; j++)
+	  {
+		int s = (written + i*channels + j) % audioQueue.GetSize();
+		int N = numSamples*channels;
+		int n = s / N;
+		int k = s % N;
+        audioQueue[n*N + (k % channels)*numSamples + k/channels] = SampleBuffer[i*channels + j];
+	  }
+  }
+  else
+  {
+	// codec wants data in interleaved format - one sample for left channel, one sample for right channel, etc.
+	// this is simpler
+	for (uint i = 0; i < NumSamples; i++)
+	  for  (uint j = 0; j < channels; j++)
+        audioQueue[(written + i*channels + j) % audioQueue.GetSize()] = SampleBuffer[i*channels + j];
+  }
+
+  // write new queue status
+  {
+    MutexScopedLock lock (mutex);
+	audioQueueWritten += channels*NumSamples;
+  }
+}

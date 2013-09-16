@@ -46,6 +46,7 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   csRef<iReporter> reporter;
   csRef<iGraphics2D> g2d;
   csRef<iVFS> VFS;
+  csRef<iSndSysRenderer> soundRenderer;
   csRef<iSndSysRendererSoftware> softSoundRenderer;
   csRef<iVirtualClock> realClock;
 
@@ -79,6 +80,9 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   csString extension;
   
   csSndSysSoundFormat soundFormat;
+
+  csMicroTicks lastSampleRead;
+  csArray<uint16> sampleBuffer;
  
   struct KeyCode
   {

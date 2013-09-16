@@ -27,7 +27,8 @@ csVideoRecorder::csVideoRecorder (iBase* parent) :
   recordSound = false;
 
   currentMicroTicks = 0;
- 
+  lastSampleRead = 0;
+
   encoder = NULL;
   fakeClock = NULL;
 }
@@ -48,12 +49,15 @@ bool csVideoRecorder::Initialize (iObjectRegistry* object_reg)
     q->RegisterListener (&frameEventHandler, events2);
   }
 
-  csRef<iSndSysRenderer> soundRenderer (csQueryRegistry<iSndSysRenderer> (object_reg));
+  soundRenderer = csQueryRegistry<iSndSysRenderer> (object_reg);
   if (soundRenderer)
   {
-	softSoundRenderer = scfQueryInterface<iSndSysRendererSoftware>(soundRenderer);
-	if (!softSoundRenderer)
-      Report(CS_REPORTER_SEVERITY_NOTIFY, "Sound renderer is not software, sound will not be recorded");
+	if (!soundRenderer->IsLoopback())
+	{
+	  softSoundRenderer = scfQueryInterface<iSndSysRendererSoftware>(soundRenderer);
+	  if (!softSoundRenderer)
+        Report(CS_REPORTER_SEVERITY_NOTIFY, "Sound renderer is not software, sound will not be recorded");
+	}
   }
   else
 	Report(CS_REPORTER_SEVERITY_NOTIFY, "No sound renderer, sound will not be recorded");
@@ -145,13 +149,21 @@ bool csVideoRecorder::InitPlugin()
 	  mode = MODE_VFR;
 
   recordSound = strcmp(config->GetStr("VideoRecorder.AudioCodec", "no"), "no") != 0;
-  if (recordSound && mode == MODE_FORCED_CFR)
+  if (!soundRenderer)
+    recordSound = false;
+  if (recordSound)
   {
-    Report (CS_REPORTER_SEVERITY_WARNING, "Sound recording is not supported in forced-cfr mode!");
-    recordSound = false;
+	bool IsLoopback = soundRenderer->IsLoopback();
+	if (IsLoopback)
+	  soundRenderer->GetLoopbackFormat(&soundFormat);
+	if (mode == MODE_FORCED_CFR && !IsLoopback)
+	{
+	  Report (CS_REPORTER_SEVERITY_WARNING, "Sound recording in forced-cfr mode requires SndSys.Loopback to be true!");
+	  recordSound = false;
+    }
+	if (!IsLoopback && !softSoundRenderer)
+      recordSound = false;
   }
-  if (recordSound && !softSoundRenderer)
-    recordSound = false;
 
   initialized = true;
   return true;
@@ -260,7 +272,7 @@ void csVideoRecorder::Start()
   }
 
   // add sound recording filter
-  if (recordSound && (!softSoundRenderer || !softSoundRenderer->AddOutputFilter(SS_FILTER_LOC_RENDEROUT, &soundRecorder)))
+  if (recordSound && softSoundRenderer && !softSoundRenderer->AddOutputFilter(SS_FILTER_LOC_RENDEROUT, &soundRecorder))
 	recordSound = false;
 
   // Create encoder. It is asynchronous and we will not wait for it to perform full initialization.
@@ -290,6 +302,23 @@ void csVideoRecorder::Stop()
 
 void csVideoRecorder::OnFrameEnd()
 {
+  if (soundRenderer && soundRenderer->IsLoopback())
+  {
+	soundRenderer->GetLoopbackFormat(&soundFormat);
+	if (sampleBuffer.IsEmpty())
+      sampleBuffer.SetSize(500*soundFormat.Channels);
+
+	csMicroTicks BufferLength = csMicroTicks(1000)*1000*sampleBuffer.GetSize()/(soundFormat.Freq*soundFormat.Channels);
+	while (currentMicroTicks > lastSampleRead + BufferLength)
+	{
+	  soundRenderer->FillDriverBuffer(&sampleBuffer[0], sampleBuffer.GetSize()/soundFormat.Channels, NULL, 0);
+	  lastSampleRead += BufferLength;
+
+	  if (recording && !paused)
+		encoder->DeliverSoundData(&sampleBuffer[0], sampleBuffer.GetSize()/soundFormat.Channels);
+	}
+  }
+  
   if (!recording || paused)
     return;
 
@@ -346,13 +375,13 @@ void csVideoRecorder::OnFrameEnd()
 
 void csVideoRecorder::AdvanceClock()
 {
-	realClock->Advance();
+  realClock->Advance();
 
-	if (mode == MODE_FORCED_CFR && IsRecording() && !IsPaused())
-		elapsedMicroTicks = 1000000/framerate; // FIXME: this is imprecise
-	else
-		elapsedMicroTicks = realClock->GetElapsedMicroTicks();
-	currentMicroTicks += elapsedMicroTicks;
+  if (mode == MODE_FORCED_CFR && IsRecording() && !IsPaused())
+    elapsedMicroTicks = 1000000/framerate; // FIXME: this is imprecise
+  else
+    elapsedMicroTicks = realClock->GetElapsedMicroTicks();
+  currentMicroTicks += elapsedMicroTicks;
 }
 
 /// Parse keyname and return key code + modifier status (from bugplug).

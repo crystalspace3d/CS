@@ -51,8 +51,8 @@ namespace CS
       }
 
       // allocate array for query results
-      bool* visibility = new bool[queries.GetSize()];
-      unsigned* query = new unsigned[queries.GetSize()];
+      CS_ALLOC_STACK_ARRAY_FALLBACK(bool, visibility, queries.GetSize(), 50000);
+      CS_ALLOC_STACK_ARRAY_FALLBACK(unsigned, query, queries.GetSize(), 50000);
 
       // check for allocation failure
       CS_ASSERT(visibility);
@@ -90,10 +90,6 @@ namespace CS
 	  }
 	}
       }
-
-      // free query results
-      delete [] visibility;
-      delete [] query;
 
       // clear active queries
       queries.Empty();

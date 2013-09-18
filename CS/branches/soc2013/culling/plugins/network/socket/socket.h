@@ -31,8 +31,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
   {
     static int const AddressLookup[2] = {AF_INET, AF_INET6};
     static int const DomainLookup[2] = {PF_INET, PF_INET6};
-    static int const ProtocolLookup[2] = {IPPROTO_TCP, IPPROTO_UDP}
-    static int const TypeLookup[2] = {SOCK_STREAM, SOCK_DGRAM}
+    static int const ProtocolLookup[2] = {IPPROTO_TCP, IPPROTO_UDP};
+    static int const TypeLookup[2] = {SOCK_STREAM, SOCK_DGRAM};
   } // namespace
 
   template<Family family> struct Address;
@@ -55,7 +55,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       memset(&socketAddress, 0, sizeof(Type));
     }
 
-    Address(AddressType const *a) : scfImplementationType(this)
+    Address(Type const *a) : scfImplementationType(this)
     {
       socketAddress = *a;
       Update();
@@ -63,7 +63,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 
     void Update()
     {
-      inet_ntop(AddressLookup[family], &(socketAddress.sin_addr), address, INET_ADDSTRLEN);
+      Platform::InetNtoP(AddressLookup[CS_SOCKET_FAMILY_IP4], &(socketAddress.sin_addr), address, INET_ADDRSTRLEN);
       port = ntohs(socketAddress.sin_port);
     }
 
@@ -79,12 +79,17 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 
     Family GetFamily() const
     {
-      return Family;
+      return CS_SOCKET_FAMILY_IP4;
+    }
+
+    sockaddr const *GetStruct() const
+    {
+      return reinterpret_cast<sockaddr const *>(&socketAddress);
     }
 
     sockaddr *GetStruct()
     {
-      return &socketAddress;
+      return reinterpret_cast<sockaddr *>(&socketAddress);
     }
   };
 
@@ -106,7 +111,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       memset(&socketAddress, 0, sizeof(Type));
     }
 
-    Address(AddressType const *a) : scfImplementationType(this)
+    Address(Type const *a) : scfImplementationType(this)
     {
       socketAddress = *a;
       Update();
@@ -114,7 +119,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 
     void Update()
     {
-      inet_ntop(AddressLookup[family], &(socketAddress.sin6_addr), address, INET6_ADDSTRLEN);
+      Platform::InetNtoP(AddressLookup[CS_SOCKET_FAMILY_IP6], &(socketAddress.sin6_addr), address, INET6_ADDRSTRLEN);
       port = ntohs(socketAddress.sin6_port);
     }
 
@@ -130,39 +135,32 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 
     Family GetFamily() const
     {
-      return Family;
+      return CS_SOCKET_FAMILY_IP6;
+    }
+
+    sockaddr const *GetStruct() const
+    {
+      return reinterpret_cast<sockaddr const *>(&socketAddress);
     }
 
     sockaddr *GetStruct()
     {
-      return &socketAddress;
+      return reinterpret_cast<sockaddr *>(&socketAddress);
     }
   };
 
-  class PlatformSocket
-  {
-  protected:
-    Platform::Socket socket;
-
-  public:
-    Platform::Socket GetSocket() const
-    {
-      return socket;
-    }
-  }
-
-  template<Protocol protocol, Family family>
+  template<Family family, Protocol protocol>
   class Socket
-    : public scfImplementation1<Socket<Protocol, Family>, iSocket>,
-      public PlatformSocket
+    : public scfImplementation1<Socket<family, protocol>, iSocket>
   {
   private:
     // convenience typedef
-    typedef Socket<Protocol> ThisType;
+    typedef Socket<family, protocol> ThisType;
     typedef Address<family> AddressType;
 
     bool ready;
     bool connected;
+    Platform::Socket socket;
 
   public:
     Socket()
@@ -198,7 +196,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       CS_ASSERT(address->GetFamily() == family);
 
       // get internal address type
-      AdressType *socketAddress = static_cast<AddressType*>(address);
+      AddressType const *socketAddress = static_cast<AddressType const *>(address);
 
       // try to bind
       if(bind(socket, socketAddress->GetStruct(), sizeof(AddressType::Type)) == 0)
@@ -258,8 +256,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	// create address
 	AddressType *socketAddress = new AddressType;
 
+	// placeholder for result size
+	socklen_t size = sizeof(AddressType::Type);
+
 	// accept connection
-	child = accept(socket, socketAddress->GetStruct(), sizeof(AddressType::Type));
+	child = accept(socket, socketAddress->GetStruct(), &size);
+
+	// ensure the size returned matches our expected one
+	CS_ASSERT(size == sizeof(AddressType::Type));
 
 	// update address data
 	socketAddress->Update();
@@ -293,7 +297,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       CS_ASSERT(address->GetFamily() == family);
 
       // get internal address type
-      AdressType *socketAddress = static_cast<AddressType*>(address);
+      AddressType const *socketAddress = static_cast<AddressType const *>(client);
 
       // try to connect
       if(connect(socket, socketAddress->GetStruct(), sizeof(AddressType::Type)) == 0)
@@ -328,7 +332,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       if(client == nullptr)
       {
 	// no, just receive normally
-	result = recv(socket, buffer, size, 0);
+	result = recv(socket, buffer, static_cast<int>(size), 0);
       }
       else
       {
@@ -336,8 +340,14 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	// create address
 	AddressType *socketAddress = new AddressType;
 
+	// placeholder for result size
+	socklen_t size = sizeof(AddressType::Type);
+
 	// receive data
-	result = recvfrom(socket, buffer, size, 0, socketAddress->GetStruct(), sizeof(AddressType::Type));
+	result = recvfrom(socket, buffer, size, 0, socketAddress->GetStruct(), &size);
+
+	// ensure the size returned matches our expected one
+	CS_ASSERT(size == sizeof(AddressType::Type));
 
 	// update address data
 	socketAddress->Update();
@@ -391,15 +401,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	CS_ASSERT(address->GetFamily() == family);
 
 	// get internal address type
-	AdressType *socketAddress = static_cast<AddressType*>(address);
+	AddressType const *socketAddress = static_cast<AddressType const *>(client);
 
 	// send data to specified peer
-	result = sendto(socket, buffer, size, socketAddress->GetStruct(), sizeof(AddressType::Type));
+#	ifdef CS_PLATFORM_WIN32
+	// winsocks uses int instead of size_t for the buffer size
+	result = sendto(socket, buffer, static_cast<int>(size), 0, socketAddress->GetStruct(), sizeof(AddressType::Type));
+#	else
+	result = sendto(socket, buffer, size, 0, socketAddress->GetStruct(), sizeof(AddressType::Type));
+#	endif
       }
       else
       {
 	// send data to connected peer
-	result = send(socket, buffer, size);
+#	ifdef CS_PLATFORM_WIN32
+	// winsocks uses int instead of size_t for the buffer size
+	result = send(socket, buffer, static_cast<int>(size), 0);
+#	else
+	result = send(socket, buffer, size, 0);
+#	endif
       }
 
       // check for error
@@ -427,6 +447,21 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     bool IsConnected() const
     {
       return connected;
+    }
+
+    Family GetFamily() const
+    {
+      return family;
+    }
+
+    Protocol GetProtocol() const
+    {
+      return protocol;
+    }
+
+    Platform::Socket GetSocket() const
+    {
+      return socket;
     }
   };
 }

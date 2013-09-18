@@ -17,11 +17,43 @@
 */
 
 #include "socketmanager.h"
+#include <csgeom/math.h>
 
 using namespace CS::Network::Socket;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 {
+  Platform::Socket SocketManager::GetHandle(iSocket* socket) const
+  {
+    switch(socket->GetFamily())
+    {
+    case CS_SOCKET_FAMILY_IP4:
+      switch(socket->GetProtocol())
+      {
+      case CS_SOCKET_PROTOCOL_TCP:
+	return static_cast<Socket<CS_SOCKET_FAMILY_IP4,CS_SOCKET_PROTOCOL_TCP> *>(socket)->GetSocket();
+      case CS_SOCKET_PROTOCOL_UDP:
+	return static_cast<Socket<CS_SOCKET_FAMILY_IP4,CS_SOCKET_PROTOCOL_UDP> *>(socket)->GetSocket();
+      default:
+	return Platform::invalidSocket;
+      }
+    case CS_SOCKET_FAMILY_IP6:
+      switch(socket->GetProtocol())
+      {
+      case CS_SOCKET_PROTOCOL_TCP:
+	return static_cast<Socket<CS_SOCKET_FAMILY_IP6,CS_SOCKET_PROTOCOL_TCP> *>(socket)->GetSocket();
+      case CS_SOCKET_PROTOCOL_UDP:
+	return static_cast<Socket<CS_SOCKET_FAMILY_IP6,CS_SOCKET_PROTOCOL_UDP> *>(socket)->GetSocket();
+      default:
+	return Platform::invalidSocket;
+      }
+      default:
+	return Platform::invalidSocket;
+    }
+
+    return Platform::invalidSocket;
+  }
+
   SocketManager::SocketManager() : scfImplementationType(this)
   {
     // perform one-time platform dependent socket library initialization
@@ -102,7 +134,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     addrinfo *info = nullptr;
 
     // get info
-    if(getaddrinfo(host, service, &const_cast<addrinfo const>(hints), &info) != 0)
+    if(getaddrinfo(host, service, &addrinfo(hints), &info) != 0)
     {
       return csPtr<iAddress>(0);
     }
@@ -123,7 +155,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	// allocate address
 	result.AttachNew(
 	  new Address<CS_SOCKET_FAMILY_IP4>(
-	    static_cast<Address<CS_SOCKET_FAMILY_IP4>::Type *>(info->ai_addr)));
+	    reinterpret_cast<Address<CS_SOCKET_FAMILY_IP4>::Type *>(info->ai_addr)));
       }
       else if(family == CS_SOCKET_FAMILY_IP6)
       {
@@ -133,7 +165,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	// allocate address
 	result.AttachNew(
 	  new Address<CS_SOCKET_FAMILY_IP6>(
-	    static_cast<Address<CS_SOCKET_FAMILY_IP6>::Type *>(info->ai_addr)));
+	    reinterpret_cast<Address<CS_SOCKET_FAMILY_IP6>::Type *>(info->ai_addr)));
       }
       else
       {
@@ -163,10 +195,10 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     for(int i = 0; i < read->GetSize(); ++i)
     {
       // get file descriptor
-      readFDs[i] = static_cast<PlatformSocket const *>(read->Get(i));
+      readFDs[i] = GetHandle(read->Get(i));
 
       // set it in the set
-      FD_SET(readFDs[i], &readSocks);
+      FD_SET(readFDs[i], &readSet);
     }
 
     // allocate and clear writing set
@@ -180,7 +212,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     for(int i = 0; i < write->GetSize(); ++i)
     {
       // get file descriptor
-      writeFDs[i] = static_cast<PlatformSocket const *>(write->Get(i));
+      writeFDs[i] = GetHandle(write->Get(i));
 
       // set it in the set
       FD_SET(writeFDs[i], &writeSet);
@@ -191,7 +223,8 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     memset(&timeout, 0, sizeof(timeval));
 
     // select sockets
-    if(select(csMax(csMax(read->GetSize(), write->GetSize()), FD_SETSIZE-1), &readSet, &writeSet, nullptr, &timeout) <= 0)
+    size_t count = csMax(csMax(read->GetSize(), write->GetSize()), GetSelectLimit());
+    if(select(static_cast<int>(count), &readSet, &writeSet, nullptr, &timeout) <= 0)
     {
       // timeout or error, nothing can be read or written
       read->Empty();
@@ -201,7 +234,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     {
       // select succeeded
       // remove sockets that can't be read from read array
-      for(int i = read->GetSize() - 1; i >= 0; --i)
+      for(size_t i = read->GetSize() - 1; i >= 0; --i)
       {
 	if(!FD_ISSET(readFDs[i],&readSet))
 	{
@@ -213,7 +246,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       }
 
       // remove sockets that can't be written from write array
-      for(int i = write->GetSize() - 1; i >= 0; --i)
+      for(size_t i = write->GetSize() - 1; i >= 0; --i)
       {
 	if(!FD_ISSET(writeFDs[i],&writeSet))
 	{
@@ -228,7 +261,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 
   size_t SocketManager::GetSelectLimit() const
   {
-    return FD_SETSIZE-1;
+    return static_cast<size_t>(FD_SETSIZE-1);
   }
 }
 CS_PLUGIN_NAMESPACE_END(Socket)

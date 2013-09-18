@@ -69,11 +69,15 @@ struct iSocket : public virtual iBase
 
   virtual size_t Send(char const *buffer, size_t size, iAddress *client = nullptr) = 0;
 
-  virtual char const *GetLastError() = 0;
+  virtual char const *GetLastError() const = 0;
 
   virtual bool IsReady() const = 0;
 
   virtual bool IsConnected() const = 0;
+
+  virtual Family GetFamily() const = 0;
+
+  virtual Protocol GetProtocol() const = 0;
 };
 
 struct iSocketArray : public iArrayChangeAll<iSocket *>
@@ -91,7 +95,7 @@ struct iSocketManager : public virtual iBase
 
   virtual void Select(iSocketArray *read, iSocketArray *write) const = 0;
 
-  virtual size_t GetSelectLimit() const;
+  virtual size_t GetSelectLimit() const = 0;
 };
 
 } // Socket

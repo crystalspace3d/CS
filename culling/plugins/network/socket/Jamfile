@@ -4,3 +4,8 @@ Description cssocket : "CrystalSpace Socket Plugin" ;
 
 Plugin cssocket : [ Wildcard *.cpp *.h ] ;
 LinkWith cssocket : crystalspace ;
+
+if $(TARGET.OS) = "WIN32"
+{
+  ExternalLibs cssocket : Ws2_32 ;
+}

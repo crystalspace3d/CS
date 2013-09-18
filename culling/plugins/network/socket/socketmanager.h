@@ -27,6 +27,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 {
   class SocketManager : public scfImplementation1<SocketManager, iSocketManager>
   {
+  private:
+    Platform::Socket GetHandle(iSocket* socket) const;
+
   public:
     SocketManager();
     ~SocketManager();

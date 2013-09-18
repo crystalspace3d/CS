@@ -16,21 +16,21 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "../socketbase.h"
+#include "socketbase.h"
 
 CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 {
   namespace Platform
   {
 #   ifdef CS_PLATFORM_WIN32
-    invalidSocket = INVALID_SOCKET;
+    static Socket const invalidSocket = INVALID_SOCKET;
 
     // initialize winsocks version 2.2
     bool Initialize()
     {
       WSADATA wsaData;
       WORD wVers = MAKEWORD(2, 2);
-      return WSAStartup(wVers, &wsaData);
+      return WSAStartup(wVers, &wsaData) == 0;
     }
 
     // clean up winsocks
@@ -58,8 +58,60 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     {
       closesocket(s);
     }
+
+    // IP printable to network conversion
+    int InetPtoN(int family, char const *source, void *destination)
+    {
+      if(family == AF_INET)
+      {
+	int size = sizeof(sockaddr_in);
+	return WSAStringToAddressA(const_cast<char *>(source), family, nullptr, reinterpret_cast<sockaddr *>(destination), &size);
+      }
+      else if(family == AF_INET6)
+      {
+	int size = sizeof(sockaddr_in6);
+	return WSAStringToAddressA(const_cast<char *>(source), family, nullptr, reinterpret_cast<sockaddr *>(destination), &size);
+      }
+      else
+      {
+	return -1;
+      }
+    }
+
+    // IP network to printable conversion
+    char const *InetNtoP(int family, void const *source, char *destination, socklen_t destinationSize)
+    {
+      if(family == AF_INET)
+      {
+	DWORD size = destinationSize;
+	if(WSAAddressToStringA(reinterpret_cast<sockaddr *>(const_cast<void *>(source)), sizeof(sockaddr_in), nullptr, destination, &size) == 0)
+	{
+	  return destination;
+	}
+	else
+	{
+	  return nullptr;
+	}
+      }
+      else if(family == AF_INET6)
+      {
+	DWORD size = destinationSize;
+	if(WSAAddressToStringA(reinterpret_cast<sockaddr *>(const_cast<void *>(source)), sizeof(sockaddr_in), nullptr, destination, &size) == 0)
+	{
+	  return destination;
+	}
+	else
+	{
+	  return nullptr;
+	}
+      }
+      else
+      {
+	return nullptr;
+      }
+    }
 #   else
-    invalidSocket = -1;
+    static Socket const invalidSocket = -1;
 
     // no need for initialization on unix
     bool Initialize()
@@ -81,6 +133,18 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     void Close(Socket s)
     {
       close(s);
+    }
+
+    // IP printable to network conversion
+    int InetPtoN(int family, char const *source, void *destination)
+    {
+      return inet_pton(family, source, destination);
+    }
+
+    // IP network to printable conversion
+    char const *InetNtoP(int family, void const *source, char *destination)
+    {
+      return inet_ntop(family, source, destination);
     }
 #   endif
   } // namespace Platform

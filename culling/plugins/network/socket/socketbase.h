@@ -26,6 +26,7 @@
 # define _INC_WINDOWS
 // include winsocks
 # include <winsock2.h>
+# include <ws2tcpip.h>
 // remove limited include again
 # undef _INC_WINDOWS
 #else
@@ -52,19 +53,25 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       typedef int Socket;
 #   endif
 
-    static Socket const invalidSocket;
+    extern Socket const invalidSocket;
 
     // function to perform one-time setup of the socket library if necessary
-    inline bool Initialize();
+    bool Initialize();
 
     // function to perform cleanup once all socket usage is done if necessary
-    inline void Cleanup();
+    void Cleanup();
 
     // get a description for the last error that occured
-    inline char *GetError();
+    char *GetError();
 
     // close a socket
-    inline void Close(Socket);
+    void Close(Socket);
+
+    // IP printable to network conversion
+    int InetPtoN(int family, char const *source, void *destination);
+
+    // IP network to printable conversion
+    char const *InetNtoP(int family, void const *source, char *destination, socklen_t size);
   } // namespace Platform
 }
 CS_PLUGIN_NAMESPACE_END(Socket)

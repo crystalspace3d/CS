@@ -1,0 +1,6 @@
+SubDir TOP plugins network socket ;
+
+Description cssocket : "CrystalSpace Socket Plugin" ;
+
+Plugin cssocket : [ Wildcard *.cpp *.h ] ;
+LinkWith cssocket : crystalspace ;

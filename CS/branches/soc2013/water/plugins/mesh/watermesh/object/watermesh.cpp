@@ -214,8 +214,8 @@ void csWaterMeshObject::SetupObject ()
 
 	// Generates foam points
 	csRef<iMeshWrapper> terrainWrapper = engine->FindMeshObject ("Terrain");
-	csPrintf("Testing code ");
-	if (terrainWrapper)
+	//if (terrainWrapper)
+	if(0)
 	{
 		csDirtyAccessArray<csVector3> foampointsTemp;  // Store all the collision points Temperately 
 
@@ -225,6 +225,8 @@ void csWaterMeshObject::SetupObject ()
 		size_t cellIndexMax = terrain->GetCellCount();
 
 		csVector3 terrainPos = terrainMovable->GetPosition();
+
+		//csPrintf("x = %f and y = %f",terrainPos.x,terrainPos.z);
 
 		for (size_t i = 0; i < cellIndexMax ; i++)
 		{
@@ -248,7 +250,7 @@ void csWaterMeshObject::SetupObject ()
 					if (waterHeight-0.1 < (height) && (height) < waterHeight+0.1)
 					{
 						int Ty = gridHeight - y; 
-						foampointsTemp.Push(csVector3(cellPos.x + cellSize.x*x/(float)(gridWidth - 1),waterHeight, cellPos.y + cellSize.z*Ty/(float)(gridHeight - 1)));
+						foampointsTemp.Push(csVector3(cellPos.x + cellSize.x*x/(float)(gridWidth - 1) + terrainPos.x,waterHeight, cellPos.y + cellSize.z*Ty/(float)(gridHeight - 1) + terrainPos.z));
 					}
 				}
 			}			 
@@ -301,7 +303,7 @@ void csWaterMeshObject::SetupObject ()
 	// Plane of Reflection 
 	csShaderVariable *PlaneReflection = variableContext->GetVariableAdd(svStrings->Request("plane reflection"));
 	PlaneReflection->SetType(csShaderVariable::VECTOR4);
-	PlaneReflection->SetValue(csVector4(0.0, -1.0, 0.0, 0.0));
+	PlaneReflection->SetValue(csVector4(0.0, -1.0, 0.0, 1.0));
 
   }
 

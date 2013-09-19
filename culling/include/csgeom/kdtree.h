@@ -65,7 +65,7 @@ template<class ChildType>
 class KDTree :
   public SpatialTree<KDTree<ChildType>, ChildType>
 {
-  friend SpatialTreeType;
+  friend class SpatialTree<KDTree<ChildType>, ChildType>;
 public:
   // convenience typedefs
   typedef KDTree<ChildType> Self;

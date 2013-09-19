@@ -164,7 +164,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 
   public:
     Socket()
-      : scfImplementationType(this),
+      : scfImplementation1<Socket<family, protocol>, iSocket>(this),
 	ready(false), connected(false)
     {
       // create socket
@@ -175,7 +175,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     }
 
     Socket(Platform::Socket s)
-      :	scfImplementationType(this),
+      :	scfImplementation1<Socket<family, protocol>, iSocket>(this),
 	ready(true), connected(true),
 	socket(s)
     {
@@ -199,7 +199,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       AddressType const *socketAddress = static_cast<AddressType const *>(address);
 
       // try to bind
-      if(bind(socket, socketAddress->GetStruct(), sizeof(AddressType::Type)) == 0)
+      if(bind(socket, socketAddress->GetStruct(), sizeof(typename AddressType::Type)) == 0)
       {
 	// bind succeeded
 	if(protocol == CS_SOCKET_PROTOCOL_UDP)
@@ -252,13 +252,13 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	AddressType *socketAddress = new AddressType;
 
 	// placeholder for result size
-	socklen_t size = sizeof(AddressType::Type);
+	socklen_t size = sizeof(typename AddressType::Type);
 
 	// accept connection
 	child = accept(socket, socketAddress->GetStruct(), &size);
 
 	// ensure the size returned matches our expected one
-	CS_ASSERT(size == sizeof(AddressType::Type));
+	CS_ASSERT(size == sizeof(typename AddressType::Type));
 
 	// update address data
 	socketAddress->Update();
@@ -295,7 +295,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       AddressType const *socketAddress = static_cast<AddressType const *>(client);
 
       // try to connect
-      if(connect(socket, socketAddress->GetStruct(), sizeof(AddressType::Type)) == 0)
+      if(connect(socket, socketAddress->GetStruct(), sizeof(typename AddressType::Type)) == 0)
       {
 	// connect succeeded
 	if(protocol == CS_SOCKET_PROTOCOL_TCP)
@@ -342,7 +342,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	result = recvfrom(socket, buffer, size, 0, socketAddress->GetStruct(), &size);
 
 	// ensure the size returned matches our expected one
-	CS_ASSERT(size == sizeof(AddressType::Type));
+	CS_ASSERT(size == sizeof(typename AddressType::Type));
 
 	// update address data
 	socketAddress->Update();
@@ -401,7 +401,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	// send data to specified peer
 #	ifdef CS_PLATFORM_WIN32
 	// winsocks uses int instead of size_t for the buffer size
-	result = sendto(socket, buffer, static_cast<int>(size), 0, socketAddress->GetStruct(), sizeof(AddressType::Type));
+	result = sendto(socket, buffer, static_cast<int>(size), 0, socketAddress->GetStruct(), sizeof(typename AddressType::Type));
 #	else
 	result = sendto(socket, buffer, size, 0, socketAddress->GetStruct(), sizeof(AddressType::Type));
 #	endif

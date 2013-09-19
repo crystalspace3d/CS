@@ -136,7 +136,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     addrinfo *info = nullptr;
 
     // get info
-    if(getaddrinfo(host, service, &addrinfo(hints), &info) != 0)
+    if(getaddrinfo(host, service, &hints, &info) != 0)
     {
       return csPtr<iAddress>(0);
     }

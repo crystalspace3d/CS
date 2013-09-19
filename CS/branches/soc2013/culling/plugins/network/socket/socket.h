@@ -336,7 +336,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	AddressType *socketAddress = new AddressType;
 
 	// placeholder for result size
-	socklen_t size = sizeof(AddressType::Type);
+	socklen_t size = sizeof(typename AddressType::Type);
 
 	// receive data
 	result = recvfrom(socket, buffer, size, 0, socketAddress->GetStruct(), &size);
@@ -403,7 +403,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 	// winsocks uses int instead of size_t for the buffer size
 	result = sendto(socket, buffer, static_cast<int>(size), 0, socketAddress->GetStruct(), sizeof(typename AddressType::Type));
 #	else
-	result = sendto(socket, buffer, size, 0, socketAddress->GetStruct(), sizeof(AddressType::Type));
+	result = sendto(socket, buffer, size, 0, socketAddress->GetStruct(), sizeof(typename AddressType::Type));
 #	endif
       }
       else

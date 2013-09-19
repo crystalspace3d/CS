@@ -80,7 +80,7 @@ THREADED_CALLABLE_IMPL(TCPTest, TestClient)
   csString sendTest("tcp client send test");
   csString recvTest("tcp server send test");
 
-  if(!client->Send(sendTest.GetData(), sendTest.Length()))
+  if(client->Send(sendTest.GetData(), sendTest.Length()) != sendTest.Length())
   {
     csPrintf("tcp client: failed to send data: %s\n", client->GetLastError());
     client.Invalidate();
@@ -128,9 +128,9 @@ THREADED_CALLABLE_IMPL(TCPTest, TestServer)
   csString sendTest("tcp server send test");
   csString recvTest("tcp client send test");
 
-  if(!serverClient->Send(sendTest.GetData(), sendTest.Length()))
+  if(serverClient->Send(sendTest.GetData(), sendTest.Length()) != sendTest.Length())
   {
-    csPrintf("tcp server: failed to send data: %s\n", client->GetLastError());
+    csPrintf("tcp server: failed to send data: %s\n", serverClient->GetLastError());
     client.Invalidate();
     return false;
   }
@@ -145,7 +145,7 @@ THREADED_CALLABLE_IMPL(TCPTest, TestServer)
       size_t received = serverClient->Receive(recvData, recvTest.Length());
       if(received == static_cast<size_t>(-1))
       {
-	csPrintf("tcp server: failed to receive data: %s\n", client->GetLastError());
+	csPrintf("tcp server: failed to receive data: %s\n", serverClient->GetLastError());
 	return false;
       }
       toReceive -= received;
@@ -167,8 +167,8 @@ THREADED_CALLABLE_IMPL(TCPTest, TestServer)
 
 bool UDPTest::Initialize(iSocketManager* manager, CS::Network::Socket::Family f)
 {
-  server = manager->CreateSocket(f, CS_SOCKET_PROTOCOL_TCP);
-  client = manager->CreateSocket(f, CS_SOCKET_PROTOCOL_TCP);
+  server = manager->CreateSocket(f, CS_SOCKET_PROTOCOL_UDP);
+  client = manager->CreateSocket(f, CS_SOCKET_PROTOCOL_UDP);
 
   if(!server.IsValid() || !client.IsValid())
   {
@@ -176,8 +176,8 @@ bool UDPTest::Initialize(iSocketManager* manager, CS::Network::Socket::Family f)
     return false;
   }
 
-  clientAddress = manager->Resolve(nullptr, "12345", f, CS_SOCKET_PROTOCOL_UDP);
-  serverAddress = manager->Resolve(nullptr, "54321", f, CS_SOCKET_PROTOCOL_UDP);
+  clientAddress = manager->Resolve(nullptr, "34521", f, CS_SOCKET_PROTOCOL_UDP);
+  serverAddress = manager->Resolve(nullptr, "12543", f, CS_SOCKET_PROTOCOL_UDP);
 
   if(!clientAddress.IsValid() || !serverAddress.IsValid())
   {
@@ -193,6 +193,12 @@ bool UDPTest::PrepareClient()
   if(!client->Bind(clientAddress))
   {
     csPrintf("udp server: failed to bind server: %s\n", server->GetLastError());
+    return false;
+  }
+
+  if(!client->Connect(serverAddress))
+  {
+    csPrintf("udp client: failed to connect to server: %s\n", client->GetLastError());
     return false;
   }
 
@@ -215,15 +221,10 @@ THREADED_CALLABLE_IMPL(UDPTest, TestClient)
   csString sendTest("udp client send test");
   csString recvTest("udp server send test");
 
-  if(!client->Connect(serverAddress))
+  size_t sent = client->Send(sendTest.GetData(), sendTest.Length());
+  if(sent != sendTest.Length())
   {
-    csPrintf("udp client: failed to connect to server: %s\n", client->GetLastError());
-    return false;
-  }
-
-  if(!client->Send(sendTest.GetData(), sendTest.Length()))
-  {
-    csPrintf("udp client: failed to send data: %s\n", client->GetLastError());
+    csPrintf("udp client: failed to send data(%u): %s\n", sent, client->GetLastError());
     client.Invalidate();
     return false;
   }
@@ -261,9 +262,10 @@ THREADED_CALLABLE_IMPL(UDPTest, TestServer)
   csString sendTest("udp server send test");
   csString recvTest("udp client send test");
 
-  if(!server->Send(sendTest.GetData(), sendTest.Length(), clientAddress))
+  size_t sent = server->Send(sendTest.GetData(), sendTest.Length(), clientAddress);
+  if(sent != sendTest.Length())
   {
-    csPrintf("udp server: failed to send data: %s\n", client->GetLastError());
+    csPrintf("udp server: failed to send data %u: %s\n", sent, server->GetLastError());
     client.Invalidate();
     return false;
   }
@@ -275,10 +277,10 @@ THREADED_CALLABLE_IMPL(UDPTest, TestServer)
     char* buffer = recvData;
     while(toReceive > 0)
     {
-      size_t received = client->Receive(recvData, recvTest.Length());
+      size_t received = server->Receive(recvData, recvTest.Length());
       if(received == static_cast<size_t>(-1))
       {
-	csPrintf("udp server: failed to receive data: %s\n", client->GetLastError());
+	csPrintf("udp server: failed to receive data: %s\n", server->GetLastError());
 	return false;
       }
       toReceive -= received;
@@ -288,11 +290,11 @@ THREADED_CALLABLE_IMPL(UDPTest, TestServer)
 
   if(recvTest != recvData)
   {
-    csPrintf("udp client: received data (%s) didn't match expected data (%s)\n", recvTest.GetData(), recvData);
+    csPrintf("udp server: received data (%s) didn't match expected data (%s)\n", recvTest.GetData(), recvData);
     return false;
   }
 
-  client.Invalidate();
+  server.Invalidate();
   return false;
 }
 

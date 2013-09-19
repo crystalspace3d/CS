@@ -381,7 +381,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       }
       // non-stream sockets must either specify
       // a target or be connected
-      else if(connected != (client != nullptr))
+      else if(connected != (client == nullptr))
       {
 	return static_cast<size_t>(-1);
       }

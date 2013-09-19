@@ -183,7 +183,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       CS_ASSERT(socket != Platform::invalidSocket);
     }
 
-    ~Socket()
+    virtual ~Socket()
     {
       ready = false;
       connected = false;
@@ -238,12 +238,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       // only tcp supports active listening
       if(protocol != CS_SOCKET_PROTOCOL_TCP)
       {
-	return csPtr<iSocket>(nullptr);
-      }
-
-      // there's no point in checking if we aren't listening
-      if(!ready)
-      {
+	CS_ASSERT(false);
 	return csPtr<iSocket>(nullptr);
       }
 
@@ -294,7 +289,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     {
       // @@@TODO: add possibility to unconnect udp sockets here
       // ensure the address is for the right family
-      CS_ASSERT(address->GetFamily() == family);
+      CS_ASSERT(client->GetFamily() == family);
 
       // get internal address type
       AddressType const *socketAddress = static_cast<AddressType const *>(client);
@@ -398,7 +393,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       if(client)
       {
 	// ensure the address is for the right family
-	CS_ASSERT(address->GetFamily() == family);
+	CS_ASSERT(client->GetFamily() == family);
 
 	// get internal address type
 	AddressType const *socketAddress = static_cast<AddressType const *>(client);

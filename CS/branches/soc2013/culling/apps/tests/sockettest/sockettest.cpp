@@ -16,12 +16,14 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "cssysdef.h"
+#include "crystalspace.h"
+#include "sockettest.h"
 #include "csutil/sysfunc.h"
-#include "inetwork/socket.h"
 #include "iutil/threadmanager.h"
 
 CS_IMPLEMENT_APPLICATION
+
+using namespace CS::Network::Socket;
 
 bool TCPTest::Initialize(iSocketManager* manager, CS::Network::Socket::Family f)
 {
@@ -78,21 +80,21 @@ THREADED_CALLABLE_IMPL(TCPTest, TestClient)
   csString sendTest("tcp client send test");
   csString recvTest("tcp server send test");
 
-  if(!client->Send(sendTest.GetData(), sendTest.GetSize()))
+  if(!client->Send(sendTest.GetData(), sendTest.Length()))
   {
     csPrintf("tcp client: failed to send data: %s\n", client->GetLastError());
     client.Invalidate();
     return false;
   }
 
-  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.GetSize()+1);
-  recvData[recvTest.GetSize()] = 0;
+  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.Length()+1);
+  recvData[recvTest.Length()] = 0;
   {
-    size_t toReceive = recvTest.GetSize();
+    size_t toReceive = recvTest.Length();
     char* buffer = recvData;
     while(toReceive > 0)
     {
-      size_t received = client->Recv(recvData, recvTest.GetSize());
+      size_t received = client->Receive(recvData, recvTest.Length());
       if(received == static_cast<size_t>(-1))
       {
 	csPrintf("tcp client: failed to receive data: %s\n", client->GetLastError());
@@ -126,21 +128,21 @@ THREADED_CALLABLE_IMPL(TCPTest, TestServer)
   csString sendTest("tcp server send test");
   csString recvTest("tcp client send test");
 
-  if(!serverClient->Send(sendTest.GetData(), sendTest.GetSize()))
+  if(!serverClient->Send(sendTest.GetData(), sendTest.Length()))
   {
     csPrintf("tcp server: failed to send data: %s\n", client->GetLastError());
     client.Invalidate();
     return false;
   }
 
-  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.GetSize()+1);
-  recvData[recvTest.GetSize()] = 0;
+  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.Length()+1);
+  recvData[recvTest.Length()] = 0;
   {
-    size_t toReceive = recvTest.GetSize();
+    size_t toReceive = recvTest.Length();
     char* buffer = recvData;
     while(toReceive > 0)
     {
-      size_t received = serverClient->Recv(recvData, recvTest.GetSize());
+      size_t received = serverClient->Receive(recvData, recvTest.Length());
       if(received == static_cast<size_t>(-1))
       {
 	csPrintf("tcp server: failed to receive data: %s\n", client->GetLastError());
@@ -219,21 +221,21 @@ THREADED_CALLABLE_IMPL(UDPTest, TestClient)
     return false;
   }
 
-  if(!client->Send(sendTest.GetData(), sendTest.GetSize()))
+  if(!client->Send(sendTest.GetData(), sendTest.Length()))
   {
     csPrintf("udp client: failed to send data: %s\n", client->GetLastError());
     client.Invalidate();
     return false;
   }
 
-  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.GetSize()+1);
-  recvData[recvTest.GetSize()] = 0;
+  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.Length()+1);
+  recvData[recvTest.Length()] = 0;
   {
-    size_t toReceive = recvTest.GetSize();
+    size_t toReceive = recvTest.Length();
     char* buffer = recvData;
     while(toReceive > 0)
     {
-      size_t received = client->Recv(recvData, recvTest.GetSize());
+      size_t received = client->Receive(recvData, recvTest.Length());
       if(received == static_cast<size_t>(-1))
       {
 	csPrintf("udp client: failed to receive data: %s\n", client->GetLastError());
@@ -259,21 +261,21 @@ THREADED_CALLABLE_IMPL(UDPTest, TestServer)
   csString sendTest("udp server send test");
   csString recvTest("udp client send test");
 
-  if(!server->Send(sendTest.GetData(), sendTest.GetSize(), clientAddress))
+  if(!server->Send(sendTest.GetData(), sendTest.Length(), clientAddress))
   {
     csPrintf("udp server: failed to send data: %s\n", client->GetLastError());
     client.Invalidate();
     return false;
   }
 
-  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.GetSize()+1);
-  recvData[recvTest.GetSize()] = 0;
+  CS_ALLOC_STACK_ARRAY(char,recvData,recvTest.Length()+1);
+  recvData[recvTest.Length()] = 0;
   {
-    size_t toReceive = recvTest.GetSize();
+    size_t toReceive = recvTest.Length();
     char* buffer = recvData;
     while(toReceive > 0)
     {
-      size_t received = client->Recv(recvData, recvTest.GetSize());
+      size_t received = client->Receive(recvData, recvTest.Length());
       if(received == static_cast<size_t>(-1))
       {
 	csPrintf("udp server: failed to receive data: %s\n", client->GetLastError());
@@ -300,12 +302,17 @@ THREADED_CALLABLE_IMPL(UDPTest, TestServer)
  *---------------------------------------------------------------------*/
 int main(int argc, char* argv[])
 {
-  csInitializer::InitializeSCF(argc, argv);
-  iObjectRegistry* objReg = csInitializer::CreateObjectRegistry();
-  if (!csInitializer::RequestPlugins(r,
+  iObjectRegistry* objReg = csInitializer::CreateEnvironment(argc, argv);
+  if (!csInitializer::RequestPlugins(objReg,
+	CS_REQUEST_VFS,
+        CS_REQUEST_REPORTER,
+        CS_REQUEST_REPORTERLISTENER,
         CS_REQUEST_PLUGIN("crystalspace.network.socket.manager", iSocketManager),
         CS_REQUEST_END))
-    return ReportError("Failed to initialize plugins!");
+  {
+    csPrintf("Failed to initialize plugins!\n");
+    return -1;
+  }
 
   csRef<iSocketManager> socketManager = csQueryRegistry<iSocketManager>(objReg);
   if(!socketManager.IsValid())
@@ -314,19 +321,16 @@ int main(int argc, char* argv[])
     return -1;
   }
 
-  csRef<iSocketManager> threadManager = csQueryRegistry<iThreadManager>(objReg);
+  csRef<iThreadManager> threadManager = csQueryRegistry<iThreadManager>(objReg);
   if(!threadManager.IsValid())
   {
     csPrintf("failed to query thread manager\n");
     return -1;
   }
 
-  csInitializer::CreateEventQueue(objReg);
-  csInitializer::CreateThreadManager(objReg);
-
   csPrintf("testing IPv4 TCP socket pair\n");
   {
-    TCPTest test;
+    TCPTest test(objReg);
 
     if(!test.Initialize(socketManager, CS_SOCKET_FAMILY_IP4))
     {
@@ -360,7 +364,7 @@ int main(int argc, char* argv[])
 
   csPrintf("testing IPv6 TCP socket pair\n");
   {
-    TCPTest test;
+    TCPTest test(objReg);
 
     if(!test.Initialize(socketManager, CS_SOCKET_FAMILY_IP6))
     {
@@ -394,7 +398,7 @@ int main(int argc, char* argv[])
 
   csPrintf("testing IPv4 UDP socket pair\n");
   {
-    UDPTest test;
+    UDPTest test(objReg);
 
     if(!test.Initialize(socketManager, CS_SOCKET_FAMILY_IP4))
     {
@@ -428,7 +432,7 @@ int main(int argc, char* argv[])
 
   csPrintf("testing IPv6 UDP socket pair\n");
   {
-    UDPTest test;
+    UDPTest test(objReg);
 
     if(!test.Initialize(socketManager, CS_SOCKET_FAMILY_IP6))
     {
@@ -459,6 +463,11 @@ int main(int argc, char* argv[])
       }
     }
   }
+
+  socketManager.Invalidate();
+  threadManager.Invalidate();
+
+  csInitializer::DestroyApplication(objReg);
 
   return 0;
 }

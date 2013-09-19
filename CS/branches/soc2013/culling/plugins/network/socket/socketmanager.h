@@ -20,19 +20,24 @@
 #define __CS_SOCKETMANAGER_H__
 
 #include "socket.h"
+#include "iutil/comp.h"
 
 using namespace CS::Network::Socket;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 {
-  class SocketManager : public scfImplementation1<SocketManager, iSocketManager>
+  class SocketManager : public scfImplementation2<SocketManager, iSocketManager, iComponent>
   {
   private:
     Platform::Socket GetHandle(iSocket* socket) const;
 
   public:
-    SocketManager();
-    ~SocketManager();
+    SocketManager(iBase*);
+    virtual ~SocketManager();
+    bool Initialize(iObjectRegistry *registry)
+    {
+      return true;
+    }
     csPtr<iSocket> CreateSocket(Family family, Protocol protocol) const;
     csPtr<iAddress> Resolve(char const *host, char const *service, Family family, Protocol protocol) const;
     void Select(iSocketArray *read, iSocketArray *write) const;

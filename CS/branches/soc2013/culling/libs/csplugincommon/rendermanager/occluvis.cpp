@@ -420,7 +420,14 @@ namespace CS
 	  {
 	    // continue traversal without frustum culling as this node (and by
 	    // extension all child nodes) are completely contained in the frustum
-	    node->Front2Back(f2bData.pos, (VisTree::VisitFunc*)TraverseTreeF2B<false>, &f2bData, frustumMask);
+	    // hack around gcc 4.4 being unwilling to do a cast
+            bool (*func)(VisTree*,
+                   Front2BackData&,
+#                  if (OCCLUVIS_TREETYPE == 0)
+                   uint32,
+#                  endif
+                   uint32&) = &TraverseTreeF2B<false>;
+	    node->Front2Back(f2bData.pos, (VisTree::VisitFunc*)func, &f2bData, frustumMask);
 	    return false;
 	  }
 
@@ -703,9 +710,6 @@ namespace CS
 
     void csOccluvis::BeginNodeQuery(VisTreeNode* node, iRenderView* rview)
     {
-      // get current frame number
-      uint32 uFrame = engine->GetCurrentFrameNumber();
-
       // get query data for our node
       QueryData* queryData = GetNodeVisData(node).GetQueryData(g3d, rview);
 
@@ -791,10 +795,6 @@ namespace CS
       // get the moveable
       iMovable* movable = visobj->GetMovable();
       CS_ASSERT(movable);
-
-      // get the mesh wrapper
-      iMeshWrapper* meshWrap = visobj->GetMeshWrapper();
-      CS_ASSERT(meshWrap);
 
       // get the object model
       iObjectModel* objModel = visobj->GetObjectModel();
@@ -999,7 +999,14 @@ namespace CS
       f2bData.meshList = nodeMeshLists;
 
       // traverse tree in approximate front to back order and fill array of visible nodes
-      Front2Back(f2bData.pos, (VisTree::VisitFunc*)TraverseTreeF2B<true>, &f2bData, frustumMask);
+      // hack around gcc 4.4 being unwilling to do a cast
+      bool (*func)(VisTree*,
+                   Front2BackData&,
+#                  if (OCCLUVIS_TREETYPE == 0)
+                   uint32,
+#                  endif
+                   uint32&) = &TraverseTreeF2B<true>;
+      Front2Back(f2bData.pos, (VisTree::VisitFunc*)func, &f2bData, frustumMask);
 
       // sort it front to back
       F2BSorter sorter(engine, f2bData.pos);
@@ -1669,7 +1676,14 @@ namespace CS
       data.bf = bf; // forward culling setting
 
       // trace segment
-      Front2Back(end-start, (VisTree::VisitFunc*)TraverseIntersectSegment<false>, &data, 0);
+      // hack around gcc 4.4 being unwilling to do a cast
+      bool (*func)(VisTree*,
+                   IntersectSegmentFront2BackData&,
+#                  if (OCCLUVIS_TREETYPE == 0)
+                   uint32,
+#                  endif
+                   uint32&) = &TraverseIntersectSegment<false>;
+      Front2Back(end-start, (VisTree::VisitFunc*)func, &data, 0);
 
       // create object iterator for results and return it
       return csPtr<iVisibilityObjectIterator>(new csOccluvisObjIt(data.vector, 0));
@@ -1696,7 +1710,14 @@ namespace CS
       data.bf = bf; // forward culling setting
 
       // trace segment
-      Front2Back(end-start, (VisTree::VisitFunc*)TraverseIntersectSegment<false>, &data, 0);
+      // hack around gcc 4.4 being unwilling to do a cast
+      bool (*func)(VisTree*,
+                   IntersectSegmentFront2BackData&,
+#                  if (OCCLUVIS_TREETYPE == 0)
+                   uint32,
+#                  endif
+                   uint32&) = &TraverseIntersectSegment<false>;
+      Front2Back(end-start, (VisTree::VisitFunc*)func, &data, 0);
 
       // set intersection
       isect = data.isect;
@@ -1727,7 +1748,14 @@ namespace CS
       data.vector = new VistestObjectsArray();
       
       // trace segment sloppily
-      Front2Back(end-start, (VisTree::VisitFunc*)TraverseIntersectSegment<true>, &data, 0);
+      // hack around gcc 4.4 being unwilling to do a cast
+      bool (*func)(VisTree*,
+                   IntersectSegmentFront2BackData&,
+#                  if (OCCLUVIS_TREETYPE == 0)
+                   uint32,
+#                  endif
+                   uint32&) = &TraverseIntersectSegment<true>;
+      Front2Back(end-start, (VisTree::VisitFunc*)func, &data, 0);
 
       // create object iterator for results and return it
       return csPtr<iVisibilityObjectIterator>(new csOccluvisObjIt(data.vector, 0));

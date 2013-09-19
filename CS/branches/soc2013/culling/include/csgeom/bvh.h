@@ -54,16 +54,16 @@ namespace Geometry
  * checks are only performed in debug mode, so those should be performed
  * additionally if needed.
  */
-template<class Child>
+template<class ChildType>
 class BVH :
-  public SpatialTree<BVH<Child>
+  public SpatialTree<BVH<ChildType>, ChildType>
 {
   friend class SpatialTreeType;
 public:
   // convenience typedefs
-  typedef BVH<Child> Self;
-  typedef Child Child;
-  typedef typename Child::BoundType BoundType;
+  typedef BVH<ChildType> Self;
+  typedef typename SpatialTreeType::Child Child;
+  typedef typename SpatialTreeType::BoundType BoundType;
 
   /**
    * A callback function for visiting a BVH node. If this function

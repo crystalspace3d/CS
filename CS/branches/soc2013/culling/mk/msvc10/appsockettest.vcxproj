@@ -83,51 +83,61 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1FFCB0C7-1B74-F503-5E9C-64794C9498E9}</ProjectGuid>
+    <ProjectGuid>{E60348E9-BD38-E750-6BF3-8C8DA3361462}</ProjectGuid>
     <SccProjectName />
     <SccLocalPath />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='ReleaseWithStaticLibs'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='ReleaseWithDlls'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='DebugWithStaticLibs'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='DebugWithDlls'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='MemoryTrackerWithStaticLibs'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='MemoryTrackerWithDlls'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='RefTrackerWithStaticLibs'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='RefTrackerWithDlls'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='ThreadCheckerWithStaticLibs'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='ThreadCheckerWithDlls'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -144,104 +154,84 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">..\..\out\release10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">..\..\out\release10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">..\..\out\release10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">..\..\out\release10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">..\..\out\debug10\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">..\..\out\debug10\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">..\..\out\release10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">..\..\out\release10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">..\..\out\release10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">..\..\out\release10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">sockettest</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">..\..\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">..\..\out\debug10-x64\build\plgcssocket\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">cssocket</TargetName>
-    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">true</IgnoreImportLibrary>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">..\..\out\debug10-x64\build\appsockettest\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">sockettest</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|Win32'">
     <ClCompile>
@@ -250,13 +240,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -268,12 +258,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -289,10 +278,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|Win32'">
     <ClCompile>
@@ -301,13 +293,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -319,12 +311,11 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -340,10 +331,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|Win32'">
     <ClCompile>
@@ -351,13 +345,13 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -367,12 +361,11 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -388,10 +381,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|Win32'">
     <ClCompile>
@@ -399,13 +395,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -415,12 +411,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -436,10 +431,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|Win32'">
     <ClCompile>
@@ -447,13 +445,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -463,12 +461,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -484,10 +481,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|Win32'">
     <ClCompile>
@@ -495,13 +495,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -511,12 +511,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -532,10 +531,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|Win32'">
     <ClCompile>
@@ -543,13 +545,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -559,12 +561,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -580,10 +581,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|Win32'">
     <ClCompile>
@@ -591,13 +595,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -607,12 +611,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -628,10 +631,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|Win32'">
     <ClCompile>
@@ -639,13 +645,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -655,12 +661,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -676,10 +681,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|Win32'">
     <ClCompile>
@@ -687,13 +695,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -703,12 +711,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10\build\plgcssocket\Win32\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10\build\plgcssocket\Win32\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10\build\appsockettest\Win32\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x86\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX86</TargetMachine>
@@ -724,10 +731,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithStaticLibs|x64'">
     <ClCompile>
@@ -736,13 +746,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -754,12 +764,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -775,10 +784,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseWithDlls|x64'">
     <ClCompile>
@@ -787,13 +799,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>..\..\out\release10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\release10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\release10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\release10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\release10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\release10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -805,12 +817,11 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\release10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\release10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\release10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -826,10 +837,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugWithStaticLibs|x64'">
     <ClCompile>
@@ -837,13 +851,13 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -853,12 +867,11 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>WS2_32.lib;delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -874,10 +887,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugWithDlls|x64'">
     <ClCompile>
@@ -885,13 +901,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -901,12 +917,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -922,10 +937,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithStaticLibs|x64'">
     <ClCompile>
@@ -933,13 +951,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -949,12 +967,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -970,10 +987,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MemoryTrackerWithDlls|x64'">
     <ClCompile>
@@ -981,13 +1001,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -997,12 +1017,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1018,10 +1037,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithStaticLibs|x64'">
     <ClCompile>
@@ -1029,13 +1051,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1045,12 +1067,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1066,10 +1087,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RefTrackerWithDlls|x64'">
     <ClCompile>
@@ -1077,13 +1101,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1093,12 +1117,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1114,10 +1137,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithStaticLibs|x64'">
     <ClCompile>
@@ -1125,13 +1151,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1141,12 +1167,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1162,10 +1187,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ThreadCheckerWithDlls|x64'">
     <ClCompile>
@@ -1173,13 +1201,13 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\plgcssocket\plgcssocket.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>..\..\out\debug10-x64\build\plgcssocket\</AssemblerListingLocation>
-      <ObjectFileName>..\..\out\debug10-x64\build\plgcssocket\</ObjectFileName>
+      <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\appsockettest\appsockettest.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>..\..\out\debug10-x64\build\appsockettest\</AssemblerListingLocation>
+      <ObjectFileName>..\..\out\debug10-x64\build\appsockettest\</ObjectFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -1189,12 +1217,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>LIBC;LIBCD;LIBCMT;LIBCMTD;MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\cssocket.dll</OutputFile>
-      <ProgramDatabaseFile>..\..\out\debug10-x64\build\plgcssocket\x64\cssocket.pdb</ProgramDatabaseFile>
-      <DelayLoadDLLs>;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <ImportLibrary>..\..\out\debug10-x64\build\plgcssocket\x64\plgcssocket.lib</ImportLibrary>
+      <OutputFile>..\..\sockettest.exe</OutputFile>
+      <ProgramDatabaseFile>..\..\out\debug10-x64\build\appsockettest\x64\sockettest.pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>delayimp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\winlibs\x64\lib;..\..\win32libs\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <TargetMachine>MachineX64</TargetMachine>
@@ -1210,26 +1237,22 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_WINDOWS;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\..\plugins\network\socket;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;_CONSOLE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\..\apps\tests\sockettest;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
+    <Manifest>
+      <AdditionalManifestFiles>..\..\mk\msvc\appsockettest-x64.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\mk\msvc\plugin_impl.cpp" />
-    <ClCompile Include="..\..\plugins\network\socket\socketbase.cpp" />
-    <ClCompile Include="..\..\plugins\network\socket\socketmanager.cpp" />
+    <ClCompile Include="..\..\apps\tests\sockettest\sockettest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\plugins\network\socket\socket.h" />
-    <ClInclude Include="..\..\plugins\network\socket\socketbase.h" />
-    <ClInclude Include="..\..\plugins\network\socket\socketmanager.h" />
+    <ClInclude Include="..\..\apps\tests\sockettest\sockettest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\mk\msvc\plgcssocket.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\plugins\network\socket\cssocket.csplugin" />
+    <ResourceCompile Include="..\..\mk\msvc\appsockettest.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libcrystalspace.vcxproj">

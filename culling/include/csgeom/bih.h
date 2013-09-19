@@ -62,14 +62,16 @@ enum
  * checks are only performed in debug mode, so those should be performed
  * additionally if needed.
  */
-template<class Child>
+template<class ChildType>
 class BIH :
-  public SpatialTree<BIH<Child>, Child>
+  public SpatialTree<BIH<ChildType>, ChildType>
 {
   friend class SpatialTreeType;
 public:
   // convenience typedefs
-  typedef BIH<Child> Self;
+  typedef BIH<ChildType> Self;
+  typedef typename SpatialTreeType::Child Child;
+  typedef typename SpatialTreeType::BoundType BoundType;
 
   /**
    * A callback function for visiting a BIH node. If this function
@@ -141,11 +143,11 @@ private:
     SortElement* set = buffers[0];
 
     // fill sort array
-    for(int i = 0; i < numObjects; ++i)
+    for(int i = 0; i < this->numObjects; ++i)
     {
       SortElement& s = set[i];
-      set[i].min = objects[i]->GetMin(axis);
-      set[i].max = objects[i]->GetMax(axis);
+      set[i].min = this->objects[i]->GetMin(axis);
+      set[i].max = this->objects[i]->GetMax(axis);
       set[i].idx = i;
     }
 
@@ -153,11 +155,11 @@ private:
     // sort by according bound
     if(low)
     {
-      qsort(set, numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMin);
+      qsort(set, this->numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMin);
     }
     else
     {
-      qsort(set, numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMax);
+      qsort(set, this->numObjects, sizeof(SortElement), (int (*)(void const*, void const*))SortElement::compareMax);
     }
 
     // create our split
@@ -167,12 +169,12 @@ private:
     if(low)
     {
       split[2] = set[0].min;
-      split[0] = set[numObjects >> 1].min;
+      split[0] = set[this->numObjects >> 1].min;
     }
     else
     {
-      split[1] = set[(numObjects >> 1) - 1].max;
-      split[3] = set[numObjects - 1].max;
+      split[1] = set[(this->numObjects >> 1) - 1].max;
+      split[3] = set[this->numObjects - 1].max;
     }
 
     // grab the other bounds
@@ -180,14 +182,14 @@ private:
     {
       // get upper bound for lower part
       split[3] = -std::numeric_limits<float>::max();
-      for(int i = 0; i < (numObjects >> 1); ++i)
+      for(int i = 0; i < (this->numObjects >> 1); ++i)
       {
 	split[3] = csMax(split[3], set[i].max);
       }
 
       // get upper bound for higher part
       split[1] = -std::numeric_limits<float>::max();
-      for(int i = numObjects >> 1; i < numObjects; ++i)
+      for(int i = this->numObjects >> 1; i < this->numObjects; ++i)
       {
 	split[1] = csMax(split[1], set[i].max);
       }
@@ -196,14 +198,14 @@ private:
     {
       // get lower bound for lower part
       split[0] = std::numeric_limits<float>::max();
-      for(int i = 0; i < (numObjects >> 1); ++i)
+      for(int i = 0; i < (this->numObjects >> 1); ++i)
       {
 	split[0] = csMin(split[0], set[i].min);
       }
 
       // get lower bound for upper part
       split[2] = std::numeric_limits<float>::max();
-      for(int i = numObjects >> 1; i < numObjects; ++i)
+      for(int i = this->numObjects >> 1; i < this->numObjects; ++i)
       {
 	split[2] = csMin(split[2], set[i].min);
       }
@@ -268,9 +270,9 @@ private:
     int failed = 0;
 
     // distribute objects
-    for(int i = 0; i < numObjects; ++i)
+    for(int i = 0; i < this->numObjects; ++i)
     {
-      Child* obj = objects[i];
+      Child* obj = this->objects[i];
       float min = obj->GetMin(splitAxis);
       float max = obj->GetMax(splitAxis);
 
@@ -278,32 +280,32 @@ private:
       if(min >= split[0] && max <= split[1])
       {
 	// add object to child1
-	child1->AddObject(obj);
+	this->child1->AddObject(obj);
 
 	// change leaf
-	obj->ReplaceLeaf(this, child1);
+	obj->ReplaceLeaf(this, this->child1);
       }
       // else it belongs to child2
       else if(min >= split[2] && max <= split[3])
       {
 	// add object to child2
-	child2->AddObject(obj);
+	this->child2->AddObject(obj);
 
 	// change leaf
-	obj->ReplaceLeaf(this, child2);
+	obj->ReplaceLeaf(this, this->child2);
       }
       else
       {
 	// keep it, but put it in front of the array
 	// so we can truncate at the end
-	objects[failed] = obj;
+	this->objects[failed] = obj;
 	++failed;
       }
     }
 
     // update object count for our node (this is equivalent
     // to a truncation of our array)
-    numObjects = failed;
+    this->numObjects = failed;
   }
 
   /// Make the tree empty.
@@ -354,7 +356,7 @@ public:
 
   virtual ~BIH()
   {
-    Clear();
+    this->Clear();
   }
 
   /**
@@ -440,14 +442,14 @@ public:
       );
 
     // check for distribution block due to failed attempts
-    if(block > 0)
+    if(this->block > 0)
     {
       // we don't want to try again, yet
       return;
     }
 
     // check whether there is anything to distribute
-    if(numObjects == 0)
+    if(this->numObjects == 0)
     {
       // nothing to distribute
       // check that we are a leaf - leaves must have objects
@@ -459,7 +461,7 @@ public:
     if(splitAxis == CS_BIH_AXISINVALID) // nope
     {
       // do we have enough objects for a new split?
-      if(numObjects < minSplitObjects)
+      if(this->numObjects < this->minSplitObjects)
       {
 	// nope, nothing to be done
 	return;
@@ -473,8 +475,8 @@ public:
 
 	// allocate buffers to hold the split
 	SortElement* buffers[2];
-	buffers[0] = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*numObjects));
-	buffers[1] = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*numObjects));
+	buffers[0] = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*this->numObjects));
+	buffers[1] = static_cast<SortElement*>(cs_malloc(sizeof(SortElement)*this->numObjects));
 
 	// validate allocations
 	CS_ASSERT(buffers[0]);
@@ -492,42 +494,42 @@ public:
 	if(quality > blockThreshold)
 	{
 	  // allocate childs
-	  child1 = TreeAlloc().Alloc();
-	  child2 = TreeAlloc().Alloc();
+	  this->child1 = this->TreeAlloc().Alloc();
+	  this->child2 = this->TreeAlloc().Alloc();
 
 	  // verify allocations
-	  CS_ASSERT(child1);
-	  CS_ASSERT(child2);
+	  CS_ASSERT(this->child1);
+	  CS_ASSERT(this->child2);
 
 	  // set us as their parent
-	  child1->SetParent(this);
-	  child2->SetParent(this);
+	  this->child1->SetParent(this);
+	  this->child2->SetParent(this);
 
 	  // distribute objects according to the split we found
 	  // first child gets lower half
-	  for(int i = 0; i < (numObjects >> 1); ++i)
+	  for(int i = 0; i < (this->numObjects >> 1); ++i)
 	  {
 	    // get object
-	    Child* object = objects[buffers[1][i].idx];
+	    Child* object = this->objects[buffers[1][i].idx];
 
 	    // add object to child
-	    child1->AddObject(object);
+	    this->child1->AddObject(object);
 
 	    // replace leaf
-	    object->ReplaceLeaf(this, child1);
+	    object->ReplaceLeaf(this, this->child1);
 	  }
 
 	  // second child gets upper half
-	  for(int i = numObjects >> 1; i < numObjects; ++i)
+	  for(int i = this->numObjects >> 1; i < this->numObjects; ++i)
 	  {
 	    // get object
-	    Child* object = objects[buffers[1][i].idx];
+	    Child* object = this->objects[buffers[1][i].idx];
 
 	    // add object to child
-	    child2->AddObject(object);
+	    this->child2->AddObject(object);
 
 	    // replace leaf
-	    object->ReplaceLeaf(this, child2);
+	    object->ReplaceLeaf(this, this->child2);
 	  }
 
 	  // free our buffers as we don't need them anymore
@@ -535,26 +537,26 @@ public:
 	  cs_free(buffers[1]);
 
 	  // truncate our object list as we distributed all childs
-	  numObjects = 0;
+	  this->numObjects = 0;
 
 	  // update their boxes so they know where they belong
 	  // first child gets cut according to first interval
-	  child1->box = box;
-	  child1->box.SetMin(splitAxis, split[0]);
-	  child1->box.SetMax(splitAxis, split[1]);
+	  this->child1->box = this->box;
+	  this->child1->box.SetMin(splitAxis, split[0]);
+	  this->child1->box.SetMax(splitAxis, split[1]);
 	  // second child gets cut according to second interval
-	  child2->box = box;
-	  child2->box.SetMin(splitAxis, split[2]);
-	  child2->box.SetMax(splitAxis, split[3]);
+	  this->child2->box = this->box;
+	  this->child2->box.SetMin(splitAxis, split[2]);
+	  this->child2->box.SetMax(splitAxis, split[3]);
 
 	  // update our estimated object count
-	  estimateObjects = child1->numObjects + child2->numObjects;
+	  this->estimateObjects = this->child1->numObjects + this->child2->numObjects;
 	}
 	else
 	{
 	  // ok, this "winner" was crap - let's wait a bit before we try again
 	  // it's tiring to run tournaments, you know
-	  block = blockTime;
+	  this->block = this->blockTime;
 	  splitAxis = CS_BIH_AXISINVALID;
 	}
       }
@@ -565,11 +567,11 @@ public:
       DistributeLeafObjects();
 
       // check whether it worked
-      if(numObjects != 0)
+      if(this->numObjects != 0)
       {
 	// nope... any ideas? no? time to start from scratch I guess
 	// @@@RlyDontKnow: TODO: we should try to fit them in somehow
-	Flatten();
+	this->Flatten();
 	Distribute();
       }
     }
@@ -602,8 +604,8 @@ public:
       CS_ASSERT(child2);
 
       // traverse childs
-      child1->TraverseRandom(func, data, frustumMask);
-      child2->TraverseRandom(func, data, frustumMask);
+      this->child1->TraverseRandom(func, data, frustumMask);
+      this->child2->TraverseRandom(func, data, frustumMask);
     }
   }
 
@@ -637,14 +639,14 @@ public:
       // traverse first child first if it is part of the interval
       if(pos[splitAxis] < split[1])
       {
-	child1->Front2Back(pos, func, data, frustumMask);
-	child2->Front2Back(pos, func, data, frustumMask);
+	this->child1->Front2Back(pos, func, data, frustumMask);
+	this->child2->Front2Back(pos, func, data, frustumMask);
       }
       // else go for the second one first
       else
       {
-	child2->Front2Back(pos, func, data, frustumMask);
-	child1->Front2Back(pos, func, data, frustumMask);
+	this->child2->Front2Back(pos, func, data, frustumMask);
+	this->child1->Front2Back(pos, func, data, frustumMask);
       }
     }
   }
@@ -661,10 +663,10 @@ private:
     }
     // ensure the split location is contained in the node bounding box
     else if(!(
-      split[0] >= GetNodeBBox().Min(splitAxis) &&
-      split[1] >= GetNodeBBox().Min(splitAxis) &&
-      split[2] >= GetNodeBBox().Min(splitAxis) &&
-      split[3] >= GetNodeBBox().Min(splitAxis) 
+      split[0] >= this->GetNodeBBox().Min(splitAxis) &&
+      split[1] >= this->GetNodeBBox().Min(splitAxis) &&
+      split[2] >= this->GetNodeBBox().Min(splitAxis) &&
+      split[3] >= this->GetNodeBBox().Min(splitAxis) 
       ))
     {
       str.AppendFmt("BIH failure: (%d,%s): %s\n", int(__LINE__),
@@ -672,10 +674,10 @@ private:
     }
     // ensure the split location is contained in the node bounding box
     else if(!(
-      split[0] <= GetNodeBBox().Max(splitAxis) &&
-      split[1] <= GetNodeBBox().Max(splitAxis) &&
-      split[2] <= GetNodeBBox().Max(splitAxis) &&
-      split[3] <= GetNodeBBox().Max(splitAxis) 
+      split[0] <= this->GetNodeBBox().Max(splitAxis) &&
+      split[1] <= this->GetNodeBBox().Max(splitAxis) &&
+      split[2] <= this->GetNodeBBox().Max(splitAxis) &&
+      split[3] <= this->GetNodeBBox().Max(splitAxis) 
       ))
     {
       str.AppendFmt("BIH failure: (%d,%s): %s\n", int(__LINE__),

@@ -61,16 +61,16 @@ enum
  * calculation only once. This is more efficient and it also generates
  * a better tree as more information is available then.
  */
-template<class Child>
+template<class ChildType>
 class KDTree :
-  public SpatialTree<KDTree<Child>, Child>
+  public SpatialTree<KDTree<ChildType>, ChildType>
 {
   friend class SpatialTreeType;
 public:
   // convenience typedefs
-  typedef KDTree<Child> Self;
-  typedef Child Child;
-  typedef typename Child::BoundType BoundType;
+  typedef KDTree<ChildType> Self;
+  typedef typename SpatialTreeType::Child Child;
+  typedef typename SpatialTreeType::BoundType BoundType;
 
   /**
    * A callback function for visiting a KD-tree node. If this function

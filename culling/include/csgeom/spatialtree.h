@@ -356,13 +356,13 @@ namespace Geometry
     };
   }
 
-  template<class Self, class Child>
+  template<class Self, class ChildType>
   class SpatialTree :
-    public scfImplementation1<SpatialTree<Self, Child>, iDebugHelper>
+    public scfImplementation1<SpatialTree<Self, ChildType>, iDebugHelper>
   {
   public:
+    typedef ChildType Child;
     typedef typename Child::BoundType BoundType;
-    typedef Child Child;
     typedef SpatialTree<Self, Child> SpatialTreeType;
 
     /**
@@ -521,7 +521,7 @@ namespace Geometry
     void RemoveObject(int idx)
     {
       CS_ASSERT(objects);
-      CS_ASSERT(idx >= 0 && idx < numObjects);
+      CS_ASSERT(idx >= 0 && idx < this->numObjects);
 
       // update object counts
       --numObjects;
@@ -531,7 +531,7 @@ namespace Geometry
       // put the last element where the one to remove was
       if(idx < numObjects)
       {
-	objects[idx] = objects[numObjects];
+	objects[idx] = objects[this->numObjects];
       }
     }
 
@@ -543,7 +543,7 @@ namespace Geometry
       CS_ASSERT(numObjects <= maxObjects);
 
       // iterate over all objects
-      for(int i = 0; i < numObjects; ++i)
+      for(int i = 0; i < this->numObjects; ++i)
       {
 	// check whether we found the object
 	if(objects[i] == obj)
@@ -604,7 +604,7 @@ namespace Geometry
     /// Create empty spatial tree.
     SpatialTree() :
       // scf initialization
-      scfImplementationType(this),
+      scfImplementation1<SpatialTree<Self, Child>, iDebugHelper>(this),
 
       // allocator initialization
       childAlloc(nullptr), treeAlloc(nullptr),

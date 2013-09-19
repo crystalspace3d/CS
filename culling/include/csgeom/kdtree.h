@@ -152,11 +152,11 @@ private:
   {
     // If we have only two objects we use the middle of the
     // empty space between the two if there is any.
-    if(numObjects == 2)
+    if(this->numObjects == 2)
     {
       // get the object bounidng boxes to attempt a split
-      const csBox3& bbox0 = objects[0]->GetBBox();
-      const csBox3& bbox1 = objects[1]->GetBBox();
+      const csBox3& bbox0 = this->objects[0]->GetBBox();
+      const csBox3& bbox1 = this->objects[1]->GetBBox();
 
       // check whether they objects are separable
       // test whether the first object is left of the second one
@@ -197,18 +197,18 @@ private:
 
     // Find minimum and maximum value along the axis.
     // allocate arrays to hold object bounds
-    CS_ALLOC_STACK_ARRAY_FALLBACK(float, objectsMin, numObjects, 50000);
-    CS_ALLOC_STACK_ARRAY_FALLBACK(float, objectsMax, numObjects, 50000);
+    CS_ALLOC_STACK_ARRAY_FALLBACK(float, objectsMin, this->numObjects, 50000);
+    CS_ALLOC_STACK_ARRAY_FALLBACK(float, objectsMax, this->numObjects, 50000);
 
     // initialize minimum and maximum
     float mina =  std::numeric_limits<float>::max();
     float maxa = -std::numeric_limits<float>::max();
 
     // iterate over all objects filling the arrays and updating the overall bounds
-    for(int i = 0 ; i < numObjects ; i++)
+    for(int i = 0 ; i < this->numObjects ; i++)
     {
       // get object bounding box
-      const csBox3& bbox = objects[i]->GetBBox();
+      const csBox3& bbox = this->objects[i]->GetBBox();
 
       // get minimum and maximum
       float mi = bbox.Min(axis);
@@ -231,13 +231,13 @@ private:
 
     // clamp the overall bounds to the node box as they may exceed it
     // due to objects belonging to multiple nodes
-    if(mina < box.Min(axis))
+    if(mina < this->box.Min(axis))
     {
-      mina = box.Min(axis);
+      mina = this->box.Min(axis);
     }
-    if(maxa > box.Max(axis))
+    if(maxa > this->box.Max(axis))
     {
-      maxa = box.Max(axis);
+      maxa = this->box.Max(axis);
     }
 
     // reject the split if the interval is too small
@@ -260,7 +260,7 @@ private:
       // so we can evaluate the split quality
       int left = 0;
       int right = 0;
-      for(int i = 0; i < numObjects; ++i)
+      for(int i = 0; i < this->numObjects; ++i)
       {
 	// check whether this object would go into the left ndoe
 	if(objectsMax[i] < a-.0001)
@@ -325,10 +325,10 @@ private:
     CS_ASSERT(splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ);
 
     // go over all objects and add them to the according child(s)
-    for(int i = 0; i < numObjects; ++i)
+    for(int i = 0; i < this->numObjects; ++i)
     {
       // get object bounding box so we can categorize it
-      const csBox3& bbox = objects[i]->GetBBox();
+      const csBox3& bbox = this->objects[i]->GetBBox();
 
       // get upper and lower bound
       float bbox_min = bbox.Min(splitAxis);
@@ -344,13 +344,13 @@ private:
       if(bbox_min-SMALL_EPSILON <= splitLocation)
       {
 	// remove us as leaf for the object and set the child as leaf
-	objects[i]->ReplaceLeaf(this, child1);
+	this->objects[i]->ReplaceLeaf(this, this->child1);
 
 	// indicate we're already removed as leaf
 	leaf_replaced = true;
 
 	// add object to the child
-	child1->AddObject(objects[i]);
+	this->child1->AddObject(this->objects[i]);
       }
       // check whether the object (also) belongs to the right node
       if(bbox_max >= splitLocation)
@@ -358,17 +358,17 @@ private:
 	// if we already removed ourself, simply add the other leaf
 	if(leaf_replaced)
 	{
-	  objects[i]->AddLeaf(child2);
+	  this->objects[i]->AddLeaf(this->child2);
 	}
 	// else remove ourself and add the leaf
 	else
 	{
-	  objects[i]->ReplaceLeaf(this, child2);
+	  this->objects[i]->ReplaceLeaf(this, this->child2);
 	  leaf_replaced = true;
 	}
 
 	// add object to the child
-	child2->AddObject(objects[i]);
+	this->child2->AddObject(this->objects[i]);
       }
 
       // ensure the object went into a child
@@ -376,7 +376,7 @@ private:
     }
 
     // update our object count
-    numObjects = 0;
+    this->numObjects = 0;
 
     // @@@TODO: Clean up objects array if there are too many objects?
     //          There should be some threshold at least.
@@ -402,20 +402,20 @@ private:
     CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // check whether we have children
-    if(child1)
+    if(this->child1)
     {
       // check whether left one goes first
       if(pos[splitAxis] <= splitLocation)
       {
 	// yes, continue with left, then right one
-	child1->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
-	child2->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
+	this->child1->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
+	this->child2->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
       }
       else
       {
 	// no, continue with right, then left one
-	child2->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
-	child1->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
+	this->child2->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
+	this->child1->Front2Back(pos, func, userdata, cur_timestamp, frustum_mask);
       }
     }
   }
@@ -440,11 +440,11 @@ private:
     CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // check whether we have children
-    if(child1)
+    if(this->child1)
     {
       // we do, continue traversal there
-      child1->TraverseRandom(func, userdata, cur_timestamp, frustum_mask);
-      child2->TraverseRandom(func, userdata, cur_timestamp, frustum_mask);
+      this->child1->TraverseRandom(func, userdata, cur_timestamp, frustum_mask);
+      this->child2->TraverseRandom(func, userdata, cur_timestamp, frustum_mask);
     }
   }
 
@@ -454,20 +454,20 @@ private:
   void ResetTimestamps()
   {
     // clear timestamps for all objects
-    for(int i = 0; i < numObjects; ++i)
+    for(int i = 0; i < this->numObjects; ++i)
     {
-      objects[i]->timestamp = 0;
+      this->objects[i]->timestamp = 0;
     }
 
     // ensure we have either two or no children
     CS_ASSERT((child1 == nullptr) == (child2 == nullptr));
 
     // check whether we have children
-    if(child1)
+    if(this->child1)
     {
       // also reset timestamps for children
-      child1->ResetTimestamps();
-      child2->ResetTimestamps();
+      this->child1->ResetTimestamps();
+      this->child2->ResetTimestamps();
     }
   }
 
@@ -557,7 +557,7 @@ public:
   {
     // check whether there is anything to distribute and
     // whether distribution is blocked
-    if(numObjects == 0 || block > 0)
+    if(this->numObjects == 0 || this->block > 0)
     {
       // nothing to be done
       return;
@@ -568,7 +568,7 @@ public:
 
     // if we already have childs simply distribute the objects among
     // our children
-    if(child1)
+    if(this->child1)
     {
       // distribute the objects
       DistributeLeafObjects();
@@ -577,12 +577,12 @@ public:
       CS_ASSERT(numObjects == 0);
 
       // update the estimated object count
-      estimateObjects = child1->GetEstimatedObjectCount()
-	  + child2->GetEstimatedObjectCount();
+      this->estimateObjects = this->child1->GetEstimatedObjectCount()
+	  + this->child2->GetEstimatedObjectCount();
     }
     // we don't have children yet, so we have to try and find a split
     // if we actually have enough objects to justify a distribution
-    else if(numObjects > minSplitObjects)
+    else if(this->numObjects > this->minSplitObjects)
     {
       // to find a split location we evaluate multiple options for each
       // axis and use the one with the best quality
@@ -625,26 +625,26 @@ public:
 	splitLocation = best_split_loc;
 
 	// allocate children
-	child1 = TreeAlloc().Alloc();
-	child2 = TreeAlloc().Alloc();
+	this->child1 = this->TreeAlloc().Alloc();
+	this->child2 = this->TreeAlloc().Alloc();
 
 	// validate allocations
 	CS_ASSERT (child1);
 	CS_ASSERT (child2);
 
 	// set us as parent
-	child1->SetParent(this);
-	child2->SetParent(this);
+	this->child1->SetParent(this);
+	this->child2->SetParent(this);
 
 	// set object descriptor
-	child1->SetObjectDescriptor(descriptor);
-	child2->SetObjectDescriptor(descriptor);
+	this->child1->SetObjectDescriptor(this->descriptor);
+	this->child2->SetObjectDescriptor(this->descriptor);
 
 	// set bounding boxes
-	child1->box = GetNodeBBox();
-	child1->box.SetMax(splitAxis, splitLocation);
-	child2->box = GetNodeBBox();
-	child2->box.SetMin(splitAxis, splitLocation);
+	this->child1->box = this->GetNodeBBox();
+	this->child1->box.SetMax(splitAxis, splitLocation);
+	this->child2->box = this->GetNodeBBox();
+	this->child2->box.SetMin(splitAxis, splitLocation);
 
 	// distribute objects according to the split
 	DistributeLeafObjects();
@@ -653,13 +653,13 @@ public:
 	CS_ASSERT(numObjects == 0);
 
 	// update estimated object count
-	estimateObjects = child1->GetEstimatedObjectCount()
-	  + child2->GetEstimatedObjectCount();
+	this->estimateObjects = this->child1->GetEstimatedObjectCount()
+	  + this->child2->GetEstimatedObjectCount();
       }
       else
       {
 	// bad split, block distribution
-	block = blockTime;
+	this->block = this->blockTime;
       }
     }
   }
@@ -697,9 +697,9 @@ public:
   uint32 NewTraversal()
   {
     // use the parent timestamp if we have a parent
-    if(parent)
+    if(this->parent)
     {
-      return parent->NewTraversal();
+      return this->parent->NewTraversal();
     }
 
     // For safety reasons we will reset all timestamps to 0
@@ -727,13 +727,13 @@ private:
 	"invalid split axis", "splitAxis >= CS_KDTREE_AXISX && splitAxis <= CS_KDTREE_AXISZ");
     }
     // ensure the split location is contained in the node bounding box
-    else if(!(splitLocation >= GetNodeBBox().Min(splitAxis)))
+    else if(!(splitLocation >= this->GetNodeBBox().Min(splitAxis)))
     {
       str.AppendFmt("KDTree failure: (%d,%s): %s\n", int(__LINE__),
 	"invalid split", "splitLocation >= GetNodeBBox().Min(splitAxis)");
     }
     // ensure the split location is contained in the node bounding box
-    else if(!(splitLocation <= GetNodeBBox().Max(splitAxis)))
+    else if(!(splitLocation <= this->GetNodeBBox().Max(splitAxis)))
     {
       str.AppendFmt("KDTree failure: (%d,%s): %s\n", int(__LINE__),
 	"invalid split", "splitLocation <= GetNodeBBox().Max(splitAxis)");

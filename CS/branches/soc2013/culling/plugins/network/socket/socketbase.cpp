@@ -111,7 +111,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
       }
     }
 #   else
-    static Socket const invalidSocket = -1;
+    Socket const invalidSocket = -1;
 
     // no need for initialization on unix
     bool Initialize()
@@ -142,9 +142,9 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     }
 
     // IP network to printable conversion
-    char const *InetNtoP(int family, void const *source, char *destination)
+    char const *InetNtoP(int family, void const *source, char *destination, socklen_t destinationSize)
     {
-      return inet_ntop(family, source, destination);
+      return inet_ntop(family, source, destination, destinationSize);
     }
 #   endif
   } // namespace Platform

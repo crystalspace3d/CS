@@ -66,7 +66,7 @@ template<class ChildType>
 class BIH :
   public SpatialTree<BIH<ChildType>, ChildType>
 {
-  friend SpatialTreeType;
+  friend class SpatialTree<BIH<ChildType>, ChildType>;
 public:
   // convenience typedefs
   typedef BIH<ChildType> Self;
@@ -147,9 +147,9 @@ private:
     for(int i = 0; i < this->numObjects; ++i)
     {
       SortElement& s = set[i];
-      set[i].min = this->objects[i]->GetMin(axis);
-      set[i].max = this->objects[i]->GetMax(axis);
-      set[i].idx = i;
+      s.min = this->objects[i]->GetMin(axis);
+      s.max = this->objects[i]->GetMax(axis);
+      s.idx = i;
     }
 
     // check simple partitioning

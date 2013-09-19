@@ -17,7 +17,10 @@
 */
 
 #include "cssysdef.h"
+#include "inetwork/socket.h"
 #include "csutil/threadmanager.h"
+
+using namespace CS::Network::Socket;
 
 struct TCPTest : public ThreadedCallable<TCPTest>
 {
@@ -25,6 +28,16 @@ struct TCPTest : public ThreadedCallable<TCPTest>
   csRef<iSocket> server;
   csRef<iSocket> serverClient;
   csRef<iAddress> address;
+  csRef<iObjectRegistry> objReg;
+
+  TCPTest(iObjectRegistry* objReg) : objReg(objReg)
+  {
+  }
+
+  iObjectRegistry *GetObjectRegistry() const
+  {
+    return objReg;
+  }
 
   bool Initialize(iSocketManager* manager, CS::Network::Socket::Family f);
 
@@ -41,6 +54,16 @@ struct UDPTest : public ThreadedCallable<UDPTest>
   csRef<iAddress> clientAddress;
   csRef<iSocket> server;
   csRef<iAddress> serverAddress;
+  csRef<iObjectRegistry> objReg;
+
+  UDPTest(iObjectRegistry* objReg) : objReg(objReg)
+  {
+  }
+
+  iObjectRegistry *GetObjectRegistry() const
+  {
+    return objReg;
+  }
 
   bool Initialize(iSocketManager* manager, CS::Network::Socket::Family f);
 

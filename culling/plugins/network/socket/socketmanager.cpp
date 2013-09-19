@@ -23,6 +23,8 @@ using namespace CS::Network::Socket;
 
 CS_PLUGIN_NAMESPACE_BEGIN(Socket)
 {
+  SCF_IMPLEMENT_FACTORY(SocketManager);
+
   Platform::Socket SocketManager::GetHandle(iSocket* socket) const
   {
     switch(socket->GetFamily())
@@ -54,7 +56,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(Socket)
     return Platform::invalidSocket;
   }
 
-  SocketManager::SocketManager() : scfImplementationType(this)
+  SocketManager::SocketManager(iBase* parent) : scfImplementationType(this, parent)
   {
     // perform one-time platform dependent socket library initialization
     Platform::Initialize();

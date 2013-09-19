@@ -62,6 +62,7 @@ class BVH :
 public:
   // convenience typedefs
   typedef BVH<ChildType> Self;
+  typedef SpatialTree<Self, ChildType> SpatialTreeType;
   typedef typename SpatialTreeType::Child Child;
   typedef typename SpatialTreeType::BoundType BoundType;
 

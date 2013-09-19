@@ -69,6 +69,7 @@ class KDTree :
 public:
   // convenience typedefs
   typedef KDTree<ChildType> Self;
+  typedef SpatialTree<Self, ChildType> SpatialTreeType;
   typedef typename SpatialTreeType::Child Child;
   typedef typename SpatialTreeType::BoundType BoundType;
 

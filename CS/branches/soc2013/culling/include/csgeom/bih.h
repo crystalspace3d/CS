@@ -70,6 +70,7 @@ class BIH :
 public:
   // convenience typedefs
   typedef BIH<ChildType> Self;
+  typedef SpatialTree<Self, ChildType> SpatialTreeType;
   typedef typename SpatialTreeType::Child Child;
   typedef typename SpatialTreeType::BoundType BoundType;
 

@@ -1213,7 +1213,7 @@ namespace Geometry
       delete rc;
 
       // return empty result to indicate no error occured
-      return nullptr;
+      return csPtr<iString>(nullptr);
     }
 
     // performs a benchmark and returns the time it took

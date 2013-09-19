@@ -66,7 +66,7 @@ template<class ChildType>
 class BIH :
   public SpatialTree<BIH<ChildType>, ChildType>
 {
-  friend class SpatialTreeType;
+  friend SpatialTreeType;
 public:
   // convenience typedefs
   typedef BIH<ChildType> Self;

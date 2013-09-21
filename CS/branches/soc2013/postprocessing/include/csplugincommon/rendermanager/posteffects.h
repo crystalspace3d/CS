@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2007-2008 by Marten Svanfeldt
+                  2013 by Pedro SOUZA
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -139,6 +140,7 @@ namespace CS
     /// Custom input mapping for a post processing layer
     struct PostEffectLayerInputMap
     {
+      /// the input type
       LayerInputType type;
 
       csRef<iTextureHandle> inputTexture;
@@ -328,10 +330,13 @@ namespace CS
       /// Add an effect pass.
       virtual iPostEffectLayer* AddLayer (const LayerDesc &desc) = 0;
 
+      /// Remove the given layer
       virtual bool RemoveLayer (iPostEffectLayer* layer) = 0;
 
+      /// Get the layer by name
       virtual iPostEffectLayer* GetLayer (const char * name) = 0;
 
+      /// Get the layer by index
       virtual iPostEffectLayer* GetLayer (int num) = 0;
 
       /// Remove all layers
@@ -340,6 +345,7 @@ namespace CS
       /// Get the layer representing the "screen" a scene is rendered to.
       virtual iPostEffectLayer* GetScreenLayer () = 0;
 
+      /// Get the layer shader variable stack
       virtual void GetLayerRenderSVs (iPostEffectLayer* layer, csShaderVariableStack& svStack) = 0;
 
       /// Get the output texture of a layer.
@@ -384,14 +390,19 @@ namespace CS
     {
       SCF_INTERFACE (iPostEffectManager, 1, 0, 0);
 
+      /// Creates a post-effect
       virtual csPtr<iPostEffect> CreatePostEffect (const char* name) = 0;
 
+      /// Request a texture with the given info
       virtual csPtr<iTextureHandle> RequestTexture(TextureAllocationInfo& info, int num) = 0;
 
+      /// Setup the view
       virtual bool SetupView (uint width, uint height) = 0;
 
+      /// Get the shader variable context shared between all effects
       virtual iShaderVariableContext* GetSharedSVs () = 0;
 
+      /// Get the string id value
       virtual CS::StringIDValue GetStringID(const char * str) const = 0;
     };
 

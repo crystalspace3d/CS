@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2007-2008 by Marten Svanfeldt
+                  2013 by Pedro SOUZA
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -55,7 +56,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
   {
     /// Input vertices for layer
     csRef<iRenderBuffer> vertBuf;
-    ////Input texture coordinates
+    /// Input texture coordinates
     csRef<iRenderBuffer> texcoordBuf;
     /// Shader vars
     csRef<iShaderVariableContext> layerSVs;
@@ -98,16 +99,22 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     const PostEffectLayerOptions * GetOptions (size_t& size) const { size = desc.outputs.GetSize();
       return desc.outputs.GetArray (); }
 
+    /// Get the layer name
     const char * GetName () const {return desc.name;}
 
+    /// Set this layer descriptor
     void SetLayerDesc (LayerDesc &desc) {this->desc = desc; dirty = true;}
 
+    /// Get the layer descriptor
     LayerDesc& GetLayerDesc () {return desc;}
 
+    /// Adds the given variable to the default shader variable context
     void AddDefaultVar(csShaderVariable *var);
 
+    /// Apply the pre-process if there is one
     void doPreprocess();
 
+    /// Apply the post-process if there is one
     void doPostprocess(csRefArray<iTextureHandle>& textures);
 
   };
@@ -126,9 +133,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
 
     //-- iPostEffect
 
+    /// Get the effect name
     const char* GetName () { return name; }
 
-
+    /// Setup the view
     bool SetupView (uint width, uint height);
 
 
@@ -260,12 +268,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
     csRef<iShaderVariableContext> svSharedContext;
     csRef<iObjectRegistry> reg;
     bool keepAllIntermediates;
-
-    /**
-     * Removes all textures not referenced
-     * by PostEffect's
-     */
-    void RemoveUnusedTextures ();
 
   public:
     CS_LEAKGUARD_DECLARE (PostEffectManager);

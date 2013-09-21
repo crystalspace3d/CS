@@ -1,5 +1,6 @@
 /*
     Copyright (C) 2010 by Frank Richter
+                  2013 by Pedro SOUZA
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

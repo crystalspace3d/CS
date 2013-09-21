@@ -1,5 +1,6 @@
 /*
-    Copyright (C)2007 by Marten Svanfeldt
+    Copyright (C) 2007 by Marten Svanfeldt
+                  2013 by Pedro SOUZA
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -106,7 +107,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (PostEffect)
       return false;
     }
 
-    /// clear all previous allocations
+    // clear all previous allocations
     Clear();
 
     TextureAllocationInfo info;

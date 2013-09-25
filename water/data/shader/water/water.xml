@@ -2,36 +2,31 @@
 <shader compiler="shaderweaver" name="water">
 
 <shadervar name="water perturb scale" type="vector4">0.5,0.5,0.0,0.0</shadervar>
-<shadervar name="ambient color" type="vector3">0.0,0.65,0.75</shadervar>
 <shadervar name="water perturb fade" type="float">1.0</shadervar>
 <shadervar name="texture scale" type="vector2">0.3,0.3</shadervar>
-<shadervar name="specularr" type="vector3">0.4,0.7,0.9</shadervar>
-  
 	<technique priority="200">
 		<pass>		
 			<combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
-	 
+			
 			<snippet id="wave" file="/shader/snippets/wave.xml" />
 			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
 			<snippet id="normalmap" file="/shader-snippets/surface/normalmap-tiled.xml" />
 			<snippet id="perturb_norm_refl" file="/shader-snippets/tcoffset2-perturb-normal-cam.xml" />
-			<snippet id="lighting" file="/shader/snippets/lighting/lighting-ppl.xml" />
-			<snippet id="apply_lighting" file="/shader/snippets/lighting/apply-lighting.xml" />
+			<snippet id="watercolor" file="/shader-snippets/surface/specular-default-nodiffuse.xml" />
+			<snippet id="finalcolor" file="/shader-snippets/modulate_rgb.xml" />
 			
 			<connection from="wave" to="reflection" />
-			<connection from="wave" to="lighting" />
 			<connection from="wave" to="normalmap" />
-			
-			<connection from="reflection" to="apply_lighting">
-				<explicit from="surfaceColor" to="surfaceDiffuse" />
-			</connection>
-		
-			<connection from="lighting" to="apply_lighting">
-				<explicit from="result" to="lightDiffuse" />
-			</connection>
-			
+				
 			<connection from="normalmap" to="perturb_norm_refl" />
 			
+			<connection from="watercolor" to="finalcolor">
+				<explicit from="specularColor" to="b" />
+			</connection>
+			
+			<connection from="reflection" to="finalcolor">
+				<explicit from="surfaceColor" to="a" />
+			</connection>
 			
 			<connection from="perturb_norm_refl" to="reflection" />
 			
@@ -41,11 +36,7 @@
 			<parameter id="perturbfade" type="shadervar" weavertype="float">water perturb fade</parameter>
 			<connection from="perturbfade" to="reflection" />
 			
-			<parameter id="lightOffset" type="int">2</parameter>
-			<parameter id="maxLights" type="int">3</parameter>
-			<connection from="lightOffset" to="lighting" />
-			<connection from="maxLights" to="lighting" />
-			
+		
 		</pass>
 	</technique>
 	

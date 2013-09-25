@@ -94,7 +94,8 @@
 			<varying type="position4" name="position_object"/>
 			<varying type="position4" name="position_world"/>
 			<varying type="position4" name="position_camera"/>
-			<varying type="texcoord4" name="texCoordw" />			
+			<varying type="texcoord4" name="texCoordw" />
+			<varying type="float3" name="Normalw" />
 		</block>
 		
 		<block location="glsl:vertexToFragment">
@@ -206,7 +207,7 @@
 			float s1, cs1;
 			sincos (waveInput.time*2.0, s1, cs1);
 			
-			Normal = vec3(0.0,0.0,0.0);
+			Normalw = vec3(0.0,1.0,0.0);
 
 			texCoordw.x = texCoord.x  - s1 * 0.5;
 			texCoordw.y = texCoord.y  + cs1 * 0.5;
@@ -250,16 +251,12 @@
 			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
 			//position_object.y = wdy1 + wdy2 + wdy3; 
 			
-			vec2 Texcord = texCoord + waveInput.time*10.0;
-			position_object.y +=  texture2D(texHeight, Texcord/256.0).g * 10.0;
+			vec2 Texcord = texCoord + waveInput.time * 10.0;
+			position_object.y +=  texture2D(texHeight, Texcord/128).r * 2.0;	
 			
 			gl_Position = position_screen = position = (ModelViewProj * position_object);
 			position_camera = ModelView * position_object;
 			position_world = objectToWorld * position_object;
-			
-			_v2f_Normal_1_ = float3(0.0,1.0,0.0);
-			_v2f_Tangent_2_ = float3(0.0,0.0,1.0);
-			_v2f_Bitangent_3_ = float3(1.0,0.0,0.0);
 			
 			//APPLY_CLIPPING_VP_POSINV(position_camera, position_world, position_object);
 		
@@ -282,6 +279,7 @@
 		<output name="position_object" type="position4_object" />
 		<output name="position_camera" type="position4_camera" />
 		<output name="texCoordw" type="texcoord4" />
+		<!--output name="Normalw" type="normal_tangent" /-->
 		
 	</technique>
 </snippet>

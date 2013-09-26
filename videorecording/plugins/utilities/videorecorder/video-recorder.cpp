@@ -27,6 +27,9 @@ csVideoRecorder::csVideoRecorder (iBase* parent) :
   recordSound = false;
 
   currentMicroTicks = 0;
+  elapsedMicroTicks = 0;
+  elapsedTicks = 0;
+
   lastSampleRead = 0;
 
   encoder = NULL;
@@ -381,7 +384,12 @@ void csVideoRecorder::AdvanceClock()
     elapsedMicroTicks = 1000000/framerate; // FIXME: this is imprecise
   else
     elapsedMicroTicks = realClock->GetElapsedMicroTicks();
+  csTicks OldTicks = currentMicroTicks / 1000;
   currentMicroTicks += elapsedMicroTicks;
+  csTicks NewTicks = currentMicroTicks / 1000;
+  // We can't do just "elapsedTicks = elapsedMicroTicks / 1000" because this will introduce error that can accumulate.
+  // This way we ensure that sum of elapsed ticks in each frame equals current ticks.
+  elapsedTicks = NewTicks - OldTicks;
 }
 
 /// Parse keyname and return key code + modifier status (from bugplug).

@@ -59,6 +59,7 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
   // pseudo time used with forced-cfr mode
   csMicroTicks currentMicroTicks;
   csMicroTicks elapsedMicroTicks;
+  csTicks elapsedTicks;
 
   csMicroTicks startTick;
   csMicroTicks pauseTick;
@@ -197,7 +198,7 @@ class csVideoRecorder : public scfImplementation2<csVideoRecorder, iMovieRecorde
     }
     virtual csTicks GetElapsedTicks () const
     {
-      return parent? parent->elapsedMicroTicks/1000 : 0;
+      return parent? parent->elapsedTicks : 0;
     }
     virtual float GetElapsedSeconds ()
     {

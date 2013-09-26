@@ -127,7 +127,10 @@
       normal.z = sqrt (1.0 - dot (normal.xy, normal.xy));
       normal_attr_perfragment = true;
     <?elsif vars."tex normal".texture ?>
-      normal = normalize (texture2D (texNormal, texCoord*texture_scale).xyz*2.0-1.0);
+	  vec2 texCoord2w;
+	  texCoord2w.x = texCoordww.x;
+      texCoord2w.y = texCoordww.y;
+      normal = normalize (texture2D (texNormal, texCoord2w*texture_scale).xyz*2.0-1.0);
       normal_attr_perfragment = true;
     <?else?>
       normal = vec3 (0.0, 0.0, 1.0);

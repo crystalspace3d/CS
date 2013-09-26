@@ -70,20 +70,10 @@
 		</input>
 	
 		<block location="cg:variablemap">
-			<variablemap variable="phases" destination="waveInput.phases" />
-			<variablemap variable="amps" destination="waveInput.amps" />
-			<variablemap variable="freqs" destination="waveInput.freqs" />
-			<variablemap variable="kys" destination="waveInput.kys" />
-			<variablemap variable="kxs" destination="waveInput.kxs" />
 			<variablemap variable="standard time" destination="waveInput.time" />
 		</block>
 		
 		<block location="glsl:variablemap">
-			<variablemap variable="phases" destination="waveInput.phases" />
-			<variablemap variable="amps" destination="waveInput.amps" />
-			<variablemap variable="freqs" destination="waveInput.freqs" />
-			<variablemap variable="kys" destination="waveInput.kys" />
-			<variablemap variable="kxs" destination="waveInput.kxs" />
 			<variablemap variable="standard time" destination="waveInput.time" />
 		</block>
 		
@@ -105,6 +95,7 @@
 			<varying type="position4" name="position_world"/>
 			<varying type="position4" name="position_camera"/>
 			<varying type="texcoord4" name="texCoordw" />
+			<varying type="float3" name="Normalw" />
 		</block>
 		
 		<block location="cg:clips">
@@ -122,28 +113,9 @@
 			<?Include /shader-snippets/cg-global_objectToWorld.cginc?> 
 			struct WaveIn
 			{
-				float3 amps; 
-				float3 kxs; 
-				float3 kys;  
-				float3 freqs; 
-				float3 phases;
 				float time;
 			};
 			uniform WaveIn waveInput;
-		
-		
-			//Wave displacement x-z
-			float2 WaveDisp(float2 k, float amp, float2 pos, float freq, float phase, float time) 
-			{ 
-				float2 normk = normalize(k);
-				return normk * amp * sin(dot(k, pos) - (freq * time) + phase);
-			}
-	
-			//Wave displacement y
-			float WaveDispVert(float2 k, float amp, float2 pos, float freq, float phase, float time)
-			{
-				return amp * cos(dot(k, pos) - (freq * time) + phase);
-			}	
 		</block>
 		
 		<block location="glsl:definitions">
@@ -151,28 +123,9 @@
 		
 			struct WaveIn
 			{
-				vec3 amps; 
-				vec3 kxs; 
-				vec3 kys;  
-				vec3 freqs; 
-				vec3 phases;
 				float time;
 			};
 			uniform WaveIn waveInput;
-		
-		
-			//Wave displacement x-z
-			vec2 WaveDisp(vec2 k, float amp, vec2 pos, float freq, float phase, float time) 
-			{	 
-				vec2 normk = normalize(k);
-				return normk * amp * sin(dot(k, pos) - (freq * time) + phase);
-			}
-	
-			//Wave displacement y
-			float WaveDispVert(vec2 k, float amp, vec2 pos, float freq, float phase, float time)
-			{
-				return amp * cos(dot(k, pos) - (freq * time) + phase);
-			}		
 		</block>
 		
 		<block location="cg:vertexMain">
@@ -180,34 +133,52 @@
 		
 			//Grab xz position
 			float2 xzpos = mul(objectToWorld, position_object).xz;
-	
-			//Displace once
-			float2 k = float2(waveInput.kxs.x, waveInput.kys.x);
-			float2 wdxz1 = WaveDisp(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
-			float wdy1 = WaveDispVert(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
-			
-			//Displace twice
-			k = float2(waveInput.kxs.y, waveInput.kys.y);
-			float2 wdxz2 = WaveDisp(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
-			float wdy2 = WaveDispVert(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
-			
-			//Displace thrice, three times displacement!
-			k = float2(waveInput.kxs.z, waveInput.kys.z);
-			float2 wdxz3 = WaveDisp(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
-			float wdy3 = WaveDispVert(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
-		
-			//Add all the displacements
-			//position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
-			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
-			//position_object.y = wdy1 + wdy2 + wdy3; 
 			
 			float2 Texcord = texCoord + waveInput.time * 10.0;
 			position_object.y +=  tex2D(texHeight, Texcord/128).r * 2.0;	
-
+			
+			
+			float s01;
+			float s21;
+			float s10;
+			float s12;
+			float2 size = float2(2.0,0.0);
+	
+			{
+				float2 Texcord2 = Texcord;
+				Texcord2.x -= 1.0;
+				s01 = tex2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			{
+				float2 Texcord2 = Texcord;
+				Texcord2.x += 1.0;
+				s21 = tex2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			{
+				float2 Texcord2 = Texcord;
+				Texcord2.y -= 1.0;
+				s10 = tex2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			{
+				float2 Texcord2 = Texcord;
+				Texcord2.y += 1.0;
+				s12 = tex2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			float3 va = normalize(float3(size.xy,s21-s01));
+			float3 vb = normalize(float3(size.yx,s12-s10));
+			
+			Normalw = vec3(cross(va,vb));
+			//Normalw = vec3(0.0,1.0,0.0);
+			
+			
 			float s1, cs1;
 			sincos (waveInput.time*2.0, s1, cs1);
 			
-			Normalw = vec3(0.0,1.0,0.0);
+			Normalw = float3(0.0,1.0,0.0);
 
 			texCoordw.x = texCoord.x  - s1 * 0.5;
 			texCoordw.y = texCoord.y  + cs1 * 0.5;
@@ -230,29 +201,56 @@
 		
 			//Grab xz position
 			vec2 xzpos = (objectToWorld * position_object).xz;
-		
-			//Displace once
-			vec2 k = vec2(waveInput.kxs.x, waveInput.kys.x);
-			vec2 wdxz1 = WaveDisp(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
-			float wdy1 = WaveDispVert(k, waveInput.amps.x, xzpos, waveInput.freqs.x, waveInput.phases.x, waveInput.time);
-			
-			//Displace twice
-			k = vec2(waveInput.kxs.y, waveInput.kys.y);
-			vec2 wdxz2 = WaveDisp(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
-			float wdy2 = WaveDispVert(k, waveInput.amps.y, xzpos, waveInput.freqs.y, waveInput.phases.y, waveInput.time);
-			
-			//Displace thrice, three times displacement!
-			k = vec2(waveInput.kxs.z, waveInput.kys.z);
-			vec2 wdxz3 = WaveDisp(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
-			float wdy3 = WaveDispVert(k, waveInput.amps.z, xzpos, waveInput.freqs.z, waveInput.phases.z, waveInput.time);
-		
-			//Add all the displacements
-			//position_object.x -= wdxz1.x + wdxz2.x + wdxz3.x;
-			//position_object.z -= wdxz1.y + wdxz2.y + wdxz3.y;
-			//position_object.y = wdy1 + wdy2 + wdy3; 
 			
 			vec2 Texcord = texCoord + waveInput.time * 10.0;
 			position_object.y +=  texture2D(texHeight, Texcord/128).r * 2.0;	
+			
+			float s01;
+			float s21;
+			float s10;
+			float s12;
+			vec2 size = vec2(2.0,0.0);
+	
+			{
+				vec2 Texcord2 = Texcord;
+				Texcord2.x += 1.0;
+				s01 = texture2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			{
+				vec2 Texcord2 = Texcord;
+				Texcord2.x -= 1.0;
+				s21 = texture2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			{
+				vec2 Texcord2 = Texcord;
+				Texcord2.y += 1.0;
+				s10 = texture2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			{
+				vec2 Texcord2 = Texcord;
+				Texcord2.y -= 1.0;
+				s12 = texture2D(texHeight, Texcord2/128.0).r * 2.0;
+			}
+			
+			vec3 va = normalize(vec3(size.xy,s21-s01));
+			vec3 vb = normalize(vec3(size.yx,s12-s10));
+			
+			Normalw = vec3(cross(va,vb));
+			//Normalw = vec3(0.0,1.0,0.0);
+			
+			
+			float s1, cs1;
+			
+			s1 = sin(waveInput.time*2.0);
+			cs1 = cos(waveInput.time*2.0);
+			
+			texCoordw.x = texCoord.x  - s1 * 0.5;
+			texCoordw.y = texCoord.y  + cs1 * 0.5;
+			texCoordw.z = 0.0;
+			texCoordw.w = 0.0;
 			
 			gl_Position = position_screen = position = (ModelViewProj * position_object);
 			position_camera = ModelView * position_object;

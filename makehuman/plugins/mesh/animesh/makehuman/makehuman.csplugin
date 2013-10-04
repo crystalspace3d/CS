@@ -5,8 +5,8 @@
     <classes>
       <class>
         <name>crystalspace.mesh.animesh.makehuman</name>
-        <implementation>MakehumanManager</implementation>
-        <description>Makehuman generation of animated meshes</description>
+        <implementation>MakeHumanManager</implementation>
+        <description>MakeHuman generation of animated meshes</description>
       </class>
     </classes>
   </scf>

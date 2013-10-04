@@ -22,14 +22,14 @@
 #include "cssysdef.h"
 #include "character.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
  * MakeHuman clothes
  *-------------------------------------------------------------------------*/
 
-csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::GenerateCloth
+csPtr<CS::Mesh::iAnimatedMeshFactory> MakeHumanCharacter::GenerateCloth
  (const char* clothingName)
 {
   // Get full path of clothing proxy file
@@ -48,7 +48,7 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::GenerateCloth
                                       nullptr, true, *cloItem);
   if (!cloItem->factory)
   {
-    ReportError ("Creating animesh factory from Makehuman clothing proxy '%s' KO!",
+    ReportError ("Creating animesh factory from MakeHuman clothing proxy '%s' KO!",
                  proxyFile.GetData ());
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
   }
@@ -56,12 +56,12 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::GenerateCloth
   return cloItem->factory;
 }
 
-bool MakehumanCharacter::GenerateClothes ()
+bool MakeHumanCharacter::GenerateClothes ()
 {
   // Clear the cloth array
   clothes.DeleteAll ();
 
-  // Treat all clothes referenced in the loaded Makehuman model
+  // Treat all clothes referenced in the loaded MakeHuman model
   for (size_t index = 0; index < human.clothesNames.GetSize (); index++)
   {
     // Load and adapt clothing item to the human model
@@ -74,4 +74,4 @@ bool MakehumanCharacter::GenerateClothes ()
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

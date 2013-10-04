@@ -23,36 +23,36 @@
 
 #include "makehuman.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 using namespace CS::Mesh;
 
-class MakehumanMorphTarget
-  : public scfImplementation1<MakehumanMorphTarget, CS::Mesh::iMakehumanMorphTarget>
+class MakeHumanMorphTarget
+  : public scfImplementation1<MakeHumanMorphTarget, CS::Mesh::iMakeHumanMorphTarget>
 {
 public:
-  MakehumanMorphTarget ();
-  ~MakehumanMorphTarget () {}
+  MakeHumanMorphTarget ();
+  ~MakeHumanMorphTarget () {}
 
-  //-- iMakehumanMorphTarget
+  //-- iMakeHumanMorphTarget
   virtual const char* GetName () const;
   virtual const csArray<csVector3>& GetOffsets () const;
   virtual const csArray<size_t>& GetIndices () const;
   virtual float GetScale () const;
-  virtual MakehumanMorphTargetDirection GetDirection () const;
+  virtual MakeHumanMorphTargetDirection GetDirection () const;
 
 private:
   csString name;
   csArray<csVector3> offsets;
   csArray<size_t> indices;
   float scale;
-  MakehumanMorphTargetDirection direction;
+  MakeHumanMorphTargetDirection direction;
 
-  friend class MakehumanCharacter;
+  friend class MakeHumanCharacter;
 };
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)
 
 #endif // __MAKEHUMAN_TARGETS_H__

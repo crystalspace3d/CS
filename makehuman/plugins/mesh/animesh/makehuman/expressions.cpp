@@ -24,14 +24,14 @@
 #include "character.h"
 #include "qr_solve.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
  * MakeHuman facial expressions
  *-------------------------------------------------------------------------*/
 
-bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals,
+bool MakeHumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals,
 						   csArray<Target>& macroExpr)
 {
   // Generate name and weight of expression folders
@@ -56,7 +56,7 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
   if (subdirNames.GetSize () == 0)
     return ReportError ("Didn't find any target file to generate model expressions");
 
-  // Find expressions in Makehuman directories
+  // Find expressions in MakeHuman directories
   printf ("\nParsing model macro expressions (from subfolders of '%s'):\n", EXPRESSIONS_PATH);
   csString targetname, filename, exprname;
   size_t index;
@@ -65,7 +65,7 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
   csString dir = csString (EXPRESSIONS_PATH).Append (subdirNames[0]).Append ("/");
 
   if (!VFS->Exists (dir.GetData ()))
-    return ReportError ("Didn't find Makehuman macro-expressions directory '%s' (deprecated)", dir.GetData ());
+    return ReportError ("Didn't find MakeHuman macro-expressions directory '%s' (deprecated)", dir.GetData ());
 
   csRef<iStringArray> expressionFiles = VFS->FindFiles (dir);
   expressionFiles->Sort ();
@@ -102,8 +102,8 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
 
     for (size_t j = 0; j < subdirNames.GetSize (); j++)
     {
-      // Parse the expression (i.e. a target file) of the Makehuman target folder
-      // Generate path of Makehuman target file
+      // Parse the expression (i.e. a target file) of the MakeHuman target folder
+      // Generate path of MakeHuman target file
       filename = csString (EXPRESSIONS_PATH) + subdirNames[j];
       filename += csString ("/neutral_") + subdirNames[j] + csString ("_");
       filename += macroExpr[i].name + csString (".target");
@@ -111,8 +111,8 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
       // Parse target file into a temporary offset buffer
       csArray<csVector3> offsets;
       csArray<size_t> indices;
-      if (!manager->ParseMakehumanTargetFile (filename.GetData (), offsets, indices))
-        return ReportError ("Could not parse the Makehuman target file %s", filename.GetData ());
+      if (!manager->ParseMakeHumanTargetFile (filename.GetData (), offsets, indices))
+        return ReportError ("Could not parse the MakeHuman target file %s", filename.GetData ());
 
       // Cumulate displacement in the offset buffer of the expression
       float weight = subdirWeights[j];
@@ -136,7 +136,7 @@ bool MakehumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
   return true;
 }
 
-bool MakehumanCharacter::ParseLandmarks (const char* bodypart, csArray<size_t>& landmarks)
+bool MakeHumanCharacter::ParseLandmarks (const char* bodypart, csArray<size_t>& landmarks)
 {
   // Get path of landmarks file
   csString filename (LANDMARKS_PATH);
@@ -158,7 +158,7 @@ bool MakehumanCharacter::ParseLandmarks (const char* bodypart, csArray<size_t>& 
     if (!manager->ParseLine (file, line, 255))
     {
       if (!file->AtEOF ())
-        return ReportError ("Malformed Makehuman landmarks file");
+        return ReportError ("Malformed MakeHuman landmarks file");
     }
     else
     {
@@ -166,11 +166,11 @@ bool MakehumanCharacter::ParseLandmarks (const char* bodypart, csArray<size_t>& 
       size_t numVals = words.SplitString (csString (line).Trim (), " ", csStringArray::delimIgnore);
 
       if (numVals != 1)
-        return ReportError ("Malformed Makehuman landmarks file");
+        return ReportError ("Malformed MakeHuman landmarks file");
 
-      // Parse the index of Makehuman vertex
+      // Parse the index of MakeHuman vertex
       if (sscanf (words[0], "%i", &mhIndex) != 1 || mhIndex > (int) totalMHVerts)
-        return ReportError ("Wrong element in Makehuman target file");
+        return ReportError ("Wrong element in MakeHuman target file");
 
       landmarks.Push (mhIndex);
     }
@@ -373,7 +373,7 @@ double* compute_distance2 (size_t n, size_t m,
   return res;
 }
 
-// This method is based on Makehuman file 'makehuman/core/warp.py':
+// This method is based on MakeHuman file 'makehuman/core/warp.py':
 // RBFs (Radial Basis Function) are Hardy functions:   
 //    h_i (x) = sqrt ( |x - x_i|^2 + s_i^2 )
 // where s_i = min_(j != i) |x_j - x_i| is the minimal distance to another landmark.
@@ -456,7 +456,7 @@ double* leastSquare (size_t n, size_t m,
   return w;
 }
 
-bool MakehumanCharacter::WarpMicroExpression (const csArray<csVector3>& xverts,
+bool MakeHumanCharacter::WarpMicroExpression (const csArray<csVector3>& xverts,
 					      double s2[], double w[], Target& expr)
 {
   // Get indices and displacements of non null offsets
@@ -496,7 +496,7 @@ bool MakehumanCharacter::WarpMicroExpression (const csArray<csVector3>& xverts,
   return true;
 }
 
-bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
+bool MakeHumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
 						csArray<Target>& microExpr)
 {
   // Generate name and weight of expression folders
@@ -525,7 +525,7 @@ bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
   if (subdirNames.GetSize () == 0)
     return ReportError ("Didn't find any target file to generate model expressions");
 
-  // Find expressions in Makehuman directories
+  // Find expressions in MakeHuman directories
   csString dir = csString (EXPRESSIONS_PATH).Append ("units/");
   printf ("\nParsing model micro-expressions (from subfolders of '%s'):", dir.GetData ());
   csString targetname, filename, exprname;
@@ -535,7 +535,7 @@ bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
   dir.Append (subdirNames[0]).Append ("/");
 
   if (!VFS->Exists (dir.GetData ()))
-    return ReportError ("Didn't find Makehuman expressions directory '%s' (deprecated)", dir.GetData ());
+    return ReportError ("Didn't find MakeHuman expressions directory '%s' (deprecated)", dir.GetData ());
 
   csRef<iStringArray> expressionFiles = VFS->FindFiles (dir);
   expressionFiles->Sort ();
@@ -566,7 +566,7 @@ bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
 
     for (size_t j = 0; j < subdirNames.GetSize (); j++)
     {
-      // Generate path of Makehuman target file
+      // Generate path of MakeHuman target file
       filename = csString (EXPRESSIONS_PATH).Append ("units/");
       filename.Append (subdirNames[j]).Append ("/");
       filename.Append (microExpr[i].name).Append (".target");
@@ -574,8 +574,8 @@ bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
       // Parse target file into a temporary offset buffer
       csArray<csVector3> offsets;
       csArray<size_t> indices;
-      if (!manager->ParseMakehumanTargetFile (filename.GetData (), offsets, indices))
-        return ReportError ("Could not parse the Makehuman target file %s", filename.GetData ());
+      if (!manager->ParseMakeHumanTargetFile (filename.GetData (), offsets, indices))
+        return ReportError ("Could not parse the MakeHuman target file %s", filename.GetData ());
 
       // Cumulate displacement in the offset buffer of the expression
       float weight = subdirWeights[j];
@@ -599,11 +599,11 @@ bool MakehumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
   return true;
 }
 
-bool MakehumanCharacter::GenerateMicroExpressions (const ModelTargets& modelVals,
+bool MakeHumanCharacter::GenerateMicroExpressions (const ModelTargets& modelVals,
 						   csArray<Target>& microExpr)
 {
   // Code based on files 'makehuman/apps/warpmodifier.py' and 'makehuman/core/warp.py'
-  // from Makehuman 1.0 alpha 7.
+  // from MakeHuman 1.0 alpha 7.
 
   // Init warping data
 
@@ -615,7 +615,7 @@ bool MakehumanCharacter::GenerateMicroExpressions (const ModelTargets& modelVals
 
   // Parse micro-expressions offsets
   if (!ParseMicroExpressions (modelVals, microExpr))
-    return ReportError ("Could not parse the Makehuman micro-expressions");
+    return ReportError ("Could not parse the MakeHuman micro-expressions");
 
   // Get source and target vertices, using indices of facial landmarks
   csArray<csVector3> xverts, yverts;
@@ -650,7 +650,7 @@ bool MakehumanCharacter::GenerateMicroExpressions (const ModelTargets& modelVals
   return true;
 }
 
-bool MakehumanCharacter::AddExpressionsToModel (CS::Mesh::iAnimatedMeshFactory* amfact,
+bool MakeHumanCharacter::AddExpressionsToModel (CS::Mesh::iAnimatedMeshFactory* amfact,
 						const csArray<VertBuf>& mapBuf,
 						const char* prefix,
 						const csArray<Target>& mhExpressions)
@@ -667,7 +667,7 @@ bool MakehumanCharacter::AddExpressionsToModel (CS::Mesh::iAnimatedMeshFactory* 
   // Clear target subsets of animesh factory
   amfact->ClearSubsets ();
 
-  // For each expression, convert Makehuman offsets to Crystal Space offsets,
+  // For each expression, convert MakeHuman offsets to Crystal Space offsets,
   // create a new morph target and add it to the animesh factory
   for (size_t ei = 0; ei < mhExpressions.GetSize (); ei++)
   {
@@ -679,13 +679,12 @@ bool MakehumanCharacter::AddExpressionsToModel (CS::Mesh::iAnimatedMeshFactory* 
     for (size_t i = 0; i < totalCSVerts; i++)
       csOffsets[i] = csVector3 (0.0f);
 
-    // Fill CS offset buffer with Makehuman offsets
+    // Fill CS offset buffer with MakeHuman offsets
     for (size_t mhIndex = 0; mhIndex < mhExpressions[ei].offsets.GetSize (); mhIndex++)
     {
       csVector3 offset = mhExpressions[ei].offsets[mhIndex];
-      offset[2] *= -1.0f;   // inverse Z component sign
 
-      // Copy the parsed offset to all cs vertices associated with this Makehuman vertex
+      // Copy the parsed offset to all cs vertices associated with this MakeHuman vertex
       for (size_t i = 0; i < mapBuf[mhExpressions[ei].indices[mhIndex]].vertices.GetSize (); i++)
       {
         csIndex = mapBuf[mhExpressions[ei].indices[mhIndex]].vertices[i];
@@ -708,4 +707,4 @@ bool MakehumanCharacter::AddExpressionsToModel (CS::Mesh::iAnimatedMeshFactory* 
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

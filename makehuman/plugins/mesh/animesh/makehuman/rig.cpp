@@ -24,14 +24,14 @@
 
 #define INFLUENCES_PER_VERTEX 4
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
  * MakeHuman rig parser (.rig)
  *-------------------------------------------------------------------------*/
 
-bool MakehumanCharacter::CalculateBaricenter (const VertBuf& facegroup, csVector3& center)
+bool MakeHumanCharacter::CalculateBaricenter (const VertBuf& facegroup, csVector3& center)
 {
   if (facegroup.vertices.GetSize () == 0)
     return false;
@@ -48,7 +48,7 @@ bool MakehumanCharacter::CalculateBaricenter (const VertBuf& facegroup, csVector
   return true;
 } 
 
-bool MakehumanCharacter::ParseJointDefinition (csString line, 
+bool MakeHumanCharacter::ParseJointDefinition (csString line, 
 					       const csHash<VertBuf, csString>& mhJoints,
 					       csHash<csVector3, csString>& jointPos)
 {
@@ -82,6 +82,9 @@ bool MakehumanCharacter::ParseJointDefinition (csString line,
         return ReportError ("Invalid offset in definition of joint location\n");
     }
 
+    // Adapt the sign of the Z axis to CS
+    offset[2] = -offset[2];
+
     pos = morphedMesh[mhIndex] + offset;
   }
   else if (type.Compare ("offset"))
@@ -101,6 +104,9 @@ bool MakehumanCharacter::ParseJointDefinition (csString line,
       if (sscanf (stmp[i + 3], "%f", &(offset[i])) != 1)
         return ReportError ("Invalid offset in definition of joint location\n");
     }
+
+    // Adapt the sign of the Z axis to CS
+    offset[2] = -offset[2];
 
     pos = *(jointPos[ jointName ]) + offset;    
   }
@@ -192,6 +198,9 @@ bool MakehumanCharacter::ParseJointDefinition (csString line,
         return ReportError ("Invalid offset in definition of joint location\n");
     }
 
+    // Adapt the sign of the Z axis to CS
+    offset[2] = -offset[2];
+
     vec = tail - head;
     vec2 = vec * vec;
     vraw = raw - head;
@@ -200,15 +209,15 @@ bool MakehumanCharacter::ParseJointDefinition (csString line,
     pos = head + rvec + offset;
   }
   else
-    return ReportError ("WARNING: unknown joint type '%s' in Makehuman rig file.\n", type.GetData ());
+    return ReportError ("WARNING: unknown joint type '%s' in MakeHuman rig file.\n", type.GetData ());
 
-  // Add joint name and its position to the hashing table
+  // Add joint name and its position to the hash table
   jointPos.Put (name, pos);
 
   return true;
 }
 
-bool MakehumanCharacter::ParseBoneDefinition (csString line,
+bool MakeHumanCharacter::ParseBoneDefinition (csString line,
 					      csHash<Bone, csString>& bones,
 					      csArray<csString>& boneOrder)
 {
@@ -227,7 +236,7 @@ bool MakehumanCharacter::ParseBoneDefinition (csString line,
   if (sscanf (stmp[3], "%f", &roll) != 1)
     return ReportError ("Invalid roll angle in definition of bone '%s'\n", boneName.GetData ());
 
-  // TODO: parse Makehuman bone options (p.e. '-nc')
+  // TODO: parse MakeHuman bone options (p.e. '-nc')
 
   // Add data into bones array
   Bone boneData (parent, head, tail, roll);
@@ -237,7 +246,7 @@ bool MakehumanCharacter::ParseBoneDefinition (csString line,
   return true;
 }
 
-bool MakehumanCharacter::ParseBoneWeights (csString line, 
+bool MakeHumanCharacter::ParseBoneWeights (csString line, 
 					   csArray<VertexInfluence>& boneWeights)
 {
   // Parse bone influence
@@ -264,7 +273,7 @@ bool MakehumanCharacter::ParseBoneWeights (csString line,
   return true;
 }
 
-bool MakehumanCharacter::ParseRigFile (const char* filename, 
+bool MakeHumanCharacter::ParseRigFile (const char* filename, 
 				       const csHash<VertBuf, csString>& mhJoints,
 				       csHash<csVector3, csString>& jointPos, 
 				       csHash<Bone, csString>& bones,
@@ -353,7 +362,7 @@ bool MakehumanCharacter::ParseRigFile (const char* filename,
   return true;
 }
 
-bool MakehumanCharacter::CreateSkelFact (const char* skelName, 
+bool MakeHumanCharacter::CreateSkelFact (const char* skelName, 
 					 const csHash<Bone, csString>& bones,
 					 const csArray<csString>& boneOrder,
 					 CS::Mesh::iAnimatedMeshFactory* amfact)
@@ -415,7 +424,7 @@ bool MakehumanCharacter::CreateSkelFact (const char* skelName,
   return true;
 }
 
-bool MakehumanCharacter::SetBoneLocations (const csHash<VertBuf, csString>& mhJoints,
+bool MakeHumanCharacter::SetBoneLocations (const csHash<VertBuf, csString>& mhJoints,
 					   const csHash<csVector3, csString>& jointPos,
 					   const csHash<Bone, csString>& bones,
 					   const bool moveOrigin,
@@ -441,14 +450,13 @@ bool MakehumanCharacter::SetBoneLocations (const csHash<VertBuf, csString>& mhJo
   // Since proxy mesh is generated from this model, its position should not be corrected.
   if (moveOrigin && !origin.IsZero ())
   {
-    // Move mesh so that its origin is at [0, 0, 0]
-    csRef<iMeshObjectFactory> obFact = scfQueryInterface<iMeshObjectFactory> (amfact);
-    csVector3 iorigin = csVector3 (-origin[0],-origin[1], origin[2]);         // inverse Z component
-    csReversibleTransform translation = csReversibleTransform (csMatrix3 (), iorigin);
-    obFact->HardTransform (translation);
+    // Move the mesh so that its feets are at [0, 0, 0]
+    csRenderBufferLock<csVector3> vertices (amfact->GetVertices ());
+    for (size_t i = 0; i < vertices.GetSize (); i++)
+      vertices[i] -= origin;
   }
 
-  // Calculate positions of the bones
+  // Compute the positions of the bones
   csRef<CS::Animation::iSkeletonFactory> skelFact = amfact->GetSkeletonFactory ();
   csArray< CS::Animation::BoneID > boneList = skelFact->GetBoneOrderList ();
   csArray< CS::Animation::BoneID >::Iterator it = boneList.GetIterator ();
@@ -492,8 +500,6 @@ bool MakehumanCharacter::SetBoneLocations (const csHash<VertBuf, csString>& mhJo
     }
 
     // Get bone orientation
-    headpos[2] *= -1.0f;        // inverse Z component
-    tailpos[2] *= -1.0f;        // inverse Z component
     csVector3 orientation = tailpos - headpos;
     orientation.Normalize ();
     csVector3 up (0, 1, 0);
@@ -510,7 +516,7 @@ bool MakehumanCharacter::SetBoneLocations (const csHash<VertBuf, csString>& mhJo
   return true;
 }
 
-bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
+bool MakeHumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
 					    CS::Mesh::iAnimatedMeshFactory* amfact)
 {
   // Get bone influences per mesh vertex and sort them in increasing order
@@ -570,10 +576,10 @@ bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
   return true;
 }
 
-bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
+bool MakeHumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
 					    ProxyData* proxy)
 {
-  // Note: Makehuman defines a specific process to generate bone weights on a proxy model.
+  // Note: MakeHuman defines a specific process to generate bone weights on a proxy model.
   // It is implemented by method 'getProxyWeights ()' in file mh2proxy.py
 
   // Get proxy weight per vertex of proxy model
@@ -692,7 +698,7 @@ bool MakehumanCharacter::SetBoneInfluences (const csHash<Bone, csString>& bones,
   return true;
 }
 
-bool MakehumanCharacter::CreateSkeleton (const char* modelName,
+bool MakeHumanCharacter::CreateSkeleton (const char* modelName,
 					 const char* rigName,
 					 const csHash<VertBuf, csString>& mhJoints,
 					 ProxyData* proxy)
@@ -705,7 +711,7 @@ bool MakehumanCharacter::CreateSkeleton (const char* modelName,
   if (proxy && !proxy->factory)
     return ReportError ("Error while creating skeleton: the animesh factory of proxy model is missing");
 
-  // Init buffers used to parse Makehuman rig
+  // Init buffers used to parse MakeHuman rig
   csHash< csVector3, csString > jointPos;
   csHash<Bone, csString> bones;
   csArray<csString> boneOrder;
@@ -764,4 +770,4 @@ bool MakehumanCharacter::CreateSkeleton (const char* modelName,
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

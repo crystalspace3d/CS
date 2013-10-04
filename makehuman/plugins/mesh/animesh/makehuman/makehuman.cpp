@@ -26,21 +26,21 @@
 #include "character.h"
 #include "makehuman.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
-SCF_IMPLEMENT_FACTORY (MakehumanManager);
+SCF_IMPLEMENT_FACTORY (MakeHumanManager);
 
-MakehumanManager::MakehumanManager (iBase* parent)
+MakeHumanManager::MakeHumanManager (iBase* parent)
   : scfImplementationType (this, parent)
 {
 }
 
-MakehumanManager::~MakehumanManager ()
+MakeHumanManager::~MakeHumanManager ()
 {
 }
 
-bool MakehumanManager::Initialize (iObjectRegistry* objectRegistry)
+bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
 {
   this->objectRegistry = objectRegistry;
 
@@ -70,23 +70,23 @@ bool MakehumanManager::Initialize (iObjectRegistry* objectRegistry)
     TODO: threaded loading of the data
   */
 
-  // Parse the object file describing the Makehuman neutral model
+  // Parse the object file describing the MakeHuman neutral model
   if (!ParseObjectFile (MESH_DATA_FILE, coords, texcoords, normals, faceGroups))
     return ReportError ("Failed parsing of base object file '%s'", MESH_DATA_FILE);
 
   return true;
 }
 
-csPtr<iMakehumanCharacter> MakehumanManager::CreateCharacter ()
+csPtr<iMakeHumanCharacter> MakeHumanManager::CreateCharacter ()
 {
-  return new MakehumanCharacter (this);
+  return new MakeHumanCharacter (this);
 }
 
-csPtr<iStringArray> MakehumanManager::GetProxies () const
+csPtr<iStringArray> MakeHumanManager::GetProxies () const
 {
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
-  // TODO: Build this list dynamically from the Makehuman data
+  // TODO: Build this list dynamically from the MakeHuman data
   names->Push ("ascottk");
   //names->Push ("clear");
   names->Push ("male");
@@ -94,11 +94,11 @@ csPtr<iStringArray> MakehumanManager::GetProxies () const
   return csPtr<iStringArray> (names);
 }
 
-csPtr<iStringArray> MakehumanManager::GetRigs () const
+csPtr<iStringArray> MakeHumanManager::GetRigs () const
 {
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
-  // TODO: Build this list dynamically from the Makehuman data
+  // TODO: Build this list dynamically from the MakeHuman data
   names->Push ("game");
   names->Push ("rigid");
   names->Push ("second_life");
@@ -107,11 +107,11 @@ csPtr<iStringArray> MakehumanManager::GetRigs () const
   return csPtr<iStringArray> (names);
 }
 
-csPtr<iStringArray> MakehumanManager::GetMeasures () const
+csPtr<iStringArray> MakeHumanManager::GetMeasures () const
 {
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
-  // TODO: Build this list dynamically from the Makehuman data
+  // TODO: Build this list dynamically from the MakeHuman data
   names->Push ("ankle");
   names->Push ("bust");
   names->Push ("calf");
@@ -134,13 +134,14 @@ csPtr<iStringArray> MakehumanManager::GetMeasures () const
   return csPtr<iStringArray> (names);
 }
 
-csPtr<iStringArray> MakehumanManager::GetProperties () const
+csPtr<iStringArray> MakeHumanManager::GetProperties () const
 {
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
-  // TODO: Build this list dynamically from the Makehuman data
+  // TODO: Build this list dynamically from the MakeHuman data
   names->Push ("age");
-  names->Push ("ethnics");
+  names->Push ("african");
+  names->Push ("asian");
   names->Push ("gender");
   names->Push ("weight");
   names->Push ("muscle");
@@ -158,4 +159,4 @@ csPtr<iStringArray> MakehumanManager::GetProperties () const
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

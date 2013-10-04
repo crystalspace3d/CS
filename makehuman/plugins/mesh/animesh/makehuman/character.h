@@ -24,21 +24,24 @@
 
 #include "makehuman.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 using namespace CS::Mesh;
 
-class MakehumanCharacter
-  : public scfImplementation1<MakehumanCharacter, CS::Mesh::iMakehumanCharacter>
+class MakeHumanCharacter
+  : public scfImplementation1<MakeHumanCharacter, CS::Mesh::iMakeHumanCharacter>
 {
 public:
-  MakehumanCharacter (MakehumanManager* manager);
-  ~MakehumanCharacter ();
+  MakeHumanCharacter (MakeHumanManager* manager);
+  ~MakeHumanCharacter ();
 
-  //-- iMakehumanCharacter
+  //-- iMakeHumanCharacter
   virtual void SetExpressionGeneration (bool generate);
   virtual bool GetExpressionGeneration () const;
+
+  virtual void SetUpdateMode (MakeHumanUpdateMode mode);
+  virtual MakeHumanUpdateMode GetUpdateMode () const;
 
   virtual iAnimatedMeshFactory* GetMeshFactory () const;
   virtual bool UpdateMeshFactory ();
@@ -51,54 +54,59 @@ public:
   virtual void SetProxy (const char* proxy);
   virtual void SetRig (const char* rig);
 
-  virtual void SetMeasure (const char* measure, float value);
   virtual void SetProperty (const char* property, float value);
   virtual float GetProperty (const char* property) const;
+  virtual void SetMeasure (const char* measure, float value);
+  virtual float GetMeasure (const char* measure) const;
 
   virtual void ClearClothes ();
   virtual size_t GetClothCount () const;
   virtual iAnimatedMeshFactory* GetClothMesh (size_t index) const;
 
   virtual bool GetPropertyTargets
-    (const char* property, csRefArray<iMakehumanMorphTarget>& targets);
+    (const char* property, csRefArray<iMakeHumanMorphTarget>& targets);
   virtual bool GetMeasureTargets
-    (const char* measure, csRefArray<iMakehumanMorphTarget>& targets);
+    (const char* measure, csRefArray<iMakeHumanMorphTarget>& targets);
 
 private:
-  csRef<MakehumanManager> manager;
+  void ApplyTargets (csRefArray<iMakeHumanMorphTarget>& targets, bool boundary, float delta);
+
+private:
+  csRef<MakeHumanManager> manager;
   csRef<iAnimatedMeshFactory> animeshFactory;
 
   csString proxy;
   csString rig;
 
   bool generateExpressions;
+  MakeHumanUpdateMode updateMode;
 
   /// Model variables
   csString modelName;
-  MakehumanModel human;            // array of model properties
+  MakeHumanModel human;            // array of model properties
 
   // Property values of the model
   ModelTargets modelVals;
 
-  /// Backup of Makehuman buffers (used for proxy processing)
+  /// Backup of MakeHuman buffers (used for proxy processing)
   csArray<VertBuf> mappingBuffer;   // index correspondence between mhx and cs vertices 
                                     // of the model
   csDirtyAccessArray<csVector3> basicMesh;  // array of vertex coordinates of 
-                                            // neutral Makehuman model
+                                            // neutral MakeHuman model
   csDirtyAccessArray<csVector3> morphedMesh;   // array of vertex coordinates of
-                                               // morphed Makehuman model
+                                               // morphed MakeHuman model
   csArray<csVector3> basicMorph;    // total offsets corresponding to basic properties
-                                    // (gender/ethnic/age) of Makehuman model
-  csHash<VertBuf, csString> mhJoints;   // list of Makehuman joints used to define
+                                    // (gender/ethnic/age) of MakeHuman model
+  csHash<VertBuf, csString> mhJoints;   // list of MakeHuman joints used to define
                                         // bone positions (parsed from file 'base.obj')
-  csArray<Target> microExpressions; // generated micro-expressions of Makehuman model
+  csArray<Target> microExpressions; // generated micro-expressions of MakeHuman model
   
-  /// Temporary Makehuman data (parsed from a Makehuman object file)
+  /// Temporary MakeHuman data (parsed from a MakeHuman object file)
   csDirtyAccessArray<csVector3> coords;     // array of vertex coordinates
   csDirtyAccessArray<csVector2> texcoords;  // array of texture coordinates
   csDirtyAccessArray<csVector3> normals;    // array of vertex normals
 
-  /// Temporary Crystal Space mesh buffers (corresponding to parsed Makehuman object)
+  /// Temporary Crystal Space mesh buffers (corresponding to parsed MakeHuman object)
   csDirtyAccessArray<csVector3> csCoords;     // array of CS vertex coordinates
   csDirtyAccessArray<csVector2> csTexcoords;  // array of CS texture coordinates
   csDirtyAccessArray<csVector3> csNormals;    // array of CS vertex normals
@@ -118,34 +126,34 @@ private:
   /// MakeHuman model parser (.mhm)
 
   /**
-   * Parse a Makehuman model file and copy the basic property values in 'human'.
-   * \param filename  Name of Makehuman model file (with extension '.mhm')
-   * \param human  Generated property values of given Makehuman model
+   * Parse a MakeHuman model file and copy the basic property values in 'human'.
+   * \param filename  Name of MakeHuman model file (with extension '.mhm')
+   * \param human  Generated property values of given MakeHuman model
    *               (only relevant if the method returns true)
    * \Return true if property values were successfully generated
    */
-  bool ParseMakehumanModelFile (const char* filename, MakehumanModel* human);
+  bool ParseMakeHumanModelFile (const char* filename, MakeHumanModel* human);
 
   /**
-   * Generate target names and associated weights from given Makehuman model 
+   * Generate target names and associated weights from given MakeHuman model 
    * properties.
-   * \param human  Property values of a Makehuman model
+   * \param human  Property values of a MakeHuman model
    * \param modelVals  Generated list of target tags and weights for each
    *                   model property (only relevant if the method returns true)
    * \Return true if model properties were successfully generated
    */
-  bool ProcessModelProperties (const MakehumanModel human,  ModelTargets* modelVals);
+  bool ProcessModelProperties (const MakeHumanModel& human,  ModelTargets* modelVals);
 
-  void ConvertTargets (csRefArray<iMakehumanMorphTarget>& targets,
+  void ConvertTargets (csRefArray<iMakeHumanMorphTarget>& targets,
 		       csArray<Target>& localTargets,
 		       float scale,
-		       MakehumanMorphTargetDirection direction);
+		       MakeHumanMorphTargetDirection direction);
 
   /**
-   * Build target list containing full path of Makehuman target files and their 
+   * Build target list containing full path of MakeHuman target files and their 
    * corresponding weights.
    * \param modelVals  List of target tags and weights for each model property
-   * \param targets  Generated list of Makehuman target filenames and their 
+   * \param targets  Generated list of MakeHuman target filenames and their 
    *                 associated weights (only relevant if the method returns true)
    */
   void GenerateTargetsWeights (const ModelTargets& modelVals, 
@@ -181,11 +189,11 @@ private:
   /// MakeHuman morph target management
 
   /**
-   * Apply morph targets to Makehuman mesh buffer
-   * \param targets  Array of Makehuman morph targets
+   * Apply morph targets to MakeHuman mesh buffer
+   * \param targets  Array of MakeHuman morph targets
    * \Return true if targets have been successfully applied to model buffer
    *
-   * Call ParseObjectFile() on basic Makehuman model file before morphing 
+   * Call ParseObjectFile() on basic MakeHuman model file before morphing 
    * the parsed mesh.
    */
   bool ApplyTargetsToModel (const csArray<Target>& targets);
@@ -193,15 +201,15 @@ private:
   /// MakeHuman mesh object parser (.obj)
 
   /**
-   * Generate a mapping buffer between Makehuman and Crystal Space vertices,
-   * and define Makehuman joints and Crystal Space submeshes.
-   * \param faceGroups  Parsed Makehuman face groups
+   * Generate a mapping buffer between MakeHuman and Crystal Space vertices,
+   * and define MakeHuman joints and Crystal Space submeshes.
+   * \param faceGroups  Parsed MakeHuman face groups
    * \param doubleSided  Indicates if generated mesh should be double sided
-   * \param mhJoints  Generated list of Makehuman joints (i.e. face groups used 
+   * \param mhJoints  Generated list of MakeHuman joints (i.e. face groups used 
    *                  to define bone positions)
    * \param csSubmeshes  Generated Crystal Space submeshes (corresponding 
-   *                     to Makehuman submeshes)
-   * \param mappingBuf  Generated mapping buffer between Makehuman and 
+   *                     to MakeHuman submeshes)
+   * \param mappingBuf  Generated mapping buffer between MakeHuman and 
    *                    Crystal Space vertices
    * \Return true if success
    *
@@ -217,11 +225,11 @@ private:
                             csArray<VertBuf>& mappingBuf);
 
   /**
-   * Create an animated mesh factory from parsed Makehuman object,
+   * Create an animated mesh factory from parsed MakeHuman object,
    * i.e. define a mesh object into internal CS data structures, and return it.
    * \param textureFile  VFS path of the image file used as texture for object
    * \param csSubmeshes  Array of Crystal Space submeshes
-   * \Return an animesh factory corresponding to parsed Makehuman object
+   * \Return an animesh factory corresponding to parsed MakeHuman object
    *
    * Call GenerateMeshBuffers() before creating the Crystal Space animesh
    */
@@ -237,17 +245,17 @@ private:
 
   /**
    * Calculate sum baricenter of a facegroup (i.e. a set of vertices).
-   * \param facegroup  Face group composed of Makehuman vertex indices
+   * \param facegroup  Face group composed of MakeHuman vertex indices
    * \param center  Calculated position of facegroup baricenter
    * \Return true if baricenter has been successfully calculated
    */
   bool CalculateBaricenter (const VertBuf& facegroup, csVector3& center);
 
   /**
-   * Parse a line defining a new Makehuman joint, evaluate its position
-   * by using Makehuman model, and add it to table 'jointPos'.
-   * \param line  String defining the position of a Makehuman joint
-   * \param mhJoints  Table of joints, composed of Makehuman vertex indices
+   * Parse a line defining a new MakeHuman joint, evaluate its position
+   * by using MakeHuman model, and add it to table 'jointPos'.
+   * \param line  String defining the position of a MakeHuman joint
+   * \param mhJoints  Table of joints, composed of MakeHuman vertex indices
    *                  (parsed from model object file)
    * \param jointPos  Table of calculated joint positions
    * \Return true if the new joint has been successfully parsed and its
@@ -258,8 +266,8 @@ private:
                              csHash<csVector3, csString>& jointPos);
 
   /**
-   * Parse a Makehuman definition of bone. 
-   * \param line  String defining a Makehuman bone
+   * Parse a MakeHuman definition of bone. 
+   * \param line  String defining a MakeHuman bone
    * \param bones  Table of parsed bone data
    * \param boneOrder  Order of parsed bones
    * \Return true if the new bone has been successfully parsed
@@ -269,9 +277,9 @@ private:
                             csArray<csString>& boneOrder);
 
   /**
-   * Parse a Makehuman bone influence and copy parsed data into table 
+   * Parse a MakeHuman bone influence and copy parsed data into table 
    * 'boneWeights'.
-   * \param line  String defining the Makehuman bone weight of a vertex
+   * \param line  String defining the MakeHuman bone weight of a vertex
    * \param boneWeights  Table of parsed weights of current bone
    * \Return true if the weight has been successfully parsed and
    *  added to table boneWeights
@@ -280,9 +288,9 @@ private:
                          csArray<VertexInfluence>& boneWeights);
 
   /**
-   * Parse joints and bones defined in a Makehuman rig file.
-   * \param filename  Name of Makehuman rig file
-   * \param mhJoints  Table of joints, composed of Makehuman vertex indices
+   * Parse joints and bones defined in a MakeHuman rig file.
+   * \param filename  Name of MakeHuman rig file
+   * \param mhJoints  Table of joints, composed of MakeHuman vertex indices
    * \param jointPos  Table of parsed joint positions
    * \param bones  Table of parsed bone data
    * \param boneOrder  Order of parsed bones
@@ -310,7 +318,7 @@ private:
 
   /**
    * Set the bone positions of an animated mesh factory
-   * \param mhJoints  Table of rig joints (i.e. Makehuman vertex indices)
+   * \param mhJoints  Table of rig joints (i.e. MakeHuman vertex indices)
    * \param jointPos  Table of parsed joint positions
    * \param bones  Table of parsed bone data
    * \param moveOrigin  Indicates if model's origin should be moved to have 
@@ -344,7 +352,7 @@ private:
   /**
    * Set the bone influences of an animated mesh factory.
    * \param boneWeights  Table of bone weights
-   * \param proxy  Parsed data of Makehuman proxy model
+   * \param proxy  Parsed data of MakeHuman proxy model
    * \Return true if bone influences have been correctly set on the 
    *  animesh factory of proxy model
    *
@@ -356,16 +364,16 @@ private:
                           ProxyData* proxy);
 
   /**
-   * Create skeleton of the morphed human model, according to Makehuman standards.
+   * Create skeleton of the morphed human model, according to MakeHuman standards.
    * If a proxy model is provided, the skeleton is added to its animesh factory;
    * otherwise, it is added to the fully detailed model.
    * \param modelName  Name of human model
    * \param rigName  Name of model rig (without extension '.rig')
-   * \param mhJoints  Table of joints, composed of Makehuman vertex indices
-   * \param proxy  Parsed data of Makehuman proxy model
+   * \param mhJoints  Table of joints, composed of MakeHuman vertex indices
+   * \param proxy  Parsed data of MakeHuman proxy model
    * \Return true if model rig has been successfully created
    *
-   * The animesh factory of Makehuman model must have been created previously
+   * The animesh factory of MakeHuman model must have been created previously
    * with CreateAnimatedMesh().
    */
   bool CreateSkeleton (const char* modelName,
@@ -377,33 +385,33 @@ private:
   /// MakeHuman expression parser (.target)
 
   /**
-   * Create morph targets for Makehuman facial macro-expressions.
-   * The expression names are generated by parsing Makehuman expression
+   * Create morph targets for MakeHuman facial macro-expressions.
+   * The expression names are generated by parsing MakeHuman expression
    * files from subfolders of '/lib/makehuman/data/targets/expression/'.
    * The expression names are prefixed by 'macro_'.
    * Notice that these macro-expressions are only adapted to 
    * 100% Caucasian models.
-   * \param modelVals  Parsed property values of Makehuman model
-   * \param macroExpr  Array of parsed Makehuman expression targets
+   * \param modelVals  Parsed property values of MakeHuman model
+   * \param macroExpr  Array of parsed MakeHuman expression targets
    * \Return true if expressions have been successfully parsed
    *
-   * These macro-expressions are deprecated in new Makehuman releases
-   * (last compatible version: Makehuman 1.0 alpha 7).
+   * These macro-expressions are deprecated in new MakeHuman releases
+   * (last compatible version: MakeHuman 1.0 alpha 7).
    */
   bool GenerateMacroExpressions (const ModelTargets& modelVals,
                                  csArray<Target>& macroExpr);
 
   /**
-   * Parse Makehuman landmarks, used to generate micro-expressions
+   * Parse MakeHuman landmarks, used to generate micro-expressions
    * \param bodypart  Part of human body corresponding to the name of
-   *                  a Makehuman landmarks file (without extension '.lmk')
+   *                  a MakeHuman landmarks file (without extension '.lmk')
    * \param landmarks  Array of parsed landmarks (i.e. vertex indices)
    * \Return true if landmarks have been successfully parsed
    */
   bool ParseLandmarks (const char* bodypart, csArray<size_t>& landmarks);
 
   /**
-   * Calculate offsets of a Makehuman micro-expression by adapting them
+   * Calculate offsets of a MakeHuman micro-expression by adapting them
    * to human model.
    */
   bool WarpMicroExpression (const csArray<csVector3>& xverts,
@@ -411,35 +419,35 @@ private:
                             Target& expr);
 
   /**
-   * Parse all micro-expressions defined in Makehuman subfolders of 
+   * Parse all micro-expressions defined in MakeHuman subfolders of 
    * 'makehuman/data/targets/expression/units/' and cumulate them 
    * into a resulting offset buffer per micro-expression. 
    * The choice of folders and weights is done by using basic model 
    * properties (ethnics/gender/age).
-   * \param modelVals  Property values of Makehuman model
-   * \param microExpr  Array of parsed Makehuman expression targets
+   * \param modelVals  Property values of MakeHuman model
+   * \param microExpr  Array of parsed MakeHuman expression targets
    * \Return true if all micro-expressions offsets have been parsed successfully
    */
   bool ParseMicroExpressions (const ModelTargets& modelVals,
                               csArray<Target>& microExpr);
 
   /**
-   * Generate morph targets for Makehuman facial micro-expressions.
-   * The expression names are generated by using the parsed Makehuman
+   * Generate morph targets for MakeHuman facial micro-expressions.
+   * The expression names are generated by using the parsed MakeHuman
    * expression files in subfolders of 'makehuman/data/targets/expression/units/'.
-   * \param modelVals  Property values of Makehuman model
-   * \param microExpr  Array of parsed Makehuman expression targets
+   * \param modelVals  Property values of MakeHuman model
+   * \param microExpr  Array of parsed MakeHuman expression targets
    * \Return true if expressions have been successfully generated
    */
   bool GenerateMicroExpressions (const ModelTargets& modelVals,
                                  csArray<Target>& microExpr);
 
   /**
-   * Convert Makehuman expression targets and add them to an animesh factory.
+   * Convert MakeHuman expression targets and add them to an animesh factory.
    * \param amfact  Animated mesh factory of the model
    * \param mapBuf
    * \param prefix  Prefix used to name the new expressions
-   * \param mhExpressions  Array of Makehuman expression targets
+   * \param mhExpressions  Array of MakeHuman expression targets
    * \Return true if expressions have been successfully added to model factory
    */
   bool AddExpressionsToModel (CS::Mesh::iAnimatedMeshFactory* amfact,
@@ -469,17 +477,17 @@ private:
   bool ParseProxyVert (csStringArray& words, ProxyData& proxy);
 
   /**
-   * Parse a proxy object from a Makehuman proxy file. Such a proxy defines
+   * Parse a proxy object from a MakeHuman proxy file. Such a proxy defines
    * how a mesh object should be adapted to a human model.
-   * \param proxyFile  Path of a Makehuman proxy file (extensions .proxy or .mhclo)
-   * \param proxy  Parsed data of Makehuman proxy
+   * \param proxyFile  Path of a MakeHuman proxy file (extensions .proxy or .mhclo)
+   * \param proxy  Parsed data of MakeHuman proxy
    * \Return true if proxy file has been successfully parsed
    */
   bool ParseProxyFile (const char* proxyFile, ProxyData& proxy);
 
   /**
    * Adapt a neutral proxy object to loaded human model.
-   * \param proxy  Parsed data of Makehuman proxy
+   * \param proxy  Parsed data of MakeHuman proxy
    * \Return true if proxy has been successfully adjusted to the 
    *  model factory
    *
@@ -493,16 +501,16 @@ private:
 			  csDirtyAccessArray<csVector3>& normals);
 
   /**
-   * Create a proxy object by parsing a Makehuman proxy file, adapt it to
+   * Create a proxy object by parsing a MakeHuman proxy file, adapt it to
    * loaded human model and generate the corresponding animesh factory.
-   * \param proxyName  Name of a Makehuman proxy
-   * \param proxyFile  Path of a Makehuman proxy file (extensions .proxy or .mhclo)
+   * \param proxyName  Name of a MakeHuman proxy
+   * \param proxyFile  Path of a MakeHuman proxy file (extensions .proxy or .mhclo)
    * \param texture  Texture used on generated animesh factory (with extension .png); 
    *                 if it is not defined (nullptr), the texture referenced in parsed
    *                 proxy data is used
    * \param doubleSided  Indicates if generated mesh should be double sided
    * \param proxy  Generated data of proxy object
-   * \Return true if an animated mesh factory corresponding to Makehuman proxy object
+   * \Return true if an animated mesh factory corresponding to MakeHuman proxy object
    *  has been successfully generated; nullptr otherwise
    */
   csPtr<CS::Mesh::iAnimatedMeshFactory> CreateProxyMesh 
@@ -510,10 +518,10 @@ private:
      const char* texture, const bool doubleSided, ProxyData& proxy);
 
   /**
-   * Generate expression targets for a Makehuman proxy model.
-   * \param proxy  Parsed Makehuman proxy model
-   * \param modelExpr  Array of expression targets for Makehuman model
-   * \param proxyExpr  Generated expression targets for Makehuman proxy model
+   * Generate expression targets for a MakeHuman proxy model.
+   * \param proxy  Parsed MakeHuman proxy model
+   * \param modelExpr  Array of expression targets for MakeHuman model
+   * \param proxyExpr  Generated expression targets for MakeHuman proxy model
    * \Return true if expressions have been correctly generated for human
    *  proxy model
    *
@@ -531,6 +539,6 @@ private:
 };
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)
 
 #endif // __MAKEHUMAN_CHARACTER_H__

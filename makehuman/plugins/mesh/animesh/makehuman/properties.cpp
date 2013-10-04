@@ -23,26 +23,26 @@
 #include "character.h"
 #include "targets.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
-void MakehumanCharacter::ConvertTargets (csRefArray<iMakehumanMorphTarget>& targets,
+void MakeHumanCharacter::ConvertTargets (csRefArray<iMakeHumanMorphTarget>& targets,
 					 csArray<Target>& localTargets,
 					 float scale,
-					 MakehumanMorphTargetDirection direction)
+					 MakeHumanMorphTargetDirection direction)
 {
   for (size_t i = 0; i < localTargets.GetSize (); i++)
   {
-    csRef<MakehumanMorphTarget> target;
-    target.AttachNew (new MakehumanMorphTarget ());
+    csRef<MakeHumanMorphTarget> target;
+    target.AttachNew (new MakeHumanMorphTarget ());
 
     target->name = localTargets[i].name;
     target->scale = scale * localTargets[i].weight;
     target->direction = direction;
 
-    manager->ParseMakehumanTargetFile (localTargets[i].path, target->offsets, target->indices);
+    manager->ParseMakeHumanTargetFile (localTargets[i].path, target->offsets, target->indices);
 
-    // Translate the vertex indices from Makehuman to CS
+    // Translate the vertex indices from MakeHuman to CS
     size_t count = target->indices.GetSize ();
     for (size_t j = 0; j < count; j++)
     {
@@ -63,14 +63,20 @@ void MakehumanCharacter::ConvertTargets (csRefArray<iMakehumanMorphTarget>& targ
   localTargets.DeleteAll ();
 }
 
-bool MakehumanCharacter::GetPropertyTargets
-  (const char* property, csRefArray<iMakehumanMorphTarget>& targets)
+bool MakeHumanCharacter::GetPropertyTargets
+  (const char* property, csRefArray<iMakeHumanMorphTarget>& targets)
 {
   // Copy the model values of this character
   ModelTargets values = modelVals;
   csArray<Target> localTargets;
 
   if (!strcmp (property, "african"))
+  {
+    // TODO
+    return false;
+  }
+
+  if (!strcmp (property, "asian"))
   {
     // TODO
     return false;
@@ -92,12 +98,14 @@ bool MakehumanCharacter::GetPropertyTargets
     GenerateTargetsWeightsAgeGender (values, localTargets);
     ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
 
+    // TODO: Breast size and firmness targets may have a boundary point
+
     return false;
   }
 
   if (!strcmp (property, "age"))
   {
-    float age = human.props.Get (csString ("age"), 0.0f);
+    float age = human.properties.Get (csString ("age"), 0.0f);
 
     if (age > 0.5f + SMALL_EPSILON)
     {
@@ -105,15 +113,15 @@ bool MakehumanCharacter::GetPropertyTargets
       values.age.Push (Target ("-old"));
 
       GenerateTargetsWeightsAgeGender (values, localTargets);
-      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+      ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_BOTH);
 
-      if (age < 1.0f)
+      if (age < 1.0f + SMALL_EPSILON)
       {
 	values.age.DeleteAll ();
 	values.age.Push (Target ("-young"));
 
 	GenerateTargetsWeightsAgeGender (values, localTargets);
-	ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+	ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_BOTH);
       }
 
       return false;
@@ -125,15 +133,15 @@ bool MakehumanCharacter::GetPropertyTargets
       values.age.Push (Target ("-child"));
 
       GenerateTargetsWeightsAgeGender (values, localTargets);
-      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+      ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_BOTH);
 
-      if (age > 0.0f)
+      if (age > 0.0f - SMALL_EPSILON)
       {
 	values.age.DeleteAll ();
 	values.age.Push (Target ("-young"));
 
 	GenerateTargetsWeightsAgeGender (values, localTargets);
-	ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+	ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_BOTH);
       }
 
       return false;
@@ -143,29 +151,29 @@ bool MakehumanCharacter::GetPropertyTargets
     values.age.Push (Target ("-old"));
 
     GenerateTargetsWeightsAgeGender (values, localTargets);
-    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+    ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_UP);
 
     values.age.DeleteAll ();
     values.age.Push (Target ("-child"));
 
     GenerateTargetsWeightsAgeGender (values, localTargets);
-    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+    ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_DOWN);
 
     values.age.DeleteAll ();
     values.age.Push (Target ("-young"));
 
     GenerateTargetsWeightsAgeGender (values, localTargets);
-    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_UP);
+    ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_UP);
 
     GenerateTargetsWeightsAgeGender (values, localTargets);
-    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_DOWN);
+    ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_DOWN);
 
     return true;
   }
 
   if (!strcmp (property, "weight"))
   {
-    float weight = human.props.Get (csString ("weight"), 0.0f);
+    float weight = human.properties.Get (csString ("weight"), 0.0f);
 
     if (weight > 0.5f + SMALL_EPSILON)
     {
@@ -173,15 +181,19 @@ bool MakehumanCharacter::GetPropertyTargets
       values.weight.Push (Target ("-heavy"));
 
       GenerateTargetsWeightsWeightMuscle (values, localTargets);
-      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+      GenerateTargetsWeightsStomach (values, localTargets);
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_BOTH);
 
-      if (weight < 1.0f)
+      if (weight < 1.0f + SMALL_EPSILON)
       {
 	values.weight.DeleteAll ();
 	values.weight.Push (Target (""));
 
 	GenerateTargetsWeightsWeightMuscle (values, localTargets);
-	ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+	GenerateTargetsWeightsStomach (values, localTargets);
+	GenerateTargetsWeightsBreast (values, localTargets);
+	ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_BOTH);
       }
 
       return false;
@@ -193,15 +205,19 @@ bool MakehumanCharacter::GetPropertyTargets
       values.weight.Push (Target ("-light"));
 
       GenerateTargetsWeightsWeightMuscle (values, localTargets);
-      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+      GenerateTargetsWeightsStomach (values, localTargets);
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_BOTH);
 
-      if (weight > 0.0f)
+      if (weight > 0.0f - SMALL_EPSILON)
       {
 	values.weight.DeleteAll ();
 	values.weight.Push (Target (""));
 
 	GenerateTargetsWeightsWeightMuscle (values, localTargets);
-	ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+	GenerateTargetsWeightsStomach (values, localTargets);
+	GenerateTargetsWeightsBreast (values, localTargets);
+	ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_BOTH);
       }
 
       return false;
@@ -211,26 +227,37 @@ bool MakehumanCharacter::GetPropertyTargets
     values.weight.Push (Target ("-heavy"));
 
     GenerateTargetsWeightsWeightMuscle (values, localTargets);
-    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_UP);
 
     values.weight.DeleteAll ();
     values.weight.Push (Target ("-light"));
 
     GenerateTargetsWeightsWeightMuscle (values, localTargets);
-    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_DOWN);
 
     values.weight.DeleteAll ();
     values.weight.Push (Target (""));
 
     GenerateTargetsWeightsWeightMuscle (values, localTargets);
-    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_UP);
+
+    GenerateTargetsWeightsWeightMuscle (values, localTargets);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_DOWN);
 
     return true;
   }
 
   if (!strcmp (property, "muscle"))
   {
-    float muscle = human.props.Get (csString ("muscle"), 0.0f);
+    float muscle = human.properties.Get (csString ("muscle"), 0.0f);
 
     if (muscle > 0.5f + SMALL_EPSILON)
     {
@@ -238,15 +265,19 @@ bool MakehumanCharacter::GetPropertyTargets
       values.muscle.Push (Target ("-muscle"));
 
       GenerateTargetsWeightsWeightMuscle (values, localTargets);
-      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+      GenerateTargetsWeightsStomach (values, localTargets);
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_BOTH);
 
-      if (muscle < 1.0f)
+      if (muscle < 1.0f + SMALL_EPSILON)
       {
 	values.muscle.DeleteAll ();
 	values.muscle.Push (Target (""));
 
 	GenerateTargetsWeightsWeightMuscle (values, localTargets);
-	ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+	GenerateTargetsWeightsStomach (values, localTargets);
+	GenerateTargetsWeightsBreast (values, localTargets);
+	ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_BOTH);
       }
 
       return false;
@@ -258,15 +289,19 @@ bool MakehumanCharacter::GetPropertyTargets
       values.muscle.Push (Target ("-flaccid"));
 
       GenerateTargetsWeightsWeightMuscle (values, localTargets);
-      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+      GenerateTargetsWeightsStomach (values, localTargets);
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_BOTH);
 
-      if (muscle > 0.0f)
+      if (muscle > 0.0f - SMALL_EPSILON)
       {
 	values.muscle.DeleteAll ();
 	values.muscle.Push (Target (""));
 
 	GenerateTargetsWeightsWeightMuscle (values, localTargets);
-	ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+	GenerateTargetsWeightsStomach (values, localTargets);
+	GenerateTargetsWeightsBreast (values, localTargets);
+	ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_BOTH);
       }
 
       return false;
@@ -276,26 +311,37 @@ bool MakehumanCharacter::GetPropertyTargets
     values.muscle.Push (Target ("-muscle"));
 
     GenerateTargetsWeightsWeightMuscle (values, localTargets);
-    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_UP);
 
     values.muscle.DeleteAll ();
     values.muscle.Push (Target ("-flaccid"));
 
     GenerateTargetsWeightsWeightMuscle (values, localTargets);
-    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_DOWN);
 
     values.muscle.DeleteAll ();
     values.muscle.Push (Target (""));
 
     GenerateTargetsWeightsWeightMuscle (values, localTargets);
-    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, -2.0f, MH_DIRECTION_UP);
+
+    GenerateTargetsWeightsWeightMuscle (values, localTargets);
+    GenerateTargetsWeightsStomach (values, localTargets);
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, 2.0f, MH_DIRECTION_DOWN);
 
     return true;
   }
 
   if (!strcmp (property, "height"))
   {
-    float height = human.props.Get (csString ("height"), 0.0f);
+    float height = human.properties.Get (csString ("height"), 0.0f);
 
     if (height > SMALL_EPSILON)
     {
@@ -336,7 +382,7 @@ bool MakehumanCharacter::GetPropertyTargets
 
   if (!strcmp (property, "genitals"))
   {
-    float genitals = human.props.Get (csString ("genitals"), 0.0f);
+    float genitals = human.properties.Get (csString ("genitals"), 0.0f);
 
     if (genitals > SMALL_EPSILON)
     {
@@ -377,7 +423,7 @@ bool MakehumanCharacter::GetPropertyTargets
 
   if (!strcmp (property, "buttocks"))
   {
-    float buttocks = human.props.Get (csString ("buttocks"), 0.0f);
+    float buttocks = human.properties.Get (csString ("buttocks"), 0.0f);
 
     if (buttocks > SMALL_EPSILON)
     {
@@ -418,7 +464,7 @@ bool MakehumanCharacter::GetPropertyTargets
 
   if (!strcmp (property, "stomach"))
   {
-    float stomach = human.props.Get (csString ("stomach"), 0.0f);
+    float stomach = human.properties.Get (csString ("stomach"), 0.0f);
 
     if (stomach > SMALL_EPSILON)
     {
@@ -459,7 +505,7 @@ bool MakehumanCharacter::GetPropertyTargets
 
   if (!strcmp (property, "pelvisTone"))
   {
-    float pelvisTone = human.props.Get (csString ("pelvisTone"), 0.0f);
+    float pelvisTone = human.properties.Get (csString ("pelvisTone"), 0.0f);
 
     if (pelvisTone > SMALL_EPSILON)
     {
@@ -498,13 +544,218 @@ bool MakehumanCharacter::GetPropertyTargets
     return true;
   }
 
+  if (!strcmp (property, "breastFirmness"))
+  {
+    float breastFirmness = human.properties.Get (csString ("breastFirmness"), 0.0f);
+
+    if (breastFirmness > SMALL_EPSILON)
+    {
+      values.breastFirmness.DeleteAll ();
+      values.breastFirmness.Push (Target ("-firmness0"));
+
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    if (breastFirmness < -SMALL_EPSILON)
+    {
+      values.breastFirmness.DeleteAll ();
+      values.breastFirmness.Push (Target ("-firmness1"));
+
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    values.breastFirmness.DeleteAll ();
+    values.breastFirmness.Push (Target ("-firmness0"));
+
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_UP);
+
+    values.breastFirmness.DeleteAll ();
+    values.breastFirmness.Push (Target ("-firmness1"));
+
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_DOWN);
+
+    return true;
+  }
+
+  if (!strcmp (property, "breastSize"))
+  {
+    float breastSize = human.properties.Get (csString ("breastSize"), 0.0f);
+
+    if (breastSize > SMALL_EPSILON)
+    {
+      values.breastSize.DeleteAll ();
+      values.breastSize.Push (Target ("-cup2"));
+
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    if (breastSize < -SMALL_EPSILON)
+    {
+      values.breastSize.DeleteAll ();
+      values.breastSize.Push (Target ("-cup1"));
+
+      GenerateTargetsWeightsBreast (values, localTargets);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    values.breastSize.DeleteAll ();
+    values.breastSize.Push (Target ("-cup2"));
+
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+
+    values.breastSize.DeleteAll ();
+    values.breastSize.Push (Target ("-cup1"));
+
+    GenerateTargetsWeightsBreast (values, localTargets);
+    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+
+    return true;
+  }
+
+  if (!strcmp (property, "breastPosition"))
+  {
+    float breastPosition = human.properties.Get (csString ("breastPosition"), 0.0f);
+
+    if (breastPosition > SMALL_EPSILON)
+    {
+      values.breastPosition.DeleteAll ();
+      values.breastPosition.Push (Target ("breast-up"));
+
+      GenerateTargetsWeightsBreastPosition (values, localTargets);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    if (breastPosition < -SMALL_EPSILON)
+    {
+      values.breastPosition.DeleteAll ();
+      values.breastPosition.Push (Target ("breast-down"));
+
+      GenerateTargetsWeightsBreastPosition (values, localTargets);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    values.breastPosition.DeleteAll ();
+    values.breastPosition.Push (Target ("breast-up"));
+
+    GenerateTargetsWeightsBreastPosition (values, localTargets);
+    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+
+    values.breastPosition.DeleteAll ();
+    values.breastPosition.Push (Target ("breast-down"));
+
+    GenerateTargetsWeightsBreastPosition (values, localTargets);
+    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+
+    return true;
+  }
+
+  if (!strcmp (property, "breastDistance"))
+  {
+    float breastDistance = human.properties.Get (csString ("breastDistance"), 0.0f);
+
+    if (breastDistance > SMALL_EPSILON)
+    {
+      values.breastDistance.DeleteAll ();
+      values.breastDistance.Push (Target ("breast-dist-max"));
+
+      GenerateTargetsWeightsBreastDistance (values, localTargets);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    if (breastDistance < -SMALL_EPSILON)
+    {
+      values.breastDistance.DeleteAll ();
+      values.breastDistance.Push (Target ("breast-dist-min"));
+
+      GenerateTargetsWeightsBreastDistance (values, localTargets);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    values.breastDistance.DeleteAll ();
+    values.breastDistance.Push (Target ("breast-dist-max"));
+
+    GenerateTargetsWeightsBreastDistance (values, localTargets);
+    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+
+    values.breastDistance.DeleteAll ();
+    values.breastDistance.Push (Target ("breast-dist-min"));
+
+    GenerateTargetsWeightsBreastDistance (values, localTargets);
+    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+
+    return true;
+  }
+
+  if (!strcmp (property, "breastTaper"))
+  {
+    float breastTaper = human.properties.Get (csString ("breastTaper"), 0.0f);
+
+    if (breastTaper > SMALL_EPSILON)
+    {
+      values.breastTaper.DeleteAll ();
+      values.breastTaper.Push (Target ("breast-point-max"));
+
+      GenerateTargetsWeightsBreastTaper (values, localTargets);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    if (breastTaper < -SMALL_EPSILON)
+    {
+      values.breastTaper.DeleteAll ();
+      values.breastTaper.Push (Target ("breast-point-min"));
+
+      GenerateTargetsWeightsBreastTaper (values, localTargets);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+
+      return false;
+    }
+
+    values.breastTaper.DeleteAll ();
+    values.breastTaper.Push (Target ("breast-point-max"));
+
+    GenerateTargetsWeightsBreastTaper (values, localTargets);
+    ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+
+    values.breastTaper.DeleteAll ();
+    values.breastTaper.Push (Target ("breast-point-min"));
+
+    GenerateTargetsWeightsBreastTaper (values, localTargets);
+    ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+
+    return true;
+  }
+
   ReportError ("Unvalid property name: %s", CS::Quote::Single (property));
 
   return false;
 }
 
-bool MakehumanCharacter::GetMeasureTargets
-(const char* measure, csRefArray<iMakehumanMorphTarget>& targets)
+bool MakeHumanCharacter::GetMeasureTargets
+(const char* measure, csRefArray<iMakeHumanMorphTarget>& targets)
 {
   // Copy the model values of this character
   ModelTargets values = modelVals;
@@ -512,7 +763,7 @@ bool MakehumanCharacter::GetMeasureTargets
 
   // TODO: check availability of the measure
 
-  float value = human.props.Get (measure, 0.0f);
+  float value = human.measures.Get (measure, 0.0f);
   csString name = measure;
 
   if (value > SMALL_EPSILON)
@@ -558,10 +809,10 @@ bool MakehumanCharacter::GetMeasureTargets
   return true;
 }
 
-bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, ModelTargets* modelVals)
+bool MakeHumanCharacter::ProcessModelProperties (const MakeHumanModel& human, ModelTargets* modelVals)
 {
   if (!modelVals)
-    return ReportError ("The Makehuman model is not valid");
+    return ReportError ("The MakeHuman model is not valid");
 
   Target val, val1, val2;
   float w;
@@ -570,8 +821,8 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   // african: 0 is neutral; 1 is african
   // asian: 0 is neutral; 1 is asian
   // TODO: use caucasian?
-  float african = human.props.Get (csString ("african"), 0.0f);
-  float asian   = human.props.Get (csString ("asian"), 0.0f);
+  float african = human.properties.Get (csString ("african"), 0.0f);
+  float asian   = human.properties.Get (csString ("asian"), 0.0f);
   float total = 0.0f;
   float ethnics = 0.0f;
 
@@ -612,7 +863,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // gender: 0 is female; 1 is male; 0.5 is neutral
-  float gender = human.props.Get (csString ("gender"), 0.5f);
+  float gender = human.properties.Get (csString ("gender"), 0.5f);
   //if (fabsf (1.0f - gender) > SMALL_EPSILON)
   {
     val = Target ("female", nullptr, 1.0f - gender);
@@ -626,7 +877,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
 
   // age: 0 is child, 0.5 is young and 1 is old
   // (considering: 0 is 12 years old, 0.5 is 25 and 1 is 70)
-  float age = human.props.Get (csString ("age"), 0.5f);
+  float age = human.properties.Get (csString ("age"), 0.5f);
   w = 0;
   if (age > 0.5f + SMALL_EPSILON)
   {
@@ -647,7 +898,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // weight: 0 for underweight, 1 for overweight
-  float weight = human.props.Get (csString ("weight"), 0.0f);  
+  float weight = human.properties.Get (csString ("weight"), 0.0f);  
   w = 0;
   if (weight > 0.5f + SMALL_EPSILON)
   {
@@ -668,7 +919,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // muscle: 0 for flacid, 1 for muscular
-  float muscle = human.props.Get (csString ("muscle"), 0.0f);  
+  float muscle = human.properties.Get (csString ("muscle"), 0.0f);  
   w = 0;
   if (muscle > 0.5f)
   {
@@ -689,7 +940,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // height: -1 for dwarf, 1 for giant
-  float height = human.props.Get (csString ("height"), 0.0f);  
+  float height = human.properties.Get (csString ("height"), 0.0f);  
   if (height > SMALL_EPSILON)
   {
     val = Target ("-giant", nullptr, height);
@@ -702,7 +953,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // genitals: -1 is female, 1 is male
-  float genitals = human.props.Get (csString ("genitals"), 0.0f);  
+  float genitals = human.properties.Get (csString ("genitals"), 0.0f);  
   if (genitals > SMALL_EPSILON)
   {
     val = Target ("-masculine", nullptr, genitals);
@@ -715,7 +966,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // buttocks: -1 for round buttocks, 1 for flat
-  float buttocks = human.props.Get (csString ("buttocks"), 0.0f);  
+  float buttocks = human.properties.Get (csString ("buttocks"), 0.0f);  
   if (buttocks > SMALL_EPSILON)
   {
     val = Target ("-nates2", nullptr, buttocks);
@@ -728,7 +979,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // stomach: -1 for round belly, 1 for flat
-  float stomach = human.props.Get (csString ("stomach"), 0.0f);  
+  float stomach = human.properties.Get (csString ("stomach"), 0.0f);  
   if (stomach > SMALL_EPSILON)
   {
     val = Target ("-stomach2", nullptr, stomach);
@@ -741,8 +992,9 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // breast firmness: 0 is saggy, 1 is firm
-  float breastFirmness = human.props.Get (csString ("breastFirmness"), 0.0f);  
-  if (fabsf (breastFirmness - 1.0) > SMALL_EPSILON)
+  float breastFirmness = human.properties.Get (csString ("breastFirmness"), 0.0f);  
+  // TODO: is this correct?
+  if (fabsf (breastFirmness - 1.0f) > SMALL_EPSILON)
   {
     val = Target ("-firmness0", nullptr, 1.0f - breastFirmness);
     modelVals->breastFirmness.Push (val);
@@ -754,7 +1006,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // breast size: -1 is flat, 1 is big
-  float breastSize = human.props.Get (csString ("breastSize"), 0.0f);  
+  float breastSize = human.properties.Get (csString ("breastSize"), 0.0f);  
   if (breastSize > SMALL_EPSILON)
   {
     val = Target ("-cup2", nullptr, breastSize);
@@ -767,7 +1019,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // breast position: -1 is down, 1 is up
-  float breastPosition = human.props.Get (csString ("breastPosition"), 0.0f);  
+  float breastPosition = human.properties.Get (csString ("breastPosition"), 0.0f);  
   if (breastPosition > SMALL_EPSILON)
   {
     val = Target ("breast-up", nullptr, breastPosition);
@@ -780,7 +1032,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // breast distance: -1 is minimal, 1 is maximal
-  float breastDistance = human.props.Get (csString ("breastDistance"), 0.0f);  
+  float breastDistance = human.properties.Get (csString ("breastDistance"), 0.0f);  
   if (breastDistance > SMALL_EPSILON)
   {
     val = Target ("breast-dist-max", nullptr, breastDistance);
@@ -793,7 +1045,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // breast taper: -1 is minimal, 1 is maximal
-  float breastTaper = human.props.Get (csString ("breastTaper"), 0.0f);  
+  float breastTaper = human.properties.Get (csString ("breastTaper"), 0.0f);  
   if (breastTaper > SMALL_EPSILON)
   {
     val = Target ("breast-point-max", nullptr, breastTaper);
@@ -806,7 +1058,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   }
 
   // pelvis tone: -1 for fat pelvis, 1 for slim
-  float pelvisTone = human.props.Get (csString ("pelvisTone"), 0.0f);  
+  float pelvisTone = human.properties.Get (csString ("pelvisTone"), 0.0f);  
   if (pelvisTone > SMALL_EPSILON)
   {
     val = Target ("-pelvis-tone2", nullptr, pelvisTone);
@@ -841,7 +1093,7 @@ bool MakehumanCharacter::ProcessModelProperties (const MakehumanModel human, Mod
   return true;
 }
 
-void MakehumanCharacter::GenerateTargetsWeights
+void MakeHumanCharacter::GenerateTargetsWeights
 (const ModelTargets& modelVals, csArray<Target>& targets)
 {
   csString path, name;
@@ -1036,13 +1288,13 @@ void MakehumanCharacter::GenerateTargetsWeights
   }
 
   // Print targets
-  printf ("\nMakehuman targets used by model:\n");
+  printf ("\nMakeHuman targets used by model:\n");
   for (size_t index = 0; index < targets.GetSize (); index++)
     printf ("%8.2f%% '%s'\n", targets[index].weight*100, targets[index].path.GetData ());
   printf ("\n");
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsEthnics
+void MakeHumanCharacter::GenerateTargetsWeightsEthnics
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1074,7 +1326,7 @@ void MakehumanCharacter::GenerateTargetsWeightsEthnics
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsAgeGender
+void MakeHumanCharacter::GenerateTargetsWeightsAgeGender
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   GenerateTargetsWeightsEthnics (modelVals, targets);
@@ -1086,7 +1338,7 @@ void MakehumanCharacter::GenerateTargetsWeightsAgeGender
   GenerateTargetsWeightsPelvis (modelVals, targets);
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsWeightMuscle
+void MakeHumanCharacter::GenerateTargetsWeightsWeightMuscle
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1121,7 +1373,7 @@ void MakehumanCharacter::GenerateTargetsWeightsWeightMuscle
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsStomach
+void MakeHumanCharacter::GenerateTargetsWeightsStomach
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1160,7 +1412,7 @@ void MakehumanCharacter::GenerateTargetsWeightsStomach
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsBreast
+void MakeHumanCharacter::GenerateTargetsWeightsBreast
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1205,7 +1457,7 @@ void MakehumanCharacter::GenerateTargetsWeightsBreast
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsGenitals
+void MakeHumanCharacter::GenerateTargetsWeightsGenitals
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1234,7 +1486,7 @@ void MakehumanCharacter::GenerateTargetsWeightsGenitals
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsButtocks
+void MakeHumanCharacter::GenerateTargetsWeightsButtocks
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1262,7 +1514,7 @@ void MakehumanCharacter::GenerateTargetsWeightsButtocks
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsPelvis
+void MakeHumanCharacter::GenerateTargetsWeightsPelvis
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1290,7 +1542,7 @@ void MakehumanCharacter::GenerateTargetsWeightsPelvis
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsBreastPosition
+void MakeHumanCharacter::GenerateTargetsWeightsBreastPosition
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1307,7 +1559,7 @@ void MakehumanCharacter::GenerateTargetsWeightsBreastPosition
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsBreastDistance
+void MakeHumanCharacter::GenerateTargetsWeightsBreastDistance
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1324,7 +1576,7 @@ void MakehumanCharacter::GenerateTargetsWeightsBreastDistance
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsBreastTaper
+void MakeHumanCharacter::GenerateTargetsWeightsBreastTaper
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1341,7 +1593,7 @@ void MakehumanCharacter::GenerateTargetsWeightsBreastTaper
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsHeight
+void MakeHumanCharacter::GenerateTargetsWeightsHeight
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1358,7 +1610,7 @@ void MakehumanCharacter::GenerateTargetsWeightsHeight
   }
 }
 
-void MakehumanCharacter::GenerateTargetsWeightsMeasure
+void MakeHumanCharacter::GenerateTargetsWeightsMeasure
 (const ModelTargets& modelVals, csArray<Target>& targets) const
 {
   csString path, name;
@@ -1376,4 +1628,4 @@ void MakehumanCharacter::GenerateTargetsWeightsMeasure
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

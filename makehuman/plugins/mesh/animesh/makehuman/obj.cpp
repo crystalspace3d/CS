@@ -25,14 +25,14 @@
 
 #define DEFAULT_GROUP_NAME "default-dummy-group"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
  * MakeHuman mesh object parser (.obj)
  *-------------------------------------------------------------------------*/
 
-bool MakehumanManager::ParseObjectFile (const char* filename,
+bool MakeHumanManager::ParseObjectFile (const char* filename,
 					csDirtyAccessArray<csVector3>& coords,
 					csDirtyAccessArray<csVector2>& texcoords,
 					csDirtyAccessArray<csVector3>& normals,
@@ -85,6 +85,9 @@ bool MakehumanManager::ParseObjectFile (const char* filename,
           if (sscanf (words[i+1], "%f", &vertex[i]) != 1)
             return ReportError ("Wrong element in object file: not a valid vertex coordinate");
 
+	// Adapt the sign of the Z axis to CS
+	vertex[2] = -vertex[2];
+
         coords.Push (vertex);
       }
 
@@ -100,6 +103,9 @@ bool MakehumanManager::ParseObjectFile (const char* filename,
           if (sscanf (words[i+1], "%f", &texco[i]) != 1)
             return ReportError ("Wrong element in object file: not a valid texture coordinate");
 
+	// Adapt the UV coordinates to CS
+	texco[1] = 1.0f - texco[1];
+
         texcoords.Push (texco);
       }
 
@@ -114,6 +120,9 @@ bool MakehumanManager::ParseObjectFile (const char* filename,
         for (size_t i = 0; i < 3; i++)
           if (sscanf (words[i+1], "%f", &normal[i]) != 1)
             return ReportError ("Wrong element in object file: not a valid normal coordinate");
+
+	// Adapt the sign of the Z axis to CS
+	normal[2] = -normal[2];
 
         normals.Push (normal);
       }
@@ -222,7 +231,7 @@ bool MakehumanManager::ParseObjectFile (const char* filename,
   return true;
 }
 
-bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coords,
+bool MakeHumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coords,
 					      csDirtyAccessArray<csVector2>& texcoords,
 					      csDirtyAccessArray<csVector3>& normals,
 					      const csDirtyAccessArray<FaceGroup>& faceGroups,
@@ -243,15 +252,15 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
   csSubmeshes.DeleteAll ();
   mappingBuf.DeleteAll ();
 
-  // Init Makehuman mapping buffer (list defining a list of MappingVertex 
-  // for each Makehuman vertex (i.e. the corresponding CS vertex, 
-  // the index of Makehuman uv coordinates and its material)
+  // Init MakeHuman mapping buffer (list defining a list of MappingVertex 
+  // for each MakeHuman vertex (i.e. the corresponding CS vertex, 
+  // the index of MakeHuman uv coordinates and its material)
   size_t vertexCount = coords.GetSize ();
   csArray< csArray<MappingVertex> > mapBuf; 
   mapBuf.SetSize (vertexCount);
   size_t csIndex = 0;
 
-  // Treat all Makehuman face groups
+  // Treat all MakeHuman face groups
   printf ("face group count %zu\n", faceGroups.GetSize());
   for (size_t fgIdx = 0; fgIdx < faceGroups.GetSize (); fgIdx++)
   {
@@ -283,12 +292,12 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
       csArray<size_t> csFace;
       triangle = false;
 
-      // Check if all Makehuman face vertices are defined in CS
+      // Check if all MakeHuman face vertices are defined in CS
       for (size_t i = 0; i < 4; i++)
       {
         mhIndex = faceVerts[4*indexF + i];
 
-        // Check if Makehuman faces are triangles
+        // Check if MakeHuman faces are triangles
         if (i == 3 && mhIndex == (size_t) ~0)
         {
           triangle = true;
@@ -297,20 +306,13 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
 
         // Get vertex coordinates
         csVector3 co = coords[mhIndex];
-        co[2] *= -1.0f;          // adapt sign of Z component to CS
 
         // Get vertex normal
         csVector3 normal (0, 0,-1);  // define default normal
         if (hasFaceNorm)
-        {
           normal = normals[ faceNorms[4*indexF+i] ];
-          normal[2] *= -1.0f;      // adapt sign of Z component to CS
-        }
         else if (hasMeshNorm)
-        {
           normal = normals[ mhIndex ];
-          normal[2] *= -1.0f;      // adapt sign of Z component to CS
-        }
         
         if (jointDef)
           joint.vertices.Push (mhIndex);
@@ -326,6 +328,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
           {
             MappingVertex mappedV = mapBuf[mhIndex][mappedI];
             bool testNorm = hasMeshNorm ? true : hasFaceNorm ? 
+	      // TODO: test "abs (difference)" instead?
               (normal == csNormals[mappedV.csIdx]) : true;
 
             if (faceGroups[fgIdx].materialName == mappedV.material &&
@@ -333,7 +336,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
                 fabs (uv[1] - texcoords[mappedV.uvIdx][1]) < EPSILON &&
                 testNorm)
             {
-              // Makehuman vertex is defined in CS with the same 
+              // MakeHuman vertex is defined in CS with the same 
               // [material / UV coordinates / normal (if defined)]
               // => don't do anything
               vertexFound = true;
@@ -345,13 +348,12 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
         
           if (!vertexFound)
           {
-            // Makehuman vertex is either not defined in CS or defined in CS with 
+            // MakeHuman vertex is either not defined in CS or defined in CS with 
             // different [material / UV coordinates / normal (if defined)]
             // => create a new CS vertex
             MappingVertex mapv (csIndex, uvIndex, faceGroups[fgIdx].materialName);
             mapBuf[mhIndex].Push (mapv);
             csCoords.Push (co);
-            uv[1] = 1.0f - uv[1];    // adapt UV coordinates to CS
             csTexcoords.Push (uv);
             csNormals.Push (normal);
             if (!jointDef)
@@ -372,7 +374,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
         else
         {
           // Without UV coordinates, there is a direct mapping between
-          // Makehuman and CS vertices
+          // MakeHuman and CS vertices
           csCoords.Push (co);
           csNormals.Push (normal);
           if (!jointDef)
@@ -391,7 +393,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
       if (!jointDef)
       {
         // Copy face data into index buffer of CS submesh.
-        // Makehuman faces have 3 or 4 vertices while the ones of Crystal Space 
+        // MakeHuman faces have 3 or 4 vertices while the ones of Crystal Space 
         // are always triangles; a triangulation might thus be needed
 
         // first CS face respecting order of indices: [2, 1, 0]
@@ -424,10 +426,10 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
 
     if (jointDef)
     {
-      // Get joint name (slice prefix "joint-" from Makehuman group name)
+      // Get joint name (slice prefix "joint-" from MakeHuman group name)
       csString name (faceGroups[fgIdx].groupName.Slice (6));
 
-      // Add parsed face group to the array of Makehuman joints
+      // Add parsed face group to the array of MakeHuman joints
       mhJoints.Put (name, joint);
     }
     else
@@ -435,8 +437,8 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
       csSubmeshes.Push (csSubmesh);
   }
 
-  // Copy mapping buffer between Makehuman and CS vertices; only keep what is useful 
-  // for the parsing of Makehuman targets, rigs and clothes
+  // Copy mapping buffer between MakeHuman and CS vertices; only keep what is useful 
+  // for the parsing of MakeHuman targets, rigs and clothes
   for (size_t i = 0; i < mapBuf.GetSize (); i++)
   {
     VertBuf buf;
@@ -451,7 +453,7 @@ bool MakehumanCharacter::GenerateMeshBuffers (csDirtyAccessArray<csVector3>& coo
   return true;
 }
 
-csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateAnimatedMesh
+csPtr<CS::Mesh::iAnimatedMeshFactory> MakeHumanCharacter::CreateAnimatedMesh
 (csDirtyAccessArray<csVector3>& coords,
  csDirtyAccessArray<csVector2>& texcoords,
  csDirtyAccessArray<csVector3>& normals,
@@ -590,4 +592,4 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateAnimatedMesh
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

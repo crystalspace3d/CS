@@ -35,12 +35,12 @@
 
 #define MODEL_NAME "test"
 
-MakehumanTest::MakehumanTest ()
-  : DemoApplication ("CrystalSpace.MakehumanTest")
+MakeHumanTest::MakeHumanTest ()
+  : DemoApplication ("CrystalSpace.MakeHumanTest"), model (MODEL_NEUTRAL)
 {
 }
 
-MakehumanTest::~MakehumanTest ()
+MakeHumanTest::~MakeHumanTest ()
 {
   // Remove the meshes from the scene
   // Remove clothes meshes
@@ -65,7 +65,7 @@ MakehumanTest::~MakehumanTest ()
   }
 }
 
-bool MakehumanTest::OnInitialize (int argc, char* argv [])
+bool MakeHumanTest::OnInitialize (int argc, char* argv [])
 {
   // Default behavior from DemoApplication
   if (!DemoApplication::OnInitialize (argc, argv))
@@ -75,14 +75,14 @@ bool MakehumanTest::OnInitialize (int argc, char* argv [])
     CS_REQUEST_PLUGIN ("crystalspace.mesh.animesh.animnode.debug",
 		       CS::Animation::iSkeletonDebugNodeManager),
     CS_REQUEST_PLUGIN ("crystalspace.mesh.animesh.makehuman",
-		       CS::Mesh::iMakehumanManager),
+		       CS::Mesh::iMakeHumanManager),
     CS_REQUEST_END))
     return ReportError ("Failed to initialize plugins!");
 
   return true;
 }
 
-bool MakehumanTest::Application ()
+bool MakeHumanTest::Application ()
 {
   // Default behavior from DemoApplication
   if (!DemoApplication::Application ())
@@ -92,23 +92,33 @@ bool MakehumanTest::Application ()
   if (!CreateRoom ())
      return false;
 
-  // Parse a Makehuman model and convert it into CS
+  // Parse a MakeHuman model and convert it into CS
   makehumanManager =
-    csQueryRegistry<CS::Mesh::iMakehumanManager> (GetObjectRegistry ());
+    csQueryRegistry<CS::Mesh::iMakeHumanManager> (GetObjectRegistry ());
   if (!makehumanManager)
-    return ReportError ("Failed to initialize the Makehuman plugin!"
+    return ReportError ("Failed to initialize the MakeHuman plugin!"
 			" Have you installed the data files such as explained at data/makehuman/README?");
 
   // Create a human model
   //if (!CreateModel ("test", "/lib/makehuman/test.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/realasian.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/test-1.0a7.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/clothes.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/measures.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/test.mhm", "ascottk", "second_life"))
+  //if (!CreateModel ("test", "/lib/makehuman/variated.mhm", "ascottk", "second_life"))
+  //if (!CreateModel ("test", "/lib/makehuman/test.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/complex.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/ethnics.mhm"))
+  //if (!CreateModel ("test", "/lib/makehuman/variated.mhm"))
   if (!CreateCustomModel ())
     return ReportError ("Problem creating avatar\n");
 
 
   //*********** test clothes ***********************
 
-  // Put clothes listed in Makehuman properties on the model
-  // if (!CreateClothes ()) ReportWarning ("Problem while putting clothes on the model");
+  // Put clothes listed in MakeHuman properties on the model
+  if (!CreateClothes ()) ReportWarning ("Problem while putting clothes on the model");
 
   // Put a single clothing item on the model
   //if (!CreateClothingItem ("shirt_medium", true))
@@ -117,12 +127,12 @@ bool MakehumanTest::Application ()
    //********** test facial expressions ***************
 
   //TestMacroExpression ();
-  //TestMicroExpression1 ();   // smile
+  TestMicroExpression1 ();   // smile
   //TestMicroExpression2 ();   // anger
   //TestMicroExpression3 ();   // cry
 
   // Update the HUD
-  hudManager->GetKeyDescriptions ()->Push ("r: reset the model");
+  hudManager->GetKeyDescriptions ()->Push ("s: switch model");
 
   // Run the application
   Run ();
@@ -130,7 +140,7 @@ bool MakehumanTest::Application ()
   return true;
 }
 
-void MakehumanTest::Frame ()
+void MakeHumanTest::Frame ()
 {
   // Default behavior from DemoApplication
   DemoApplication::Frame ();
@@ -139,7 +149,7 @@ void MakehumanTest::Frame ()
     debugNode->Draw (view->GetCamera ());
 }
 
-bool MakehumanTest::OnKeyboard (iEvent &event)
+bool MakeHumanTest::OnKeyboard (iEvent &event)
 {
   // Default behavior from DemoApplication
   DemoApplication::OnKeyboard (event);
@@ -147,17 +157,50 @@ bool MakehumanTest::OnKeyboard (iEvent &event)
   csKeyEventType eventtype = csKeyEventHelper::GetEventType (&event);
   if (eventtype == csKeyEventTypeDown)
   {
-    // Reset the model to the neutral state
-    if (csKeyEventHelper::GetCookedCode (&event) == 'r')
+    // Switching of model
+    if (csKeyEventHelper::GetCookedCode (&event) == 's')
     {
-      csPrintf ("Resetting the model to neutral\n");
-
-      character->SetNeutral ();
-
-      if (!character->UpdateMeshFactory ())
+      switch (model)
       {
-	ReportError ("Error re-generating the Makehuman model");
-	return true;
+      case MODEL_NEUTRAL:
+	// Reset the model to the neutral state
+	csPrintf ("Resetting the model to neutral\n");
+
+	character->SetUpdateMode (CS::Mesh::MH_UPDATE_FULL);
+	character->SetNeutral ();
+
+	if (!character->UpdateMeshFactory ())
+	{
+	  ReportError ("Error re-generating the MakeHuman model");
+	  return true;
+	}
+
+	model = MODEL_VARIETED;
+	break;
+
+      case MODEL_VARIETED:
+	// Change a few properties using the 'fast' update mode
+	csPrintf ("Testing the %s update mode\n", CS::Quote::Single ("fast"));
+
+	character->SetUpdateMode (CS::Mesh::MH_UPDATE_FAST);
+
+	character->SetProperty ("age", 0.2f);
+	character->SetProperty ("height", 0.4f);
+	character->SetProperty ("gender", 0.2f);
+	character->SetProperty ("weight", 0.9f);
+	character->SetProperty ("pelvisTone", 0.97f);
+	character->SetProperty ("stomach", 0.97f);
+
+	character->SetMeasure ("bust", -.76f);
+	character->SetMeasure ("shoulder", .8f);
+	character->SetMeasure ("frontchest", -.3f);
+	character->SetMeasure ("hips", .75f);
+
+	// Invalidate the animated mesh factory after all those changes
+        character->GetMeshFactory ()->Invalidate ();
+
+	model = MODEL_NEUTRAL;
+	break;
       }
 
       return true;
@@ -167,7 +210,7 @@ bool MakehumanTest::OnKeyboard (iEvent &event)
   return false;
 }
 
-bool MakehumanTest::CreateRoom ()
+bool MakeHumanTest::CreateRoom ()
 {
   // Default behavior from DemoApplication for the creation of the scene
   if (!DemoApplication::CreateRoom ())
@@ -198,7 +241,7 @@ bool MakehumanTest::CreateRoom ()
  *  Model
  *-------------------------------------------------------------------------*/
 
-void MakehumanTest::ResetScene ()
+void MakeHumanTest::ResetScene ()
 {
   if (!animesh)
     return;
@@ -219,28 +262,39 @@ void MakehumanTest::ResetScene ()
 		       csVector3 (0.0f, height * 0.5f, -height)));
 }
 
-bool MakehumanTest::CreateModel (const char* factoryName, const char* filename, const char* proxy, const char* rig)
+bool MakeHumanTest::CreateModel (const char* factoryName, const char* filename, const char* proxy, const char* rig)
 {
   character = makehumanManager->CreateCharacter ();
   character->SetExpressionGeneration (false);
 
   if (!character->Parse (filename))
-    return ReportError ("Error parsing the Makehuman model file '%s'", filename);
+    return ReportError ("Error parsing the MakeHuman model file '%s'", filename);
 
   character->SetProxy (proxy);
   character->SetRig (rig);
 
   if (!character->UpdateMeshFactory ())
-    return ReportError ("Error generating the Makehuman model '%s'", factoryName);
+    return ReportError ("Error generating the MakeHuman model '%s'", factoryName);
 
   return SetupAnimatedMesh ();
 }
 
-bool MakehumanTest::CreateCustomModel ()
+bool MakeHumanTest::CreateCustomModel ()
 {
   character = makehumanManager->CreateCharacter ();
-  character->SetExpressionGeneration (false);
   character->SetNeutral ();
+
+  character->SetProperty ("age", 0.2f);
+  character->SetProperty ("height", 0.4f);
+  character->SetProperty ("gender", 0.8f);
+  character->SetProperty ("weight", 0.9f);
+  character->SetProperty ("pelvisTone", 0.97f);
+  character->SetProperty ("stomach", 0.97f);
+
+  character->SetMeasure ("bust", -.76f);
+  character->SetMeasure ("shoulder", .8f);
+  character->SetMeasure ("frontchest", -.3f);
+  character->SetMeasure ("hips", .75f);
 
 /*
   // Those are the set of properties equivalent to a call to SetNeutral ()
@@ -255,15 +309,19 @@ bool MakehumanTest::CreateCustomModel ()
   character->SetProperty ("breastFirmness", 0.5f);
   character->SetProperty ("breastSize", 0.5f);
 */
+
   if (!character->UpdateMeshFactory ())
-    return ReportError ("Error generating the Makehuman model");
+    return ReportError ("Error generating the MakeHuman model");
 
   //TestTargetAccess ("gender", true);
+
+  // Disable expression generation for faster future updates
+  character->SetExpressionGeneration (false); 
 
   return SetupAnimatedMesh ();
 }
 
-bool MakehumanTest::SetupAnimatedMesh ()
+bool MakeHumanTest::SetupAnimatedMesh ()
 {
   // Print some additional information
   animeshFactory = character->GetMeshFactory ();
@@ -300,44 +358,45 @@ bool MakehumanTest::SetupAnimatedMesh ()
     eyes *= 0.5f;
 
     printf ("\nfeet position: %s\n", feet.Description ().GetData ());
-
     printf ("\nskeleton height: %f\n", (eyes - feet).Norm ());
-  }
 
-  csRef<iMeshObjectFactory> meshObject =
-    scfQueryInterface<iMeshObjectFactory> (animeshFactory);
-  printf ("body height: %f\n\n", meshObject->GetObjectModel ()->GetObjectBoundingBox ().GetSize ()[1]);
+    // Create and setup an animation tree with a single 'debug' animation node
+    csRef<iMeshObjectFactory> meshObject =
+      scfQueryInterface<iMeshObjectFactory> (animeshFactory);
+    printf ("body height: %f\n\n", meshObject->GetObjectModel ()->GetObjectBoundingBox ().GetSize ()[1]);
 
-  // Create a 'debug' animation node for the animesh
-  csRef<CS::Animation::iSkeletonDebugNodeManager> debugManager = 
-    csQueryRegistry<CS::Animation::iSkeletonDebugNodeManager> (GetObjectRegistry ());
-  if (!debugManager) return ReportError ("Failed to locate iSkeletonDebugNodeManager plugin!");
+    // Create a 'debug' animation node for the animesh
+    csRef<CS::Animation::iSkeletonDebugNodeManager> debugManager = 
+      csQueryRegistry<CS::Animation::iSkeletonDebugNodeManager> (GetObjectRegistry ());
+    if (!debugManager) return ReportError ("Failed to locate iSkeletonDebugNodeManager plugin!");
 
-  csRef<CS::Animation::iSkeletonFactory> skelFact =
-    animeshFactory->GetSkeletonFactory ();
+    csRef<CS::Animation::iSkeletonFactory> skelFact =
+      animeshFactory->GetSkeletonFactory ();
 
-  csRef<CS::Animation::iSkeletonAnimPacketFactory> animPacketFactory =
-    skelFact->GetAnimationPacket ();
+    csRef<CS::Animation::iSkeletonAnimPacketFactory> animPacketFactory =
+      skelFact->GetAnimationPacket ();
 
-  if (!animPacketFactory)
-  {
-    csRef<CS::Animation::iSkeletonManager> skeletonManager = 
-      csQueryRegistryOrLoad<CS::Animation::iSkeletonManager>
-       (object_reg, "crystalspace.skeletalanimation");
-    if (!skeletonManager)
-      ReportWarning ("Could not find skeleton manager."
-                     "Importing animesh skeletons and animations won't be possible");
+    if (!animPacketFactory)
+    {
+      csRef<CS::Animation::iSkeletonManager> skeletonManager = 
+	csQueryRegistryOrLoad<CS::Animation::iSkeletonManager>
+	(object_reg, "crystalspace.skeletalanimation");
+      if (!skeletonManager)
+	ReportWarning ("Could not find skeleton manager."
+		       "Importing animesh skeletons and animations won't be possible");
 
-    animPacketFactory = skeletonManager->CreateAnimPacketFactory ("test_packet");
-    skelFact->SetAnimationPacket (animPacketFactory);
-  }
+      animPacketFactory = skeletonManager->CreateAnimPacketFactory ("test_packet");
+      skelFact->SetAnimationPacket (animPacketFactory);
+    }
 
-  debugNodeFactory = debugManager->CreateAnimNodeFactory ("debug");
-  debugNodeFactory->SetDebugModes (CS::Animation::DEBUG_2DLINES);
+    debugNodeFactory = debugManager->CreateAnimNodeFactory ("debug");
+    debugNodeFactory->SetDebugModes (CS::Animation::DEBUG_2DLINES);
 //  debugNodeFactory->SetDebugModes (CS::Animation::DEBUG_BBOXES);
-  debugNodeFactory->SetRandomColor (true);
-  animPacketFactory->SetAnimationRoot (debugNodeFactory);
+    debugNodeFactory->SetRandomColor (true);
+    animPacketFactory->SetAnimationRoot (debugNodeFactory);
+  }
 
+  // Create the mesh
   csRef<iMeshObjectFactory> meshFactory =
     scfQueryInterface<iMeshObjectFactory> (animeshFactory);
 
@@ -346,25 +405,32 @@ bool MakehumanTest::SetupAnimatedMesh ()
 
   csRef<iMeshWrapper> avatarMesh =
     engine->CreateMeshWrapper (meshFactWrapper, "test", room, csVector3 (0.0f));
-  animesh = scfQueryInterface<CS::Mesh::iAnimatedMesh> (avatarMesh->GetMeshObject ());
 
-  CS::Animation::iSkeletonAnimNode* rootNode =
-    animesh->GetSkeleton ()->GetAnimationPacket ()->GetAnimationRoot ();
+  if (skeleton)
+  {
+    // Find a reference to the 'debug' animation node
+    animesh = scfQueryInterface<CS::Mesh::iAnimatedMesh> (avatarMesh->GetMeshObject ());
 
-  debugNode = scfQueryInterface<CS::Animation::iSkeletonDebugNode> 
-    (rootNode->FindNode ("debug"));
-  if (!debugNode)
-    ReportWarning ("Could not find the debug node");
+    CS::Animation::iSkeletonAnimNode* rootNode =
+      animesh->GetSkeleton ()->GetAnimationPacket ()->GetAnimationRoot ();
+
+    debugNode = scfQueryInterface<CS::Animation::iSkeletonDebugNode> 
+      (rootNode->FindNode ("debug"));
+    if (!debugNode)
+      ReportWarning ("Could not find the debug node");
+  }
+
+  CS::Debug::VisualDebuggerHelper::DebugTransform (GetObjectRegistry (), csOrthoTransform (), true);
 
   ResetScene ();
   return true;
 }
 
-void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
+void MakeHumanTest::TestTargetAccess (const char* property, bool testOffsets)
 {
   // Query the list of morph targets that will get activated if the given
   // property is modified
-  csRefArray<CS::Mesh::iMakehumanMorphTarget> targets;
+  csRefArray<CS::Mesh::iMakeHumanMorphTarget> targets;
   bool boundary = character->GetPropertyTargets (property, targets);
 
   // Print the list of targets
@@ -373,26 +439,30 @@ void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
   for (size_t i = 0; i < targets.GetSize (); i++)
     csPrintf ("target %s scale: %f direction: %i\n", targets[i]->GetName (),
 	    targets[i]->GetScale (), (int) targets[i]->GetDirection ());
+  csPrintf ("\n");
 
   // Test the validity of the targets that are returned
   if (!testOffsets) return;
 
-  // Define a step value to be applied 
-  float step = 0.01f;
-  CS::Mesh::MakehumanMorphTargetDirection direction =
+  // Define a random step value to be applied 
+  float step = -.5f;
+  CS::Mesh::MakeHumanMorphTargetDirection direction =
     step > 0.0f ? CS::Mesh::MH_DIRECTION_UP : CS::Mesh::MH_DIRECTION_DOWN;
 
-  // Iterate on all vertices
+  // Iterate on all morph targets
   csRenderBufferLock<csVector3> vertices (character->GetMeshFactory ()->GetVertices ());
   for (size_t i = 0; i < targets.GetSize (); i++)
   {
-    CS::Mesh::iMakehumanMorphTarget* target = targets[i];
+    CS::Mesh::iMakeHumanMorphTarget* target = targets[i];
 
     // Check if we are at a target boundary and if the direction is OK
     if (boundary
 	&& target->GetDirection () != CS::Mesh::MH_DIRECTION_BOTH
 	&& target->GetDirection () != direction)
       continue;
+
+    csPrintf ("target activated %s scale: %f\n", targets[i]->GetName (),
+	      targets[i]->GetScale ());
 
     // Iterate on all vertices activated by the morph target
     const csArray<csVector3>& offsets = target->GetOffsets ();
@@ -408,7 +478,7 @@ void MakehumanTest::TestTargetAccess (const char* property, bool testOffsets)
   }
 }
 
-bool MakehumanTest::CreateClothes ()
+bool MakeHumanTest::CreateClothes ()
 {
   // Place an instance of each clothing factory in the scene
   for (size_t index = 0; index < character->GetClothCount (); index++)
@@ -427,7 +497,7 @@ bool MakehumanTest::CreateClothes ()
   return true;
 }
 
-bool MakehumanTest::CreateClothingItem (const char* clothingName)
+bool MakeHumanTest::CreateClothingItem (const char* clothingName)
 {
   character->ClearClothes ();
   //character->AddCloth (...);
@@ -447,115 +517,115 @@ bool MakehumanTest::CreateClothingItem (const char* clothingName)
   return true;
 }
 
-void MakehumanTest::TestMacroExpression ()
+void MakeHumanTest::TestMacroExpression ()
 {
   const char* expname = "macro_realsmile";
   printf ("\nTEST: setting macro-expression '%s'\n", expname);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, 1.0, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, 1.0))
     ReportError ("Could not apply morph target '%s'", expname);
 }
 
-void MakehumanTest::TestMicroExpression1 ()
+void MakeHumanTest::TestMicroExpression1 ()
 {
   // Expression 'smile'
   printf ("\nTEST: setting micro-expression 'smile'\n");
   const char* expname = "mouth-corner-puller";
   float weight = 0.645833;
   printf ("TEST: setting expression '%s'\n\n", expname);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
 }
 
-void MakehumanTest::TestMicroExpression2 ()
+void MakeHumanTest::TestMicroExpression2 ()
 {
   // Expression 'anger'
   printf ("\nTEST: setting macro-expression 'anger'\n");
   const char* expname = "eyebrows-right-extern-up";
   float weight = 0.187500;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "eyebrows-left-down";
   weight = 1.0;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "nose-right-elevation";
   weight = 0.635417;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "nose-compression";
   weight = 0.854167;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "nose-left-dilatation";
   weight =  0.437500;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "eyebrows-left-extern-up";
   weight = 0.281250;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "eyebrows-right-down";
   weight =  1.0;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "nose-left-elevation";
   weight = 0.572917;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "nose-right-dilatation";
   weight = 0.458333;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "mouth-part-later";
   weight = 1.000000;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
 }
 
-void MakehumanTest::TestMicroExpression3 ()
+void MakeHumanTest::TestMicroExpression3 ()
 {
   // Expression 'cry'
   printf ("\nTEST: setting macro-expression 'cry'\n");
   const char* expname = "eyebrows-right-inner-up";
   float weight = 0.635417;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "eye-left-slit";
   weight = 0.822917;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "eye-right-slit";
   weight = 0.822917;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "eyebrows-left-inner-up";
   weight = 0.864583;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
   expname = "mouth-depression-retraction";
   weight =  0.583333;
   printf ("TEST: setting expression '%s' weight %f\n", expname, weight);
-  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (expname, weight, animeshFactory))
+  if (!CS::Mesh::AnimatedMeshTools::ApplyMorphTarget (animeshFactory, expname, weight))
     ReportError ("Could not apply morph target '%s'", expname);
 }
 
 //******* Utility function ********
 
-void MakehumanTest::SaveSprite (const char* filename)
+void MakeHumanTest::SaveSprite (const char* filename)
 {
   csRef<iDocumentSystem> xml = csPtr<iDocumentSystem> (new csTinyDocumentSystem ());
   csRef<iDocument> doc = xml->CreateDocument ();
@@ -621,5 +691,5 @@ CS_IMPLEMENT_APPLICATION
 
 int main (int argc, char* argv[])
 {
-  return MakehumanTest ().Main (argc, argv);
+  return MakeHumanTest ().Main (argc, argv);
 }

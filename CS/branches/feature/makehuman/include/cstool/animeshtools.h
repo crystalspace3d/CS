@@ -71,10 +71,12 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
 						  const char* factoryName,
 						  const char* filename);
 
-  // Recursively remove bones from animesh's skeleton.
-  // The current bone or any child bone of curBone that influences no vertex
-  // is removed if none of their children bones influence a vertex.
-  static bool RemoveBones (iAnimatedMeshFactory* amfact, 
+  /**
+   * Recursively remove bones from animesh's skeleton.
+   * The current bone or any child bone of curBone that influences no vertex
+   * is removed if none of their children bones influence a vertex.
+   */
+  static bool RemoveBones (iAnimatedMeshFactory* factory, 
                            CS::Animation::BoneID curBone);
 
  public:
@@ -145,12 +147,13 @@ class CS_CRYSTALSPACE_EXPORT AnimatedMeshTools
   /**
    * Apply a morph target directly to the mesh of an animesh factory.
    *
+   * \param factory Animesh factory
    * \param target Name of the morph target
    * \param weight Weight to blend the given morph target
    * \return true if success
    */
-  static bool ApplyMorphTarget (const char* target, const float weight,
-				iAnimatedMeshFactory* factory);
+  static bool ApplyMorphTarget
+    (iAnimatedMeshFactory* factory, const char* target, const float weight);
 
   /**
    * Remove all bones of an animesh factory that influence no vertex.

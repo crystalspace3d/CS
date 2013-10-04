@@ -344,13 +344,14 @@ csPtr<iAnimatedMeshFactory> AnimatedMeshTools::ImportGeneralMesh
 }
 
 
-bool AnimatedMeshTools::ApplyMorphTarget (const char* target, const float weight, iAnimatedMeshFactory* amfact)
+bool AnimatedMeshTools::ApplyMorphTarget
+(iAnimatedMeshFactory* factory, const char* target, const float weight)
 {
   // Clear animesh subsets
-  amfact->ClearSubsets();
+  factory->ClearSubsets();
 
   // Find morph target
-  uint mtindex = amfact->FindMorphTarget (target);
+  uint mtindex = factory->FindMorphTarget (target);
   if (mtindex == (uint)~0)
   {
     ReportError ("Can't find target '%s'", target);
@@ -358,12 +359,12 @@ bool AnimatedMeshTools::ApplyMorphTarget (const char* target, const float weight
   }
 
   // Get the animesh vertex buffer where the target will be morphed
-  size_t vertexCount = amfact->GetVertexCount ();
-  csRef<iRenderBuffer> vertexBuf = amfact->GetVertices ();
+  size_t vertexCount = factory->GetVertexCount ();
+  csRef<iRenderBuffer> vertexBuf = factory->GetVertices ();
   csRenderBufferLock<csVector3> verts (vertexBuf);
 
   // Apply target directly to the mesh buffer
-  CS::Mesh::iAnimatedMeshMorphTarget* mt = amfact->GetMorphTarget (mtindex);
+  CS::Mesh::iAnimatedMeshMorphTarget* mt = factory->GetMorphTarget (mtindex);
   csVertexListWalker<float, csVector3> offsets (mt->GetVertexOffsets ());
   for (uint vi = 0; vi < vertexCount; vi++)
   {
@@ -384,7 +385,7 @@ bool AnimatedMeshTools::RemoveBones (iAnimatedMeshFactory* factory, CS::Animatio
 
   // Check if child bones of the current bone can be removed
   for (size_t i = 0; i < bones.GetSize (); i++)
-    if (skeletonFactory->HasBone (bones[i]) &&
+    if (skeletonFactory->HasBone (bones[i]) and
         skeletonFactory->GetBoneParent (bones[i]) == curBone)
       // If any child bone can't be removed, the current bone can't either
       if (!RemoveBones (factory, bones[i]))
@@ -393,7 +394,7 @@ bool AnimatedMeshTools::RemoveBones (iAnimatedMeshFactory* factory, CS::Animatio
   // Since none of the children bones influence any vertex,
   // if the current bone does not influence any vertex either, remove it
   if (skeletonFactory->HasBone (curBone)
-      && factory->GetBoneBoundingBox (curBone).Empty ())
+      and factory->GetBoneBoundingBox (curBone).Empty ())
   {
     skeletonFactory->RemoveBone (curBone);
     return true;
@@ -414,7 +415,7 @@ void AnimatedMeshTools::CleanSkeleton (iAnimatedMeshFactory* factory)
   for (CS::Animation::BoneID bi = 0; bi < topBone; bi++)
     // If a bone is root of an armature, clean the skeleton tree 
     // having this bone as root
-    if (skeletonFactory->HasBone (bi) &&
+    if (skeletonFactory->HasBone (bi) and
         skeletonFactory->GetBoneParent (bi) == CS::Animation::InvalidBoneID)
       RemoveBones (factory, bi);
 }

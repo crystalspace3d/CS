@@ -23,40 +23,40 @@
 #include "character.h"
 #include "targets.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
- * MakehumanMorphTarget
+ * MakeHumanMorphTarget
  *-------------------------------------------------------------------------*/
 
-MakehumanMorphTarget::MakehumanMorphTarget ()
-  : scfImplementationType (this)
+MakeHumanMorphTarget::MakeHumanMorphTarget ()
+  : scfImplementationType (this), scale (1.0f), direction (MH_DIRECTION_BOTH)
 {
 
 }
 
-const char* MakehumanMorphTarget::GetName () const
+const char* MakeHumanMorphTarget::GetName () const
 {
   return name;
 }
 
-const csArray<csVector3>& MakehumanMorphTarget::GetOffsets () const
+const csArray<csVector3>& MakeHumanMorphTarget::GetOffsets () const
 {
   return offsets;
 }
 
-const csArray<size_t>& MakehumanMorphTarget::GetIndices () const
+const csArray<size_t>& MakeHumanMorphTarget::GetIndices () const
 {
   return indices;
 }
 
-float MakehumanMorphTarget::GetScale () const
+float MakeHumanMorphTarget::GetScale () const
 {
   return scale;
 }
 
-MakehumanMorphTargetDirection MakehumanMorphTarget::GetDirection () const
+MakeHumanMorphTargetDirection MakeHumanMorphTarget::GetDirection () const
 {
   return direction;
 }
@@ -64,7 +64,7 @@ MakehumanMorphTargetDirection MakehumanMorphTarget::GetDirection () const
 /*-------------------------------------------------------------------------*
  * MakeHuman morph targets parser (.target)
  *-------------------------------------------------------------------------*/
-bool MakehumanManager::ParseMakehumanTargetFile
+bool MakeHumanManager::ParseMakeHumanTargetFile
   (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices)
 {
   // Check if the target buffers are already in the cache
@@ -76,14 +76,14 @@ bool MakehumanManager::ParseMakehumanTargetFile
     return true;
   }
 
-  // Open the Makehuman target file
+  // Open the MakeHuman target file
   csRef<iFile> file = OpenFile (filename, TARGETS_PATH);
   if (!file)
     return ReportError ("Could not open file %s", filename);
   if (file->GetSize () == 0)
     return true;
 
-  // Parse the Makehuman target file
+  // Parse the MakeHuman target file
   int mhxIndex;
   float offsetX, offsetY, offsetZ;
   char line[256];
@@ -94,7 +94,7 @@ bool MakehumanManager::ParseMakehumanTargetFile
     if (!ParseLine (file, line, 255)) 
     {
       if (!file->AtEOF ())
-        return ReportError ("Malformed Makehuman target file");
+        return ReportError ("Malformed MakeHuman target file");
     }
     else
     {
@@ -108,7 +108,7 @@ bool MakehumanManager::ParseMakehumanTargetFile
 
       if (numVals != 4)
       {
-        ReportError ("Wrong number of element in Makehuman target file (line %s)",
+        ReportError ("Wrong number of element in MakeHuman target file (line %s)",
 		CS::Quote::Single (line));
 	continue;
       }
@@ -117,7 +117,7 @@ bool MakehumanManager::ParseMakehumanTargetFile
       if (sscanf (words[0], "%i", &mhxIndex) != 1 || mhxIndex >= (int) coords.GetSize ())
       {
 /*
-        ReportError ("Wrong index element in Makehuman target file %s (%s)",
+        ReportError ("Wrong index element in MakeHuman target file %s (%s)",
 		CS::Quote::Single (filename), CS::Quote::Single (words[0]));
 */
         continue;
@@ -125,21 +125,21 @@ bool MakehumanManager::ParseMakehumanTargetFile
 
       // Parse X component of offset
       if (sscanf (words[1], "%f", &offsetX) != 1)
-        return ReportError ("Wrong X element in Makehuman target file %s (%s)",
+        return ReportError ("Wrong X element in MakeHuman target file %s (%s)",
 		       CS::Quote::Single (filename), CS::Quote::Single (words[1]));
 
       // Parse Y component of offset
       if (sscanf (words[2], "%f", &offsetY) != 1)
-        return ReportError ("Wrong Y element in Makehuman target file %s (%s)",
+        return ReportError ("Wrong Y element in MakeHuman target file %s (%s)",
 		       CS::Quote::Single (filename), CS::Quote::Single (words[2]));
 
       // Parse Z component of offset
       if (sscanf (words[3], "%f", &offsetZ) != 1)
-        return ReportError ("Wrong Z element in Makehuman target file %s (%s)",
+        return ReportError ("Wrong Z element in MakeHuman target file %s (%s)",
 		       CS::Quote::Single (filename), CS::Quote::Single (words[3]));
 
-      // Copy the parsed offset into the buffers
-      offsets.Push (csVector3 (offsetX, offsetY, offsetZ));
+      // Copy the parsed offset into the buffers (adapting the Z axis)
+      offsets.Push (csVector3 (offsetX, offsetY, -offsetZ));
       indices.Push (mhxIndex);
     }
   }
@@ -155,9 +155,9 @@ bool MakehumanManager::ParseMakehumanTargetFile
   return true;
 }
 
-bool MakehumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
+bool MakeHumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
 {
-  // Make a backup of neutral Makehuman mesh and init basic offsets buffer 'basicMorph'
+  // Make a backup of neutral MakeHuman mesh and init basic offsets buffer 'basicMorph'
   // TODO: not needed if not generating expressions
   basicMesh.DeleteAll ();
   basicMorph.DeleteAll ();
@@ -167,8 +167,8 @@ bool MakehumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
     basicMorph.Push (csVector3 (0.0f));
   }
 
-  // Apply Makehuman targets to neutral mesh buffer
-  printf ("\nApplying morphtargets:\n");
+  // Apply MakeHuman targets to neutral mesh buffer
+  //printf ("\nApplying morphtargets:\n");
   for (size_t ti = 0; ti < targets.GetSize (); ti++)
   {
     // Get morph target
@@ -196,7 +196,7 @@ bool MakehumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
     if (target.offsets.GetSize () != target.indices.GetSize ())
       return ReportError ("Error while applying morph targets: wrong number of offsets and vertices");
 
-    // Apply target offsets to Makehuman mesh buffer
+    // Apply target offsets to MakeHuman mesh buffer
     for (size_t i = 0; i < target.offsets.GetSize (); i++)
     {
       // Add offsets of all model properties to basic mesh
@@ -207,19 +207,19 @@ bool MakehumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
         basicMorph[target.indices[i]] += target.weight * target.offsets[i];
     }
     
-    printf ("  '%s.target' with weight %.4f\n", target.name.GetData (), target.weight);
+    //printf ("  '%s.target' with weight %.4f\n", target.name.GetData (), target.weight);
   }
 
-  // Make a backup of morphed Makehuman model
+  // Make a backup of morphed MakeHuman model
   morphedMesh.DeleteAll ();
   for (size_t i = 0; i < coords.GetSize (); i++)
     morphedMesh.Push (coords[i]);
 
-  // Notice that basic Makehuman model 'base.obj' doesn't define vertex normals;
+  // Notice that basic MakeHuman model 'base.obj' doesn't define vertex normals;
   // consequently, array 'normals' is empty and should not be updated after morphing
 
   return true;
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

@@ -22,14 +22,14 @@
 #include "cssysdef.h"
 #include "character.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
  * MakeHuman proxy parser (.proxy and .mhclo)
  *-------------------------------------------------------------------------*/
 
-bool MakehumanCharacter::ParseProxyScale (csStringArray& words, ProxyData& proxy)
+bool MakeHumanCharacter::ParseProxyScale (csStringArray& words, ProxyData& proxy)
 {
   int mhxIndex;
   float floatVal;
@@ -71,7 +71,7 @@ bool MakehumanCharacter::ParseProxyScale (csStringArray& words, ProxyData& proxy
   return true;
 }
 
-bool MakehumanCharacter::ParseProxyVert (csStringArray& words, ProxyData& proxy)
+bool MakeHumanCharacter::ParseProxyVert (csStringArray& words, ProxyData& proxy)
 {
   int mhxIndex;
   float floatVal;
@@ -136,7 +136,7 @@ bool MakehumanCharacter::ParseProxyVert (csStringArray& words, ProxyData& proxy)
   return true;
 }
 
-bool MakehumanCharacter::ParseProxyFile (const char* proxyFile, ProxyData& proxy)
+bool MakeHumanCharacter::ParseProxyFile (const char* proxyFile, ProxyData& proxy)
 {
   // Open the resource file
   csRef<iFile> file = manager->OpenFile (proxyFile, "/lib/makehuman/");
@@ -260,7 +260,7 @@ bool MakehumanCharacter::ParseProxyFile (const char* proxyFile, ProxyData& proxy
   return true;
 }
 
-bool MakehumanCharacter::AdaptProxyToModel (ProxyData& proxy,
+bool MakeHumanCharacter::AdaptProxyToModel (ProxyData& proxy,
 					    csDirtyAccessArray<csVector3>& coords,
 					    csDirtyAccessArray<csVector2>& texcoords,
 					    csDirtyAccessArray<csVector3>& normals)
@@ -314,13 +314,10 @@ bool MakehumanCharacter::AdaptProxyToModel (ProxyData& proxy,
       // Proxy vertex is defined by barycentric coordinates
       csIndex = mappingBuffer[pvert.v[0]].vertices[0];
       v0 = modelVerts[csIndex];
-      v0[2] *= -1.0f;  // go back to Makehuman Z orientation
       csIndex = mappingBuffer[pvert.v[1]].vertices[0];
       v1 = modelVerts[csIndex];
-      v1[2] *= -1.0f;  // go back to Makehuman Z orientation
       csIndex = mappingBuffer[pvert.v[2]].vertices[0];
       v2 = modelVerts[csIndex];
-      v2[2] *= -1.0f;  // go back to Makehuman Z orientation
 
       coords[index][0] =
         pvert.w[0] * v0[0] + pvert.w[1] * v1[0] + pvert.w[2] * v2[0] + pvert.d[0] * scale[0];
@@ -334,7 +331,7 @@ bool MakehumanCharacter::AdaptProxyToModel (ProxyData& proxy,
   return true;
 }
 
-csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh 
+csPtr<CS::Mesh::iAnimatedMeshFactory> MakeHumanCharacter::CreateProxyMesh 
 (const char* proxyName, const char* proxyFile,
  const char* texture, const bool doubleSided,
  ProxyData& proxy)
@@ -349,7 +346,7 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
   }
 
-  // Check that an object file describing the Makehuman neutral mesh of 
+  // Check that an object file describing the MakeHuman neutral mesh of 
   // proxy object is defined
   csDirtyAccessArray<FaceGroup> faceGroups;
   csString dirPath;
@@ -396,7 +393,7 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
   if (!GenerateMeshBuffers (coords, texcoords, normals,
 			    faceGroups, doubleSided, tmp, csSubmeshes, proxy.mappingBuffer))
   {
-    ReportError ("Generating mesh buffers for Makehuman proxy KO!");
+    ReportError ("Generating mesh buffers for MakeHuman proxy KO!");
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
   }
 
@@ -407,7 +404,7 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
   }
   
-  // Create animesh factory from parsed Makehuman proxy object  
+  // Create animesh factory from parsed MakeHuman proxy object  
   if (texture)
   {
     // Use texture given as parameter (model skin)
@@ -423,11 +420,11 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
 
   if (!proxy.factory)
   {
-    ReportError ("Creating CS animesh from Makehuman proxy '%s' KO!", proxyName);
+    ReportError ("Creating CS animesh from MakeHuman proxy '%s' KO!", proxyName);
     return csPtr<CS::Mesh::iAnimatedMeshFactory> (nullptr);
   }
 
-  printf ("  - number of vertices of Makehuman proxy model: %i\n",
+  printf ("  - number of vertices of MakeHuman proxy model: %i\n",
          (int) proxy.proxyVerts.GetSize ());
   printf ("  - number of vertices of Crystal Space proxy model: %i\n",
          (int) proxy.factory->GetVertexCount ());
@@ -435,7 +432,7 @@ csPtr<CS::Mesh::iAnimatedMeshFactory> MakehumanCharacter::CreateProxyMesh
   return proxy.factory;
 }
 
-bool MakehumanCharacter::GenerateProxyMicroExpressions (const ProxyData& proxy, 
+bool MakeHumanCharacter::GenerateProxyMicroExpressions (const ProxyData& proxy, 
 							const csArray<Target>& modelExpr,
 							csArray<Target>& proxyExpr)
 {
@@ -525,4 +522,4 @@ bool MakehumanCharacter::GenerateProxyMicroExpressions (const ProxyData& proxy,
 }
  
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

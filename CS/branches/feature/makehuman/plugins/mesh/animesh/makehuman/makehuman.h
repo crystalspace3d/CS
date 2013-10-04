@@ -44,33 +44,33 @@
 #include "ivaria/reporter.h"
 #include "ivideo/rndbuf.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 using namespace CS::Mesh;
 
 /*******************************************************************
- ******** Data structures used by MakehumanManager class ************
+ ******** Data structures used by MakeHumanManager class ************
  *******************************************************************/
 
 /// FILE NAMES AND VFS PATHS FOR MAKEHUMAN DATA
 
 // TODO: cfg options instead of macros
 
-// name of a saved Makehuman model in MODELS_PATH folder
+// name of a saved MakeHuman model in MODELS_PATH folder
 #define MODEL_NAME          "test"
 // Default skin
 //#define DEFAULT_SKIN "brown-female-young-2-bald.png"
 #define DEFAULT_SKIN "texture.png"
-// default Makehuman rig file (here we use the 'simple' rig)
+// default MakeHuman rig file (here we use the 'simple' rig)
 #define DEFAULT_RIG "simple"
 // name of default proxy model
 #define PROXY_NAME          "rorkimaru"
-// default Makehuman rig file used for proxy models
+// default MakeHuman rig file used for proxy models
 #define PROXY_RIG_NAME      "rigid"
-// path of the basic Makehuman model file (3D mesh object)
+// path of the basic MakeHuman model file (3D mesh object)
 #define MESH_DATA_FILE      "/lib/makehuman/data/3dobjs/base.obj"
-// path of the Makehuman folders
+// path of the MakeHuman folders
 #define RIG_PATH            "/lib/makehuman/data/rigs/"
 //#define SKIN_PATH           "/lib/makehuman/data/skins/"
 #define SKIN_PATH           "/lib/makehuman/data/textures/"
@@ -91,7 +91,7 @@ struct VertBuf
 struct MappingVertex
 {
   size_t   csIdx;     // index of Crystal Space vertex
-  size_t   uvIdx;     // index of Makehuman uv coordinates
+  size_t   uvIdx;     // index of MakeHuman uv coordinates
   csString material;  // material name
 
   MappingVertex (size_t cs, size_t uv, csString mat)
@@ -101,7 +101,7 @@ struct MappingVertex
 
 struct FaceGroup
 {
-  csString groupName;     // name of Makehuman facegroup (i.e. a submesh or a joint)
+  csString groupName;     // name of MakeHuman facegroup (i.e. a submesh or a joint)
   csString materialName;  // name of the material
   size_t faceCount;       // number of faces in the facegroup
   csDirtyAccessArray<size_t> vIndices;   // array of vertex indices
@@ -158,10 +158,10 @@ struct Bone
 /// DATA STRUCTURES FOR MAKEHUMAN MODEL PROPERTIES
 
 // Basic human model properties
-struct MakehumanModel
+struct MakeHumanModel
 {
   // Model properties:
-  csHash<float, csString> props;
+  csHash<float, csString> properties;
   // Measures:
   csHash<float, csString> measures;
   // Texture (full vfs path):
@@ -171,7 +171,7 @@ struct MakehumanModel
   // List of clothes:
   csArray<csString> clothesNames;
 
-  MakehumanModel (/*const char* modelName*/);
+  MakeHumanModel (/*const char* modelName*/);
 
   void Reset ();
   void SetNeutral ();
@@ -273,7 +273,7 @@ struct ProxyScale
 // Data of a proxy object
 struct ProxyData
 {
-  // Makehuman name of the proxy object 
+  // MakeHuman name of the proxy object 
   csString name;
   // animated mesh factory of proxy object
   csRef<CS::Mesh::iAnimatedMeshFactory> factory;
@@ -304,23 +304,23 @@ struct ProxyData
 };
 
 /************************************************************************
- *********************** MakehumanManager class **********************
+ *********************** MakeHumanManager class **********************
  ************************************************************************/
 
-class MakehumanManager : public scfImplementation2<MakehumanManager,
-  CS::Mesh::iMakehumanManager, iComponent>
+class MakeHumanManager : public scfImplementation2<MakeHumanManager,
+  CS::Mesh::iMakeHumanManager, iComponent>
 {
-  friend class MakehumanCharacter;
+  friend class MakeHumanCharacter;
 
 public:
-  MakehumanManager (iBase* parent);
-  ~MakehumanManager ();
+  MakeHumanManager (iBase* parent);
+  ~MakeHumanManager ();
 
   //-- iComponent
   virtual bool Initialize (iObjectRegistry* objectRegistry);
 
-  //-- iMakehumanManager
-  virtual csPtr<iMakehumanCharacter> CreateCharacter ();
+  //-- iMakeHumanManager
+  virtual csPtr<iMakeHumanCharacter> CreateCharacter ();
 
   virtual csPtr<iStringArray> GetProxies () const;
   virtual csPtr<iStringArray> GetRigs () const;
@@ -328,13 +328,13 @@ public:
   virtual csPtr<iStringArray> GetProperties () const;
 
   /**
-   * Generate an animesh factory for a Makehuman proxy model, corresponding
-   * to a loaded Makehuman model. By priority order, the proxy will be determined by:
-   * - the proxy referenced in Makehuman model file (mhm),
+   * Generate an animesh factory for a MakeHuman proxy model, corresponding
+   * to a loaded MakeHuman model. By priority order, the proxy will be determined by:
+   * - the proxy referenced in MakeHuman model file (mhm),
    * - the proxy name provided as parameter,
    * - the default proxy PROXY_NAME
-   * \param proxyName  Name of a Makehuman proxy (defined in PROXY_PATH folder)
-   * \param rigName  Name of a Makehuman rig file (without extension '.rig')
+   * \param proxyName  Name of a MakeHuman proxy (defined in PROXY_PATH folder)
+   * \param rigName  Name of a MakeHuman rig file (without extension '.rig')
    * \Return the animesh factory corresponding to a proxy of the loaded human model
    *  if success; NULL otherwise
    */
@@ -345,13 +345,13 @@ public:
 */
   /**
    * Load a clothing item as an animesh factory and adapt it to the loaded model.
-   * \param clothingName  Name of a Makehuman clothing item located 
-   *                      in Makehuman 'clothes' folder
+   * \param clothingName  Name of a MakeHuman clothing item located 
+   *                      in MakeHuman 'clothes' folder
    * \param doubleSided  Indicates if generated mesh should be double sided
-   * \Return the animesh factory corresponding to Makehuman clothing item if succeeded;
+   * \Return the animesh factory corresponding to MakeHuman clothing item if succeeded;
    *  NULL otherwise
    *
-   * Since this method adapts clothes to a Makehuman model, such a model should 
+   * Since this method adapts clothes to a MakeHuman model, such a model should 
    * have been previously loaded with method GenerateModel().
    */
 /*
@@ -359,7 +359,7 @@ public:
     (const char* clothingName, const bool doubleSided);
 */
   /**
-   * Load all clothes of current Makehuman model as animesh factories
+   * Load all clothes of current MakeHuman model as animesh factories
    * and adapt them to the loaded model.
    * \param doubleSided  Indicates if generated mesh should be double sided
    * \param clothesFacts  Array of generated animesh factories, one for each clothing 
@@ -368,8 +368,8 @@ public:
    *                      clothesFacts
    * \Return true if clothes were successfully generated
    *
-   * Since this method loads clothes referenced in a Makehuman model file, 
-   * a Makehuman model should have been previously loaded with
+   * Since this method loads clothes referenced in a MakeHuman model file, 
+   * a MakeHuman model should have been previously loaded with
    * method GenerateModel() before calling this one.
    */
 /*
@@ -390,7 +390,7 @@ private:
   /// Base model
   csDirtyAccessArray<FaceGroup> faceGroups;
 
-  /// Temporary Makehuman data (parsed from a Makehuman object file)
+  /// Temporary MakeHuman data (parsed from a MakeHuman object file)
   csDirtyAccessArray<csVector3> coords;     // array of vertex coordinates
   csDirtyAccessArray<csVector2> texcoords;  // array of texture coordinates
   csDirtyAccessArray<csVector3> normals;    // array of vertex normals
@@ -416,9 +416,9 @@ private:
   /// MakeHuman mesh object parser (.obj)
 
   /**
-   * Parse a Makehuman object file. 
+   * Parse a MakeHuman object file. 
    * \param filename  Path of a Wavefront OBJ file (with extension '.obj')
-   * \param faceGroups  Parsed face groups of Makehuman object
+   * \param faceGroups  Parsed face groups of MakeHuman object
    * \Return true if the object file was successfully parsed
    */
   bool ParseObjectFile (const char* filename,
@@ -430,20 +430,20 @@ private:
   /// MakeHuman morph target parser (.target)
 
   /**
-   * Parse a Makehuman target file into a buffer defining a displacement 
+   * Parse a MakeHuman target file into a buffer defining a displacement 
    * for each CS vertex.
-   * \param filename  Path of a Makehuman target file (i.e. filepath composed of 
+   * \param filename  Path of a MakeHuman target file (i.e. filepath composed of 
    *                  the morph target name and the extension '.target':
    *                  '<vfs_path>/<target_name>.target')
-   * \param offsetsBuffer  Offsets buffer of parsed Makehuman target
+   * \param offsetsBuffer  Offsets buffer of parsed MakeHuman target
    * \Return true if success
    */
-  bool ParseMakehumanTargetFile
+  bool ParseMakeHumanTargetFile
     (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices);
 
 };
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)
 
 #endif // __MAKEHUMAN_MANAGER_H__

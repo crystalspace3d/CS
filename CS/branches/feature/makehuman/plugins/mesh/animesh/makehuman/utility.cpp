@@ -22,14 +22,14 @@
 #include "cssysdef.h"
 #include "character.h"
 
-CS_PLUGIN_NAMESPACE_BEGIN (Makehuman)
+CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 /*-------------------------------------------------------------------------*
  * Utility functions
  *-------------------------------------------------------------------------*/
 
-bool MakehumanManager::ReportError (const char* msg, ...) const
+bool MakeHumanManager::ReportError (const char* msg, ...) const
 {
   va_list arg;
   va_start (arg, msg);
@@ -47,7 +47,7 @@ bool MakehumanManager::ReportError (const char* msg, ...) const
   return false;
 }
 
-bool MakehumanManager::ReportWarning (const char* msg, ...) const
+bool MakeHumanManager::ReportWarning (const char* msg, ...) const
 {
   va_list arg;
   va_start (arg, msg);
@@ -65,7 +65,7 @@ bool MakehumanManager::ReportWarning (const char* msg, ...) const
   return false;
 }
 
-bool MakehumanCharacter::ReportError (const char* msg, ...) const
+bool MakeHumanCharacter::ReportError (const char* msg, ...) const
 {
   va_list arg;
   va_start (arg, msg);
@@ -83,7 +83,7 @@ bool MakehumanCharacter::ReportError (const char* msg, ...) const
   return false;
 }
 
-bool MakehumanCharacter::ReportWarning (const char* msg, ...) const
+bool MakeHumanCharacter::ReportWarning (const char* msg, ...) const
 {
   va_list arg;
   va_start (arg, msg);
@@ -101,7 +101,7 @@ bool MakehumanCharacter::ReportWarning (const char* msg, ...) const
   return false;
 }
 
-csPtr<iFile> MakehumanManager::OpenFile (const char* filename, const char* vfsPath)
+csPtr<iFile> MakeHumanManager::OpenFile (const char* filename, const char* vfsPath)
 {
   size_t index;
   csString filenameVFS;
@@ -144,7 +144,7 @@ csPtr<iFile> MakehumanManager::OpenFile (const char* filename, const char* vfsPa
   return csPtr<iFile> (file);
 }
 
-bool MakehumanManager::ParseLine  (iFile* file, char* buf, size_t nbytes)
+bool MakeHumanManager::ParseLine  (iFile* file, char* buf, size_t nbytes)
 {
   if (!file)
     return false;
@@ -172,7 +172,7 @@ bool MakehumanManager::ParseLine  (iFile* file, char* buf, size_t nbytes)
   return true;
 }
 
-bool MakehumanManager::ParseWord (const char* txt, char* buf, size_t& start)
+bool MakeHumanManager::ParseWord (const char* txt, char* buf, size_t& start)
 {
   int index = start;
 
@@ -195,9 +195,9 @@ bool MakehumanManager::ParseWord (const char* txt, char* buf, size_t& start)
   return found;
 }
 
-void MakehumanCharacter::PrintModelProperties (const ModelTargets& modelVals)
+void MakeHumanCharacter::PrintModelProperties (const ModelTargets& modelVals)
 {
-  printf ("Makehuman model properties:\n");
+  printf ("MakeHuman model properties:\n");
 
   for (size_t i=0; i< modelVals.ethnics.GetSize (); i++)
     printf ("  Ethnics: %.2f%% '%s'\n",
@@ -265,4 +265,4 @@ void MakehumanCharacter::PrintModelProperties (const ModelTargets& modelVals)
 }
 
 }
-CS_PLUGIN_NAMESPACE_END (Makehuman)
+CS_PLUGIN_NAMESPACE_END (MakeHuman)

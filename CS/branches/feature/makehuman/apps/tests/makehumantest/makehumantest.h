@@ -27,7 +27,13 @@
 #include "imesh/animnode/debug.h"
 #include "imesh/makehuman.h"
 
-class MakehumanTest : public CS::Utility::DemoApplication
+enum TestModel
+{
+  MODEL_NEUTRAL = 0,
+  MODEL_VARIETED
+};
+
+class MakeHumanTest : public CS::Utility::DemoApplication
 {
 private:
 
@@ -36,24 +42,26 @@ private:
   csRef<CS::Animation::iSkeletonDebugNodeFactory> debugNodeFactory;
 
   /// Model variables
-  csRef<CS::Mesh::iMakehumanManager> makehumanManager;     // Makehuman generator
-  csRef<CS::Mesh::iMakehumanCharacter> character;
+  csRef<CS::Mesh::iMakeHumanManager> makehumanManager;     // MakeHuman generator
+  csRef<CS::Mesh::iMakeHumanCharacter> character;
   csRef<CS::Mesh::iAnimatedMeshFactory> animeshFactory;  // model factory
   csRef<CS::Mesh::iAnimatedMesh> animesh;                // model mesh
   csRefArray<CS::Mesh::iAnimatedMeshFactory> clothesFactories;  // clothes factories
   csRefArray<CS::Mesh::iAnimatedMesh> clothes;                  // clothes meshes
 
+  TestModel model;
+
   void ResetScene ();
 
   /**
-   * Load a Makehuman model as a CS animated mesh factory
+   * Load a MakeHuman model as a CS animated mesh factory
    * (with adapted expressions and skeleton) and place it in current scene.
-   * \param modelName  Name of a Makehuman model file (without extension '.mhm')
-   *                   located in Makehuman 'models' folder
-   * \param proxyName  Name of a Makehuman proxy (without extension '.proxy')
-   *                   located in Makehuman 'data/proxymeshes' folder
-   * \param rigName  Name of a Makehuman rig file (without extension '.rig')
-   *                   located in Makehuman 'data/rigs' folder
+   * \param modelName  Name of a MakeHuman model file (without extension '.mhm')
+   *                   located in MakeHuman 'models' folder
+   * \param proxyName  Name of a MakeHuman proxy (without extension '.proxy')
+   *                   located in MakeHuman 'data/proxymeshes' folder
+   * \param rigName  Name of a MakeHuman rig file (without extension '.rig')
+   *                   located in MakeHuman 'data/rigs' folder
    */
   bool CreateModel (const char* factoryName, const char* filename = "",
 		    const char* proxy = "", const char* rig = "");
@@ -64,12 +72,12 @@ private:
   void TestTargetAccess (const char* property, bool testOffsets = false);
 
   /**
-   * Load clothes of current Makehuman model as animated mesh factories,
+   * Load clothes of current MakeHuman model as animated mesh factories,
    * adapt them to loaded model and correctly place them in the scene,
    * on human model.
    *
-   * Since this method loads clothes referenced in a Makehuman 
-   * model file, a Makehuman model should have been previously loaded
+   * Since this method loads clothes referenced in a MakeHuman 
+   * model file, a MakeHuman model should have been previously loaded
    * with methods CreateModel() or CreateProxyModel().
    * \param doubleSided  Indicates if generated meshes should be double sided
    */
@@ -79,8 +87,8 @@ private:
    * Load a clothing item as an animated mesh factory,
    * adapt it to loaded model and correctly place it in the scene,
    * on human model.
-   * \param clothingName  Name of a Makehuman clothing item (without extension)
-   *                      located in Makehuman 'data/clothes' folder
+   * \param clothingName  Name of a MakeHuman clothing item (without extension)
+   *                      located in MakeHuman 'data/clothes' folder
    * \param doubleSided  Indicates if generated mesh should be double sided
    */
   bool CreateClothingItem (const char* clothingName);
@@ -93,8 +101,8 @@ private:
   void SaveSprite (const char* filename);
 
 public:
-  MakehumanTest ();
-  ~MakehumanTest ();
+  MakeHumanTest ();
+  ~MakeHumanTest ();
 
   //-- csApplicationFramework
   bool OnInitialize (int argc, char* argv[]);

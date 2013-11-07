@@ -99,21 +99,35 @@ bool MakeHumanTest::Application ()
     return ReportError ("Failed to initialize the MakeHuman plugin!"
 			" Have you installed the data files such as explained at data/makehuman/README?");
 
+  // Print out the hierarchy of MakeHuman parameters
+  csPrintf ("=========================\n");
+  csPrintf ("== MakeHuman parameters:\n");
+  csPrintf ("== ---------------------\n");
+
+  csRef<iStringArray> categories = makehumanManager->GetCategories ();
+  for (size_t i = 0; i < categories->GetSize (); i++)
+  {
+    const char* category = categories->Get (i);
+    csPrintf ("== - Category: %s\n", category);
+
+    csRef<iStringArray> subCategories = makehumanManager->GetSubCategories (category);
+    for (size_t j = 0; j < subCategories->GetSize (); j++)
+    {
+      const char* subCategory = subCategories->Get (j);
+      csPrintf ("==   - Sub-category: %s\n", subCategory);
+
+      csRef<iStringArray> parameters = makehumanManager->GetParameters (category, subCategory);
+      for (size_t k = 0; k < parameters->GetSize (); k++)
+	csPrintf ("==     - Parameter: %s\n", parameters->Get (k));
+    }
+  }
+
+  csPrintf ("=========================\n\n");
+
   // Create a human model
   //if (!CreateModel ("test", "/lib/makehuman/test.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/realasian.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/test-1.0a7.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/clothes.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/measures.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/test.mhm", "ascottk", "second_life"))
-  //if (!CreateModel ("test", "/lib/makehuman/variated.mhm", "ascottk", "second_life"))
-  //if (!CreateModel ("test", "/lib/makehuman/test.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/complex.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/ethnics.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/variated.mhm"))
   if (!CreateCustomModel ())
     return ReportError ("Problem creating avatar\n");
-
 
   //*********** test clothes ***********************
 
@@ -121,17 +135,21 @@ bool MakeHumanTest::Application ()
   if (!CreateClothes ()) ReportWarning ("Problem while putting clothes on the model");
 
   // Put a single clothing item on the model
-  //if (!CreateClothingItem ("shirt_medium", true))
-  //ReportError ("Problem while putting the clothing item on the model");
+  //if (!CreateClothingItem ("shirt_medium"))
+  //ReportWarning ("Problem while putting the clothing item on the model");
 
    //********** test facial expressions ***************
 
-  //TestMacroExpression ();
-  TestMicroExpression1 ();   // smile
-  //TestMicroExpression2 ();   // anger
-  //TestMicroExpression3 ();   // cry
+  if (character->GetExpressionGeneration ())
+  {
+    //TestMacroExpression ();
+    TestMicroExpression1 ();   // smile
+    //TestMicroExpression2 ();   // anger
+    //TestMicroExpression3 ();   // cry
+  }
 
   // Update the HUD
+  hudManager->GetKeyDescriptions ()->Empty ();
   hudManager->GetKeyDescriptions ()->Push ("s: switch model");
 
   // Run the application
@@ -184,17 +202,13 @@ bool MakeHumanTest::OnKeyboard (iEvent &event)
 
 	character->SetUpdateMode (CS::Mesh::MH_UPDATE_FAST);
 
-	character->SetProperty ("age", 0.2f);
-	character->SetProperty ("height", 0.4f);
-	character->SetProperty ("gender", 0.2f);
-	character->SetProperty ("weight", 0.9f);
-	character->SetProperty ("pelvisTone", 0.97f);
-	character->SetProperty ("stomach", 0.97f);
-
-	character->SetMeasure ("bust", -.76f);
-	character->SetMeasure ("shoulder", .8f);
-	character->SetMeasure ("frontchest", -.3f);
-	character->SetMeasure ("hips", .75f);
+	character->SetParameter ("macro", "gender", 1.f);
+	character->SetParameter ("macro", "age", 1.f);
+	character->SetParameter ("macro", "weight", 1.f);
+	character->SetParameter ("macro", "african", 1.f);
+	character->SetParameter ("macro", "asian", 1.f);
+	character->SetParameter ("face", "cheek1", 1.f);
+	character->SetParameter ("face", "neck1", 1.f);
 
 	// Invalidate the animated mesh factory after all those changes
         character->GetMeshFactory ()->Invalidate ();
@@ -265,7 +279,7 @@ void MakeHumanTest::ResetScene ()
 bool MakeHumanTest::CreateModel (const char* factoryName, const char* filename, const char* proxy, const char* rig)
 {
   character = makehumanManager->CreateCharacter ();
-  character->SetExpressionGeneration (false);
+  //character->SetExpressionGeneration (false);
 
   if (!character->Parse (filename))
     return ReportError ("Error parsing the MakeHuman model file '%s'", filename);
@@ -282,41 +296,21 @@ bool MakeHumanTest::CreateModel (const char* factoryName, const char* filename, 
 bool MakeHumanTest::CreateCustomModel ()
 {
   character = makehumanManager->CreateCharacter ();
-  character->SetNeutral ();
 
-  character->SetProperty ("age", 0.2f);
-  character->SetProperty ("height", 0.4f);
-  character->SetProperty ("gender", 0.8f);
-  character->SetProperty ("weight", 0.9f);
-  character->SetProperty ("pelvisTone", 0.97f);
-  character->SetProperty ("stomach", 0.97f);
+  // Disable the facial expression generation for faster updates
+  character->SetExpressionGeneration (false); 
 
-  character->SetMeasure ("bust", -.76f);
-  character->SetMeasure ("shoulder", .8f);
-  character->SetMeasure ("frontchest", -.3f);
-  character->SetMeasure ("hips", .75f);
+  character->SetParameter ("macro", "age", 0.2f);
+  character->SetParameter ("macro", "height", 0.55f);
+  character->SetParameter ("macro", "gender", 0.3f);
+  character->SetParameter ("macro", "weight", 0.4f);
+  character->SetParameter ("macro", "tone", 0.8f);
 
-/*
-  // Those are the set of properties equivalent to a call to SetNeutral ()
-  character->SetProperty ("weight", 0.5f);
-  character->SetProperty ("gender", 0.5f);
-  character->SetProperty ("age", 0.5f);
-  character->SetProperty ("height", 0.5f);
-  character->SetProperty ("asian", 0.333333f);
-  character->SetProperty ("african", 0.333333f);
-  character->SetProperty ("muscle", 0.5f);
-  character->SetProperty ("caucasian", 0.333333f);
-  character->SetProperty ("breastFirmness", 0.5f);
-  character->SetProperty ("breastSize", 0.5f);
-*/
-
+  printf ("%s\n", character->Description ().GetData ());
   if (!character->UpdateMeshFactory ())
     return ReportError ("Error generating the MakeHuman model");
 
-  //TestTargetAccess ("gender", true);
-
-  // Disable expression generation for faster future updates
-  character->SetExpressionGeneration (false); 
+  TestTargetAccess ("face", "neck1", 1.f);
 
   return SetupAnimatedMesh ();
 }
@@ -426,28 +420,26 @@ bool MakeHumanTest::SetupAnimatedMesh ()
   return true;
 }
 
-void MakeHumanTest::TestTargetAccess (const char* property, bool testOffsets)
+void MakeHumanTest::TestTargetAccess (const char* category, const char* parameter, float testValue)
 {
   // Query the list of morph targets that will get activated if the given
   // property is modified
   csRefArray<CS::Mesh::iMakeHumanMorphTarget> targets;
-  bool boundary = character->GetPropertyTargets (property, targets);
+  bool boundary = character->GetParameterTargets (category, parameter, targets);
 
   // Print the list of targets
-  csPrintf ("\ncount of targets for %s: %i - currently at boundary: %d\n",
-	    CS::Quote::Single (property), (int) targets.GetSize (), boundary);
+  csPrintf ("\nList of targets for the parameter %s: %i - currently at boundary: %d\n",
+	    CS::Quote::Single (parameter), (int) targets.GetSize (), boundary);
   for (size_t i = 0; i < targets.GetSize (); i++)
     csPrintf ("target %s scale: %f direction: %i\n", targets[i]->GetName (),
 	    targets[i]->GetScale (), (int) targets[i]->GetDirection ());
   csPrintf ("\n");
 
-  // Test the validity of the targets that are returned
-  if (!testOffsets) return;
+  if (fabs (testValue) < SMALL_EPSILON) return;
 
-  // Define a random step value to be applied 
-  float step = -.5f;
+  // Apply manually the targets on the mesh
   CS::Mesh::MakeHumanMorphTargetDirection direction =
-    step > 0.0f ? CS::Mesh::MH_DIRECTION_UP : CS::Mesh::MH_DIRECTION_DOWN;
+    testValue > 0.0f ? CS::Mesh::MH_DIRECTION_UP : CS::Mesh::MH_DIRECTION_DOWN;
 
   // Iterate on all morph targets
   csRenderBufferLock<csVector3> vertices (character->GetMeshFactory ()->GetVertices ());
@@ -461,8 +453,8 @@ void MakeHumanTest::TestTargetAccess (const char* property, bool testOffsets)
 	&& target->GetDirection () != direction)
       continue;
 
-    csPrintf ("target activated %s scale: %f\n", targets[i]->GetName (),
-	      targets[i]->GetScale ());
+    csPrintf ("target activated %s scale: %f vertices: %i\n", targets[i]->GetName (),
+	      targets[i]->GetScale (), (int) target->GetIndices ().GetSize ());
 
     // Iterate on all vertices activated by the morph target
     const csArray<csVector3>& offsets = target->GetOffsets ();
@@ -470,7 +462,7 @@ void MakeHumanTest::TestTargetAccess (const char* property, bool testOffsets)
     for (size_t j = 0; j < indices.GetSize (); j++)
     {
       // Compute the new position of the vertex after the application of this morph target 
-      csVector3 newPosition = vertices[indices[j]] + step * target->GetScale () * offsets[j];
+      csVector3 newPosition = vertices[indices[j]] + testValue * target->GetScale () * offsets[j];
 
       // Test the computation of the new position by updating the original vertex
       vertices[indices[j]] = newPosition;
@@ -500,6 +492,7 @@ bool MakeHumanTest::CreateClothes ()
 bool MakeHumanTest::CreateClothingItem (const char* clothingName)
 {
   character->ClearClothes ();
+  // TODO: this does not work yet...
   //character->AddCloth (...);
   character->UpdateMeshFactory ();
 

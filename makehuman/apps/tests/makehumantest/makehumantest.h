@@ -69,7 +69,7 @@ private:
   bool CreateCustomModel ();
   bool SetupAnimatedMesh ();
 
-  void TestTargetAccess (const char* property, bool testOffsets = false);
+  void TestTargetAccess (const char* category, const char* parameter, float testValue = 0.f);
 
   /**
    * Load clothes of current MakeHuman model as animated mesh factories,

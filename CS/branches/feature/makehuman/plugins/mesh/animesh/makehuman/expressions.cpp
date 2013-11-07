@@ -31,8 +31,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
  * MakeHuman facial expressions
  *-------------------------------------------------------------------------*/
 
-bool MakeHumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals,
-						   csArray<Target>& macroExpr)
+bool MakeHumanCharacter::GenerateMacroExpressions (csArray<Target>& macroExpr)
 {
   // Generate name and weight of expression folders
   printf ("\nGenerating macro-expressions:\n");
@@ -41,13 +40,14 @@ bool MakeHumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
   csArray<csString> subdirNames;
   csArray<float> subdirWeights;
 
-  for (size_t i=0; i< modelVals.gender.GetSize (); i++)
-    for (size_t j=0; j< modelVals.age.GetSize (); j++)
+  const csStringArray* gender = manager->categoryLabels.GetElementPointer ("gender");
+  const csStringArray* age = manager->categoryLabels.GetElementPointer ("age");
+
+  for (size_t i = 0; i < gender->GetSize (); i++)
+    for (size_t j = 0; j < age->GetSize (); j++)
     {
-      name = modelVals.gender[i].name;
-      name.Append (modelVals.age[j].name);
-      name.ReplaceAll ("-", "_");
-      weight = modelVals.gender[i].weight * modelVals.age[j].weight;
+      name.Format ("%s_%s", gender->Get (i), age->Get (j));
+      weight = parameters.Get (gender->Get (i), 0.0f) * parameters.Get (age->Get (j), 0.0f);
       subdirNames.Push (name);
       subdirWeights.Push (weight);
       printf ("  - from model '%s' with weight %.3f\n", name.GetData (), weight);
@@ -90,10 +90,9 @@ bool MakeHumanCharacter::GenerateMacroExpressions (const ModelTargets& modelVals
   }
   printf ("\n\n");
 
-  for (size_t i = 0; i < modelVals.ethnics.GetSize (); i++)
-    if (modelVals.ethnics[i].name == "neutral" && modelVals.ethnics[i].weight < 1)
-      printf ("WARNING: Generated macro-expressions are only adapted to 100%% Caucasian models\n"\
-              "         while this model is partly African or Asian.\n\n");
+  if (parameters.Get ("neutral", 0.0f) < 1.f)
+    printf ("WARNING: Generated macro-expressions are only adapted to 100%% Caucasian models\n"	\
+	    "         while this model is partly African or Asian.\n\n");
 
   // Parse expression files and generate an offset buffer for each expression
   for (size_t i = 0; i < macroExpr.GetSize (); i++)
@@ -496,8 +495,7 @@ bool MakeHumanCharacter::WarpMicroExpression (const csArray<csVector3>& xverts,
   return true;
 }
 
-bool MakeHumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
-						csArray<Target>& microExpr)
+bool MakeHumanCharacter::ParseMicroExpressions (csArray<Target>& microExpr)
 {
   // Generate name and weight of expression folders
   printf ("Generating micro-expressions:\n");
@@ -506,17 +504,18 @@ bool MakeHumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
   csArray<csString> subdirNames;
   csArray<float> subdirWeights;
 
-  for (size_t i = 0; i < modelVals.ethnics.GetSize (); i++)
-    for (size_t j = 0; j < modelVals.gender.GetSize (); j++)
-      for (size_t k = 0; k < modelVals.age.GetSize (); k++)
+  const csStringArray* ethnic = manager->categoryLabels.GetElementPointer ("ethnic2");
+  const csStringArray* gender = manager->categoryLabels.GetElementPointer ("gender");
+  const csStringArray* age = manager->categoryLabels.GetElementPointer ("age");
+
+  for (size_t i = 0; i < ethnic->GetSize (); i++)
+    for (size_t j = 0; j < gender->GetSize (); j++)
+      for (size_t k = 0; k < age->GetSize (); k++)
       {
-        name = modelVals.ethnics[i].name;
-        if (name == "neutral")
-          name.Replace ("caucasian");
-        name.Append ("/").Append (modelVals.gender[j].name);
-        name.Append (modelVals.age[k].name);
-        name.ReplaceAll ("-", "_");
-        weight = modelVals.ethnics[i].weight * modelVals.gender[j].weight * modelVals.age[k].weight;
+	name.Format ("%s/%s_%s", ethnic->Get (i), gender->Get (j), age->Get (k));
+	weight = parameters.Get (ethnic->Get (i), 0.0f)
+	  * parameters.Get (gender->Get (j), 0.0f)
+	  * parameters.Get (age->Get (k), 0.0f);
         subdirNames.Push (name);
         subdirWeights.Push (weight);
         printf ("  - from model '%s' with weight %.3f\n", name.GetData (), weight);
@@ -599,8 +598,7 @@ bool MakeHumanCharacter::ParseMicroExpressions (const ModelTargets& modelVals,
   return true;
 }
 
-bool MakeHumanCharacter::GenerateMicroExpressions (const ModelTargets& modelVals,
-						   csArray<Target>& microExpr)
+bool MakeHumanCharacter::GenerateMicroExpressions (csArray<Target>& microExpr)
 {
   // Code based on files 'makehuman/apps/warpmodifier.py' and 'makehuman/core/warp.py'
   // from MakeHuman 1.0 alpha 7.
@@ -614,7 +612,7 @@ bool MakeHumanCharacter::GenerateMicroExpressions (const ModelTargets& modelVals
     return ReportError ("Error while parsing landmarks file of body part '%s'", bodypart);
 
   // Parse micro-expressions offsets
-  if (!ParseMicroExpressions (modelVals, microExpr))
+  if (!ParseMicroExpressions (microExpr))
     return ReportError ("Could not parse the MakeHuman micro-expressions");
 
   // Get source and target vertices, using indices of facial landmarks

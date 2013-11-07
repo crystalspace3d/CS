@@ -27,35 +27,6 @@
 CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
-MakeHumanModel::MakeHumanModel ()
-{
-}
-
-void MakeHumanModel::Reset ()
-{
-  properties.DeleteAll ();
-  measures.DeleteAll ();
-  skinFile = "";
-  proxyFilename = "";
-  clothesNames.DeleteAll ();
-}
-
-void MakeHumanModel::SetNeutral ()
-{
-  Reset ();
-
-  properties.Put ("weight", 0.5f);
-  properties.Put ("gender", 0.5f);
-  properties.Put ("age", 0.5f);
-  properties.Put ("height", 0.5f);
-  properties.Put ("asian", 0.333333f);
-  properties.Put ("african", 0.333333f);
-  properties.Put ("muscle", 0.5f);
-  properties.Put ("caucasian", 0.333333f);
-  properties.Put ("breastFirmness", 0.5f);
-  properties.Put ("breastSize", 0.5f);
-}
-
 MakeHumanCharacter::MakeHumanCharacter (MakeHumanManager* manager)
   : scfImplementationType (this), manager (manager),
     proxy (), rig(), generateExpressions (true), updateMode (MH_UPDATE_FULL)
@@ -63,6 +34,8 @@ MakeHumanCharacter::MakeHumanCharacter (MakeHumanManager* manager)
   // Create the animated mesh factory
   csRef<iMeshObjectFactory> factory = manager->animeshType->NewFactory ();
   animeshFactory = scfQueryInterfaceSafe<CS::Mesh::iAnimatedMeshFactory> (factory);
+
+  SetNeutral ();
 }
 
 MakeHumanCharacter::~MakeHumanCharacter ()
@@ -90,6 +63,38 @@ MakeHumanUpdateMode MakeHumanCharacter::GetUpdateMode () const
   return updateMode;
 }
 
+bool MakeHumanCharacter::Parse (const char* filename)
+{
+  Clear ();
+  return ParseMakeHumanModelFile (filename);
+}
+
+void MakeHumanCharacter::SetProxy (const char* proxy)
+{
+  this->proxy = proxy;
+}
+
+void MakeHumanCharacter::SetRig (const char* rig)
+{
+  this->rig = rig;
+}
+
+void MakeHumanCharacter::ClearClothes ()
+{
+  clothes.DeleteAll ();
+  clothesNames.DeleteAll ();
+}
+
+size_t MakeHumanCharacter::GetClothCount () const
+{
+  return clothes.GetSize ();
+}
+
+iAnimatedMeshFactory* MakeHumanCharacter::GetClothMesh (size_t index) const
+{
+  return clothes[index];
+}
+
 iAnimatedMeshFactory* MakeHumanCharacter::GetMeshFactory () const
 {
   return animeshFactory;
@@ -98,7 +103,6 @@ iAnimatedMeshFactory* MakeHumanCharacter::GetMeshFactory () const
 bool MakeHumanCharacter::UpdateMeshFactory ()
 {
   // Clear all previous data
-  modelVals.DeleteAll ();
   mappingBuffer.DeleteAll ();
   basicMesh.DeleteAll ();
   morphedMesh.DeleteAll ();
@@ -115,21 +119,14 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
   texcoords = manager->texcoords;
   normals = manager->normals;
 
-  // Process the property values of the model
-  if (!ProcessModelProperties (human, &modelVals))
-    return ReportError ("Problem while processing MakeHuman model properties");
-  PrintModelProperties (modelVals);
-
   // Generate the list of target names and weights
+  csPrintf ("%s\n", Description ().GetData ());
   csArray<Target> targets;
-  GenerateTargetsWeights (modelVals, targets);
+  ExpandTargets (targets);
 
   // Parse all offset buffers of the model targets
   for (size_t i = 0; i < targets.GetSize (); i++)
-  {
-    if (!manager->ParseMakeHumanTargetFile (targets[i].path, targets[i].offsets, targets[i].indices))
-      return ReportError ("Parsing target file '%s' KO!", targets[i].path.GetData ());
-  }
+    manager->ParseMakeHumanTargetFile (&targets[i]);
 
   // Apply morph targets to the buffer of MakeHuman vertex coordinates
   if (!ApplyTargetsToModel (targets))
@@ -139,11 +136,11 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
   if (generateExpressions)
   {
     // Parse macro-expressions of MakeHuman model
-    if (!GenerateMacroExpressions (modelVals, macroExpressions))
+    if (!GenerateMacroExpressions (macroExpressions))
       ReportError ("Problem while generating model's macro-expressions");
 
     // Generate micro-expressions of MakeHuman model
-    if (!GenerateMicroExpressions (modelVals, microExpressions))
+    if (!GenerateMicroExpressions (microExpressions))
       ReportError ("Problem while generating model's micro-expressions");
   }
 
@@ -161,7 +158,7 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
   // Create mesh texture
   csString textureName;
   csString texturePath;
-  if (human.skinFile.IsEmpty ())
+  if (skinFile.IsEmpty ())
   {
     textureName = DEFAULT_SKIN;
     texturePath = SKIN_PATH;
@@ -170,8 +167,8 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
 
   else
   {
-    textureName = human.skinFile;
-    texturePath = human.skinFile;
+    textureName = skinFile;
+    texturePath = skinFile;
   }
 
   size_t idx1 = textureName.FindLast ('/') + 1;
@@ -304,7 +301,7 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
 
   // If no proxy is defined
   if ((!proxy || strcmp (proxy, "") == 0)
-      && (!human.proxyFilename || strcmp (human.proxyFilename, "") == 0))
+      && (!proxyFilename || strcmp (proxyFilename, "") == 0))
   {
     if (generateExpressions)
     {
@@ -336,8 +333,8 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
     else
     {
       // Use proxy referenced in MakeHuman model file (mhm)
-      path = human.proxyFilename;
-      csString tmp = human.proxyFilename;
+      path = proxyFilename;
+      csString tmp = proxyFilename;
       size_t start = tmp.FindLast ('/') + 1;
       size_t end = tmp.FindLast ('.');
       name = tmp.Slice (start, end - start);
@@ -353,7 +350,7 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
 				      texturePath, false, *proxyModel);
     if (!animeshFactory)
       return ReportError ("Creating animesh factory from MakeHuman model proxy %s KO!",
-			  CS::Quote::Single (human.proxyFilename.GetData ()));
+			  CS::Quote::Single (proxyFilename.GetData ()));
 
     // Create a skeleton by parsing MakeHuman rig file
     // and update bone positions according to mesh modifications
@@ -385,167 +382,24 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
   return true;
 }
 
-void MakeHumanCharacter::Clear ()
-{
-  human.Reset ();
-  clothes.DeleteAll ();
-}
-
-void MakeHumanCharacter::SetNeutral ()
-{
-  human.SetNeutral ();
-}
-
-bool MakeHumanCharacter::Parse (const char* filename)
-{
-  Clear ();
-  return ParseMakeHumanModelFile (filename, &human);
-}
-
-void MakeHumanCharacter::SetProxy (const char* proxy)
-{
-  this->proxy = proxy;
-}
-
-void MakeHumanCharacter::SetRig (const char* rig)
-{
-  this->rig = rig;
-}
-
-void MakeHumanCharacter::SetProperty (const char* property, float value)
-{
-  if (updateMode == MH_UPDATE_FULL)
-    human.properties.PutUnique (property, value);
-
-  else
-  {
-    // Compute the delta value to be applied
-    float delta = value - GetProperty (property);
-    if (fabs (delta) > SMALL_EPSILON)
-    {
-      // Create the mesh factory if not yet made
-      if (!coords.GetSize ())
-      {
-	human.properties.PutUnique (property, value);
-	UpdateMeshFactory ();
-	return;
-      }
-
-      // Apply the morph targets activated by the parameter
-      // TODO: check if a boundary point is crossed
-      csRefArray<CS::Mesh::iMakeHumanMorphTarget> targets;
-      bool boundary = GetPropertyTargets (property, targets);
-      ApplyTargets (targets, boundary, delta);
-
-      // Update the list of morph targets of the model
-      human.properties.PutUnique (property, value);
-      modelVals.DeleteAll ();
-      ProcessModelProperties (human, &modelVals);
-    }
-  }
-}
-
-float MakeHumanCharacter::GetProperty (const char* property) const
-{
-  return human.properties.Get (property, 0.0f);
-}
-
-void MakeHumanCharacter::SetMeasure (const char* measure, float value)
-{
-  if (updateMode == MH_UPDATE_FULL)
-    human.measures.PutUnique (measure, value);
-
-  else
-  {
-    // Compute the delta value to be applied
-    float delta = value - GetMeasure (measure);
-    if (fabs (delta) > SMALL_EPSILON)
-    {
-      // Create the mesh factory if not yet made
-      if (!coords.GetSize ())
-      {
-	human.measures.PutUnique (measure, value);
-	UpdateMeshFactory ();
-	return;
-      }
-
-      // Apply the morph targets activated by the parameter
-      // TODO: check if a boundary point is crossed
-      csRefArray<CS::Mesh::iMakeHumanMorphTarget> targets;
-      bool boundary = GetMeasureTargets (measure, targets);
-      ApplyTargets (targets, boundary, delta);
-
-      // Updating the list of morph targets of the model is not needed
-      // since measures don't affect any other parameter
-      human.measures.PutUnique (measure, value);
-    }
-  }
-}
-
-float MakeHumanCharacter::GetMeasure (const char* measure) const
-{
-  return human.measures.Get (measure, 0.0f);
-}
-
-void MakeHumanCharacter::ApplyTargets
-(csRefArray<iMakeHumanMorphTarget>& targets, bool boundary, float delta)
-{
-  CS::Mesh::MakeHumanMorphTargetDirection direction =
-    delta > 0.0f ? MH_DIRECTION_UP : MH_DIRECTION_DOWN;
-
-  // Iterate on all morph targets
-  csRenderBufferLock<csVector3> vertices (animeshFactory->GetVertices ());
-  for (size_t i = 0; i < targets.GetSize (); i++)
-  {
-    CS::Mesh::iMakeHumanMorphTarget* target = targets[i];
-
-    // Check if we are at a target boundary and if the direction is OK
-    if (boundary
-	&& target->GetDirection () != MH_DIRECTION_BOTH
-	&& target->GetDirection () != direction)
-      continue;
-
-    // Iterate on all vertices activated by the morph target and update their position
-    const csArray<csVector3>& offsets = target->GetOffsets ();
-    const csArray<size_t>& indices = target->GetIndices ();
-    for (size_t j = 0; j < indices.GetSize (); j++)
-      vertices[indices[j]] += delta * target->GetScale () * offsets[j];
-  }
-
-  // TODO: skeleton, normals and bitangents should be recomputed...
-}
-
-void MakeHumanCharacter::ClearClothes ()
-{
-  clothes.DeleteAll ();
-  human.clothesNames.DeleteAll ();
-}
-
-size_t MakeHumanCharacter::GetClothCount () const
-{
-  return clothes.GetSize ();
-}
-
-iAnimatedMeshFactory* MakeHumanCharacter::GetClothMesh (size_t index) const
-{
-  return clothes[index];
-}
-
 /*-------------------------------------------------------------------------*
  * MakeHuman model parser (.mhm)
  *-------------------------------------------------------------------------*/
 
-bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename, MakeHumanModel* human)
+bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename)
 {
+  // Clear the state of this character
+  Clear ();
+
   // Open model file
   csRef<iFile> file = manager->OpenFile (filename, "");
   if (!file)
-    return ReportError ( "Could not open file %s", filename);
+    return ReportError ("Could not open file %s", filename);
 
   // Parse model file
   printf ("\nParsing MakeHuman model file: '%s'\n\n", filename);
   char line[256];
-  float val;
+  float value;
 
   // Skip the three first lines of the file
   // TODO: treat 3rd line tags of MakeHuman model file
@@ -559,7 +413,7 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename, MakeHuma
     if (!manager->ParseLine (file, line, 255))
     {
       if (!file->AtEOF ())
-        return ReportError ( "Malformed MakeHuman model file");
+        return ReportError ("Malformed MakeHuman model file");
     }
     else
     {
@@ -567,10 +421,10 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename, MakeHuma
       size_t numVals = words.SplitString (csString (line).Trim (), " ", csStringArray::delimIgnore);
 
       // Parse a MakeHuman property name
-      csString mhprop (words[0]);
+      csString parameter (words[0]);
 
       // Parse property type
-      if (strcmp (mhprop.GetData (), "skinTexture") == 0)
+      if (parameter == "skinTexture")
       {
         if (numVals < 2)
           return ReportError ("Wrong element in MakeHuman model file");
@@ -592,14 +446,14 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename, MakeHuma
           if (!manager->vfs->Exists (texPath.GetData ()))
 	  {
             ReportWarning ("Could not find the texture file '%s' of the MakeHuman model!", texPath.GetData ());
-	    human->skinFile = SKIN_PATH;
-	    human->skinFile += DEFAULT_SKIN;
+	    skinFile = SKIN_PATH;
+	    skinFile += DEFAULT_SKIN;
 	  }
         }
 
-        else human->skinFile = texPath;
+        else skinFile = texPath;
       }
-      else if (strcmp (mhprop.GetData (), "clothes") == 0)
+      else if (parameter == "clothes")
       {
         if (numVals < 3)
           return ReportError ("Wrong element in MakeHuman model file");
@@ -607,46 +461,63 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename, MakeHuma
         // Parse clothing name
         csString clotmp (words[1]);
         csString clostr = clotmp.Slice (0, clotmp.FindLast ('.'));
-        human->clothesNames.Push (clostr);
+        clothesNames.Push (clostr);
       }
-      else if (strcmp (mhprop.GetData (), "measure") == 0)
-      {
-        if (numVals < 3)
-          return ReportError ( "Wrong element in MakeHuman model file");
-
-        // Parse measure name and value
-        mhprop = csString (words[1]);
-        if (sscanf (words[2], "%f", &val) != 1)
-          return ReportError ( "Wrong element in MakeHuman model file");
-
-        human->measures.PutUnique (mhprop, val);
-      }
-      else if (strcmp (mhprop.GetData (), "proxy") == 0)
+      else if (parameter == "proxy")
       {
         if (numVals < 2)
-          return ReportError ( "Wrong element in MakeHuman model file");
+          return ReportError ("Wrong element in MakeHuman model file");
 
         // Parse the proxy filename
-        human->proxyFilename = csString ("/lib/makehuman/").Append (words[1]);
+        proxyFilename = csString ("/lib/makehuman/").Append (words[1]);
 
-        size_t start = human->proxyFilename.FindLast ('/') + 1;
-        size_t end = human->proxyFilename.FindLast ('.');
+        size_t start = proxyFilename.FindLast ('/') + 1;
+        size_t end = proxyFilename.FindLast ('.');
         printf ("MakeHuman model proxy: '%s'\n", 
-               human->proxyFilename.Slice (start, end - start).GetData ());
+               proxyFilename.Slice (start, end - start).GetData ());
       }
+
+      else if (numVals == 3)
+      {
+        // Parse measure name and value
+	csString category = csString (words[0]);
+        parameter = csString (words[1]);
+        if (sscanf (words[2], "%f", &value) != 1)
+	{
+          ReportError ("Wrong element in MakeHuman model file");
+	  continue;
+	}
+
+	// Fix the parameter name
+	parameter[0] = csUnicodeTransform::MapToLower (parameter[0]);
+
+	SetParameter (category, parameter, value);
+      }
+
       else
       {
         if (numVals < 2)
-          return ReportError ( "Wrong element in MakeHuman model file");
+          return ReportError ("Wrong element in MakeHuman model file");
 
         // Parse property value
-        if (sscanf (words[1], "%f", &val) != 1)
+        if (sscanf (words[1], "%f", &value) != 1)
         {
           // TODO: treat 2nd property word (ex: "face nose") in MakeHuman model file
           continue;
         }
 
-        human->properties.PutUnique (mhprop, val);
+	// Fix the parameter name
+	parameter[0] = csUnicodeTransform::MapToLower (parameter[0]);
+	if (parameter == "muscle") parameter = "tone";
+
+	csString category;
+	if (!manager->FindParameterCategory (parameter, category))
+	{
+	  ReportError ("Could not find the category of the parameter %s", CS::Quote::Single (parameter));
+	  continue;
+	}
+
+	SetParameter (category, parameter, value);
       }
     }
   }

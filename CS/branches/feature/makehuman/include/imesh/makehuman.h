@@ -67,6 +67,8 @@ struct iMakeHumanCharacter : public virtual iBase
 {
   SCF_INTERFACE (iMakeHumanCharacter, 1, 0, 0);
 
+  virtual csString Description () const = 0;
+
   virtual void SetExpressionGeneration (bool generate) = 0;
   virtual bool GetExpressionGeneration () const = 0;
 
@@ -84,16 +86,11 @@ struct iMakeHumanCharacter : public virtual iBase
   virtual void SetProxy (const char* proxy) = 0;
   virtual void SetRig (const char* rig) = 0;
 
-  virtual void SetProperty (const char* property, float value) = 0;
-  virtual float GetProperty (const char* property) const = 0;
-  virtual void SetMeasure (const char* measure, float value) = 0;
-  virtual float GetMeasure (const char* measure) const = 0;
-  //void SetMeasureDistance (const char* measure, float distance);
+  virtual void SetParameter (const char* category, const char* parameter, float value) = 0;
+  virtual float GetParameter (const char* category, const char* parameter) const = 0;
 
-  virtual bool GetPropertyTargets
-    (const char* property, csRefArray<iMakeHumanMorphTarget>& targets) = 0;
-  virtual bool GetMeasureTargets
-    (const char* measure, csRefArray<iMakeHumanMorphTarget>& targets) = 0;
+  virtual bool GetParameterTargets
+    (const char* category, const char* parameter, csRefArray<iMakeHumanMorphTarget>& targets) = 0;
 
   virtual void ClearClothes () = 0;
   virtual size_t GetClothCount () const = 0;
@@ -113,8 +110,14 @@ struct iMakeHumanManager : public virtual iBase
 
   virtual csPtr<iStringArray> GetProxies () const = 0;
   virtual csPtr<iStringArray> GetRigs () const = 0;
-  virtual csPtr<iStringArray> GetProperties () const = 0;
-  virtual csPtr<iStringArray> GetMeasures () const = 0;
+
+  virtual csPtr<iStringArray> GetCategories () const = 0;
+  virtual csPtr<iStringArray> GetSubCategories (const char* category) const = 0;
+  virtual csPtr<iStringArray> GetParameters (const char* category, const char* subCategory) const = 0;
+  virtual csPtr<iStringArray> GetParameters (const char* category) const = 0;
+
+  //virtual void GetParameterRanges (const char* category, const char* subCategory) const = 0;
+  //virtual void GetParameterRanges (const char* category, const char* parameter) const = 0;
 };
 
 /** @} */

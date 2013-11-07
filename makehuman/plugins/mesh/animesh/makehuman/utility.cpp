@@ -65,6 +65,24 @@ bool MakeHumanManager::ReportWarning (const char* msg, ...) const
   return false;
 }
 
+bool MakeHumanManager::ReportInfo (const char* msg, ...) const
+{
+  va_list arg;
+  va_start (arg, msg);
+  csRef<iReporter> rep (csQueryRegistry<iReporter> (objectRegistry));
+  if (rep)
+    rep->ReportV (CS_REPORTER_SEVERITY_NOTIFY,
+		  "crystalspace.mesh.animesh.makehuman",
+		  msg, arg);
+  else
+  {
+    csPrintfV (msg, arg);
+    csPrintf ("\n");
+  }
+  va_end (arg);
+  return false;
+}
+
 bool MakeHumanCharacter::ReportError (const char* msg, ...) const
 {
   va_list arg;
@@ -103,6 +121,7 @@ bool MakeHumanCharacter::ReportWarning (const char* msg, ...) const
 
 csPtr<iFile> MakeHumanManager::OpenFile (const char* filename, const char* vfsPath)
 {
+  // TODO: clean this code
   size_t index;
   csString filenameVFS;
   csString filenamestr (filename);
@@ -195,73 +214,72 @@ bool MakeHumanManager::ParseWord (const char* txt, char* buf, size_t& start)
   return found;
 }
 
-void MakeHumanCharacter::PrintModelProperties (const ModelTargets& modelVals)
+
+csString MakeHumanCharacter::Description () const
 {
-  printf ("MakeHuman model properties:\n");
+  csString txt;
+  txt += "=======================================\n";
+  txt += "== MakeHuman character parameters:\n";
+  txt += "== -------------------------------\n";
 
-  for (size_t i=0; i< modelVals.ethnics.GetSize (); i++)
-    printf ("  Ethnics: %.2f%% '%s'\n",
-	    modelVals.ethnics[i].weight*100, modelVals.ethnics[i].name.GetData ());
+/*
+  for (csHash<float, csString>::ConstGlobalIterator it = parameters.GetIterator (); it.HasNext (); )
+  {
+    csString parameter;
+    float value = it.Next (parameter);
+    txt += "== - ";
+    txt += parameter + ": ";
+    txt += value;
+    txt += "\n";
+  }
+*/
+  txt += "== - gender: ";
+  txt += GetParameter ("macro", "gender");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.gender.GetSize (); i++)
-    printf ("  Gender: %.2f%% '%s'\n",
-	    modelVals.gender[i].weight*100, modelVals.gender[i].name.GetData ());
+  txt += "== - age: ";
+  txt += GetParameter ("macro", "age");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.age.GetSize (); i++)
-    printf ("  Age: %.2f%% '%s'\n",
-	    modelVals.age[i].weight*100, modelVals.age[i].name.GetData ());
+  txt += "== - african: ";
+  txt += GetParameter ("macro", "african");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.weight.GetSize (); i++)
-    printf ("  Weight: %.2f%% '%s'\n",
-	    modelVals.weight[i].weight*100, modelVals.weight[i].name.GetData ());
+  txt += "== - asian: ";
+  txt += GetParameter ("macro", "asian");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.muscle.GetSize (); i++)
-    printf ("  Muscle: %.2f%% '%s'\n",
-	    modelVals.muscle[i].weight*100, modelVals.muscle[i].name.GetData ());
+  txt += "== - tone: ";
+  txt += GetParameter ("macro", "tone");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.height.GetSize (); i++)
-    printf ("  Height: %.2f%% '%s'\n",
-	    modelVals.height[i].weight*100, modelVals.height[i].name.GetData ());
+  txt += "== - weight: ";
+  txt += GetParameter ("macro", "weight");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.genitals.GetSize (); i++)
-    printf ("  Genitals: %.2f%% '%s'\n",
-	    modelVals.genitals[i].weight*100, modelVals.genitals[i].name.GetData ());
+  txt += "== - breastFirmness: ";
+  txt += GetParameter ("gender", "breastFirmness");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.buttocks.GetSize (); i++)
-    printf ("  Buttocks: %.2f%% '%s'\n",
-	    modelVals.buttocks[i].weight*100, modelVals.buttocks[i].name.GetData ());
+  txt += "== - breastSize: ";
+  txt += GetParameter ("gender", "breastSize");
+  txt += "\n";
 
-  for (size_t i=0; i< modelVals.stomach.GetSize (); i++)
-    printf ("  Stomach: %.2f%% '%s'\n",
-	    modelVals.stomach[i].weight*100, modelVals.stomach[i].name.GetData ());
+  for (csHash<float, csString>::ConstGlobalIterator it = parameters.GetIterator (); it.HasNext (); )
+  {
+    csString parameter;
+    float value = it.Next (parameter);
 
-  for (size_t i=0; i< modelVals.pelvisTone.GetSize (); i++)
-    printf ("  Pelvis tone: %.2f%% '%s'\n",
-	    modelVals.pelvisTone[i].weight*100, modelVals.pelvisTone[i].name.GetData ());
+    if (!manager->parameters[parameter]) continue;
 
-  for (size_t i=0; i< modelVals.breastSize.GetSize (); i++)
-    printf ("  Breast size: %.2f%% '%s'\n",
-	    modelVals.breastSize[i].weight*100, modelVals.breastSize[i].name.GetData ());
+    txt += "== - ";
+    txt += parameter + ": ";
+    txt += value;
+    txt += "\n";
+  }
 
-  for (size_t i=0; i< modelVals.breastFirmness.GetSize (); i++)
-    printf ("  Breast firmness: %.2f%% '%s'\n",
-	    modelVals.breastFirmness[i].weight*100, modelVals.breastFirmness[i].name.GetData ());
-
-  for (size_t i=0; i< modelVals.breastPosition.GetSize (); i++)
-    printf ("  Breast position: %.2f%% '%s'\n",
-	    modelVals.breastPosition[i].weight*100, modelVals.breastPosition[i].name.GetData ());
-
-  for (size_t i=0; i< modelVals.breastDistance.GetSize (); i++)
-    printf ("  Breast distance: %.2f%% '%s'\n",
-	    modelVals.breastDistance[i].weight*100, modelVals.breastDistance[i].name.GetData ());
-
-  for (size_t i=0; i< modelVals.breastTaper.GetSize (); i++)
-    printf ("  Breast taper: %.2f%% '%s'\n",
-	    modelVals.breastTaper[i].weight*100, modelVals.breastTaper[i].name.GetData ());
-
-  for (size_t i=0; i< modelVals.measures.GetSize (); i++)
-    printf ("  Measure: %6.2f%% '%s'\n",
-	    modelVals.measures[i].weight*100, modelVals.measures[i].name.GetData ());
+  txt += "=======================================\n";
+  return txt;
 }
 
 }

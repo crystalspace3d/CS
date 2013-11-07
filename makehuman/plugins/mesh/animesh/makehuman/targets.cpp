@@ -64,6 +64,41 @@ MakeHumanMorphTargetDirection MakeHumanMorphTarget::GetDirection () const
 /*-------------------------------------------------------------------------*
  * MakeHuman morph targets parser (.target)
  *-------------------------------------------------------------------------*/
+bool MakeHumanManager::ParseMakeHumanTargetFile (Target* target)
+{
+  return ParseMakeHumanTargetFile (target, target->offsets, target->indices);
+}
+
+bool MakeHumanManager::ParseMakeHumanTargetFile
+  (Target* target, csArray<csVector3>& offsets, csArray<size_t>& indices)
+{
+  // Check if the target buffers are already in the cache
+  TargetBuffer* buffer = targetBuffers.GetElementPointer (target->name);
+  if (buffer)
+  {
+    offsets = buffer->offsets;
+    indices = buffer->indices;
+    return true;
+  }
+
+  csString path = TARGETS_PATH;
+  path += target->name + ".target";
+
+  // TODO: fallback behavior for target names
+
+  bool result = ParseMakeHumanTargetFile (path, offsets, indices);
+
+  // Cache the target buffers
+  {
+    TargetBuffer& buffer = targetBuffers.Put (target->name, TargetBuffer ());
+    buffer.offsets = offsets;
+    buffer.indices = indices;
+    // TODO: don't let the cache grow too high
+  }
+
+  return result;
+}
+
 bool MakeHumanManager::ParseMakeHumanTargetFile
   (const char* filename, csArray<csVector3>& offsets, csArray<size_t>& indices)
 {
@@ -77,9 +112,45 @@ bool MakeHumanManager::ParseMakeHumanTargetFile
   }
 
   // Open the MakeHuman target file
+  if (!vfs->Exists (filename))
+  {
+#ifdef CS_DEBUG
+    ReportInfo ("The target file %s doesn't exist", CS::Quote::Single (filename));
+#endif
+    return true;
+  }
+
+  csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
+  if (!file)
+  {
+    ReportWarning ("Error opening the target file %s", CS::Quote::Single (filename));
+    return true;
+  }
+
+/*
   csRef<iFile> file = OpenFile (filename, TARGETS_PATH);
   if (!file)
-    return ReportError ("Could not open file %s", filename);
+    //return ReportError ("Could not open file %s", filename);
+    return ReportWarning ("Could not open file %s", filename);
+  // TODO: Add the fallback behavior for unfound files (see mh/core/algos3d.py)
+*/
+  bool result = ParseMakeHumanTargetFile (file, offsets, indices);
+  if (!result) return false;
+
+  // Cache the target buffers
+  {
+    TargetBuffer& buffer = targetBuffers.Put (filename, TargetBuffer ());
+    buffer.offsets = offsets;
+    buffer.indices = indices;
+    // TODO: don't let the cache grow too high
+  }
+
+  return true;
+}
+
+bool MakeHumanManager::ParseMakeHumanTargetFile
+  (iFile* file, csArray<csVector3>& offsets, csArray<size_t>& indices)
+{
   if (file->GetSize () == 0)
     return true;
 
@@ -126,30 +197,22 @@ bool MakeHumanManager::ParseMakeHumanTargetFile
       // Parse X component of offset
       if (sscanf (words[1], "%f", &offsetX) != 1)
         return ReportError ("Wrong X element in MakeHuman target file %s (%s)",
-		       CS::Quote::Single (filename), CS::Quote::Single (words[1]));
+		       CS::Quote::Single (file->GetName ()), CS::Quote::Single (words[1]));
 
       // Parse Y component of offset
       if (sscanf (words[2], "%f", &offsetY) != 1)
         return ReportError ("Wrong Y element in MakeHuman target file %s (%s)",
-		       CS::Quote::Single (filename), CS::Quote::Single (words[2]));
+		       CS::Quote::Single (file->GetName ()), CS::Quote::Single (words[2]));
 
       // Parse Z component of offset
       if (sscanf (words[3], "%f", &offsetZ) != 1)
         return ReportError ("Wrong Z element in MakeHuman target file %s (%s)",
-		       CS::Quote::Single (filename), CS::Quote::Single (words[3]));
+		       CS::Quote::Single (file->GetName ()), CS::Quote::Single (words[3]));
 
       // Copy the parsed offset into the buffers (adapting the Z axis)
       offsets.Push (csVector3 (offsetX, offsetY, -offsetZ));
       indices.Push (mhxIndex);
     }
-  }
-
-  // Cache the target buffers
-  {
-    TargetBuffer& buffer = targetBuffers.Put (filename, TargetBuffer ());
-    buffer.offsets = offsets;
-    buffer.indices = indices;
-    // TODO: don't let the cache grow too high
   }
 
   return true;
@@ -219,6 +282,34 @@ bool MakeHumanCharacter::ApplyTargetsToModel (const csArray<Target>& targets)
   // consequently, array 'normals' is empty and should not be updated after morphing
 
   return true;
+}
+
+void MakeHumanCharacter::ApplyTargets
+(csRefArray<iMakeHumanMorphTarget>& targets, bool boundary, float delta)
+{
+  CS::Mesh::MakeHumanMorphTargetDirection direction =
+    delta > 0.0f ? MH_DIRECTION_UP : MH_DIRECTION_DOWN;
+
+  // Iterate on all morph targets
+  csRenderBufferLock<csVector3> vertices (animeshFactory->GetVertices ());
+  for (size_t i = 0; i < targets.GetSize (); i++)
+  {
+    CS::Mesh::iMakeHumanMorphTarget* target = targets[i];
+
+    // Check if we are at a target boundary and if the direction is OK
+    if (boundary
+	&& target->GetDirection () != MH_DIRECTION_BOTH
+	&& target->GetDirection () != direction)
+      continue;
+
+    // Iterate on all vertices activated by the morph target and update their position
+    const csArray<csVector3>& offsets = target->GetOffsets ();
+    const csArray<size_t>& indices = target->GetIndices ();
+    for (size_t j = 0; j < indices.GetSize (); j++)
+      vertices[indices[j]] += delta * target->GetScale () * offsets[j];
+  }
+
+  // TODO: skeleton, normals and bitangents should be recomputed...
 }
 
 }

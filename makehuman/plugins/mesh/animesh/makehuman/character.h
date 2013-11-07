@@ -37,14 +37,13 @@ public:
   ~MakeHumanCharacter ();
 
   //-- iMakeHumanCharacter
+  virtual csString Description () const;
+
   virtual void SetExpressionGeneration (bool generate);
   virtual bool GetExpressionGeneration () const;
 
   virtual void SetUpdateMode (MakeHumanUpdateMode mode);
   virtual MakeHumanUpdateMode GetUpdateMode () const;
-
-  virtual iAnimatedMeshFactory* GetMeshFactory () const;
-  virtual bool UpdateMeshFactory ();
 
   virtual void Clear ();
   virtual void SetNeutral ();
@@ -54,19 +53,19 @@ public:
   virtual void SetProxy (const char* proxy);
   virtual void SetRig (const char* rig);
 
-  virtual void SetProperty (const char* property, float value);
-  virtual float GetProperty (const char* property) const;
-  virtual void SetMeasure (const char* measure, float value);
-  virtual float GetMeasure (const char* measure) const;
+  virtual iAnimatedMeshFactory* GetMeshFactory () const;
+  virtual bool UpdateMeshFactory ();
+
+  virtual void SetParameter (const char* category, const char* parameter, float value);
+  virtual void SetParameterInternal (const char* category, const char* parameter, float value);
+  virtual float GetParameter (const char* category, const char* parameter) const;
+
+  virtual bool GetParameterTargets
+    (const char* category, const char* parameter, csRefArray<iMakeHumanMorphTarget>& targets);
 
   virtual void ClearClothes ();
   virtual size_t GetClothCount () const;
   virtual iAnimatedMeshFactory* GetClothMesh (size_t index) const;
-
-  virtual bool GetPropertyTargets
-    (const char* property, csRefArray<iMakeHumanMorphTarget>& targets);
-  virtual bool GetMeasureTargets
-    (const char* measure, csRefArray<iMakeHumanMorphTarget>& targets);
 
 private:
   void ApplyTargets (csRefArray<iMakeHumanMorphTarget>& targets, bool boundary, float delta);
@@ -81,12 +80,19 @@ private:
   bool generateExpressions;
   MakeHumanUpdateMode updateMode;
 
+  csHash<float, csString> parameters;
+  float africanValue, asianValue;
+  float breastSizeValue;
+
+  // Texture (full vfs path):
+  csString skinFile;
+  // Model proxy file (full vfs path):
+  csString proxyFilename;
+  // List of clothes:
+  csArray<csString> clothesNames;
+
   /// Model variables
   csString modelName;
-  MakeHumanModel human;            // array of model properties
-
-  // Property values of the model
-  ModelTargets modelVals;
 
   /// Backup of MakeHuman buffers (used for proxy processing)
   csArray<VertBuf> mappingBuffer;   // index correspondence between mhx and cs vertices 
@@ -121,8 +127,6 @@ private:
   bool ReportError (const char* msg, ...) const;
   bool ReportWarning (const char* msg, ...) const;
 
-  void PrintModelProperties (const ModelTargets& modelVals);
-
   /// MakeHuman model parser (.mhm)
 
   /**
@@ -132,59 +136,25 @@ private:
    *               (only relevant if the method returns true)
    * \Return true if property values were successfully generated
    */
-  bool ParseMakeHumanModelFile (const char* filename, MakeHumanModel* human);
+  bool ParseMakeHumanModelFile (const char* filename);
+
+  // Expansion of target lists
+  void ExpandGlobalTargets (csArray<Target>& targets) const;
+  void ExpandParameterTargets (csArray<Target>& targets, const char* parameter) const;
+  void ExpandTargets (csArray<Target>& targets) const;
+  void ExpandTargets (csArray<Target>& targets, const char* pattern) const;
+  void ExpandTargets (csArray<Target>& targets, const char* _pattern, const csStringArray& values) const;
+  void ExpandTargets (csArray<Target>& targets, const char* parameter, float weight) const;
+  void ExpandTargets (csArray<Target>& targets, const MHParameter* parameterData, const char* parameter, float weight) const;
 
   /**
-   * Generate target names and associated weights from given MakeHuman model 
-   * properties.
-   * \param human  Property values of a MakeHuman model
-   * \param modelVals  Generated list of target tags and weights for each
-   *                   model property (only relevant if the method returns true)
-   * \Return true if model properties were successfully generated
+   * Convert a list of internal 'Target' data structures into the public interface
+   * iMakeHumanMorphTarget.
    */
-  bool ProcessModelProperties (const MakeHumanModel& human,  ModelTargets* modelVals);
-
   void ConvertTargets (csRefArray<iMakeHumanMorphTarget>& targets,
 		       csArray<Target>& localTargets,
 		       float scale,
 		       MakeHumanMorphTargetDirection direction);
-
-  /**
-   * Build target list containing full path of MakeHuman target files and their 
-   * corresponding weights.
-   * \param modelVals  List of target tags and weights for each model property
-   * \param targets  Generated list of MakeHuman target filenames and their 
-   *                 associated weights (only relevant if the method returns true)
-   */
-  void GenerateTargetsWeights (const ModelTargets& modelVals, 
-                               csArray<Target>& targets);
-
-  void GenerateTargetsWeightsEthnics (const ModelTargets& modelVals,
-				      csArray<Target>& targets) const;
-  void GenerateTargetsWeightsAgeGender (const ModelTargets& modelVals,
-					csArray<Target>& targets) const;
-  void GenerateTargetsWeightsWeightMuscle (const ModelTargets& modelVals,
-					   csArray<Target>& targets) const;
-  void GenerateTargetsWeightsStomach (const ModelTargets& modelVals,
-				      csArray<Target>& targets) const;
-  void GenerateTargetsWeightsBreast (const ModelTargets& modelVals,
-				     csArray<Target>& targets) const;
-  void GenerateTargetsWeightsGenitals (const ModelTargets& modelVals,
-				       csArray<Target>& targets) const;
-  void GenerateTargetsWeightsButtocks (const ModelTargets& modelVals,
-				       csArray<Target>& targets) const;
-  void GenerateTargetsWeightsPelvis (const ModelTargets& modelVals,
-				     csArray<Target>& targets) const;
-  void GenerateTargetsWeightsBreastPosition (const ModelTargets& modelVals,
-					     csArray<Target>& targets) const;
-  void GenerateTargetsWeightsBreastDistance (const ModelTargets& modelVals,
-					     csArray<Target>& targets) const;
-  void GenerateTargetsWeightsBreastTaper (const ModelTargets& modelVals,
-					  csArray<Target>& targets) const;
-  void GenerateTargetsWeightsHeight (const ModelTargets& modelVals,
-				     csArray<Target>& targets) const;
-  void GenerateTargetsWeightsMeasure (const ModelTargets& modelVals,
-				      csArray<Target>& targets) const;
 
   /// MakeHuman morph target management
 
@@ -391,15 +361,13 @@ private:
    * The expression names are prefixed by 'macro_'.
    * Notice that these macro-expressions are only adapted to 
    * 100% Caucasian models.
-   * \param modelVals  Parsed property values of MakeHuman model
    * \param macroExpr  Array of parsed MakeHuman expression targets
    * \Return true if expressions have been successfully parsed
    *
    * These macro-expressions are deprecated in new MakeHuman releases
    * (last compatible version: MakeHuman 1.0 alpha 7).
    */
-  bool GenerateMacroExpressions (const ModelTargets& modelVals,
-                                 csArray<Target>& macroExpr);
+  bool GenerateMacroExpressions (csArray<Target>& macroExpr);
 
   /**
    * Parse MakeHuman landmarks, used to generate micro-expressions
@@ -424,23 +392,19 @@ private:
    * into a resulting offset buffer per micro-expression. 
    * The choice of folders and weights is done by using basic model 
    * properties (ethnics/gender/age).
-   * \param modelVals  Property values of MakeHuman model
    * \param microExpr  Array of parsed MakeHuman expression targets
    * \Return true if all micro-expressions offsets have been parsed successfully
    */
-  bool ParseMicroExpressions (const ModelTargets& modelVals,
-                              csArray<Target>& microExpr);
+  bool ParseMicroExpressions (csArray<Target>& microExpr);
 
   /**
    * Generate morph targets for MakeHuman facial micro-expressions.
    * The expression names are generated by using the parsed MakeHuman
    * expression files in subfolders of 'makehuman/data/targets/expression/units/'.
-   * \param modelVals  Property values of MakeHuman model
    * \param microExpr  Array of parsed MakeHuman expression targets
    * \Return true if expressions have been successfully generated
    */
-  bool GenerateMicroExpressions (const ModelTargets& modelVals,
-                                 csArray<Target>& microExpr);
+  bool GenerateMicroExpressions (csArray<Target>& microExpr);
 
   /**
    * Convert MakeHuman expression targets and add them to an animesh factory.

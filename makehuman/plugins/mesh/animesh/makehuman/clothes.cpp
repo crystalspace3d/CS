@@ -62,10 +62,10 @@ bool MakeHumanCharacter::GenerateClothes ()
   clothes.DeleteAll ();
 
   // Treat all clothes referenced in the loaded MakeHuman model
-  for (size_t index = 0; index < human.clothesNames.GetSize (); index++)
+  for (size_t index = 0; index < clothesNames.GetSize (); index++)
   {
     // Load and adapt clothing item to the human model
-    csString cloname = human.clothesNames[index];
+    csString cloname = clothesNames[index];
     csRef<CS::Mesh::iAnimatedMeshFactory> cloth = GenerateCloth (cloname);
     if (cloth) clothes.Push (cloth);
   }

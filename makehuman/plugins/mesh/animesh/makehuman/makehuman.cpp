@@ -42,6 +42,7 @@ MakeHumanManager::~MakeHumanManager ()
 
 bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
 {
+  // Find references to the engine objects
   this->objectRegistry = objectRegistry;
 
   engine = csQueryRegistry<iEngine> (objectRegistry);
@@ -57,6 +58,117 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
     (objectRegistry, "crystalspace.mesh.object.animesh", false);
   if (!animeshType) return ReportError ( "Could not load the animesh object plugin!");
 
+  // Create the labels of the categories
+  // TODO: parse that from a configuration file instead
+  csStringArray array;
+
+  array.Push ("female");
+  array.Push ("male");
+  categoryLabels.Put ("gender", array);
+
+  array.DeleteAll ();
+  array.Push ("child");
+  array.Push ("young");
+  array.Push ("old");
+  categoryLabels.Put ("age", array);
+
+  array.DeleteAll ();
+  array.Push ("african");
+  array.Push ("asian");
+  array.Push ("neutral");
+  categoryLabels.Put ("ethnic", array);
+
+  array.DeleteAll ();
+  array.Push ("african");
+  array.Push ("asian");
+  array.Push ("caucasian");
+  categoryLabels.Put ("ethnic2", array);
+
+  array.DeleteAll ();
+  array.Push ("muscle");
+  array.Push ("flaccid");
+  array.Push ("averageTone");
+  categoryLabels.Put ("tone", array);
+
+  array.DeleteAll ();
+  array.Push ("heavy");
+  array.Push ("light");
+  array.Push ("averageWeight");
+  categoryLabels.Put ("weight", array);
+
+  array.DeleteAll ();
+  array.Push ("cup1");
+  array.Push ("cup2");
+  categoryLabels.Put ("breastSize", array);
+
+  array.DeleteAll ();
+  array.Push ("firmness0");
+  array.Push ("firmness1");
+  categoryLabels.Put ("breastFirmness", array);
+
+  // Create the categories of parameters
+  // TODO: parse that from a configuration file instead
+  MHCategory* category = &categories.Put ("macro", MHCategory ());
+
+  category->AddSubCategory ("main", "");
+  globalPatterns.Push ("macrodetails/universal-${gender}-${age}-${tone}-${weight}");
+  globalPatterns.Push ("macrodetails/${ethnic}-${gender}-${age}");
+  category->AddParameter ("gender", "", "");
+  category->AddParameter ("age", "", "");
+  //category->AddParameter ("caucasian", "", "");
+  category->AddParameter ("african", "", "");
+  category->AddParameter ("asian", "", "");
+  category->AddParameter ("weight", "", "");
+  category->AddParameter ("tone", "", "");
+  category->AddParameter ("height", "macrodetails/universal-stature-${value}", "dwarf", "giant");
+
+  category = &categories.Put ("torso", MHCategory ());
+
+  category->AddSubCategory ("main", "");
+  category->AddParameter ("pelvisTone", "details/${gender}-${age}-pelvis-tone${value}", "1", "2");
+  category->AddParameter ("stomach", "details/${gender}-${age}-${tone}-${weight}-stomach${value}", "1", "2");
+  category->AddParameter ("buttocks", "details/${gender}-${age}-nates${value}", "1", "2");
+
+  category = &categories.Put ("gender", MHCategory ());
+
+  category->AddSubCategory ("main", "");
+  category->AddParameter ("genitals", "details/genitals_${gender}_${value}_${age}", "feminine", "masculine");
+  globalPatterns.Push ("breast/female-${age}-${tone}-${weight}-${breastSize}-${breastFirmness}");
+  category->AddParameter ("breastSize", "", "");
+  category->AddParameter ("breastFirmness", "", "");
+  category->AddParameter ("breastPosition", "breast/breast-${value}", "down", "up");
+  category->AddParameter ("breastDistance", "breast/breast-dist-${value}", "min", "max");
+  category->AddParameter ("breastPoint", "breast/breast-point-${value}", "min", "max");
+
+  category = &categories.Put ("face", MHCategory ());
+
+  category->AddSubCategory ("neck", "neck/${ethnic2}/${gender}_${age}/${value}");
+  category->AddParameter ("neck-scale-depth-less", "neck-scale-depth-more");
+  category->AddParameter ("neck-scale-horiz-less", "neck-scale-horiz-more");
+
+  category->AddSubCategory ("cheek", "cheek/${ethnic2}/${gender}_${age}/${value}");
+  category->AddParameter ("l-cheek-in", "l-cheek-out");
+  category->AddParameter ("l-cheek-bones-out", "l-cheek-bones-in");
+  category->AddParameter ("r-cheek-in", "r-cheek-out");
+  category->AddParameter ("r-cheek-bones-out", "r-cheek-bones-in");
+
+  category->AddSubCategory ("head-shape", "head/${ethnic}/${gender}_${age}/${value}");
+  category->AddParameter ("", "head-oval");
+  category->AddParameter ("", "head-round");
+  category->AddParameter ("", "head-rectangular");
+
+  // Build the list of references to the parameters
+  for (csHash<MHCategory, csString>::GlobalIterator it = categories.GetIterator (); it.HasNext (); )
+  {
+    MHCategory& category = it.Next ();
+    for (csHash<MHParameter, csString>::GlobalIterator rit = category.parameters.GetIterator (); rit.HasNext (); )
+    {
+      csString name;
+      MHParameter& parameter = rit.Next (name);
+      parameters.Put (name, &parameter);
+    }
+  }
+
   /*
     TODO: cfg file or options for:
       - paths
@@ -65,9 +177,6 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
       - if generate clothes
       - if clean skeleton
       - cache size
-
-    TODO: use a cache for the ressource files
-    TODO: threaded loading of the data
   */
 
   // Parse the object file describing the MakeHuman neutral model
@@ -80,6 +189,42 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
 csPtr<iMakeHumanCharacter> MakeHumanManager::CreateCharacter ()
 {
   return new MakeHumanCharacter (this);
+}
+
+const MHParameter* MakeHumanManager::FindParameter (const char* category, const char* parameter) const
+{
+  const MHCategory* mhcategory = categories.GetElementPointer (category);
+  if (!mhcategory) return nullptr;
+
+  return mhcategory->parameters.GetElementPointer (parameter);
+}
+
+bool MakeHumanManager::FindParameterCategory (const char* parameter, csString& category) const
+{
+  // We actually look only in the main categories that are not defined in the MakeHuman
+  // model files
+  const MHCategory* mhcategory = categories.GetElementPointer ("macro");
+  if (mhcategory->parameters.Contains (parameter))
+  {
+    category = "macro";
+    return true;
+  }
+
+  mhcategory = categories.GetElementPointer ("gender");
+  if (mhcategory->parameters.Contains (parameter))
+  {
+    category = "gender";
+    return true;
+  }
+
+  mhcategory = categories.GetElementPointer ("torso");
+  if (mhcategory->parameters.Contains (parameter))
+  {
+    category = "torso";
+    return true;
+  }
+
+  return false;
 }
 
 csPtr<iStringArray> MakeHumanManager::GetProxies () const
@@ -107,55 +252,124 @@ csPtr<iStringArray> MakeHumanManager::GetRigs () const
   return csPtr<iStringArray> (names);
 }
 
-csPtr<iStringArray> MakeHumanManager::GetMeasures () const
+csPtr<iStringArray> MakeHumanManager::GetCategories () const
 {
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
-  // TODO: Build this list dynamically from the MakeHuman data
-  names->Push ("ankle");
-  names->Push ("bust");
-  names->Push ("calf");
-  names->Push ("frontchest");
-  names->Push ("hips");
-  names->Push ("lowerarmlenght");
-  names->Push ("lowerlegheight");
-  names->Push ("napetowaist");
-  names->Push ("neckcirc");
-  names->Push ("neckheight");
-  names->Push ("shoulder");
-  names->Push ("thighcirc");
-  names->Push ("underbust");
-  names->Push ("upperarm");
-  names->Push ("upperarmlenght");
-  names->Push ("upperlegheight");
-  names->Push ("waist");
-  names->Push ("waisttohip");
-  names->Push ("wrist");
+
+  for (csHash<MHCategory, csString>::ConstGlobalIterator it = categories.GetIterator (); it.HasNext (); )
+  {
+    csString name;
+    it.Next (name);
+    names->Push (name);
+  }
+
   return csPtr<iStringArray> (names);
 }
 
-csPtr<iStringArray> MakeHumanManager::GetProperties () const
+csPtr<iStringArray> MakeHumanManager::GetSubCategories (const char* category) const
 {
+  const MHCategory* mhcategory = categories.GetElementPointer (category);
+  if (!mhcategory)
+  {
+    ReportError ("The category %s doesn't exist", CS::Quote::Single (category));
+    return csPtr<iStringArray> (nullptr);
+  }
+
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
-  // TODO: Build this list dynamically from the MakeHuman data
-  names->Push ("age");
-  names->Push ("african");
-  names->Push ("asian");
-  names->Push ("gender");
-  names->Push ("weight");
-  names->Push ("muscle");
-  names->Push ("height");
-  names->Push ("genitals");
-  names->Push ("buttocks");
-  names->Push ("stomach");
-  names->Push ("breastFirmness");
-  names->Push ("breastSize");
-  names->Push ("breastPosition");
-  names->Push ("breastDistance");
-  names->Push ("breastTaper");
-  names->Push ("pelvisTone");
+
+  for (size_t i = 0; i < mhcategory->subCategories.GetSize (); i++)
+    names->Push (mhcategory->subCategories[i].name);
+
   return csPtr<iStringArray> (names);
+}
+
+csPtr<iStringArray> MakeHumanManager::GetParameters (const char* category, const char* subCategory) const
+{
+  const MHCategory* mhcategory = categories.GetElementPointer (category);
+  if (!mhcategory)
+  {
+    ReportError ("The category %s doesn't exist", CS::Quote::Single (category));
+    return csPtr<iStringArray> (nullptr);
+  }
+
+  const MHSubCategory* mhsubCategory = nullptr;
+  for (size_t i = 0; i < mhcategory->subCategories.GetSize (); i++)
+    if (mhcategory->subCategories[i].name == subCategory)
+    {
+      mhsubCategory = &mhcategory->subCategories[i];
+      break;
+    }
+
+  if (!mhsubCategory)
+  {
+    ReportError ("The sub-category %s doesn't exist", CS::Quote::Single (subCategory));
+    return csPtr<iStringArray> (nullptr);
+  }
+
+  csRef<iStringArray> names;
+  names.AttachNew (new scfStringArray ());
+
+  for (size_t i = 0; i < mhsubCategory->parameters.GetSize (); i++)
+    names->Push (mhsubCategory->parameters[i]);
+
+  return csPtr<iStringArray> (names);
+}
+
+csPtr<iStringArray> MakeHumanManager::GetParameters (const char* category) const
+{
+  const MHCategory* mhcategory = categories.GetElementPointer (category);
+  if (!mhcategory)
+  {
+    ReportError ("The category %s doesn't exist", CS::Quote::Single (category));
+    return csPtr<iStringArray> (nullptr);
+  }
+
+  csRef<iStringArray> names;
+  names.AttachNew (new scfStringArray ());
+
+  for (csHash<MHParameter, csString>::ConstGlobalIterator it = mhcategory->parameters.GetIterator (); it.HasNext (); )
+  {
+    csString name;
+    it.Next (name);
+    names->Push (name);
+  }
+
+  return csPtr<iStringArray> (names);
+}
+
+//--------------------------- MHCategory ---------------------------
+
+void MHCategory::AddSubCategory (const char* subCategory, const char* pattern)
+{
+  subCategories.Push (MHSubCategory (subCategory, pattern));
+}
+
+void MHCategory::AddParameter (const char* name, const char* left, const char* right)
+{
+  MHSubCategory& subCategory = subCategories[subCategories.GetSize () - 1];
+
+  subCategory.parameters.Push (name);
+  parameters.Put (name, MHParameter (subCategory.pattern, left, right));
+}
+
+void MHCategory::AddParameter (const char* name, const char* pattern,
+			       const char* left, const char* right)
+{
+  subCategories[subCategories.GetSize () - 1].parameters.Push (name);
+  parameters.Put (name, MHParameter (pattern, left, right));
+}
+
+void MHCategory::AddParameter (const char* left, const char* right)
+{
+  MHSubCategory& subCategory = subCategories[subCategories.GetSize () - 1];
+
+  csString name = subCategory.name;
+  name += subCategory.parameters.GetSize () + 1;
+
+  subCategory.parameters.Push (name);
+  parameters.Put (name, MHParameter (subCategory.pattern, left, right));
 }
 
 }

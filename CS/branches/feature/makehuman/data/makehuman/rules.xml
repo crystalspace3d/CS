@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://crystalspace3d.org/xml/library" changeToken="1382509229328.017">
+  <category name="macro">
+    <subcategory name="main">
+      <global pattern="macrodetails/universal-${gender}-${age}-${tone}-${weight}" />
+      <global pattern="macrodetails/${ethnic}-${gender}-${age}" />
+      <parameter name="gender" />
+      <parameter name="age" />
+      <parameter name="tone" />
+      <parameter name="weight" />
+      <parameter name="height" pattern="macrodetails/universal-stature-${value}" left="dwarf" right="giant" />
+      <parameter name="african" />
+      <parameter name="asian" />
+    </subcategory>
+  </category>
+  <category name="torso">
+    <subcategory name="main">
+      <parameter name="pelvisTone" pattern="details/${gender}-${age}-pelvis-tone${value}" left="1" right="2" />
+      <parameter name="stomach" pattern="details/${gender}-${age}-${tone}-${weight}-stomach${value}" left="1" right="2" />
+      <parameter name="buttocks" pattern="details/${gender}-${age}-nates${value}" left="1" right="2" />
+    </subcategory>
+    <subcategory name="torso" pattern="torso/${ethnic}/${gender}_${age}/${value}">
+      <parameter left="torso-scale-depth-decr" right="torso-scale-depth-incr" />
+      <parameter left="torso-scale-horiz-decr" right="torso-scale-horiz-incr" />
+      <parameter left="torso-scale-vert-decr" right="torso-scale-vert-incr" />
+      <parameter left="torso-trans-in" right="torso-trans-out" />
+      <parameter left="torso-trans-down" right="torso-trans-up" />
+      <parameter left="torso-trans-forward" right="torso-trans-backward" />
+    </subcategory>
+    <subcategory name="hip" pattern="hip/${ethnic}/${gender}_${age}/${value}">
+      <parameter left="hip-scale-depth-decr" right="hip-scale-depth-incr" />
+      <parameter left="hip-scale-horiz-decr" right="hip-scale-horiz-incr" />
+      <parameter left="hip-scale-vert-decr" right="hip-scale-vert-incr" />
+      <parameter left="hip-trans-in" right="hip-trans-out" />
+      <parameter left="hip-trans-down" right="hip-trans-up" />
+      <parameter left="hip-trans-forward" right="hip-trans-backward" />
+    </subcategory>
+  </category>
+  <category name="face">
+    <subcategory name="head" pattern="head/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="head-age-less" right="head-age-more" />
+      <parameter left="head-angle-in" right="head-angle-out" />
+      <parameter left="head-scale-depth-less" right="head-scale-depth-more" />
+      <parameter left="head-scale-horiz-less" right="head-scale-horiz-more" />
+      <parameter left="head-scale-vert-more" right="head-scale-vert-less" />
+      <parameter left="head-trans-in" right="head-trans-out" />
+      <parameter left="head-trans-down" right="head-trans-up" />
+      <parameter left="head-trans-forward" right="head-trans-backward" />
+    </subcategory>
+    <subcategory name="neck" pattern="neck/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="neck-scale-depth-less" right="neck-scale-depth-more" />
+      <parameter left="neck-scale-horiz-less" right="neck-scale-horiz-more" />
+      <parameter left="neck-scale-vert-more" right="neck-scale-vert-less" />
+      <parameter left="neck-trans-in" right="neck-trans-out" />
+      <parameter left="neck-trans-down" right="neck-trans-up" />
+      <parameter left="neck-trans-forward" right="neck-trans-backward" />
+    </subcategory>
+    <subcategory name="right-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-eye-height1-min" right="r-eye-height1-max" />
+      <parameter left="r-eye-height2-min" right="r-eye-height2-max" />
+      <parameter left="r-eye-height3-min" right="r-eye-height3-max" />
+      <parameter left="r-eye-push1-in" right="r-eye-push1-out" />
+      <parameter left="r-eye-push2-in" right="r-eye-push2-out" />
+      <parameter left="r-eye-move-in" right="r-eye-move-out" />
+      <parameter left="r-eye-move-up" right="r-eye-move-down" />
+      <parameter left="r-eye-small" right="r-eye-big" />
+      <parameter left="r-eye-corner1-up" right="r-eye-corner1-down" />
+      <parameter left="r-eye-corner2-up" right="r-eye-corner2-down" />
+    </subcategory>
+    <subcategory name="left-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-eye-height1-min" right="l-eye-height1-max" />
+      <parameter left="l-eye-height2-min" right="l-eye-height2-max" />
+      <parameter left="l-eye-height3-min" right="l-eye-height3-max" />
+      <parameter left="l-eye-push1-in" right="l-eye-push1-out" />
+      <parameter left="l-eye-push2-in" right="l-eye-push2-out" />
+      <parameter left="l-eye-move-in" right="l-eye-move-out" />
+      <parameter left="l-eye-move-up" right="l-eye-move-down" />
+      <parameter left="l-eye-small" right="l-eye-big" />
+      <parameter left="l-eye-corner1-up" right="l-eye-corner1-down" />
+      <parameter left="l-eye-corner2-up" right="l-eye-corner2-down" />
+    </subcategory>
+    <subcategory name="nose-features" pattern="nose/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="nose-compress" right="nose-uncompress" />
+      <parameter left="nose-convex" right="nose-concave" />
+      <parameter left="nose-greek" right="nose-ungreek" />
+      <parameter left="nose-hump" right="nose-unhump" />
+      <parameter left="nose-potato" right="nose-point" />
+      <parameter left="nose-nostrils-point" right="nose-nostrils-unpoint" />
+      <parameter left="nose-nostrils-up" right="nose-nostrils-down" />
+      <parameter left="nose-point-up" right="nose-point-down" />
+    </subcategory>
+    <subcategory name="nose-size-details" pattern="nose/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="nose-nostril-width-min" right="nose-nostril-width-max" />
+      <parameter left="nose-height-min" right="nose-height-max" />
+      <parameter left="nose-width1-min" right="nose-width1-max" />
+      <parameter left="nose-width2-min" right="nose-width2-max" />
+      <parameter left="nose-width3-min" right="nose-width3-max" />
+      <parameter left="nose-width-min" right="nose-width-max" />
+    </subcategory>
+    <subcategory name="nose-size" pattern="nose/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="nose-trans-up" right="nose-trans-down" />
+      <parameter left="nose-trans-forward" right="nose-trans-backward" />
+      <parameter left="nose-trans-in" right="nose-trans-out" />
+      <parameter left="nose-scale-vert-incr" right="nose-scale-vert-decr" />
+      <parameter left="nose-scale-horiz-incr" right="nose-scale-horiz-decr" />
+      <parameter left="nose-scale-depth-incr" right="nose-scale-depth-decr" />
+    </subcategory>
+    <subcategory name="mouth-size" pattern="mouth/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="mouth-scale-horiz-incr" right="mouth-scale-horiz-decr" />
+      <parameter left="mouth-scale-vert-incr" right="mouth-scale-vert-decr" />
+      <parameter left="mouth-scale-depth-incr" right="mouth-scale-depth-decr" />
+      <parameter left="mouth-trans-in" right="mouth-trans-out" />
+      <parameter left="mouth-trans-up" right="mouth-trans-down" />
+      <parameter left="mouth-trans-forward" right="mouth-trans-backward" />
+    </subcategory>
+    <subcategory name="mouth-size-details" pattern="mouth/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="mouth-lowerlip-height-min" right="mouth-lowerlip-height-max" />
+      <parameter left="mouth-lowerlip-middle-up" right="mouth-lowerlip-middle-down" />
+      <parameter left="mouth-lowerlip-width-min" right="mouth-lowerlip-width-max" />
+      <parameter left="mouth-upperlip-height-min" right="mouth-upperlip-height-max" />
+      <parameter left="mouth-upperlip-width-min" right="mouth-upperlip-width-max" />
+    </subcategory>
+    <subcategory name="mouth-features" pattern="mouth/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="mouth-lowerlip-ext-up" right="mouth-lowerlip-ext-down" />
+      <parameter left="mouth-angles-up" right="mouth-angles-down" />
+      <parameter left="mouth-lowerlip-middle-up" right="mouth-lowerlip-middle-down" />
+      <parameter left="mouth-lowerlip-deflate" right="mouth-lowerlip-inflate" />
+      <parameter left="mouth-philtrum-up" right="mouth-philtrum-down" />
+      <parameter left="mouth-philtrum-increase" right="mouth-philtrum-decrease" />
+      <parameter left="mouth-up" right="mouth-down" />
+      <parameter left="mouth-upperlip-deflate" right="mouth-upperlip-inflate" />
+      <parameter left="mouth-upperlip-ext-up" right="mouth-upperlip-ext-down" />
+      <parameter left="mouth-upperlip-middle-up" right="mouth-upperlip-middle-down" />
+    </subcategory>
+    <subcategory name="right-ear" pattern="ears/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-ear-backward" right="r-ear-forward" />
+      <parameter left="r-ear-big" right="r-ear-small" />
+      <parameter left="r-ear-down" right="r-ear-up" />
+      <parameter left="r-ear-height-min" right="r-ear-height-max" />
+      <parameter left="r-ear-lobe-min" right="r-ear-lobe-max" />
+      <parameter left="r-ear-pointed" right="r-ear-triangle" />
+      <parameter left="r-ear-backward" right="r-ear-forward" />
+      <parameter left="r-ear-square" right="r-ear-round" />
+      <parameter left="r-ear-width-min" right="r-ear-width-max" />
+      <parameter left="r-ear-wing-out" right="r-ear-wing-out" />
+      <parameter left="r-ear-flap-out" right="r-ear-flap-in" />
+    </subcategory>
+    <subcategory name="left-ear" pattern="ears/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-ear-backward" right="l-ear-forward" />
+      <parameter left="l-ear-big" right="l-ear-small" />
+      <parameter left="l-ear-down" right="l-ear-up" />
+      <parameter left="l-ear-height-min" right="l-ear-height-max" />
+      <parameter left="l-ear-lobe-min" right="l-ear-lobe-max" />
+      <parameter left="l-ear-pointed" right="l-ear-triangle" />
+      <parameter left="l-ear-backward" right="l-ear-forward" />
+      <parameter left="l-ear-square" right="l-ear-round" />
+      <parameter left="l-ear-width-min" right="l-ear-width-max" />
+      <parameter left="l-ear-wing-out" right="l-ear-wing-out" />
+      <parameter left="l-ear-flap-out" right="l-ear-flap-in" />
+    </subcategory>
+    <subcategory name="chin" pattern="chin/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="chin-in" right="chin-out" />
+      <parameter left="chin-width-min" right="chin-width-max" />
+      <parameter left="chin-height-min" right="chin-height-max" />
+      <parameter left="chin-squared" right="chin-round" />
+      <parameter left="chin-prognathism1" right="chin-prognathism2" />
+    </subcategory>
+    <subcategory name="cheek" pattern="cheek/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-cheek-in" right="l-cheek-out" />
+      <parameter left="l-cheek-bones-out" right="l-cheek-bones-in" />
+      <parameter left="r-cheek-in" right="r-cheek-out" />
+      <parameter left="r-cheek-bones-out" right="r-cheek-bones-in" />
+    </subcategory>
+    <subcategory name="head-shape" pattern="head/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="" right="head-oval" />
+      <parameter left="" right="head-round" />
+      <parameter left="" right="head-rectangular" />
+      <parameter left="" right="head-square" />
+      <parameter left="" right="head-triangular" />
+      <parameter left="" right="head-invertedtriangular" />
+      <parameter left="" right="head-diamond" />
+    </subcategory>
+  </category>
+  <category name="armslegs">
+    <subcategory name="right-hand" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-hand-scale-depth-decr" right="r-hand-scale-depth-incr" />
+      <parameter left="r-hand-scale-horiz-decr" right="r-hand-scale-horiz-incr" />
+      <parameter left="r-hand-scale-vert-decr" right="r-hand-scale-vert-incr" />
+      <parameter left="r-hand-trans-in" right="r-hand-trans-out" />
+      <parameter left="r-hand-trans-down" right="r-hand-trans-up" />
+      <parameter left="r-hand-trans-forward" right="r-hand-trans-backward" />
+    </subcategory>
+    <subcategory name="left-hand" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-hand-scale-depth-decr" right="l-hand-scale-depth-incr" />
+      <parameter left="l-hand-scale-horiz-decr" right="l-hand-scale-horiz-incr" />
+      <parameter left="l-hand-scale-vert-decr" right="l-hand-scale-vert-incr" />
+      <parameter left="l-hand-trans-in" right="l-hand-trans-out" />
+      <parameter left="l-hand-trans-down" right="l-hand-trans-up" />
+      <parameter left="l-hand-trans-forward" right="l-hand-trans-backward" />
+    </subcategory>
+    <subcategory name="right-foot" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-foot-scale-depth-decr" right="r-foot-scale-depth-incr" />
+      <parameter left="r-foot-scale-horiz-decr" right="r-foot-scale-horiz-incr" />
+      <parameter left="r-foot-scale-vert-decr" right="r-foot-scale-vert-incr" />
+      <parameter left="r-foot-trans-in" right="r-foot-trans-out" />
+      <parameter left="r-foot-trans-down" right="r-foot-trans-up" />
+      <parameter left="r-foot-trans-forward" right="r-foot-trans-backward" />
+    </subcategory>
+    <subcategory name="left-foot" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-foot-scale-depth-decr" right="l-foot-scale-depth-incr" />
+      <parameter left="l-foot-scale-horiz-decr" right="l-foot-scale-horiz-incr" />
+      <parameter left="l-foot-scale-vert-decr" right="l-foot-scale-vert-incr" />
+      <parameter left="l-foot-trans-in" right="l-foot-trans-out" />
+      <parameter left="l-foot-trans-down" right="l-foot-trans-up" />
+      <parameter left="l-foot-trans-forward" right="l-foot-trans-backward" />
+    </subcategory>
+    <subcategory name="left-arm" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-lowerarm-scale-depth-decr" right="l-lowerarm-scale-depth-incr" />
+      <parameter left="l-lowerarm-scale-horiz-decr" right="l-lowerarm-scale-horiz-incr" />
+      <parameter left="l-lowerarm-scale-vert-decr" right="l-lowerarm-scale-vert-incr" />
+      <parameter left="l-lowerarm-trans-in" right="l-lowerarm-trans-out" />
+      <parameter left="l-lowerarm-trans-down" right="l-lowerarm-trans-up" />
+      <parameter left="l-lowerarm-trans-forward" right="l-lowerarm-trans-backward" />
+      <parameter left="l-upperarm-scale-depth-decr" right="l-upperarm-scale-depth-incr" />
+      <parameter left="l-upperarm-scale-horiz-decr" right="l-upperarm-scale-horiz-incr" />
+      <parameter left="l-upperarm-scale-vert-decr" right="l-upperarm-scale-vert-incr" />
+      <parameter left="l-upperarm-trans-in" right="l-upperarm-trans-out" />
+      <parameter left="l-upperarm-trans-down" right="l-upperarm-trans-up" />
+      <parameter left="l-upperarm-trans-forward" right="l-upperarm-trans-backward" />
+    </subcategory>
+    <subcategory name="right-arm" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-lowerarm-scale-depth-decr" right="r-lowerarm-scale-depth-incr" />
+      <parameter left="r-lowerarm-scale-horiz-decr" right="r-lowerarm-scale-horiz-incr" />
+      <parameter left="r-lowerarm-scale-vert-decr" right="r-lowerarm-scale-vert-incr" />
+      <parameter left="r-lowerarm-trans-in" right="r-lowerarm-trans-out" />
+      <parameter left="r-lowerarm-trans-down" right="r-lowerarm-trans-up" />
+      <parameter left="r-lowerarm-trans-forward" right="r-lowerarm-trans-backward" />
+      <parameter left="r-upperarm-scale-depth-decr" right="r-upperarm-scale-depth-incr" />
+      <parameter left="r-upperarm-scale-horiz-decr" right="r-upperarm-scale-horiz-incr" />
+      <parameter left="r-upperarm-scale-vert-decr" right="r-upperarm-scale-vert-incr" />
+      <parameter left="r-upperarm-trans-in" right="r-upperarm-trans-out" />
+      <parameter left="r-upperarm-trans-down" right="r-upperarm-trans-up" />
+      <parameter left="r-upperarm-trans-forward" right="r-upperarm-trans-backward" />
+    </subcategory>
+    <subcategory name="left-leg" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-lowerleg-scale-depth-decr" right="l-lowerleg-scale-depth-incr" />
+      <parameter left="l-lowerleg-scale-horiz-decr" right="l-lowerleg-scale-horiz-incr" />
+      <parameter left="l-lowerleg-scale-vert-decr" right="l-lowerleg-scale-vert-incr" />
+      <parameter left="l-lowerleg-trans-in" right="l-lowerleg-trans-out" />
+      <parameter left="l-lowerleg-trans-down" right="l-lowerleg-trans-up" />
+      <parameter left="l-lowerleg-trans-forward" right="l-lowerleg-trans-backward" />
+      <parameter left="l-upperleg-scale-depth-decr" right="l-upperleg-scale-depth-incr" />
+      <parameter left="l-upperleg-scale-horiz-decr" right="l-upperleg-scale-horiz-incr" />
+      <parameter left="l-upperleg-scale-vert-decr" right="l-upperleg-scale-vert-incr" />
+      <parameter left="l-upperleg-trans-in" right="l-upperleg-trans-out" />
+      <parameter left="l-upperleg-trans-down" right="l-upperleg-trans-up" />
+      <parameter left="l-upperleg-trans-forward" right="l-upperleg-trans-backward" />
+    </subcategory>
+    <subcategory name="right-leg" pattern="armslegs/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-lowerleg-scale-depth-decr" right="r-lowerleg-scale-depth-incr" />
+      <parameter left="r-lowerleg-scale-horiz-decr" right="r-lowerleg-scale-horiz-incr" />
+      <parameter left="r-lowerleg-scale-vert-decr" right="r-lowerleg-scale-vert-incr" />
+      <parameter left="r-lowerleg-trans-in" right="r-lowerleg-trans-out" />
+      <parameter left="r-lowerleg-trans-down" right="r-lowerleg-trans-up" />
+      <parameter left="r-lowerleg-trans-forward" right="r-lowerleg-trans-backward" />
+      <parameter left="r-upperleg-scale-depth-decr" right="r-upperleg-scale-depth-incr" />
+      <parameter left="r-upperleg-scale-horiz-decr" right="r-upperleg-scale-horiz-incr" />
+      <parameter left="r-upperleg-scale-vert-decr" right="r-upperleg-scale-vert-incr" />
+      <parameter left="r-upperleg-trans-in" right="r-upperleg-trans-out" />
+      <parameter left="r-upperleg-trans-down" right="r-upperleg-trans-up" />
+      <parameter left="r-upperleg-trans-forward" right="r-upperleg-trans-backward" />
+    </subcategory>
+  </category>
+  <category name="gender">
+    <subcategory name="main">
+      <parameter name="genitals" pattern="details/genitals_${gender}_${value}_${age}" left="feminine" right="masculine" />
+      <global pattern="breast/female-${age}-${tone}-${weight}-${breastSize}-${breastFirmness}" />
+      <parameter name="breastSize" />
+      <parameter name="breastFirmness" />
+      <parameter name="breastPosition" pattern="breast/breast-${value}" left="down" right="up" />
+      <parameter name="breastDistance" pattern="breast/breast-dist-${value}" left="min" right="max" />
+      <parameter name="breastPoint" pattern="breast/breast-point-${value}" left="min" right="max" />
+    </subcategory>
+  </category>
+  <category name="measure">
+    <subcategory name="neck" pattern="measure/measure-${value}">
+      <parameter name="neckcirc" left="neckcirc-decrease" right="neckcirc-increase" />
+      <parameter name="neckheight" left="neckheight-decrease" right="neckheight-increase" />
+    </subcategory>
+    <subcategory name="upperarm" pattern="measure/measure-${value}">
+      <parameter name="upperarm" left="upperarm-decrease" right="upperarm-increase" />
+      <parameter name="upperarmlenght" left="upperarmlenght-decrease" right="upperarmlenght-increase" />
+    </subcategory>
+    <subcategory name="lowerarm" pattern="measure/measure-${value}">
+      <parameter name="lowerarmlenght" left="lowerarmlenght-decrease" right="lowerarmlenght-increase" />
+      <parameter name="wrist" left="wrist-decrease" right="wrist-increase" />
+    </subcategory>
+    <subcategory name="torso" pattern="measure/measure-${value}">
+      <parameter name="frontchest" left="frontchest-decrease" right="frontchest-increase" />
+      <parameter name="bust" left="bust-decrease" right="bust-increase" />
+      <parameter name="underbust" left="underbust-decrease" right="underbust-increase" />
+      <parameter name="waist" left="waist-decrease" right="waist-increase" />
+      <parameter name="napetowaist" left="napetowaist-decrease" right="napetowaist-increase" />
+      <parameter name="waisttohip" left="waisttohip-decrease" right="waisttohip-increase" />
+      <parameter name="shoulder" left="shoulder-decrease" right="shoulder-increase" />
+    </subcategory>
+    <subcategory name="hips" pattern="measure/measure-${value}">
+      <parameter name="hips" left="hips-decrease" right="hips-increase" />
+    </subcategory>
+    <subcategory name="upperleg" pattern="measure/measure-${value}">
+      <parameter name="upperlegheight" left="upperlegheight-decrease" right="upperlegheight-increase" />
+      <parameter name="thighcirc" left="thighcirc-decrease" right="thighcirc-increase" />
+    </subcategory>
+    <subcategory name="lowerleg" pattern="measure/measure-${value}">
+      <parameter name="lowerlegheight" left="lowerlegheight-decrease" right="lowerlegheight-increase" />
+      <parameter name="calf" left="calf-decrease" right="calf-increase" />
+    </subcategory>
+    <subcategory name="ankle" pattern="measure/measure-${value}">
+      <parameter name="ankle" left="ankle-decrease" right="ankle-increase" />
+    </subcategory>
+  </category>
+</rules>

@@ -72,6 +72,9 @@ struct iMakeHumanCharacter : public virtual iBase
   virtual void SetExpressionGeneration (bool generate) = 0;
   virtual bool GetExpressionGeneration () const = 0;
 
+  virtual void SetSkeletonGeneration (bool generate) = 0;
+  virtual bool GetSkeletonGeneration () const = 0;
+
   virtual void SetUpdateMode (MakeHumanUpdateMode mode) = 0;
   virtual MakeHumanUpdateMode GetUpdateMode () const = 0;
 

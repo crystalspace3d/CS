@@ -42,6 +42,9 @@ public:
   virtual void SetExpressionGeneration (bool generate);
   virtual bool GetExpressionGeneration () const;
 
+  virtual void SetSkeletonGeneration (bool generate);
+  virtual bool GetSkeletonGeneration () const;
+
   virtual void SetUpdateMode (MakeHumanUpdateMode mode);
   virtual MakeHumanUpdateMode GetUpdateMode () const;
 
@@ -78,6 +81,7 @@ private:
   csString rig;
 
   bool generateExpressions;
+  bool generateSkeleton;
   MakeHumanUpdateMode updateMode;
 
   csHash<float, csString> parameters;

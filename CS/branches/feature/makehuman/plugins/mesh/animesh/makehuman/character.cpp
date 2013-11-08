@@ -29,7 +29,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 
 MakeHumanCharacter::MakeHumanCharacter (MakeHumanManager* manager)
   : scfImplementationType (this), manager (manager),
-    proxy (), rig(), generateExpressions (true), updateMode (MH_UPDATE_FULL)
+  proxy (), rig(), generateExpressions (true), generateSkeleton (true),
+  updateMode (MH_UPDATE_FULL)
 {
   // Create the animated mesh factory
   csRef<iMeshObjectFactory> factory = manager->animeshType->NewFactory ();
@@ -51,6 +52,16 @@ void MakeHumanCharacter::SetExpressionGeneration (bool generate)
 bool MakeHumanCharacter::GetExpressionGeneration () const
 {
   return generateExpressions;
+}
+
+void MakeHumanCharacter::SetSkeletonGeneration (bool generate)
+{
+  generateSkeleton = generate;
+}
+
+bool MakeHumanCharacter::GetSkeletonGeneration () const
+{
+  return generateSkeleton;
 }
 
 void MakeHumanCharacter::SetUpdateMode (MakeHumanUpdateMode mode)
@@ -291,13 +302,16 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
   csString rigName = rig;
   if (rigName.IsEmpty ()) rigName = DEFAULT_RIG;
 
-  // Create a skeleton by parsing MakeHuman rig file
-  // and update bone positions according to mesh modifications
-  if (!CreateSkeleton (modelName, rigName, mhJoints))
-    ReportError ("Problem while updating animesh skeleton");
+  if (generateSkeleton)
+  {
+    // Create a skeleton by parsing MakeHuman rig file
+    // and update bone positions according to mesh modifications
+    if (!CreateSkeleton (modelName, rigName, mhJoints))
+      ReportError ("Problem while updating animesh skeleton");
 
-  // Remove the bones that are not influencing any vertex
-  CS::Mesh::AnimatedMeshTools::CleanSkeleton (animeshFactory);
+    // Remove the bones that are not influencing any vertex
+    CS::Mesh::AnimatedMeshTools::CleanSkeleton (animeshFactory);
+  }
 
   // If no proxy is defined
   if ((!proxy || strcmp (proxy, "") == 0)
@@ -352,13 +366,16 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
       return ReportError ("Creating animesh factory from MakeHuman model proxy %s KO!",
 			  CS::Quote::Single (proxyFilename.GetData ()));
 
-    // Create a skeleton by parsing MakeHuman rig file
-    // and update bone positions according to mesh modifications
-    if (!CreateSkeleton (modelName, rigName, mhJoints, proxyModel))
-      ReportError ("Problem while updating proxy skeleton");
+    if (generateSkeleton)
+    {
+      // Create a skeleton by parsing MakeHuman rig file
+      // and update bone positions according to mesh modifications
+      if (!CreateSkeleton (modelName, rigName, mhJoints, proxyModel))
+	ReportError ("Problem while updating proxy skeleton");
 
-    // Remove the bones that are not influencing any vertex
-    CS::Mesh::AnimatedMeshTools::CleanSkeleton (animeshFactory);
+      // Remove the bones that are not influencing any vertex
+      CS::Mesh::AnimatedMeshTools::CleanSkeleton (animeshFactory);
+    }
 
     if (generateExpressions)
     {

@@ -40,8 +40,10 @@ CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 #define PROXY_NAME          "rorkimaru"
 // default MakeHuman rig file used for proxy models
 #define PROXY_RIG_NAME      "rigid"
-// path of the basic MakeHuman model file (3D mesh object)
+// path to the basic MakeHuman model file (3D mesh object)
 #define MESH_DATA_FILE      "/lib/makehuman/data/3dobjs/base.obj"
+// path to the configuration rules file
+#define CONFIGURATION_RULES_FILE "/lib/makehuman/rules.xml"
 // path of the MakeHuman folders
 #define RIG_PATH            "/lib/makehuman/data/rigs/"
 //#define SKIN_PATH           "/lib/makehuman/data/skins/"

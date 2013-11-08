@@ -270,6 +270,7 @@ csString MakeHumanCharacter::Description () const
     csString parameter;
     float value = it.Next (parameter);
 
+    // TODO: use FindParameter
     if (!manager->parameters[parameter]) continue;
 
     txt += "== - ";

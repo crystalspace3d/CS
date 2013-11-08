@@ -422,6 +422,7 @@ bool MakeHumanCharacter::GetParameterTargets
     return result;
   }
 
+  // TODO: ethnics is not perfect yet
   if (!strcmp (parameter, "african"))
   {
     float african = 1.0f;
@@ -666,7 +667,7 @@ bool MakeHumanCharacter::GetParameterTargets
 
       csArray<Target> localTargets;
       ExpandParameterTargets (localTargets, "breastSize");
-      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
 
       result = false;
     }
@@ -678,7 +679,7 @@ bool MakeHumanCharacter::GetParameterTargets
 
       csArray<Target> localTargets;
       ExpandParameterTargets (localTargets, "breastSize");
-      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
 
       result = false;
     }
@@ -691,14 +692,14 @@ bool MakeHumanCharacter::GetParameterTargets
 
       csArray<Target> localTargets;
       ExpandParameterTargets (localTargets, "breastSize");
-      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
+      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
 
       // 'cup2' targets
       parameters.PutUnique ("cup1", .0f);
       parameters.PutUnique ("cup2", female);
 
       ExpandParameterTargets (localTargets, "breastSize");
-      ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_DOWN);
+      ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_UP);
 
       result = true;
     }
@@ -711,11 +712,15 @@ bool MakeHumanCharacter::GetParameterTargets
   }
 
 #ifdef CS_DEBUG
+  // TODO: use FindParameter
   if (!manager->parameters[parameter])
     return ReportError ("The parameter %s doesn't exist", CS::Quote::Single (parameter));
 #endif
 
-  const MHParameter* parameterData = *manager->parameters[parameter];
+  const MHParameter* parameterData = manager->FindParameter (category, parameter);
+  if (!manager->parameters[parameter])
+    return ReportError ("The parameter %s doesn't exist", CS::Quote::Single (parameter));
+
   float value = parameters.Get (parameter, parameterData->neutral);
 
   if (parameterData->left.IsEmpty ()
@@ -797,6 +802,7 @@ void MakeHumanCharacter::ExpandParameterTargets (csArray<Target>& targets, const
     // Ignore the internal parameters that have no description
     if (!manager->parameters[parameter]) continue;
 
+    // TODO: use FindParameter
     const MHParameter* parameterData = *manager->parameters[parameter];
     if (parameterData->pattern.Find (pattern) == (size_t) -1)
       continue;
@@ -827,6 +833,7 @@ void MakeHumanCharacter::ExpandTargets (csArray<Target>& targets) const
     // Ignore the internal parameters that have no description
     if (!manager->parameters[parameter]) continue;
 
+    // TODO: use FindParameter
     const MHParameter* parameterData = *manager->parameters[parameter];
     if (parameterData->pattern == "") continue;
 

@@ -34,6 +34,7 @@
 #include "csutil/scf_implementation.h"
 #include "csutil/stringarray.h"
 #include "iengine/engine.h"
+#include "imap/services.h"
 #include "imesh/animesh.h"
 #include "imesh/makehuman.h"
 #include "imesh/object.h"
@@ -45,6 +46,8 @@
 #include "ivideo/rndbuf.h"
 
 #include "types.h"
+
+struct iDocumentNode;
 
 CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
@@ -131,7 +134,7 @@ private:
   csRef<iEngine> engine;
   csRef<iGraphics3D> g3d;
   csRef<iVFS> vfs;
-
+  csRef<iSyntaxService> synldr;
   csRef<iMeshObjectType> animeshType;
 
   /// Base model
@@ -152,6 +155,7 @@ private:
 
   // Description of the categories of parameters
   csHash<MHCategory, csString> categories;
+  csStringArray categoriesOrder;
   csHash<MHParameter*, csString> parameters;
   csHash<csStringArray, csString> categoryLabels;
   csStringArray globalPatterns;
@@ -170,6 +174,18 @@ private:
 
   const MHParameter* FindParameter (const char* category, const char* parameter) const;
   bool FindParameterCategory (const char* parameter, csString& category) const;
+
+  /// MakeHuman plugin configuration rules
+
+  csStringHash xmltokens;
+#define CS_TOKEN_ITEM_FILE \
+  "plugins/mesh/animesh/makehuman/makehuman.tok"
+#include "cstool/tokenlist.h"
+#undef CS_TOKEN_ITEM_FILE
+
+  bool ParseConfigurationRules (const char* filename);
+  bool ParseCategory (iDocumentNode* node);
+  bool ParseSubCategory (iDocumentNode* node, MHCategory* category);
 
   /// MakeHuman mesh object parser (.obj)
 

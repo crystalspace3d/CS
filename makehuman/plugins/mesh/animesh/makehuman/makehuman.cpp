@@ -21,6 +21,8 @@
 */
 #include "cssysdef.h"
 #include "csutil/scfstringarray.h"
+#include "csutil/xmltiny.h"
+#include "iutil/document.h"
 #include "iutil/stringarray.h"
 
 #include "character.h"
@@ -30,6 +32,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 {
 
 SCF_IMPLEMENT_FACTORY (MakeHumanManager);
+
+static const char* msgid = "crystalspace.mesh.animesh.makehuman";
 
 MakeHumanManager::MakeHumanManager (iBase* parent)
   : scfImplementationType (this, parent)
@@ -46,20 +50,23 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
   this->objectRegistry = objectRegistry;
 
   engine = csQueryRegistry<iEngine> (objectRegistry);
-  if (!engine) return ReportError ( "Failed to locate 3D engine!");
+  if (!engine) return ReportError ("Failed to locate 3D engine!");
 
   g3d = csQueryRegistry<iGraphics3D> (objectRegistry);
-  if (!g3d) return ReportError ( "Failed to locate 3D renderer!");
+  if (!g3d) return ReportError ("Failed to locate 3D renderer!");
 
   vfs = csQueryRegistry<iVFS> (objectRegistry);
-  if (!vfs) return ReportError ( "Failed to locate Virtual File System!");
+  if (!vfs) return ReportError ("Failed to locate Virtual File System!");
+
+  synldr = csQueryRegistry<iSyntaxService> (objectRegistry);
+  if (!synldr) ReportError ("Failed to locate the syntax service!");
 
   animeshType = csLoadPluginCheck<iMeshObjectType>
     (objectRegistry, "crystalspace.mesh.object.animesh", false);
-  if (!animeshType) return ReportError ( "Could not load the animesh object plugin!");
+  if (!animeshType) return ReportError ("Could not load the animesh object plugin!");
 
   // Create the labels of the categories
-  // TODO: parse that from a configuration file instead
+  // TODO: parse that from the configuration file instead
   csStringArray array;
 
   array.Push ("female");
@@ -106,56 +113,10 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
   array.Push ("firmness1");
   categoryLabels.Put ("breastFirmness", array);
 
-  // Create the categories of parameters
-  // TODO: parse that from a configuration file instead
-  MHCategory* category = &categories.Put ("macro", MHCategory ());
-
-  category->AddSubCategory ("main", "");
-  globalPatterns.Push ("macrodetails/universal-${gender}-${age}-${tone}-${weight}");
-  globalPatterns.Push ("macrodetails/${ethnic}-${gender}-${age}");
-  category->AddParameter ("gender", "", "");
-  category->AddParameter ("age", "", "");
-  //category->AddParameter ("caucasian", "", "");
-  category->AddParameter ("african", "", "");
-  category->AddParameter ("asian", "", "");
-  category->AddParameter ("weight", "", "");
-  category->AddParameter ("tone", "", "");
-  category->AddParameter ("height", "macrodetails/universal-stature-${value}", "dwarf", "giant");
-
-  category = &categories.Put ("torso", MHCategory ());
-
-  category->AddSubCategory ("main", "");
-  category->AddParameter ("pelvisTone", "details/${gender}-${age}-pelvis-tone${value}", "1", "2");
-  category->AddParameter ("stomach", "details/${gender}-${age}-${tone}-${weight}-stomach${value}", "1", "2");
-  category->AddParameter ("buttocks", "details/${gender}-${age}-nates${value}", "1", "2");
-
-  category = &categories.Put ("gender", MHCategory ());
-
-  category->AddSubCategory ("main", "");
-  category->AddParameter ("genitals", "details/genitals_${gender}_${value}_${age}", "feminine", "masculine");
-  globalPatterns.Push ("breast/female-${age}-${tone}-${weight}-${breastSize}-${breastFirmness}");
-  category->AddParameter ("breastSize", "", "");
-  category->AddParameter ("breastFirmness", "", "");
-  category->AddParameter ("breastPosition", "breast/breast-${value}", "down", "up");
-  category->AddParameter ("breastDistance", "breast/breast-dist-${value}", "min", "max");
-  category->AddParameter ("breastPoint", "breast/breast-point-${value}", "min", "max");
-
-  category = &categories.Put ("face", MHCategory ());
-
-  category->AddSubCategory ("neck", "neck/${ethnic2}/${gender}_${age}/${value}");
-  category->AddParameter ("neck-scale-depth-less", "neck-scale-depth-more");
-  category->AddParameter ("neck-scale-horiz-less", "neck-scale-horiz-more");
-
-  category->AddSubCategory ("cheek", "cheek/${ethnic2}/${gender}_${age}/${value}");
-  category->AddParameter ("l-cheek-in", "l-cheek-out");
-  category->AddParameter ("l-cheek-bones-out", "l-cheek-bones-in");
-  category->AddParameter ("r-cheek-in", "r-cheek-out");
-  category->AddParameter ("r-cheek-bones-out", "r-cheek-bones-in");
-
-  category->AddSubCategory ("head-shape", "head/${ethnic}/${gender}_${age}/${value}");
-  category->AddParameter ("", "head-oval");
-  category->AddParameter ("", "head-round");
-  category->AddParameter ("", "head-rectangular");
+  // Parse the categories of parameters from the configuration rules file
+  InitTokenTable (xmltokens);
+  if (!ParseConfigurationRules (CONFIGURATION_RULES_FILE))
+    return false;
 
   // Build the list of references to the parameters
   for (csHash<MHCategory, csString>::GlobalIterator it = categories.GetIterator (); it.HasNext (); )
@@ -257,12 +218,8 @@ csPtr<iStringArray> MakeHumanManager::GetCategories () const
   csRef<iStringArray> names;
   names.AttachNew (new scfStringArray ());
 
-  for (csHash<MHCategory, csString>::ConstGlobalIterator it = categories.GetIterator (); it.HasNext (); )
-  {
-    csString name;
-    it.Next (name);
-    names->Push (name);
-  }
+  for (size_t i = 0; i < categoriesOrder.GetSize (); i++)
+    names->Push (categoriesOrder.Get (i));
 
   return csPtr<iStringArray> (names);
 }
@@ -339,15 +296,169 @@ csPtr<iStringArray> MakeHumanManager::GetParameters (const char* category) const
   return csPtr<iStringArray> (names);
 }
 
+bool MakeHumanManager::ParseConfigurationRules (const char* filename)
+{
+  csRef<iFile> file = vfs->Open (filename, VFS_FILE_READ);
+  if (!file)
+  {
+    ReportWarning ("Error opening the configuration rules file %s", CS::Quote::Single (filename));
+    return false;
+  }
+
+  csRef<iDocumentSystem> documentSystem;
+  documentSystem.AttachNew (new csTinyDocumentSystem ());
+  csRef<iDocument> document = documentSystem->CreateDocument ();
+  const char* error = document->Parse (file, false);
+  if (error != 0)
+  {
+    ReportWarning ("Could not parse the configuration rules file %s: %s",
+		   CS::Quote::Single (filename), error);
+    return false;
+  }
+
+  csRef<iDocumentNode> root = document->GetRoot ()->GetNode ("rules");
+  if (!root)
+  {
+    ReportWarning ("The configuration rules file %s is empty",
+		   CS::Quote::Single (filename));
+    return false;
+  }
+
+  csRef<iDocumentNodeIterator> it = root->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char *value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+    case XMLTOKEN_CATEGORY:
+      ParseCategory (child);
+      break;
+
+    default:
+      synldr->ReportBadToken (child);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool MakeHumanManager::ParseCategory (iDocumentNode* node)
+{
+  const char* name = node->GetAttributeValue ("name");
+  if (!name)
+  {
+    synldr->ReportError (msgid, node, "No name specified for the category");
+    return false;
+  }
+
+#ifdef CS_DEBUG
+  if (categories.Contains (name))
+  {
+    ReportError ("The category %s already exists", CS::Quote::Single (name));
+    return false;
+  }
+#endif
+
+  MHCategory* category = &categories.PutUnique (name, MHCategory ());
+  categoriesOrder.Push (name);
+
+  csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char *value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+    case XMLTOKEN_SUBCATEGORY:
+      ParseSubCategory (child, category);
+      break;
+
+    default:
+      synldr->ReportBadToken (child);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool MakeHumanManager::ParseSubCategory (iDocumentNode* node, MHCategory* category)
+{
+  const char* name = node->GetAttributeValue ("name");
+  if (!name)
+  {
+    synldr->ReportError (msgid, node, "No name specified for the sub-category");
+    return false;
+  }
+
+  csString pattern = node->GetAttributeValue ("pattern");
+  category->AddSubCategory (name, pattern);
+
+  csRef<iDocumentNodeIterator> it = node->GetNodes ();
+  while (it->HasNext ())
+  {
+    csRef<iDocumentNode> child = it->Next ();
+    if (child->GetType () != CS_NODE_ELEMENT) continue;
+    const char *value = child->GetValue ();
+    csStringID id = xmltokens.Request (value);
+    switch (id)
+    {
+    case XMLTOKEN_GLOBAL:
+    {
+      csString pattern = child->GetAttributeValue ("pattern");
+      globalPatterns.Push (pattern);
+      break;
+    }
+
+    case XMLTOKEN_PARAMETER:
+    {
+      const char* name = child->GetAttributeValue ("name");
+      const char* pattern = child->GetAttributeValue ("pattern");
+      csString left = child->GetAttributeValue ("left");
+      csString right = child->GetAttributeValue ("right");
+      category->AddParameter (name, pattern, left, right);
+      break;
+    }
+
+    default:
+      synldr->ReportBadToken (child);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 //--------------------------- MHCategory ---------------------------
 
 void MHCategory::AddSubCategory (const char* subCategory, const char* pattern)
 {
+#ifdef CS_DEBUG
+  for (size_t i = 0; i < subCategories.GetSize (); i++)
+    if (subCategories[i].name == subCategory)
+    {
+      csPrintf ("ERROR: The sub-category %s already exists\n", CS::Quote::Single (subCategory));
+      return;
+    }
+#endif
+
   subCategories.Push (MHSubCategory (subCategory, pattern));
 }
 
 void MHCategory::AddParameter (const char* name, const char* left, const char* right)
 {
+  if (!name)
+  {
+    AddParameter (left, right);
+    return;
+  }
+
   MHSubCategory& subCategory = subCategories[subCategories.GetSize () - 1];
 
   subCategory.parameters.Push (name);
@@ -357,6 +468,12 @@ void MHCategory::AddParameter (const char* name, const char* left, const char* r
 void MHCategory::AddParameter (const char* name, const char* pattern,
 			       const char* left, const char* right)
 {
+  if (!pattern)
+  {
+    AddParameter (name, left, right);
+    return;
+  }
+
   subCategories[subCategories.GetSize () - 1].parameters.Push (name);
   parameters.Put (name, MHParameter (pattern, left, right));
 }

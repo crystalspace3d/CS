@@ -221,7 +221,6 @@ csString MakeHumanCharacter::Description () const
   txt += "=======================================\n";
   txt += "== MakeHuman character parameters:\n";
   txt += "== -------------------------------\n";
-
 /*
   for (csHash<float, csString>::ConstGlobalIterator it = parameters.GetIterator (); it.HasNext (); )
   {

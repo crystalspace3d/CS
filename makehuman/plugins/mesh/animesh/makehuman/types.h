@@ -44,6 +44,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 #define MESH_DATA_FILE      "/lib/makehuman/data/3dobjs/base.obj"
 // path to the configuration rules file
 #define CONFIGURATION_RULES_FILE "/lib/makehuman/rules.xml"
+//#define CONFIGURATION_RULES_FILE "/lib/makehuman/rules_pure_python.xml"
 // path of the MakeHuman folders
 #define RIG_PATH            "/lib/makehuman/data/rigs/"
 //#define SKIN_PATH           "/lib/makehuman/data/skins/"

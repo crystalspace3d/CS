@@ -62,8 +62,50 @@ MakeHumanMorphTargetDirection MakeHumanMorphTarget::GetDirection () const
 }
 
 /*-------------------------------------------------------------------------*
+ * Target conversion from the internal to the public interface
+ *-------------------------------------------------------------------------*/
+
+void MakeHumanCharacter::ConvertTargets (csRefArray<iMakeHumanMorphTarget>& targets,
+					 csArray<Target>& localTargets,
+					 float scale,
+					 MakeHumanMorphTargetDirection direction)
+{
+  for (size_t i = 0; i < localTargets.GetSize (); i++)
+  {
+    csRef<MakeHumanMorphTarget> target;
+    target.AttachNew (new MakeHumanMorphTarget ());
+
+    target->name = localTargets[i].name;
+    target->scale = scale * localTargets[i].weight;
+    target->direction = direction;
+
+    manager->ParseMakeHumanTargetFile (&localTargets[i], target->offsets, target->indices);
+
+    // Translate the vertex indices from MakeHuman to CS
+    size_t count = target->indices.GetSize ();
+    for (size_t j = 0; j < count; j++)
+    {
+      VertBuf& mapping = mappingBuffer[target->indices[j]];
+
+      target->indices[j] = mapping.vertices[0];
+
+      for (size_t k = 1; k < mapping.vertices.GetSize (); k++)
+      {
+	target->offsets.Push (target->offsets[j]);
+	target->indices.Push (mapping.vertices[k]);
+      }
+    }
+
+    targets.Push (target);
+  }
+
+  localTargets.DeleteAll ();
+}
+
+/*-------------------------------------------------------------------------*
  * MakeHuman morph targets parser (.target)
  *-------------------------------------------------------------------------*/
+
 bool MakeHumanManager::ParseMakeHumanTargetFile (Target* target)
 {
   return ParseMakeHumanTargetFile (target, target->offsets, target->indices);
@@ -127,13 +169,6 @@ bool MakeHumanManager::ParseMakeHumanTargetFile
     return true;
   }
 
-/*
-  csRef<iFile> file = OpenFile (filename, TARGETS_PATH);
-  if (!file)
-    //return ReportError ("Could not open file %s", filename);
-    return ReportWarning ("Could not open file %s", filename);
-  // TODO: Add the fallback behavior for unfound files (see mh/core/algos3d.py)
-*/
   bool result = ParseMakeHumanTargetFile (file, offsets, indices);
   if (!result) return false;
 
@@ -301,6 +336,8 @@ void MakeHumanCharacter::ApplyTargets
 	&& target->GetDirection () != MH_DIRECTION_BOTH
 	&& target->GetDirection () != direction)
       continue;
+
+    //printf ("Applying target %s scale: %f delta: %f\n", target->GetName (), target->GetScale (), target->GetScale () * delta);
 
     // Iterate on all vertices activated by the morph target and update their position
     const csArray<csVector3>& offsets = target->GetOffsets ();

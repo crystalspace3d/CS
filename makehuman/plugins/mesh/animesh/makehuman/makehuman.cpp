@@ -71,47 +71,47 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
 
   array.Push ("female");
   array.Push ("male");
-  categoryLabels.Put ("gender", array);
+  categoryLabels.PutUnique ("gender", array);
 
   array.DeleteAll ();
   array.Push ("child");
   array.Push ("young");
   array.Push ("old");
-  categoryLabels.Put ("age", array);
+  categoryLabels.PutUnique ("age", array);
 
   array.DeleteAll ();
   array.Push ("african");
   array.Push ("asian");
   array.Push ("neutral");
-  categoryLabels.Put ("ethnic", array);
+  categoryLabels.PutUnique ("ethnic", array);
 
   array.DeleteAll ();
   array.Push ("african");
   array.Push ("asian");
   array.Push ("caucasian");
-  categoryLabels.Put ("ethnic2", array);
+  categoryLabels.PutUnique ("ethnic2", array);
 
   array.DeleteAll ();
   array.Push ("muscle");
   array.Push ("flaccid");
   array.Push ("averageTone");
-  categoryLabels.Put ("tone", array);
+  categoryLabels.PutUnique ("tone", array);
 
   array.DeleteAll ();
   array.Push ("heavy");
   array.Push ("light");
   array.Push ("averageWeight");
-  categoryLabels.Put ("weight", array);
+  categoryLabels.PutUnique ("weight", array);
 
   array.DeleteAll ();
   array.Push ("cup1");
   array.Push ("cup2");
-  categoryLabels.Put ("breastSize", array);
+  categoryLabels.PutUnique ("breastSize", array);
 
   array.DeleteAll ();
   array.Push ("firmness0");
   array.Push ("firmness1");
-  categoryLabels.Put ("breastFirmness", array);
+  categoryLabels.PutUnique ("breastFirmness", array);
 
   // Parse the categories of parameters from the configuration rules file
   InitTokenTable (xmltokens);
@@ -126,7 +126,7 @@ bool MakeHumanManager::Initialize (iObjectRegistry* objectRegistry)
     {
       csString name;
       MHParameter& parameter = rit.Next (name);
-      parameters.Put (name, &parameter);
+      parameters.PutUnique (name, &parameter);
     }
   }
 
@@ -162,6 +162,7 @@ const MHParameter* MakeHumanManager::FindParameter (const char* category, const 
 
 bool MakeHumanManager::FindParameterCategory (const char* parameter, csString& category) const
 {
+/*
   // We actually look only in the main categories that are not defined in the MakeHuman
   // model files
   const MHCategory* mhcategory = categories.GetElementPointer ("macro");
@@ -183,6 +184,18 @@ bool MakeHumanManager::FindParameterCategory (const char* parameter, csString& c
   {
     category = "torso";
     return true;
+  }
+*/
+  for (csHash<MHCategory, csString>::ConstGlobalIterator it = categories.GetIterator (); it.HasNext (); )
+  {
+    csString name;
+    const MHCategory& mhcategory = it.Next (name);
+
+    if (mhcategory.parameters.Contains (parameter))
+    {
+      category = name;
+      return true;
+    }
   }
 
   return false;
@@ -462,7 +475,7 @@ void MHCategory::AddParameter (const char* name, const char* left, const char* r
   MHSubCategory& subCategory = subCategories[subCategories.GetSize () - 1];
 
   subCategory.parameters.Push (name);
-  parameters.Put (name, MHParameter (subCategory.pattern, left, right));
+  parameters.PutUnique (name, MHParameter (subCategory.pattern, left, right));
 }
 
 void MHCategory::AddParameter (const char* name, const char* pattern,
@@ -475,7 +488,7 @@ void MHCategory::AddParameter (const char* name, const char* pattern,
   }
 
   subCategories[subCategories.GetSize () - 1].parameters.Push (name);
-  parameters.Put (name, MHParameter (pattern, left, right));
+  parameters.PutUnique (name, MHParameter (pattern, left, right));
 }
 
 void MHCategory::AddParameter (const char* left, const char* right)
@@ -486,7 +499,7 @@ void MHCategory::AddParameter (const char* left, const char* right)
   name += subCategory.parameters.GetSize () + 1;
 
   subCategory.parameters.Push (name);
-  parameters.Put (name, MHParameter (subCategory.pattern, left, right));
+  parameters.PutUnique (name, MHParameter (subCategory.pattern, left, right));
 }
 
 }

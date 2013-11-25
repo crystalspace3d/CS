@@ -56,17 +56,15 @@ private:
   /**
    * Load a MakeHuman model as a CS animated mesh factory
    * (with adapted expressions and skeleton) and place it in current scene.
-   * \param modelName  Name of a MakeHuman model file (without extension '.mhm')
-   *                   located in MakeHuman 'models' folder
-   * \param proxyName  Name of a MakeHuman proxy (without extension '.proxy')
-   *                   located in MakeHuman 'data/proxymeshes' folder
-   * \param rigName  Name of a MakeHuman rig file (without extension '.rig')
-   *                   located in MakeHuman 'data/rigs' folder
+   * \param modelName  Name of a MakeHuman model file
+   * \param proxyName  Name of a MakeHuman proxy
+   * \param rigName  Name of a MakeHuman rig file
    */
   bool CreateModel (const char* factoryName, const char* filename = "",
 		    const char* proxy = "", const char* rig = "");
 
   bool CreateCustomModel ();
+
   bool SetupAnimatedMesh ();
 
   void TestTargetAccess (const char* category, const char* parameter, float testValue = 0.f);

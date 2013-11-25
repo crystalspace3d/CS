@@ -36,17 +36,17 @@ namespace Mesh {
 
 struct iAnimatedMeshFactory;
 
+enum MakeHumanUpdateMode
+{
+  MH_UPDATE_FULL = 0,
+  MH_UPDATE_FAST
+};
+
 enum MakeHumanMorphTargetDirection
 {
   MH_DIRECTION_BOTH = 0,
   MH_DIRECTION_UP,
   MH_DIRECTION_DOWN
-};
-
-enum MakeHumanUpdateMode
-{
-  MH_UPDATE_FULL = 0,
-  MH_UPDATE_FAST
 };
 
 struct iMakeHumanMorphTarget : public virtual iBase
@@ -59,9 +59,6 @@ struct iMakeHumanMorphTarget : public virtual iBase
   virtual float GetScale () const = 0;
   virtual MakeHumanMorphTargetDirection GetDirection () const = 0;
 };
-
-// TODO: iMakeHumanParameters: MH model parameters -> struct MakeHumanModel
-// TODO: MH generation parameters
 
 struct iMakeHumanCharacter : public virtual iBase
 {
@@ -84,13 +81,19 @@ struct iMakeHumanCharacter : public virtual iBase
   virtual void Clear () = 0;
   virtual void SetNeutral () = 0;
 
-  virtual bool Parse (const char* filename) = 0;
+  virtual bool Save (const char* filename) const = 0;
+  virtual bool Load (const char* filename) = 0;
 
+  // TODO: return bool?
   virtual void SetProxy (const char* proxy) = 0;
   virtual void SetRig (const char* rig) = 0;
 
+  // TODO: return bool?
   virtual void SetParameter (const char* category, const char* parameter, float value) = 0;
   virtual float GetParameter (const char* category, const char* parameter) const = 0;
+
+  //virtual bool SetActiveParameters (const csHash<float, csString>& parameters) = 0;
+  //virtual void GetActiveParameters (csHash<float, csString>& parameters) const = 0;
 
   virtual bool GetParameterTargets
     (const char* category, const char* parameter, csRefArray<iMakeHumanMorphTarget>& targets) = 0;
@@ -119,8 +122,8 @@ struct iMakeHumanManager : public virtual iBase
   virtual csPtr<iStringArray> GetParameters (const char* category, const char* subCategory) const = 0;
   virtual csPtr<iStringArray> GetParameters (const char* category) const = 0;
 
-  //virtual void GetParameterRanges (const char* category, const char* subCategory) const = 0;
-  //virtual void GetParameterRanges (const char* category, const char* parameter) const = 0;
+  //virtual void GetParameterRange (const char* category, const char* parameter, float& min, float& max) const = 0;
+  //virtual void GetParameterBoundaries (const char* category, const char* parameter, csArray<float>& boundaries) const = 0;
 };
 
 /** @} */

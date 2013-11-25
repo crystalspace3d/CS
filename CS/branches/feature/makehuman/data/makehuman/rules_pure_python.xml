@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://crystalspace3d.org/xml/library" changeToken="1382509229328.017">
+  <category name="macro">
+    <subcategory name="main">
+      <global pattern="macrodetails/universal-${gender}-${age}-${tone}-${weight}" />
+      <global pattern="macrodetails/${ethnic}-${gender}-${age}" />
+    </subcategory>
+  </category>
+  <category name="face">
+    <subcategory name="head" pattern="head/${value}">
+      <parameter left="head-age-less" right="head-age-more" />
+      <parameter left="head-angle-in" right="head-angle-out" />
+      <parameter left="" right="head-oval" />
+      <parameter left="" right="head-round" />
+      <parameter left="" right="head-rectangular" />
+      <parameter left="" right="head-square" />
+      <parameter left="" right="head-triangular" />
+      <parameter left="" right="head-invertedtriangular" />
+      <parameter left="" right="head-diamond" />
+    </subcategory>
+    <subcategory name="head-size" pattern="head/${value}">
+      <parameter left="head-scale-depth-less" right="head-scale-depth-more" />
+      <parameter left="head-scale-horiz-less" right="head-scale-horiz-more" />
+      <parameter left="head-scale-vert-more" right="head-scale-vert-less" />
+      <parameter left="head-trans-in" right="head-trans-out" />
+      <parameter left="head-trans-down" right="head-trans-up" />
+      <parameter left="head-trans-up" right="head-trans-down" />
+      <parameter left="head-trans-forward" right="head-trans-backward" />
+    </subcategory>
+    <subcategory name="forehead" pattern="forehead/${value}">
+      <parameter left="forehead-trans-depth-forward" right="forehead-trans-depth-backward" />
+      <parameter left="forehead-scale-vert-less" right="forehead-scale-vert-more" />
+      <parameter left="forehead-nubian-less" right="forehead-nubian-more" />
+      <parameter left="forehead-temple-in" right="forehead-temple-out" />
+    </subcategory>
+    <subcategory name="eyebrows" pattern="eyebrows/${value}">
+      <parameter left="eyebrows-trans-depth-less" right="eyebrows-trans-depth-more" />
+      <parameter left="eyebrows-angle-up" right="eyebrows-angle-dow" />
+      <parameter left="eyebrows-trans-vert-less" right="eyebrows-trans-vert-more" />
+    </subcategory>
+    <subcategory name="neck" pattern="neck/${value}">
+      <parameter left="neck-scale-depth-less" right="neck-scale-depth-more" />
+      <parameter left="neck-scale-horiz-less" right="neck-scale-horiz-more" />
+      <parameter left="neck-scale-vert-more" right="neck-scale-vert-less" />
+      <parameter left="neck-trans-horiz-in" right="neck-trans-horiz-out" />
+      <parameter left="neck-trans-vert-down" right="neck-trans-vert-up" />
+      <parameter left="neck-trans-depth-forward" right="neck-trans-depth-backward" />
+    </subcategory>
+    <subcategory name="right-eye" pattern="eyes/${value}">
+      <parameter left="r-eye-height1-min" right="r-eye-height1-max" />
+      <parameter left="r-eye-height2-min" right="r-eye-height2-max" />
+      <parameter left="r-eye-height3-min" right="r-eye-height3-max" />
+      <parameter left="r-eye-push1-in" right="r-eye-push1-out" />
+      <parameter left="r-eye-push2-in" right="r-eye-push2-out" />
+      <parameter left="r-eye-move-in" right="r-eye-move-out" />
+      <parameter left="r-eye-move-up" right="r-eye-move-down" />
+      <parameter left="r-eye-small" right="r-eye-big" />
+      <parameter left="r-eye-corner1-up" right="r-eye-corner1-down" />
+      <parameter left="r-eye-corner2-up" right="r-eye-corner2-down" />
+    </subcategory>
+    <subcategory name="left-eye" pattern="eyes/${value}">
+      <parameter left="l-eye-height1-min" right="l-eye-height1-max" />
+      <parameter left="l-eye-height2-min" right="l-eye-height2-max" />
+      <parameter left="l-eye-height3-min" right="l-eye-height3-max" />
+      <parameter left="l-eye-push1-in" right="l-eye-push1-out" />
+      <parameter left="l-eye-push2-in" right="l-eye-push2-out" />
+      <parameter left="l-eye-move-in" right="l-eye-move-out" />
+      <parameter left="l-eye-move-up" right="l-eye-move-down" />
+      <parameter left="l-eye-small" right="l-eye-big" />
+      <parameter left="l-eye-corner1-up" right="l-eye-corner1-down" />
+      <parameter left="l-eye-corner2-up" right="l-eye-corner2-down" />
+    </subcategory>
+    <subcategory name="nose-size" pattern="nose/${value}">
+      <parameter left="nose-trans-vert-up" right="nose-trans-vert-down" />
+      <parameter left="nose-trans-depth-forward" right="nose-trans-depth-backward" />
+      <parameter left="nose-trans-horiz-in" right="nose-trans-horiz-out" />
+      <parameter left="nose-scale-vert-incr" right="nose-scale-vert-decr" />
+      <parameter left="nose-scale-horiz-incr" right="nose-scale-horiz-decr" />
+      <parameter left="nose-scale-depth-incr" right="nose-scale-depth-decr" />
+    </subcategory>
+    <subcategory name="nose-size-details" pattern="nose/${value}">
+      <parameter left="nose-nostril-width-min" right="nose-nostril-width-max" />
+      <parameter left="nose-point-width-less" right="nose-point-width-more" />
+      <parameter left="nose-height-min" right="nose-height-max" />
+      <parameter left="nose-width1-min" right="nose-width1-max" />
+      <parameter left="nose-width2-min" right="nose-width2-max" />
+      <parameter left="nose-width3-min" right="nose-width3-max" />
+    </subcategory>
+    <subcategory name="nose-features" pattern="nose/${value}">
+      <parameter left="nose-compression-compress" right="nose-compression-uncompress" />
+      <parameter left="nose-curve-convex" right="nose-curve-concave" />
+      <parameter left="nose-greek-moregreek" right="nose-greek-lessgreek" />
+      <parameter left="nose-hump-morehump" right="nose-hump-lesshump" />
+      <parameter left="nose-volume-potato" right="nose-volume-point" />
+      <parameter left="nose-nostrils-angle-up" right="nose-nostrils-angle-down" />
+      <parameter left="nose-point-up" right="nose-point-down" />
+      <parameter left="nose-septumangle-decr" right="nose-septumangle-incr" />
+      <parameter left="nose-flaring-decr" right="nose-flaring-incr" />
+    </subcategory>
+    <subcategory name="mouth-size" pattern="mouth/${value}">
+      <parameter left="mouth-scale-horiz-incr" right="mouth-scale-horiz-decr" />
+      <parameter left="mouth-scale-vert-incr" right="mouth-scale-vert-decr" />
+      <parameter left="mouth-scale-depth-incr" right="mouth-scale-depth-decr" />
+      <parameter left="mouth-trans-in" right="mouth-trans-out" />
+      <parameter left="mouth-trans-up" right="mouth-trans-down" />
+      <parameter left="mouth-trans-forward" right="mouth-trans-backward" />
+    </subcategory>
+    <subcategory name="mouth-size-details" pattern="mouth/${value}">
+      <parameter left="mouth-lowerlip-height-min" right="mouth-lowerlip-height-max" />
+      <parameter left="mouth-lowerlip-width-min" right="mouth-lowerlip-width-max" />
+      <parameter left="mouth-upperlip-height-min" right="mouth-upperlip-height-max" />
+      <parameter left="mouth-upperlip-width-min" right="mouth-upperlip-width-max" />
+      <parameter left="mouth-cupidsbow-width-min" right="mouth-cupidsbow-width-max" />
+    </subcategory>
+    <subcategory name="mouth-features" pattern="mouth/${value}">
+      <parameter left="mouth-lowerlip-ext-up" right="mouth-lowerlip-ext-down" />
+      <parameter left="mouth-angles-up" right="mouth-angles-down" />
+      <parameter left="mouth-lowerlip-middle-up" right="mouth-lowerlip-middle-down" />
+      <parameter left="mouth-lowerlip-volume-deflate" right="mouth-lowerlip-volume-inflate" />
+      <parameter left="mouth-philtrum-volume-increase" right="mouth-philtrum-volume-decrease" />
+      <parameter left="mouth-upperlip-volume-deflate" right="mouth-upperlip-volume-inflate" />
+      <parameter left="mouth-upperlip-ext-up" right="mouth-upperlip-ext-down" />
+      <parameter left="mouth-upperlip-middle-up" right="mouth-upperlip-middle-down" />
+      <parameter left="mouth-cupidsbow-decr" right="mouth-cupidsbow-incr" />
+    </subcategory>
+    <subcategory name="right-ear" pattern="ears/${value}">
+      <parameter left="r-ear-trans-depth-backward" right="r-ear-trans-depth-forward" />
+      <parameter left="r-ear-size-big" right="r-ear-size-small" />
+      <parameter left="r-ear-trans-vert-down" right="r-ear-trans-vert-up" />
+      <parameter left="r-ear-height-min" right="r-ear-height-max" />
+      <parameter left="r-ear-lobe-min" right="r-ear-lobe-max" />
+      <parameter left="r-ear-shape1-pointed" right="r-ear-shape1-triangle" />
+      <parameter left="r-ear-rot-backward" right="r-ear-rot-forward" />
+      <parameter left="r-ear-shape2-square" right="r-ear-shape2-round" />
+      <parameter left="r-ear-width-max" right="r-ear-width-min" />
+      <parameter left="r-ear-wing-out" right="r-ear-wing-out" />
+      <parameter left="r-ear-flap-out" right="r-ear-flap-in" />
+    </subcategory>
+    <subcategory name="left-ear" pattern="ears/${value}">
+      <parameter left="l-ear-trans-depth-backward" right="l-ear-trans-depth-forward" />
+      <parameter left="l-ear-size-big" right="l-ear-size-small" />
+      <parameter left="l-ear-trans-vert-down" right="l-ear-trans-vert-up" />
+      <parameter left="l-ear-height-min" right="l-ear-height-max" />
+      <parameter left="l-ear-lobe-min" right="l-ear-lobe-max" />
+      <parameter left="l-ear-shape1-pointed" right="l-ear-shape1-triangle" />
+      <parameter left="l-ear-rot-backward" right="l-ear-rot-forward" />
+      <parameter left="l-ear-shape2-square" right="l-ear-shape2-round" />
+      <parameter left="l-ear-width-max" right="l-ear-width-min" />
+      <parameter left="l-ear-wing-out" right="l-ear-wing-out" />
+      <parameter left="l-ear-flap-out" right="l-ear-flap-in" />
+    </subcategory>
+    <subcategory name="chin" pattern="chin/${value}">
+      <parameter left="chin-prominent-less" right="chin-prominent-more" />
+      <parameter left="chin-width-min" right="chin-width-max" />
+      <parameter left="chin-height-min" right="chin-height-max" />
+      <parameter left="chin-bones-in" right="chin-bones-out" />
+      <parameter left="chin-prognathism-less" right="chin-prognathism-more" />
+    </subcategory>
+    <subcategory name="cheek" pattern="cheek/${value}">
+      <parameter left="l-cheek-volume-deflate" right="l-cheek-volume-inflate" />
+      <parameter left="l-cheek-bones-in" right="l-cheek-bones-out" />
+      <parameter left="l-cheek-inner-deflate" right="l-cheek-inner-inflate" />
+      <parameter left="r-cheek-volume-deflate" right="r-cheek-volume-inflate" />
+      <parameter left="r-cheek-bones-in" right="r-cheek-bones-out" />
+      <parameter left="r-cheek-inner-deflate" right="r-cheek-inner-inflate" />
+    </subcategory>
+  </category>
+  <category name="torso">
+    <subcategory name="torso" pattern="torso/${value}">
+      <parameter left="torso-scale-depth-decr" right="torso-scale-depth-incr" />
+      <parameter left="torso-scale-horiz-decr" right="torso-scale-horiz-incr" />
+      <parameter left="torso-scale-vert-decr" right="torso-scale-vert-incr" />
+      <parameter left="torso-trans-in" right="torso-trans-out" />
+      <parameter left="torso-trans-down" right="torso-trans-up" />
+      <parameter left="torso-trans-forward" right="torso-trans-backward" />
+      <parameter left="torso-vshape-less" right="torso-vshape-more" />
+    </subcategory>
+    <subcategory name="hip" pattern="hip/${value}">
+      <parameter left="hip-scale-depth-decr" right="hip-scale-depth-incr" />
+      <parameter left="hip-scale-horiz-decr" right="hip-scale-horiz-incr" />
+      <parameter left="hip-scale-vert-decr" right="hip-scale-vert-incr" />
+      <parameter left="hip-trans-in" right="hip-trans-out" />
+      <parameter left="hip-trans-down" right="hip-trans-up" />
+      <parameter left="hip-trans-forward" right="hip-trans-backward" />
+    </subcategory>
+    <subcategory name="stomach" pattern="stomach/${value}">
+      <parameter left="stomach-tone-decr" right="stomach-tone-incr" />
+    </subcategory>
+    <subcategory name="buttocks" pattern="buttocks/${value}">
+      <parameter left="buttocks-tone-decr" right="buttocks-tone-incr" />
+    </subcategory>
+    <subcategory name="pelvis" pattern="pelvis/${value}">
+      <parameter left="pelvis-tone-decr" right="pelvis-tone-incr" />
+    </subcategory>
+  </category>
+</rules>

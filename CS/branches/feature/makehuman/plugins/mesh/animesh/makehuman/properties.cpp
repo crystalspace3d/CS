@@ -28,10 +28,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (MakeHuman)
 
 void MakeHumanCharacter::Clear ()
 {
-  //SetNeutral ();
-  parameters.DeleteAll ();
-  africanValue = asianValue = 0.0f;
-  breastSizeValue = 0.0f;
+  SetNeutral ();
 
   skinFile = "";
   proxyFilename = "";
@@ -44,35 +41,39 @@ void MakeHumanCharacter::SetNeutral ()
   // TODO: manage also the fast update mode
 
   parameters.DeleteAll ();
-  parameters.Put ("neutral", 1.f);
-  parameters.Put ("caucasian", 1.f);
-  parameters.Put ("female", .5f);
-  parameters.Put ("male", .5f);
-  parameters.Put ("young", 1.f);
-  parameters.Put ("firmness0", 0.5f);
-  parameters.Put ("firmness1", 0.5f);
-  parameters.Put ("averageTone", 1.f);
-  parameters.Put ("averageWeight", 1.f);
+  parameters.PutUnique ("neutral", 1.f);
+  parameters.PutUnique ("caucasian", 1.f);
+  parameters.PutUnique ("female", .5f);
+  parameters.PutUnique ("male", .5f);
+  parameters.PutUnique ("young", 1.f);
+  parameters.PutUnique ("firmness0", 0.5f);
+  parameters.PutUnique ("firmness1", 0.5f);
+  parameters.PutUnique ("averageTone", 1.f);
+  parameters.PutUnique ("averageWeight", 1.f);
 
   africanValue = asianValue = 0.0f;
   breastSizeValue = 0.0f;
 }
 
-void MakeHumanCharacter::SetParameter (const char* category, const char* parameter, float value)
+void MakeHumanCharacter::SetParameter (const char* category, const char* parameter, float newValue)
 {
+  //printf ("SetParameter %s:%s %f\n", category, parameter, newValue);
+  // TODO: add a clamp option to constraint the parameter values
+
   if (updateMode == MH_UPDATE_FULL)
-    SetParameterInternal (category, parameter, value);
+    SetParameterInternal (category, parameter, newValue);
 
   else
   {
     // Compute the delta value to be applied
-    float delta = value - GetParameter (category, parameter);
+    float currentValue = GetParameter (category, parameter);
+    float delta = newValue - currentValue;
     if (fabs (delta) > SMALL_EPSILON)
     {
       // Create the mesh factory if not yet made
       if (!coords.GetSize ())
       {
-	SetParameterInternal (category, parameter, value);
+	SetParameterInternal (category, parameter, newValue);
 	UpdateMeshFactory ();
 	return;
       }
@@ -81,10 +82,51 @@ void MakeHumanCharacter::SetParameter (const char* category, const char* paramet
       // TODO: check if a boundary point is crossed
       csRefArray<CS::Mesh::iMakeHumanMorphTarget> targets;
       bool boundary = GetParameterTargets (category, parameter, targets);
-      ApplyTargets (targets, boundary, delta);
+
+      // Application of parameters with no boundary points
+      if (!strcmp (parameter, "gender")
+	  || !strcmp (parameter, "african")
+	  || !strcmp (parameter, "asian"))
+	ApplyTargets (targets, boundary, delta);
+
+      // Application of parameters when precisely at the boundary point
+      // TODO: there might be several boundary points, and they might not
+      // necessarily be at the neutral value
+      else if (boundary)
+	ApplyTargets (targets, boundary, delta);
+
+      else
+      {
+	float neutral = 0.0f;
+	if (!strcmp (parameter, "age")
+	    || !strcmp (parameter, "tone")
+	    || !strcmp (parameter, "weight")
+	    || !strcmp (parameter, "age")
+	    || !strcmp (parameter, "breastFirmness"))
+	  neutral = 0.5f;
+
+	// Check if the boundary point will be crossed
+	if ((currentValue > neutral + SMALL_EPSILON && newValue < neutral - SMALL_EPSILON)
+	    || (currentValue < neutral - SMALL_EPSILON && newValue > neutral + SMALL_EPSILON))
+	{
+	  float delta1 = neutral - currentValue;
+	  delta -= delta1;
+
+	  // First step: move to the boundary point
+	  ApplyTargets (targets, boundary, delta1);
+	  SetParameterInternal (category, parameter, neutral);
+
+	  // Second step: move from the boundary point to the target point
+	  targets.DeleteAll ();
+	  boundary = GetParameterTargets (category, parameter, targets);
+	  ApplyTargets (targets, boundary, delta);
+	}
+
+	else ApplyTargets (targets, boundary, delta);
+      }
 
       // Update the value of the parameter
-      SetParameterInternal (category, parameter, value);
+      SetParameterInternal (category, parameter, newValue);
     }
   }
 }
@@ -147,12 +189,14 @@ void MakeHumanCharacter::SetParameterInternal (const char* category, const char*
     if (african > SMALL_EPSILON) ethnics += 1.0f;
     if (asian > SMALL_EPSILON) ethnics += 1.0f;
 
-    float neutral = 1.0f - (african + asian) / ethnics;
+    float neutral = 1.0f - (african + asian);
 
+    // TODO: this MakeHuman rule generates a huge non linearity
     if (ethnics > 1.5f)
     {
       african /= ethnics;
       asian /= ethnics;
+      neutral = 1.0f - (africanValue + asianValue) / ethnics;
     }
 
     parameters.PutUnique ("african", african);
@@ -239,7 +283,8 @@ void MakeHumanCharacter::SetParameterInternal (const char* category, const char*
   const MHParameter* mhparameter = manager->FindParameter (category, parameter);
   if (!mhparameter)
   {
-    ReportError ("The parameter %s doesn't exist", CS::Quote::Single (csString ().Format ("%s:%s", category, parameter)));
+    ReportError ("The parameter %s doesn't exist in the category %s",
+		 CS::Quote::Single (csString ().Format ("%s:%s", category, parameter)));
     return;
   }
 
@@ -305,7 +350,8 @@ float MakeHumanCharacter::GetParameter (const char* category, const char* parame
   const MHParameter* mhparameter = manager->FindParameter (category, parameter);
   if (!mhparameter)
   {
-    ReportError ("The parameter %s doesn't exist", CS::Quote::Single (parameter));
+    ReportError ("The parameter %s doesn't exist in the category %s",
+		 CS::Quote::Single (csString ().Format ("%s:%s", category, parameter)));
     return 0.0f;
   }
 
@@ -426,18 +472,14 @@ bool MakeHumanCharacter::GetParameterTargets
   if (!strcmp (parameter, "african"))
   {
     float african = 1.0f;
-    float asian = asianValue;
+    float asian = -asianValue;
+    float neutral = asianValue - 1.f;
 
-    float ethnics = 1.0f;
-    if (asianValue > SMALL_EPSILON) ethnics += 1.0f;
-
-    float neutral = -1.f;
-
-    if (ethnics > 1.5f)
+    if (asianValue > SMALL_EPSILON)
     {
-      african /= ethnics;
-      asian = -asian / ethnics;
-      neutral = (asian - 1.f) / ethnics;
+      african *= 0.5f;
+      asian *= 0.5f;
+      neutral = asianValue * -0.5f;
     }
 
     parameters.PutUnique ("african", african);
@@ -458,22 +500,17 @@ bool MakeHumanCharacter::GetParameterTargets
     return false;
   }
 
-
   if (!strcmp (parameter, "asian"))
   {
-    float african = africanValue;
+    float african = -africanValue;
     float asian = 1.0f;
+    float neutral = africanValue - 1.f;
 
-    float ethnics = 1.0f;
-    if (africanValue > SMALL_EPSILON) ethnics += 1.0f;
-
-    float neutral = -1.f;
-
-    if (ethnics > 1.5f)
+    if (africanValue > SMALL_EPSILON)
     {
-      african = -african / ethnics;
-      asian /= ethnics;
-      neutral = (african - 1.f) / ethnics;
+      african *= 0.5f;
+      asian *= 0.5f;
+      neutral = africanValue * -0.5f;
     }
 
     parameters.PutUnique ("african", african);
@@ -714,12 +751,14 @@ bool MakeHumanCharacter::GetParameterTargets
 #ifdef CS_DEBUG
   // TODO: use FindParameter
   if (!manager->parameters[parameter])
-    return ReportError ("The parameter %s doesn't exist", CS::Quote::Single (parameter));
+    return ReportError ("The parameter %s doesn't exist in the category %s",
+			CS::Quote::Single (csString ().Format ("%s:%s", category, parameter)));
 #endif
 
   const MHParameter* parameterData = manager->FindParameter (category, parameter);
-  if (!manager->parameters[parameter])
-    return ReportError ("The parameter %s doesn't exist", CS::Quote::Single (parameter));
+  if (!parameterData)
+    return ReportError ("The parameter %s doesn't exist in the category %s",
+			CS::Quote::Single (csString ().Format ("%s:%s", category, parameter)));
 
   float value = parameters.Get (parameter, parameterData->neutral);
 
@@ -727,7 +766,7 @@ bool MakeHumanCharacter::GetParameterTargets
       || parameterData->right.IsEmpty ())
   {
     csArray<Target> localTargets;
-    ExpandTargets (localTargets, parameterData, parameter, 1.0f);
+    ExpandTargets (localTargets, parameterData, parameter, parameterData->neutral + 1.0f);
     ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
     return false;
   }
@@ -735,7 +774,7 @@ bool MakeHumanCharacter::GetParameterTargets
   if (value > parameterData->neutral + SMALL_EPSILON)
   {
     csArray<Target> localTargets;
-    ExpandTargets (localTargets, parameterData, parameter, 1.0f);
+    ExpandTargets (localTargets, parameterData, parameter, parameterData->neutral + 1.0f);
     ConvertTargets (targets, localTargets, 1.0f, MH_DIRECTION_BOTH);
     return false;
   }
@@ -743,7 +782,7 @@ bool MakeHumanCharacter::GetParameterTargets
   if (value < parameterData->neutral - SMALL_EPSILON)
   {
     csArray<Target> localTargets;
-    ExpandTargets (localTargets, parameterData, parameter, 1.0f);
+    ExpandTargets (localTargets, parameterData, parameter, parameterData->neutral - 1.0f);
     ConvertTargets (targets, localTargets, -1.0f, MH_DIRECTION_BOTH);
     return false;
   }
@@ -797,18 +836,19 @@ void MakeHumanCharacter::ExpandParameterTargets (csArray<Target>& targets, const
   for (csHash<float, csString>::ConstGlobalIterator it = parameters.GetIterator (); it.HasNext (); )
   {
     csString parameter;
-    it.Next (parameter);
+    float value = it.Next (parameter);
 
-    // Ignore the internal parameters that have no description
     if (!manager->parameters[parameter]) continue;
+    if (parameter == "african" || parameter == "asian") continue;
 
     // TODO: use FindParameter
     const MHParameter* parameterData = *manager->parameters[parameter];
-    if (parameterData->pattern.Find (pattern) == (size_t) -1)
-      continue;
+    if (parameterData->pattern == "") continue;
+
+    if (parameterData->pattern.Find (pattern) == (size_t) -1) continue;
 
     csArray<Target> localTargets;
-    ExpandTargets (localTargets, parameterData, parameter, 1.0f);
+    ExpandTargets (localTargets, parameterData, parameter, value);
     targets.Merge (localTargets);
   }
 }
@@ -832,6 +872,7 @@ void MakeHumanCharacter::ExpandTargets (csArray<Target>& targets) const
 
     // Ignore the internal parameters that have no description
     if (!manager->parameters[parameter]) continue;
+    if (parameter == "african" || parameter == "asian") continue;
 
     // TODO: use FindParameter
     const MHParameter* parameterData = *manager->parameters[parameter];
@@ -917,58 +958,39 @@ void MakeHumanCharacter::ExpandTargets (csArray<Target>& targets, const MHParame
 {
   if (weight > parameterData->neutral + SMALL_EPSILON)
   {
-    if (parameterData->right == "") return;
+    if (parameterData->right == "")
+    {
+      if (parameterData->left == "") return;
+      targets.Push (Target (parameterData->pattern));
+      ExpandTargets (targets, parameterData->left, parameterData->neutral - weight);
+    }
 
-    targets.Push (Target (parameterData->pattern));
-    ExpandTargets (targets, parameterData->right, weight);
+    else
+    {
+      targets.Push (Target (parameterData->pattern));
+      ExpandTargets (targets, parameterData->right, weight - parameterData->neutral);
+    }
   }
+
   else if (weight < parameterData->neutral - SMALL_EPSILON)
   {
-    if (parameterData->left == "") return;
+    if (parameterData->left == "")
+    {
+      if (parameterData->right == "") return;
+      targets.Push (Target (parameterData->pattern));
+      ExpandTargets (targets, parameterData->right, weight - parameterData->neutral);
+    }
 
-    targets.Push (Target (parameterData->pattern));
-    ExpandTargets (targets, parameterData->left, -weight);
+    else
+    {
+      targets.Push (Target (parameterData->pattern));
+      ExpandTargets (targets, parameterData->left, parameterData->neutral - weight);
+    }
   }
+
   else return;
 
   ExpandGlobalTargets (targets);
-}
-
-void MakeHumanCharacter::ConvertTargets (csRefArray<iMakeHumanMorphTarget>& targets,
-					 csArray<Target>& localTargets,
-					 float scale,
-					 MakeHumanMorphTargetDirection direction)
-{
-  for (size_t i = 0; i < localTargets.GetSize (); i++)
-  {
-    csRef<MakeHumanMorphTarget> target;
-    target.AttachNew (new MakeHumanMorphTarget ());
-
-    target->name = localTargets[i].name;
-    target->scale = scale * localTargets[i].weight;
-    target->direction = direction;
-
-    manager->ParseMakeHumanTargetFile (&localTargets[i], target->offsets, target->indices);
-
-    // Translate the vertex indices from MakeHuman to CS
-    size_t count = target->indices.GetSize ();
-    for (size_t j = 0; j < count; j++)
-    {
-      VertBuf& mapping = mappingBuffer[target->indices[j]];
-
-      target->indices[j] = mapping.vertices[0];
-
-      for (size_t k = 1; k < mapping.vertices.GetSize (); k++)
-      {
-	target->offsets.Push (target->offsets[j]);
-	target->indices.Push (mapping.vertices[k]);
-      }
-    }
-
-    targets.Push (target);
-  }
-
-  localTargets.DeleteAll ();
 }
 
 }

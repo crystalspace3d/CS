@@ -19,7 +19,7 @@
       <parameter name="stomach" pattern="details/${gender}-${age}-${tone}-${weight}-stomach${value}" left="1" right="2" />
       <parameter name="buttocks" pattern="details/${gender}-${age}-nates${value}" left="1" right="2" />
     </subcategory>
-    <subcategory name="torso" pattern="torso/${ethnic}/${gender}_${age}/${value}">
+    <subcategory name="torso" pattern="torso/${ethnic2}/${gender}_${age}/${value}">
       <parameter left="torso-scale-depth-decr" right="torso-scale-depth-incr" />
       <parameter left="torso-scale-horiz-decr" right="torso-scale-horiz-incr" />
       <parameter left="torso-scale-vert-decr" right="torso-scale-vert-incr" />
@@ -27,7 +27,7 @@
       <parameter left="torso-trans-down" right="torso-trans-up" />
       <parameter left="torso-trans-forward" right="torso-trans-backward" />
     </subcategory>
-    <subcategory name="hip" pattern="hip/${ethnic}/${gender}_${age}/${value}">
+    <subcategory name="hip" pattern="hip/${ethnic2}/${gender}_${age}/${value}">
       <parameter left="hip-scale-depth-decr" right="hip-scale-depth-incr" />
       <parameter left="hip-scale-horiz-decr" right="hip-scale-horiz-incr" />
       <parameter left="hip-scale-vert-decr" right="hip-scale-vert-incr" />
@@ -54,6 +54,14 @@
       <parameter left="neck-trans-in" right="neck-trans-out" />
       <parameter left="neck-trans-down" right="neck-trans-up" />
       <parameter left="neck-trans-forward" right="neck-trans-backward" />
+    </subcategory>
+    <subcategory name="right-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="r-eye-move-in" right="r-eye-move-out" />
+      <parameter left="r-eye-move-up" right="r-eye-move-down" />
+    </subcategory>
+    <subcategory name="left-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
+      <parameter left="l-eye-move-in" right="l-eye-move-out" />
+      <parameter left="l-eye-move-up" right="l-eye-move-down" />
     </subcategory>
     <subcategory name="right-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
       <parameter left="r-eye-height1-min" right="r-eye-height1-max" />
@@ -141,7 +149,7 @@
       <parameter left="r-ear-pointed" right="r-ear-triangle" />
       <parameter left="r-ear-backward" right="r-ear-forward" />
       <parameter left="r-ear-square" right="r-ear-round" />
-      <parameter left="r-ear-width-min" right="r-ear-width-max" />
+      <parameter left="r-ear-width-max" right="r-ear-width-min" />
       <parameter left="r-ear-wing-out" right="r-ear-wing-out" />
       <parameter left="r-ear-flap-out" right="r-ear-flap-in" />
     </subcategory>
@@ -154,7 +162,7 @@
       <parameter left="l-ear-pointed" right="l-ear-triangle" />
       <parameter left="l-ear-backward" right="l-ear-forward" />
       <parameter left="l-ear-square" right="l-ear-round" />
-      <parameter left="l-ear-width-min" right="l-ear-width-max" />
+      <parameter left="l-ear-width-max" right="l-ear-width-min" />
       <parameter left="l-ear-wing-out" right="l-ear-wing-out" />
       <parameter left="l-ear-flap-out" right="l-ear-flap-in" />
     </subcategory>

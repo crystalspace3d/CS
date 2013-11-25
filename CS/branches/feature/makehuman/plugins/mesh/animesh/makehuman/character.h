@@ -51,7 +51,8 @@ public:
   virtual void Clear ();
   virtual void SetNeutral ();
 
-  virtual bool Parse (const char* filename);
+  virtual bool Save (const char* filename) const;
+  virtual bool Load (const char* filename);
 
   virtual void SetProxy (const char* proxy);
   virtual void SetRig (const char* rig);
@@ -130,17 +131,6 @@ private:
 
   bool ReportError (const char* msg, ...) const;
   bool ReportWarning (const char* msg, ...) const;
-
-  /// MakeHuman model parser (.mhm)
-
-  /**
-   * Parse a MakeHuman model file and copy the basic property values in 'human'.
-   * \param filename  Name of MakeHuman model file (with extension '.mhm')
-   * \param human  Generated property values of given MakeHuman model
-   *               (only relevant if the method returns true)
-   * \Return true if property values were successfully generated
-   */
-  bool ParseMakeHumanModelFile (const char* filename);
 
   // Expansion of target lists
   void ExpandGlobalTargets (csArray<Target>& targets) const;

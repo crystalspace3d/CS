@@ -20,6 +20,7 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #include "cssysdef.h"
+#include "csver.h"
 #include "character.h"
 
 #include "ivideo/txtmgr.h"
@@ -72,12 +73,6 @@ void MakeHumanCharacter::SetUpdateMode (MakeHumanUpdateMode mode)
 MakeHumanUpdateMode MakeHumanCharacter::GetUpdateMode () const
 {
   return updateMode;
-}
-
-bool MakeHumanCharacter::Parse (const char* filename)
-{
-  Clear ();
-  return ParseMakeHumanModelFile (filename);
 }
 
 void MakeHumanCharacter::SetProxy (const char* proxy)
@@ -242,7 +237,7 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
   else
   {
     // TODO: Calculate mesh normals
-    printf ("WARNING: setting default normals to CS mesh\n");
+    //printf ("WARNING: setting default normals to CS mesh\n");
     //animeshFactory->ComputeNormals ();
 
     //*******************************
@@ -403,17 +398,73 @@ bool MakeHumanCharacter::UpdateMeshFactory ()
  * MakeHuman model parser (.mhm)
  *-------------------------------------------------------------------------*/
 
-bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename)
+bool MakeHumanCharacter::Save (const char* filename) const
+{
+  csRef<iFile> file = manager->vfs->Open (filename, VFS_FILE_WRITE);
+  if (!file.IsValid ())
+    return ReportError ("Could not open file %s", filename);
+
+  csString txt;
+  txt.Format ("# Written by Crystal Space %i.%i.%i\n",
+	      CS_VERSION_NUM_MAJOR, CS_VERSION_NUM_MINOR, CS_VERSION_NUM_RELEASE);
+  txt += "version 1.0.0\n";
+  txt += "tags model\n";
+
+  txt += csString ().Format ("gender %f\n", GetParameter ("macro", "gender"));
+  txt += csString ().Format ("age %f\n", GetParameter ("macro", "age"));
+  txt += csString ().Format ("muscle %f\n", GetParameter ("macro", "tone"));
+  txt += csString ().Format ("weight %f\n", GetParameter ("macro", "weight"));
+  txt += csString ().Format ("african %f\n", GetParameter ("macro", "african"));
+  txt += csString ().Format ("asian %f\n", GetParameter ("macro", "asian"));
+  txt += csString ().Format ("height %f\n", GetParameter ("macro", "height"));
+  txt += csString ().Format ("genitals %f\n", GetParameter ("gender", "genitals"));
+  txt += csString ().Format ("buttocks %f\n", GetParameter ("torso", "buttocks"));
+  txt += csString ().Format ("breastPosition %f\n", GetParameter ("gender", "breastPosition"));
+  txt += csString ().Format ("breastPoint %f\n", GetParameter ("gender", "breastPoint"));
+  txt += csString ().Format ("breastFirmness %f\n", GetParameter ("gender", "breastFirmness"));
+  txt += csString ().Format ("breastSize %f\n", GetParameter ("gender", "breastSize"));
+  txt += csString ().Format ("stomach %f\n", GetParameter ("torso", "stomach"));
+  txt += csString ().Format ("pelvisTone %f\n", GetParameter ("torso", "pelvisTone"));
+  txt += csString ().Format ("breastDistance %f\n", GetParameter ("gender", "breastDistance"));
+
+  for (csHash<float, csString>::ConstGlobalIterator it = parameters.GetIterator (); it.HasNext (); )
+  {
+    csString parameter;
+    float value = it.Next (parameter);
+
+    // Ignore the internal parameters that have no description
+    if (!manager->parameters[parameter]) continue;
+    if (parameter == "african" || parameter == "asian") continue;
+
+    csString category;
+    manager->FindParameterCategory (parameter, category);
+    txt += csString ().Format ("%s %s %f\n", category.GetData (), parameter.GetData (), value);
+  }
+
+  csString skinTexture = skinFile;
+  skinTexture.ReplaceAll (SKIN_PATH, "");
+  if (skinTexture.IsEmpty ()) skinTexture = DEFAULT_SKIN;
+  txt += csString ().Format ("skinTexture %s\n", skinTexture.GetData ());
+
+  // TODO: proxy + rig + clothes + redundant parameters + case sensitivity problems
+
+  size_t size = file->Write (txt.GetData (), txt.Length ());
+  return size == txt.Length ();
+}
+
+bool MakeHumanCharacter::Load (const char* filename)
 {
   // Clear the state of this character
-  Clear ();
+  SetNeutral ();
+  // TODO: take care of the FAST UPDATE mode (eg use SetActivatedParameters)
 
-  // Open model file
-  csRef<iFile> file = manager->OpenFile (filename, "");
+  // Open the model file
+  //csRef<iFile> file = manager->OpenFile (filename, "");
+  csRef<iFile> file = manager->vfs->Open (filename, VFS_FILE_READ);
   if (!file)
     return ReportError ("Could not open file %s", filename);
 
-  // Parse model file
+  // Parse the model file
   printf ("\nParsing MakeHuman model file: '%s'\n\n", filename);
   char line[256];
   float value;
@@ -496,12 +547,13 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename)
 
       else if (numVals == 3)
       {
-        // Parse measure name and value
+        // Parse the category and parameter name and value
 	csString category = csString (words[0]);
         parameter = csString (words[1]);
         if (sscanf (words[2], "%f", &value) != 1)
 	{
-          ReportError ("Wrong element in MakeHuman model file");
+	  ReportError ("Could not parse the value of the parameter %s",
+		       CS::Quote::Single (parameter));
 	  continue;
 	}
 
@@ -519,7 +571,8 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename)
         // Parse property value
         if (sscanf (words[1], "%f", &value) != 1)
         {
-          // TODO: treat 2nd property word (ex: "face nose") in MakeHuman model file
+	  ReportError ("Could not parse the value of the parameter %s",
+		       CS::Quote::Single (parameter));
           continue;
         }
 
@@ -530,7 +583,8 @@ bool MakeHumanCharacter::ParseMakeHumanModelFile (const char* filename)
 	csString category;
 	if (!manager->FindParameterCategory (parameter, category))
 	{
-	  ReportError ("Could not find the category of the parameter %s", CS::Quote::Single (parameter));
+	  ReportError ("Could not find the category of the parameter %s",
+		       CS::Quote::Single (parameter));
 	  continue;
 	}
 

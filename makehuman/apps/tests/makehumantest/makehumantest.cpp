@@ -101,7 +101,7 @@ bool MakeHumanTest::Application ()
   if (!makehumanManager)
     return ReportError ("Failed to initialize the MakeHuman plugin!"
 			" Have you installed the data files such as explained at data/makehuman/README?");
-/*
+
   // Print out the hierarchy of MakeHuman parameters
   csPrintf ("=========================\n");
   csPrintf ("== MakeHuman parameters:\n");
@@ -126,10 +126,9 @@ bool MakeHumanTest::Application ()
   }
 
   csPrintf ("=========================\n\n");
-*/
+
   // Create a human model
   //if (!CreateModel ("test", "/lib/makehuman/test.mhm"))
-  //if (!CreateModel ("test", "/lib/makehuman/model.mhm"))
   if (!CreateCustomModel ())
     return ReportError ("Problem creating avatar\n");
 
@@ -189,14 +188,7 @@ bool MakeHumanTest::OnKeyboard (iEvent &event)
 	csPrintf ("Resetting the model to neutral\n");
 
 	character->SetUpdateMode (CS::Mesh::MH_UPDATE_FULL);
-	//character->SetNeutral ();
-	//PopulateParameters ();
-	//character->SetParameter ("macro", "height", 1.f);
-	//character->SetParameter ("face", "neck3", 1.f);
-	//character->SetParameter ("face", "head-shape1", 1.f);
-	//character->SetParameter ("macro", "gender", 0.f);
-	//character->SetParameter ("macro", "african", 1.f);
-	//character->SetParameter ("macro", "asian", 1.f);
+	character->SetNeutral ();
 
 	if (!character->UpdateMeshFactory ())
 	{
@@ -262,27 +254,13 @@ bool MakeHumanTest::CreateCustomModel ()
 
   // Disable the facial expression generation for faster updates
   character->SetExpressionGeneration (false); 
-  character->SetSkeletonGeneration (false); 
-/*
+  //character->SetSkeletonGeneration (false); 
+
   character->SetParameter ("macro", "age", 0.2f);
   character->SetParameter ("macro", "height", 0.55f);
   character->SetParameter ("macro", "gender", 0.3f);
   character->SetParameter ("macro", "weight", 0.4f);
   character->SetParameter ("macro", "tone", 0.8f);
-*/
-/*
-  character->SetParameter ("macro", "gender", 0.5f);
-  character->SetParameter ("macro", "age", 0.5f);
-  character->SetParameter ("macro", "tone", 0.5f);
-  character->SetParameter ("macro", "weight", 0.5f);
-  character->SetParameter ("macro", "height", 0.f);
-  character->SetParameter ("torso", "stomach", 0.f);
-*/
-  //character->SetParameter ("face", "head1", 1.f);
-  //character->SetParameter ("macro", "height", -1.f);
-  //character->SetParameter ("face", "head-shape1", 1.f);
-
-  //character->SetParameter ("macro", "gender", 1.f);
 
   const char* filename = "/this/test.mhm";
   bool res = character->Save (filename);
@@ -291,62 +269,7 @@ bool MakeHumanTest::CreateCustomModel ()
   if (!character->UpdateMeshFactory ())
     return ReportError ("Error generating the MakeHuman model");
 
-  character->SetUpdateMode (CS::Mesh::MH_UPDATE_FAST);
-  //character->SetParameter ("macro", "height", 1.f);
-  //character->SetParameter ("face", "head-shape1", 0.f);
-  //character->SetParameter ("face", "head-shape1", 1.f);
-  //character->SetParameter ("macro", "gender", 0.f);
-/*
-  character->SetParameter ("macro", "african", 1.f);
-  character->SetParameter ("macro", "asian", 1.f);
-  character->SetParameter ("macro", "age", 0.f);
-  character->SetParameter ("macro", "gender", 1.f);
-  character->SetParameter ("macro", "tone", 1.f);
-  character->SetParameter ("macro", "weight", 0.f);
-  //character->SetParameter ("gender", "breastPosition", 1.f);
-  character->SetParameter ("gender", "breastPoint", 1.f);
-  character->SetParameter ("gender", "breastSize", 1.f);
-  character->SetParameter ("gender", "breastFirmness", 1.f);
-  character->SetParameter ("macro", "gender", 0.f);
-  character->SetParameter ("macro", "age", 1.f);
-  character->SetParameter ("macro", "african", 0.f);
-  character->SetParameter ("macro", "asian", 0.f);
-*/
-/*
-  //const char* category = "face";
-  const char* category = "gender";
-  csRandomFloatGen generator (0);
-  csRef<iStringArray> parameters = makehumanManager->GetParameters (category);
-  //csRef<iStringArray> parameters = makehumanManager->GetParameters (category, "head-shape");
-  //csRef<iStringArray> parameters = makehumanManager->GetParameters (category, "head");
-  for (size_t i = 0; i < parameters->GetSize (); i++)
-  {
-    csString parameter = parameters->Get (i);
-    character->SetParameter (category, parameter, generator.Get (-1.f, 1.f));
-  }
-*/
-/*
-  csRandomFloatGen generator (0);
-  for (size_t i = 0; i < 100; i++)
-  {
-    csString ethnic = (generator.Get (0.f, 1.f) < 0.5f) ? "african" : "asian";
-    character->SetParameter ("macro", ethnic, generator.Get (0.f, 1.f));
-  }
-  character->SetParameter ("macro", "african", 0.f);
-  character->SetParameter ("macro", "asian", 0.f);
-*/
-
-  character->SetParameter ("macro", "african", 0.5f);
-  character->SetParameter ("macro", "asian", 1.f);
-  //character->SetParameter ("macro", "african", 0.f);
-  //character->SetParameter ("macro", "asian", 0.f);
-  //character->SetParameter ("macro", "african", 0.001f);
-  //character->SetParameter ("macro", "asian", 0.001f);
-  character->SetParameter ("macro", "african", 0.1f);
-
   //TestTargetAccess ("face", "neck1", 1.f);
-  //TestTargetAccess ("face", "neck3", 1.f);
-  //TestTargetAccess ("macro", "height", 1.f);
 
   return SetupAnimatedMesh ();
 }
@@ -616,7 +539,7 @@ bool MakeHumanTest::SetupAnimatedMesh ()
   csPrintf ("\nCharacter vertex count: %i\n", animeshFactory->GetVertexCount ());
 
   CS::Animation::iSkeletonFactory* skeleton = animeshFactory->GetSkeletonFactory ();
-  if (false)//skeleton)
+  if (skeleton)
   {
     // Print the skeleton structure
     printf ("%s", skeleton->Description ().GetData ());
@@ -694,7 +617,7 @@ bool MakeHumanTest::SetupAnimatedMesh ()
   csRef<iMeshWrapper> avatarMesh =
     engine->CreateMeshWrapper (meshFactWrapper, "test", room, csVector3 (0.0f));
 
-  if (false)//skeleton)
+  if (skeleton)
   {
     // Find a reference to the 'debug' animation node
     animesh = scfQueryInterface<CS::Mesh::iAnimatedMesh> (avatarMesh->GetMeshObject ());

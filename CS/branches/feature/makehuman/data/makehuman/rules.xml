@@ -56,14 +56,6 @@
       <parameter left="neck-trans-forward" right="neck-trans-backward" />
     </subcategory>
     <subcategory name="right-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
-      <parameter left="r-eye-move-in" right="r-eye-move-out" />
-      <parameter left="r-eye-move-up" right="r-eye-move-down" />
-    </subcategory>
-    <subcategory name="left-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
-      <parameter left="l-eye-move-in" right="l-eye-move-out" />
-      <parameter left="l-eye-move-up" right="l-eye-move-down" />
-    </subcategory>
-    <subcategory name="right-eye" pattern="eyes/${ethnic2}/${gender}_${age}/${value}">
       <parameter left="r-eye-height1-min" right="r-eye-height1-max" />
       <parameter left="r-eye-height2-min" right="r-eye-height2-max" />
       <parameter left="r-eye-height3-min" right="r-eye-height3-max" />

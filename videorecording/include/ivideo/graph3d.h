@@ -237,6 +237,8 @@ enum csVertexAttrib
   CS_VATTRIB_14 = CS_VATTRIB_GENERIC_FIRST + 14,
   CS_VATTRIB_15 = CS_VATTRIB_GENERIC_FIRST + 15,
   //@}
+  /* Note: gl3d currently assumes there are at most 32 attributes,
+   * keep that in mind if bumping up the number above */
 
   /// Pseudo-instancing attribute: object-to-world matrix 
   CS_IATTRIB_OBJECT2WORLD = CS_IATTRIB_FIRST + 0
@@ -810,7 +812,7 @@ namespace CS
  */
 struct iGraphics3D : public virtual iBase
 {
-  SCF_INTERFACE(iGraphics3D, 5, 0, 0);
+  SCF_INTERFACE(iGraphics3D, 5, 1, 0);
   
   /// Open the 3D graphics display.
   virtual bool Open () = 0;
@@ -1243,6 +1245,11 @@ struct iGraphics3D : public virtual iBase
    * Check via occlusion query whether a mesh is visible.
    */
   virtual bool OQIsVisible (unsigned int occlusion_query, unsigned int sampleLimit = 0) = 0;
+
+  /**
+   * Check the visibility of multiple meshes via occlusion queries.
+   */
+  virtual void OQVisibleQueries (unsigned int* queries, bool* results, int num_queries) = 0;
 
   /// Start counting unoccluded fragments for a given query.
   virtual void OQBeginQuery (unsigned int occlusion_query) = 0;

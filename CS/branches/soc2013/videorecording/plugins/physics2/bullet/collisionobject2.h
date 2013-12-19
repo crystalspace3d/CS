@@ -42,7 +42,6 @@ class csBulletCollisionObject : public scfVirtImplementationExt1<
   friend class csBulletKinematicMotionState;
   friend class csBulletJoint;
   friend class csBulletCollisionTerrain;
-  friend class csBulletCollisionActor;
   friend class csBulletGhostCollisionObject;
   friend class CollisionPortal;
 
@@ -80,7 +79,7 @@ public:
 
   virtual iObject* QueryObject () { return (iObject*) this; }
   virtual CS::Physics::iPhysicalBody* QueryPhysicalBody () { return nullptr; }
-  virtual CS::Collisions::iActor* QueryActor () { return nullptr; }
+  virtual CS::Collisions::iCollisionActor* QueryCollisionActor () { return nullptr; }
 
   virtual CS::Collisions::iCollisionSystem* GetSystem () const { return system; }
   virtual void SetSector (CS::Collisions::iCollisionSector* sector);
@@ -91,10 +90,7 @@ public:
   virtual void SetAttachedSceneNode (iSceneNode* newSceneNode);
   virtual iSceneNode* GetAttachedSceneNode () const { return sceneNode; }
 
-  virtual void SetAttachedCamera (iCamera* camera) 
-  { 
-    this->camera = camera; if (camera) camera->SetTransform (GetTransform ());
-  }
+  virtual void SetAttachedCamera (iCamera* camera);
   virtual iCamera* GetAttachedCamera () const { return camera; }
 
   virtual CS::Collisions::iCollider* GetCollider () const { return collider; }
@@ -106,7 +102,6 @@ public:
 
   virtual void SetTransform (const csOrthoTransform& trans);
   virtual csOrthoTransform GetTransform () const;
-  virtual void SetRotation (const csMatrix3& rot);
 
   virtual void RebuildObject () = 0;
 
@@ -129,8 +124,6 @@ public:
 
   virtual bool AddBulletObject () = 0;
   virtual bool RemoveBulletObject () = 0;
-
-  bool TestOnGround ();
 
   /// Whether this object may be excluded from deactivation.
   virtual bool GetDeactivable () const

@@ -1532,6 +1532,9 @@
 				RelativePath="..\..\mk\msvc\plugin_impl.cpp">
 			</File>
 			<File
+				RelativePath="..\..\plugins\physics2\bullet\btKinematicCharacterController.cpp">
+			</File>
+			<File
 				RelativePath="..\..\plugins\physics2\bullet\bulletsector.cpp">
 			</File>
 			<File
@@ -1559,13 +1562,7 @@
 				RelativePath="..\..\plugins\physics2\bullet\common2.cpp">
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\dynamicactor.cpp">
-			</File>
-			<File
 				RelativePath="..\..\plugins\physics2\bullet\joint2.cpp">
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\kinematicactorcontroller.cpp">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics2\bullet\motionstates.cpp">
@@ -1593,7 +1590,7 @@
 			Name="Header Files"
 			Filter="">
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\actor.h">
+				RelativePath="..\..\plugins\physics2\bullet\btKinematicCharacterController.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics2\bullet\bulletsector.h">
@@ -1626,13 +1623,7 @@
 				RelativePath="..\..\plugins\physics2\bullet\common2.h">
 			</File>
 			<File
-				RelativePath="..\..\plugins\physics2\bullet\dynamicactor.h">
-			</File>
-			<File
 				RelativePath="..\..\plugins\physics2\bullet\joint2.h">
-			</File>
-			<File
-				RelativePath="..\..\plugins\physics2\bullet\kinematicactorcontroller.h">
 			</File>
 			<File
 				RelativePath="..\..\plugins\physics2\bullet\motionstates.h">

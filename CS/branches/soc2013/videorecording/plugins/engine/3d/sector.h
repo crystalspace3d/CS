@@ -221,8 +221,6 @@ public:
 
   /**\name Drawing related
    * @{ */
-  virtual void Draw (iRenderView* rview);
-
   virtual void PrepareDraw (iRenderView* rview);
 
   virtual int GetRecLevel () const
@@ -231,12 +229,6 @@ public:
   { drawBusy++; }
   virtual void DecRecLevel ()
   { drawBusy--; }
-
-  THREADED_CALLABLE_DECL1(csSector, SetRenderLoop, csThreadReturn,
-    iRenderLoop*, rl, MED, false, false);
-
-  virtual iRenderLoop* GetRenderLoop ()
-  { return renderloop; }
   /** @} */
 
   /**\name Fog handling
@@ -504,9 +496,6 @@ private:
 
   /// Required by ThreadedCallable
   iObjectRegistry* GetObjectRegistry() const;
-
-  /// Optional renderloop.
-  iRenderLoop* renderloop;
 
   /// Fog information.
   csFog fog;

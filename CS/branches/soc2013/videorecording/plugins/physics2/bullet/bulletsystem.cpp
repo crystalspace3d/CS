@@ -20,7 +20,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
 #include "csgeom/sphere.h"
 #include "csgeom/tri.h"
@@ -34,6 +33,7 @@
 #include "imesh/genmesh.h"
 #include "imesh/object.h"
 #include "imesh/objmodel.h"
+#include "iutil/evdefs.h"
 #include "iutil/objreg.h"
 #include "ivaria/view.h"
 
@@ -53,7 +53,6 @@
 #include "collisionterrain.h"
 #include "rigidbody2.h"
 #include "softbody2.h"
-#include "dynamicactor.h"
 #include "collisionactor.h"
 #include "joint2.h"
 
@@ -123,6 +122,10 @@ csBulletSystem::~csBulletSystem ()
   collisionGroups.DeleteAll ();
   delete debugDraw;
   // TODO: unregister
+
+  // Unregister from the event queue
+  if (eventQueue)
+    eventQueue->RemoveListener (this);
 }
 
 bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
@@ -136,7 +139,26 @@ bool csBulletSystem::Initialize (iObjectRegistry* object_reg)
   if (!collisionSystem)
     object_reg->Register (this, "CS::Collisions::iCollisionSystem");
 
+  // Find references to the engine objects
+  vc = csQueryRegistry<iVirtualClock> (object_reg);
+  if (!vc) return ReportError ("Failed to locate virtual clock!");
+
+  eventQueue = csQueryRegistry<iEventQueue> (object_reg);
+  if (!eventQueue) return ReportError ("Failed to locate event queue!");
+
+  // Register to the event queue
+  csEventID events[2] = { csevFrame (object_reg), CS_EVENTLIST_END };
+  eventQueue->RegisterListener (this, events);
+
   return true;
+}
+
+bool csBulletSystem::HandleEvent (iEvent& event)
+{
+  if (simulationSpeed > SMALL_EPSILON)
+    StepSimulation (vc->GetElapsedSeconds ());
+
+  return false;
 }
 
 void csBulletSystem::SetSimulationSpeed (float speed)
@@ -159,11 +181,13 @@ void csBulletSystem::SetStepParameters (float timeStep,
   }
 }
 
-void csBulletSystem::Step (csTicks duration)
+void csBulletSystem::StepSimulation (float duration)
 {
-  float fduration = duration * simulationSpeed * 0.001f;
+  if (simulationSpeed > SMALL_EPSILON)
+    duration *= simulationSpeed;
+
   for (size_t i = 0; i < collSectors.GetSize (); i++)
-    collSectors[i]->Step (fduration);
+    collSectors[i]->Step (duration);
 }
 
 void csBulletSystem::SetSoftBodyEnabled (bool enabled)
@@ -271,6 +295,14 @@ csPtr<CS::Collisions::iColliderPlane> csBulletSystem::CreateColliderPlane (const
 
 CS::Collisions::iCollisionSector* csBulletSystem::CreateCollisionSector (iSector* sector)
 {
+  // Look first if there is already a collision sector associated to the given engine sector
+  if (sector)
+  {
+    CS::Collisions::iCollisionSector* collisionSector = FindCollisionSector (sector);
+    if (collisionSector) return collisionSector;
+  }
+
+  // Create a new collision sector
   csRef<csBulletSector> collSector = csPtr<csBulletSector> (new csBulletSector (this));
   if (sector) collSector->SetSector (sector);
   collSectors.Push (collSector);
@@ -291,16 +323,13 @@ void csBulletSystem::DeleteCollisionSectors ()
   }
 }
 
-CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSector* sec)
+CS::Collisions::iCollisionSector* csBulletSystem::FindCollisionSector (const iSector* sector)
 {
   // TODO: use a hash for faster access
   for (size_t i = 0; i < collSectors.GetSize (); i++)
-  {
-    if (collSectors[i]->GetSector () == sec)
-    {
+    if (collSectors[i]->GetSector () == sector)
       return collSectors[i];
-    }
-  }
+
   return nullptr;
 }
 
@@ -521,13 +550,6 @@ csPtr<CS::Physics::iRigidBodyFactory>
   return csPtr<iRigidBodyFactory> (fact); 
 }
 
-csPtr<CS::Physics::iDynamicActorFactory> 
-  csBulletSystem::CreateDynamicActorFactory (CS::Collisions::iCollider* collider)
-{
-  BulletDynamicActorFactory* fact = new BulletDynamicActorFactory (this, collider);
-  return csPtr<iDynamicActorFactory> (fact);
-}
-
 csPtr<CS::Physics::iSoftRopeFactory> csBulletSystem::CreateSoftRopeFactory ()
 {
   BulletSoftRopeFactory* fact = new BulletSoftRopeFactory (this);
@@ -652,13 +674,20 @@ btTriangleMesh* csBulletSystem::CreateBulletTriMesh (iTriangleMesh* triMesh)
   return btMesh;
 }
 
+bool csBulletSystem::ReportError (const char* msg, ...)
+{
+  va_list arg;
+  va_start (arg, msg);
+  csReportV (object_reg, CS_REPORTER_SEVERITY_ERROR, msgid, msg, arg);
+  va_end (arg);
+  return false;
+}
+
 void csBulletSystem::ReportWarning (const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING,
-	     "crystalspace.physics.bullet",
-	     msg, arg);
+  csReportV (object_reg, CS_REPORTER_SEVERITY_WARNING, msgid, msg, arg);
   va_end (arg);
 }
 

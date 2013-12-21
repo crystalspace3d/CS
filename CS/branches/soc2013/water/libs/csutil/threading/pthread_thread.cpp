@@ -34,50 +34,24 @@ namespace Implementation
   namespace
   {
 
-    class ThreadStartParams : public CS::Memory::CustomAllocated
-    {
-    public:
-      ThreadStartParams (ThreadBase* thread, Runnable* runner, int32* isRunningPtr, 
-        Barrier* startupBarrier)
-        : thread (thread), runnable (runner), isRunningPtr (isRunningPtr), 
-        startupBarrier (startupBarrier)
-      {
-      }
-
-      ThreadBase* thread;
-      Runnable* runnable;
-      int32* isRunningPtr;
-      Barrier* startupBarrier;
-    };
-
-    void* proxyFunc (void* param)
+    static void* proxyFunc (void* param)
     {
       // Extract the parameters
-      ThreadStartParams* tp = static_cast<ThreadStartParams*> (param);
-      csRef<ThreadBase> thread (tp->thread);
-      int32* isRunningPtr = tp->isRunningPtr;
-      Runnable* runnable = tp->runnable;
-      Barrier* startupBarrier = tp->startupBarrier;
-
-      // Set as running and wait for main thread to catch up
-      AtomicOperations::Set (isRunningPtr, 1);
-      startupBarrier->Wait ();
+      ThreadBase* tb = static_cast<ThreadBase*> (param);
+      Runnable* runnable = tb->GetRunnable();
 
     #ifdef CS_HAVE_PTHREAD_SETNAME_NP
       {
-	// Set the name, for debugging
-	const char* threadName = runnable->GetName ();
-	if (threadName)
-	  pthread_setname_np (pthread_self(), threadName);
+        // Set the name, for debugging
+        const char* threadName = runnable->GetName ();
+        if (threadName)
+          pthread_setname_np (pthread_self(), threadName);
       }
     #endif
-      
-      // Run      
+
+      // Run
       runnable->Run ();
 
-      // Set as non-running
-      AtomicOperations::Set (isRunningPtr, 0);
-      
       return 0;
     }
 
@@ -85,26 +59,33 @@ namespace Implementation
 
 
   ThreadBase::ThreadBase (Runnable* runnable)
-    : runnable (runnable), isRunning (0), priority (THREAD_PRIO_NORMAL),
-    startupBarrier (2)
+    : runnable (runnable), isRunning (false), priority (THREAD_PRIO_NORMAL)
   {
+  }
+
+  ThreadBase::~ThreadBase ()
+  {
+    if (IsRunning ())
+    {
+      pthread_join (threadHandle, 0);
+    }
   }
 
   void ThreadBase::Start ()
   {
     if (!IsRunning ())
-    {      
-      ThreadStartParams param (this, runnable, &isRunning, &startupBarrier);
+    {
+      int res;
 
-      pthread_attr_t attr;
-      pthread_attr_init(&attr);
-      pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-      pthread_create(&threadHandle, &attr, proxyFunc, &param); 
-            
-      startupBarrier.Wait ();
+      // The default is a joinable thread.
+      res = pthread_create(&threadHandle, 0, proxyFunc, this);
+      if (res == 0)
+      {
+        isRunning = true;
 
-      // Set priority to make sure its updated if we set it before starting
-      SetPriority (priority);
+        // Set priority to make sure its updated if we set it before starting
+        SetPriority (priority);
+      }
     }
   }
 
@@ -112,25 +93,18 @@ namespace Implementation
   {
     if (IsRunning ())
     {
-      int res = pthread_cancel (threadHandle);
-      if (res == 0)
-      {
-        AtomicOperations::Set (&isRunning, 0);
-      }
+      isRunning = false;
+      pthread_cancel (threadHandle);
+      pthread_join (threadHandle, 0);
     }
-  }
-
-  bool ThreadBase::IsRunning () const
-  {
-    return (AtomicOperations::Read ((int32*)&isRunning) != 0);
   }
 
   bool ThreadBase::SetPriority (ThreadPriority prio)
   {
-    int res = 1;
-    
+    int res = 0;
+
     if (IsRunning ())
-    {    
+    {
       struct sched_param SchedulerProperties;
 
       // Clear the properties initially
@@ -155,23 +129,24 @@ namespace Implementation
       }
     }
 
-    if (res != 0)
+    if (res == 0)
     {
       priority = prio;
     }
 
-    return res != 0;
+    return res == 0;
   }
 
   void ThreadBase::Wait () const
   {
     if (IsRunning ())
     {
-      pthread_join (threadHandle,0);
+      isRunning = false;
+      pthread_join (threadHandle, 0);
     }
   }
 
-  void ThreadBase::Yield () 
+  void ThreadBase::Yield ()
   {
     sched_yield ();
   }

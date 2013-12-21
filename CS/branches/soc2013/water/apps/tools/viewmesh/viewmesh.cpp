@@ -181,15 +181,6 @@ void ViewMesh::HandleCommandLine ()
   csRef<iCommandLineParser> cmdline =
     csQueryRegistry<iCommandLineParser> (GetObjectRegistry ());
 
-  const char* libname;
-  for (int i=0; (libname = cmdline->GetOption ("L",i)); i++)
-  {
-    if (!loader->LoadLibraryFile (libname))
-    {
-      ReportError("Couldn't load lib %s.\n", CS::Quote::Single (libname));
-    }
-  }
-
   csString meshfilename = cmdline->GetName (0);
   const char* texturefilename = cmdline->GetName (1);
   const char* texturename = cmdline->GetName (2);
@@ -216,6 +207,15 @@ void ViewMesh::HandleCommandLine ()
       vfs->ChDir (tempPath);
       if (vfsDir.IsEmpty ())
         vfsDir = tempPath;
+    }
+  }
+  
+  const char* libname;
+  for (int i=0; (libname = cmdline->GetOption ("L",i)); i++)
+  {
+    if (!loader->LoadLibraryFile (libname))
+    {
+      ReportError("Couldn't load lib %s.\n", CS::Quote::Single (libname));
     }
   }
 
@@ -487,6 +487,7 @@ void ViewMesh::LoadSprite (const char* filename, const char* path, const char* f
 
   if (!loading->GetResultRefPtr().IsValid())
   {
+    engine->SyncEngineListsNow(tloader);
     // Library file. Find the first factory in our region.
     iMeshFactoryList* factories = engine->GetMeshFactories ();
     int i;
@@ -823,6 +824,22 @@ void ViewMesh::MoveLights (const csVector3 &a, const csVector3 &b,
 
 }
 
+void ViewMesh::Reload ()
+{
+  if (reloadFilename == "")
+      return;
+
+  collection->ReleaseAllObjects();
+
+  size_t reloadLibraryCount = reloadLibraryFilenames.GetSize();
+  for(size_t i=0; i < reloadLibraryCount; ++i)
+  {
+    LoadLibrary(reloadLibraryFilenames[i], false);
+  }
+
+  LoadSprite(reloadFilename, reloadFilePath, 0);
+}
+
 //---------------------------------------------------------------------------
 
 void ViewMesh::StdDlgUpdateLists(const char* filename)
@@ -1000,8 +1017,22 @@ bool ViewMesh::StdDlgDirChange (const CEGUI::EventArgs& e)
 }
 
 //---------------------------------------------------------------------------
+#include <signal.h> 
+
+ViewMesh viewmesh;
+
+void signalHandler (int param)
+{
+  printf ("Reloading content...\n");
+  viewmesh.Reload();
+}
 
 int main(int argc, char** argv)
 {
-  return ViewMesh().Main(argc, argv);
+  void (*prev_fn)(int);
+
+  prev_fn = signal (SIGINT,signalHandler);
+  if (prev_fn==SIG_IGN) signal (SIGINT,SIG_IGN);
+  
+  return viewmesh.Main(argc, argv);
 }

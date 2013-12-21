@@ -162,6 +162,12 @@ public:
   { CollectUsedConditions (rootNode, condWrite); }
 };
 
+// Dummy interface to 'tag' activators from XMLShader
+struct iShaderPassesActivatorXML : public virtual iBase
+{
+  SCF_INTERFACE(iShaderPassesActivatorXML, 0, 0, 1);
+};
+
 class ForcedPriorityShader;
 
 class csXMLShader : public scfImplementationExt4<csXMLShader,
@@ -201,6 +207,7 @@ class csXMLShader : public scfImplementationExt4<csXMLShader,
 				     TechniqueKeeper const&);
 				     
   csXMLShaderTech* activeTech;
+  csXMLShaderTech::ActivationState activationState;
   csShaderConditionResolver* techsResolver;
   /* Technique variants
      These are 'lightweight' and only store which techniques (from
@@ -324,6 +331,29 @@ class csXMLShader : public scfImplementationExt4<csXMLShader,
     return activeTech ? activeTech->svcontext : globalSVContext;
   }
 
+  class Activator :
+    public scfImplementationPooled<scfImplementation2<Activator,
+                                                      iShaderPassesActivatorXML,
+                                                      iShaderPassesActivator> >
+  {
+    csXMLShader* parent;
+
+    csXMLShaderTech* activeTech;
+    csXMLShaderTech::ActivationState activationState;
+    size_t currentPass;
+    size_t numPasses;
+  public:
+    Activator (csXMLShader* parent, size_t ticket);
+    ~Activator();
+
+    bool ActivateNextPass ();
+    bool SetupPass (const CS::Graphics::RenderMesh *mesh,
+      CS::Graphics::RenderMeshModes& modes,
+      const csShaderVariableStack& stack);
+    void TeardownPass ();
+    void DeactivatePass ();
+  };
+  Activator::Pool activators;
 protected:
   void InternalRemove() { SelfDestruct(); }
 
@@ -418,7 +448,7 @@ public:
 
     CS_ASSERT_MSG ("A pass must be activated prior calling SetupPass()",
       activeTech);
-    return activeTech->SetupPass (mesh, modes, stack); 
+    return activeTech->SetupPass (activationState, mesh, modes, stack); 
   }
 
   /**
@@ -437,7 +467,7 @@ public:
 
     CS_ASSERT_MSG ("A pass must be activated prior calling TeardownPass()",
       activeTech);
-    return activeTech->TeardownPass(); 
+    return activeTech->TeardownPass (activationState); 
   }
 
   /// Completely deactivate a pass
@@ -470,6 +500,9 @@ public:
   csPtr<iShaderPriorityList> GetAvailablePriorities (size_t prioTicket) const;
   csPtr<iString> GetTechniqueMetadata (int priority, const char* dataKey) const;
   csPtr<iShader> ForceTechnique (int priority);
+
+  csPtr<iShaderPassesActivator> BeginShaderActivation (size_t ticket,
+    iShaderPassesActivator* previous_activator);
 
   friend class csXMLShaderCompiler;
 

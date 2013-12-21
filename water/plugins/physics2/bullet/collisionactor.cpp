@@ -1,4 +1,8 @@
 /*
+    Copyright (C) 2013 Christian Van Brussel, Institute of Information
+      and Communication Technologies, Electronics and Applied Mathematics
+      at Universite catholique de Louvain, Belgium
+      http://www.uclouvain.be/en-icteam.html
     Copyright (C) 2012 by Dominik Seifert
 
     This library is free software; you can redistribute it and/or
@@ -15,7 +19,7 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
+#include "cssysdef.h"
 #include "collisionactor.h"
 #include "btBulletDynamicsCommon.h"
 #include "btBulletCollisionCommon.h"
@@ -29,206 +33,173 @@ using namespace CS::Collisions;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {   
 
-  // TODO: use simulation speed
-
-  csPtr<CS::Collisions::iActor> BulletCollisionActorFactory::CreateActor ()
-  {
-    csRef<CS::Collisions::iCollisionActor> actor = CreateCollisionActor ();
-    return csPtr<iActor> (actor);
-  }
+  //----------------------------- BulletCollisionActorFactory -----------------------------
 
   csPtr<CS::Collisions::iCollisionActor> BulletCollisionActorFactory::CreateCollisionActor ()
   {
-    csBulletCollisionActor* actor = new csBulletCollisionActor (system);
-    actor->CreateCollisionActor (this);
-    csRef<CS::Collisions::iCollisionActor> iactor = csPtr<CS::Collisions::iCollisionActor> (actor);
-    return csPtr<iCollisionActor> (iactor);
+    return new BulletCollisionActor (this);
   }
 
   csPtr<CS::Collisions::iCollisionObject> BulletCollisionActorFactory::CreateCollisionObject () 
   { 
-    return DowncastPtr<CS::Collisions::iCollisionObject, CS::Collisions::iCollisionActor> (CreateCollisionActor ()); 
+    return new BulletCollisionActor (this);
   }
 
-  void csBulletCollisionActor::CreateCollisionActor (CS::Collisions::iCollisionActorFactory* props)
+  //----------------------------- BulletCollisionActor -----------------------------
+
+  BulletCollisionActor::BulletCollisionActor (BulletCollisionActorFactory* factory)
+    : scfImplementationType (this, factory->system)
   {
-    CreateGhostCollisionObject (props);
-    
-    btPairCachingGhostObject* go = GetPairCachingGhostObject ();
-    btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape ());
-    controller = new csKinematicActorController
-      (go, convShape, stepHeight = props->GetStepHeight (), 1);
-    
-    SetWalkSpeed (props->GetWalkSpeed ());
-    SetJumpSpeed (props->GetJumpSpeed ());
-    SetAirControlFactor (props->GetAirControlFactor ());
+    CreateGhostCollisionObject (factory);
+
+    btPairCachingGhostObject* ghost = GetPairCachingGhostObject ();
+    btConvexShape* convShape = (btConvexShape*) (ghost->getCollisionShape ());
+    controller = new btKinematicCharacterController
+      (ghost, convShape, factory->stepHeight, 1);
+    controller->setMaxSlope (factory->maximumSlope);
+    controller->setJumpSpeed (factory->jumpSpeed);
+
+    ghost->setCollisionFlags (btCollisionObject::CF_CHARACTER_OBJECT);
   }
 
-  csBulletCollisionActor::csBulletCollisionActor (csBulletSystem* sys) : scfImplementationType (this, sys),
-    controller (nullptr), airControlFactor (0), gravityEnabled (false)
-  {
-  }
-
-  csBulletCollisionActor::~csBulletCollisionActor ()
+  BulletCollisionActor::~BulletCollisionActor ()
   {
     delete controller;
   }
-
-  void csBulletCollisionActor::SetAttachedCamera (iCamera* camera)
+/*
+  void BulletCollisionActor::SetRotation (const csMatrix3& rot)
   {
-    this->camera = camera; 
-    //SetTransform (camera->GetTransform ());
-    //csVector3 upVec = camera->GetTransform ().GetUp ();
-    //upVector.setValue (upVec.x, upVec.y, upVec.z);
+    btObject->getWorldTransform ().setBasis (CSToBullet (rot));
+
+    iSceneNode* sceneNode = GetAttachedSceneNode ();
+    if (sceneNode)
+      sceneNode->GetMovable ()->GetTransform ().SetT2O (rot);
+    if (camera)
+      camera->GetTransform ().SetT2O (rot);
+  }
+*/
+  void BulletCollisionActor::Rotate (float yaw)
+  {
+    btMatrix3x3 rotation = btObject->getWorldTransform ().getBasis ();
+    rotation *= btMatrix3x3 (btQuaternion (btVector3 (0.0f, 1.0f, 0.0f), yaw));
+    btObject->getWorldTransform ().setBasis (rotation);
+
+    iSceneNode* sceneNode = GetAttachedSceneNode ();
+    if (sceneNode)
+      sceneNode->GetMovable ()->GetTransform ().SetO2T (BulletToCS (rotation));
+    if (camera)
+      camera->GetTransform ().SetO2T (BulletToCS (rotation));
   }
 
-  void csBulletCollisionActor::SetTransform (const csOrthoTransform& trans)
+  bool BulletCollisionActor::AddBulletObject ()
+  {
+    if (insideWorld)
+      RemoveBulletObject ();
+    insideWorld = true;
+
+    controller->setGravity (- sector->bulletWorld->getGravity ()[1] * 3);
+    controller->reset ();
+    sector->bulletWorld->addCollisionObject (btObject, group->value, group->mask);
+    sector->bulletWorld->addAction (this);
+
+    return true;
+  }
+
+  bool BulletCollisionActor::RemoveBulletObject ()
+  {
+    insideWorld = false;
+
+    sector->bulletWorld->removeAction (this);
+    sector->bulletWorld->removeCollisionObject (btObject);
+
+    return true;
+  }
+
+  void BulletCollisionActor::SetTransform (const csOrthoTransform& trans)
   {
     csBulletCollisionObject::SetTransform (trans);
+    controller->reset ();
   }
 
-  bool csBulletCollisionActor::AddBulletObject ()
+  void BulletCollisionActor::SetStepHeight (float height)
   {
-    if (csBulletGhostCollisionObject::AddBulletObject ())
-    {
-      return true;
-    }
-    return false;
-  }
-  
-  void csBulletCollisionActor::SetStepHeight (float newHeight)
-  {
-    // need to re-create the controller
-    btPairCachingGhostObject* go = GetPairCachingGhostObject ();
-    btConvexShape* convShape = (btConvexShape*)(go->getCollisionShape ());
-    delete controller;
-    controller = new csKinematicActorController (go, convShape, stepHeight = newHeight, 1);
+    controller->setStepHeight (height * system->GetInternalScale ());
   }
 
-  void csBulletCollisionActor::SetMaximumSlope (float slope) 
+  float BulletCollisionActor::GetStepHeight () const
+  {
+    return controller->getStepHeight () * system->GetInverseInternalScale ();
+  }
+
+  void BulletCollisionActor::SetMaximumSlope (float slope) 
   { 
     controller->setMaxSlope (slope);
   }
 
-  float csBulletCollisionActor::GetMaximumSlope () const 
+  float BulletCollisionActor::GetMaximumSlope () const 
   {
     return controller->getMaxSlope ();
   }
 
-  void csBulletCollisionActor::Walk (csVector3 vel)
+  void BulletCollisionActor::SetJumpSpeed (float jumpSpeed) 
   {
-    vel.Normalize ();
-    controller->setVelocityForTimeInterval (CSToBullet (walkSpeed * vel, system->GetInternalScale ()), INT_MAX);
+    jumpSpeed *= system->GetInternalScale ();
+    controller->setJumpSpeed (jumpSpeed);
+    controller->setFallSpeed (jumpSpeed);
   }
 
-  void csBulletCollisionActor::WalkHorizontal (csVector2 newVel2)
+  void BulletCollisionActor::SetSpeed (const csVector3& speed)
   {
-    if (!controller) return;
-    newVel2.Normalize ();
-    newVel2 *= walkSpeed;
-    
-    //csVector3 vel = GetLinearVelocity (); TODO: Fix this
-    csVector3 vel (0);
-    if (IsFreeFalling ())
-    {
-      // cannot entirely control movement mid-air
-      newVel2 = airControlFactor * newVel2;
-      csVector2 horizontalVel (vel.x, vel.z);
-      newVel2 += (1.f - airControlFactor) * csVector2 (vel.x, vel.z);
-    }
-    
-    // previous vertical movement is unchanged
-    csVector3 newVel (newVel2.x, vel[1], newVel2.y);
-    
-    controller->setVelocityForTimeInterval (CSToBullet (newVel, system->GetInternalScale ()), INT_MAX);
+    // TODO: use a real value for the time interval parameter?
+    controller->setVelocityForTimeInterval
+      (btObject->getWorldTransform ().getBasis () * CSToBullet (speed, system->GetInternalScale ()), INT_MAX);
   }
 
-  void csBulletCollisionActor::StopMoving ()
-  {
-    if (!IsFreeFalling ())
-    {
-      controller->setVelocityForTimeInterval (btVector3 (0, 0, 0), INT_MAX);
-    }
-  }
-
- 
-  void csBulletCollisionActor::UpdatePreStep (float delta)
-  {
-    if (!controller) return;
-
-    //delta *= 0.001f;
-    controller->setGravity (-sector->GetBulletWorld ()->getGravity ()[1]);
-
-    // Remove ghost objects from list of blocking objects:
-    btPairCachingGhostObject* go = GetPairCachingGhostObject ();
-    for (int i = 0; i < go->getOverlappingPairCache ()->getNumOverlappingPairs (); )
-    {
-      btBroadphasePair* collisionPair = &go->getOverlappingPairCache ()->getOverlappingPairArray ()[i];
-      btBroadphaseProxy* otherProxy;
-      if ((btCollisionObject*)collisionPair->m_pProxy0->m_clientObject == (btCollisionObject*)go)
-      {
-        otherProxy = collisionPair->m_pProxy1;
-      }
-      else
-      {
-        otherProxy = collisionPair->m_pProxy0;
-      }
-
-      btCollisionObject* otherObj = (btCollisionObject*)otherProxy->m_clientObject;
-      if (otherObj->getInternalType () == btCollisionObject::CO_GHOST_OBJECT)
-      {
-        // Disregard ghost object collisions
-        go->getOverlappingPairCache ()->removeOverlappingPair (
-          collisionPair->m_pProxy0, collisionPair->m_pProxy1,
-          sector->GetBulletWorld ()->getDispatcher ());
-      }
-      else
-      {
-        ++i;
-      }
-    }
-
-    // Resolve collisions and setup step height
-    controller->updateAction (sector->bulletWorld, delta);
-    
-    csVector3 pos = BulletToCS (controller->getGhostObject ()->getWorldTransform ().getOrigin (), this->system->GetInverseInternalScale ());
-    
-    // update camera & movable position
-    if (camera)
-    {
-      camera->GetTransform ().SetOrigin (pos);
-    }
-    if (sceneNode)
-    {
-      sceneNode->GetMovable ()->SetFullPosition (pos);
-      sceneNode->GetMovable ()->UpdateMove ();
-    }
-  }
-  
-  void csBulletCollisionActor::UpdatePostStep (float delta)
-  {
-  }
-
-  void csBulletCollisionActor::Jump ()
+  void BulletCollisionActor::Jump ()
   {
     controller->jump ();
   }
   
-  bool csBulletCollisionActor::IsOnGround () const { return controller->onGround (); }
-
-  float csBulletCollisionActor::GetGravity () const
+  bool BulletCollisionActor::IsOnGround () const
+  {
+    return controller->onGround ();
+  }
+/*
+  float BulletCollisionActor::GetGravity () const
   {
     return controller->getGravity ();
   }
+*/
 
-  void csBulletCollisionActor::SetGravity (float gravity)
+  void BulletCollisionActor::SetGravity (float gravity)
   {
-    controller->setGravity (gravity);
+    // For some reason, the actor controller needs a 3G acceleration
+    controller->setGravity (- gravity * 3);
+    controller->reset ();
   }
 
-  void csBulletCollisionActor::SetJumpSpeed (float jumpSpeed) 
+  void BulletCollisionActor::updateAction (btCollisionWorld* collisionWorld, btScalar deltaTime)
   {
-    controller->setJumpSpeed (jumpSpeed * system->GetInternalScale ());
+    // Update the character controller
+    controller->updateAction (collisionWorld, deltaTime);
+
+    // Update the camera & movable position
+    if (camera || sceneNode)
+    {
+      csVector3 position =
+	BulletToCS (controller->getGhostObject ()->getWorldTransform ().getOrigin (),
+		    system->GetInverseInternalScale ());
+
+      if (camera)
+	camera->GetTransform ().SetOrigin (position);
+
+      if (sceneNode)
+      {
+	sceneNode->GetMovable ()->SetFullPosition (position);
+	sceneNode->GetMovable ()->UpdateMove ();
+      }
+    }
   }
+
 }
 CS_PLUGIN_NAMESPACE_END (Bullet2)

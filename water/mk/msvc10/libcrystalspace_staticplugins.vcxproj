@@ -229,7 +229,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet /MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -264,7 +264,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -277,7 +277,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet /MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -312,7 +312,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -324,7 +324,7 @@ copy /y "$(TargetPath)" ..\..\out\release10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -357,7 +357,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -369,7 +369,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -402,7 +402,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -414,7 +414,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -447,7 +447,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -459,7 +459,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -492,7 +492,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -504,7 +504,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -537,7 +537,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -549,7 +549,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -582,7 +582,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -594,7 +594,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -627,7 +627,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -639,7 +639,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10\build\libcrystalspace_staticplugins\Win32\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x86\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -672,7 +672,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x86\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -685,7 +685,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10\bin\
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet /MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -720,7 +720,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -733,7 +733,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName>..\..\out\release10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet /MP  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\release10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -768,7 +768,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -780,7 +780,7 @@ copy /y "$(TargetPath)" ..\..\out\release10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -813,7 +813,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -825,7 +825,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -858,7 +858,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -870,7 +870,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -903,7 +903,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -915,7 +915,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -948,7 +948,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_MEMORY_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -960,7 +960,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -993,7 +993,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -1005,7 +1005,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -1038,7 +1038,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_REF_TRACKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -1050,7 +1050,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -1083,7 +1083,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -1095,7 +1095,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ProgramDataBaseFileName>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\x64\crystalspace_staticplugins.pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;WIN32;CS_USE_SHARED_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-I..\..\winlibs\x64\include\bullet  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>.;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderOutputFile>..\..\out\debug10-x64\build\libcrystalspace_staticplugins\libcrystalspace_staticplugins.pch</PrecompiledHeaderOutputFile>
@@ -1128,7 +1128,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
 </Command>
     </PostBuildEvent>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;CS_DEBUG;CS_WIN32_CSCONFIG;__CRYSTAL_SPACE__;CS_SUPPORTS_MMX;CS_THREAD_CHECKER;CS_STATIC_LINKED;LIB3DS_GENERIC_DATA_IO_CALLBACKS;CS_ASSIMP_VERSION=3;ASSIMP_BUILD_NO_EXPORT;CS_ASSIMP_HPP_HEADERS;CS_HAVE_CAL3D;wxUSE_GUI=1;WXUSINGDLL=1;WXDEBUG=1;UNICODE;_UNICODE;_WIN64;PROJECTGEN_VERSION=10;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\plugins;..\..\winlibs\x64\include;..\..\win32libs\include;..\..;..\..\include</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
     </ResourceCompile>
@@ -1158,10 +1158,12 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\libcsgifimg_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcsjngimg_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcsjpgimg_staticreg.cpp" />
+    <ClCompile Include="..\..\mk\msvc\libcsnetworkeventmanager_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcsopcode_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcsparser_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcspngimg_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcssaver_staticreg.cpp" />
+    <ClCompile Include="..\..\mk\msvc\libcssocket_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcssynldr_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libcstgaimg_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libdebug_staticreg.cpp" />
@@ -1226,14 +1228,11 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\mk\msvc\libptpdlight_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libragdoll2_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libragdoll_staticreg.cpp" />
-    <ClCompile Include="..\..\mk\msvc\librendloop_loader_staticreg.cpp" />
-    <ClCompile Include="..\..\mk\msvc\librendstep_std_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libreporter_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libretarget_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\librm_deferred_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\librm_null_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\librm_osm_staticreg.cpp" />
-    <ClCompile Include="..\..\mk\msvc\librm_rlcompat_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\librm_shadow_pssm_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\librm_unshadowed_staticreg.cpp" />
     <ClCompile Include="..\..\mk\msvc\libsequence_staticreg.cpp" />
@@ -1391,22 +1390,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\engine\3d\portal.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\portalcontainer.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\reflectomotron3000.cpp" />
-    <ClCompile Include="..\..\plugins\engine\3d\renderloop.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\sector.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\sharevar.cpp" />
     <ClCompile Include="..\..\plugins\engine\3d\texture.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\loader\parserenderstep.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\loader\rlloader.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\basesteploader.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\basesteptype.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\fullquad.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\generic.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\lightiter.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\shadowmap.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\stdsteps.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\stencil.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\stencil2.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\target.cpp" />
     <ClCompile Include="..\..\plugins\engseq\engseq.cpp" />
     <ClCompile Include="..\..\plugins\filesys\vfs\vfs.cpp" />
     <ClCompile Include="..\..\plugins\font\server\csfont\csfont.cpp" />
@@ -1520,6 +1506,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\mesh\watermesh\object\watermesh.cpp" />
     <ClCompile Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.cpp" />
     <ClCompile Include="..\..\plugins\misc\pathloader\pathloader.cpp" />
+    <ClCompile Include="..\..\plugins\network\eventmanager\eventmanager.cpp" />
+    <ClCompile Include="..\..\plugins\network\socket\socketbase.cpp" />
+    <ClCompile Include="..\..\plugins\network\socket\socketmanager.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\bullet.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\colliders.cpp" />
     <ClCompile Include="..\..\plugins\physics\bullet\joints.cpp" />
@@ -1529,6 +1518,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\physics\loader\physldr.cpp" />
     <ClCompile Include="..\..\plugins\physics\odedynam\odedynam.cpp" />
     <ClCompile Include="..\..\plugins\physics\softanim\softanim.cpp" />
+    <ClCompile Include="..\..\plugins\physics2\bullet\btKinematicCharacterController.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\bulletsector.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\bulletsystem.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\collider.cpp" />
@@ -1538,9 +1528,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionobject2.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\collisionterrain.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\common2.cpp" />
-    <ClCompile Include="..\..\plugins\physics2\bullet\dynamicactor.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\joint2.cpp" />
-    <ClCompile Include="..\..\plugins\physics2\bullet\kinematicactorcontroller.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\motionstates.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\physicalbody.cpp" />
     <ClCompile Include="..\..\plugins\physics2\bullet\physicsfactories.cpp" />
@@ -1574,7 +1562,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\rendermanager\deferred\deferred.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\null\null.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\osm\osm.cpp" />
-    <ClCompile Include="..\..\plugins\rendermanager\rlcompat\rm_compat.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.cpp" />
     <ClCompile Include="..\..\plugins\rendermanager\unshadowed\unshadowed.cpp" />
     <ClCompile Include="..\..\plugins\reporter\reporter.cpp" />
@@ -1723,9 +1710,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClCompile Include="..\..\plugins\videodecode\loader\vplloader.cpp" />
     <ClCompile Include="..\..\plugins\videodecode\persist\standard\vplparser.cpp" />
     <ClCompile Include="..\..\plugins\videodecode\player\vplplayer.cpp" />
-    <ClCompile Include="..\..\plugins\engine\renderloop\stdsteps\parserenderstep.cpp">
-      <ObjectFileName>$(IntermediateOutputPath)plugins_engine_renderloop_stdsteps_parserenderstep.cpp.obj</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="..\..\plugins\physics\bullet\common.cpp">
       <ObjectFileName>$(IntermediateOutputPath)plugins_physics_bullet_common.cpp.obj</ObjectFileName>
     </ClCompile>
@@ -1883,24 +1867,9 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\engine\3d\portal.h" />
     <ClInclude Include="..\..\plugins\engine\3d\portalcontainer.h" />
     <ClInclude Include="..\..\plugins\engine\3d\reflectomotron3000.h" />
-    <ClInclude Include="..\..\plugins\engine\3d\renderloop.h" />
     <ClInclude Include="..\..\plugins\engine\3d\sector.h" />
     <ClInclude Include="..\..\plugins\engine\3d\sharevar.h" />
     <ClInclude Include="..\..\plugins\engine\3d\texture.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\loader\parserenderstep.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\loader\rlloader.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\basesteploader.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\basesteptype.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\fullquad.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\generic.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\lightiter.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\shadowmap.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\stdsteps.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\stencil.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\stencil2.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\target.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\trimesh.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\trimesh2.h" />
     <ClInclude Include="..\..\plugins\engseq\engseq.h" />
     <ClInclude Include="..\..\plugins\filesys\vfs\vfs.h" />
     <ClInclude Include="..\..\plugins\font\server\csfont\csfont.h" />
@@ -2019,6 +1988,10 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\mesh\watermesh\object\watermesh.h" />
     <ClInclude Include="..\..\plugins\mesh\watermesh\persist\standard\watermeshldr.h" />
     <ClInclude Include="..\..\plugins\misc\pathloader\pathloader.h" />
+    <ClInclude Include="..\..\plugins\network\eventmanager\eventmanager.h" />
+    <ClInclude Include="..\..\plugins\network\socket\socket.h" />
+    <ClInclude Include="..\..\plugins\network\socket\socketbase.h" />
+    <ClInclude Include="..\..\plugins\network\socket\socketmanager.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\bullet.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\colliders.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\joints.h" />
@@ -2028,7 +2001,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\physics\loader\physldr.h" />
     <ClInclude Include="..\..\plugins\physics\odedynam\odedynam.h" />
     <ClInclude Include="..\..\plugins\physics\softanim\softanim.h" />
-    <ClInclude Include="..\..\plugins\physics2\bullet\actor.h" />
+    <ClInclude Include="..\..\plugins\physics2\bullet\btKinematicCharacterController.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\bulletsector.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\bulletsystem.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\collider.h" />
@@ -2039,9 +2012,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionobject2.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\collisionterrain.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\common2.h" />
-    <ClInclude Include="..\..\plugins\physics2\bullet\dynamicactor.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\joint2.h" />
-    <ClInclude Include="..\..\plugins\physics2\bullet\kinematicactorcontroller.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\motionstates.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\physicalbody.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\physicsfactories.h" />
@@ -2085,37 +2056,36 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\null\null.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\osm.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\shadow_osm.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\lightsetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\occluvis.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\operations.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\render.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\rendergroupinghandler.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\renderview.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadersetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_common.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\standardsorter.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\svsetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\svtraverse.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\texturecache.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\viscull.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\..\..\..\include\csplugincommon\rendermanager\viscullcommon.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\rlcompat\rm_compat.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\lightsetup.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\occluvis.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendergroupinghandler.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderview.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadersetup.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_common.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardsorter.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svsetup.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svtraverse.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\texturecache.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscull.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscullcommon.h" />
+    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\unshadowed.h" />
     <ClInclude Include="..\..\plugins\reporter\reporter.h" />
     <ClInclude Include="..\..\plugins\sequence\sequence.h" />
@@ -2276,7 +2246,6 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\videodecode\persist\standard\vplparser.h" />
     <ClInclude Include="..\..\plugins\videodecode\player\vplplayer.h" />
     <ClInclude Include="..\..\plugins\collide\opcode\Ice\Stdafx.h" />
-    <ClInclude Include="..\..\plugins\engine\renderloop\stdsteps\parserenderstep.h" />
     <ClInclude Include="..\..\plugins\physics\bullet\common.h" />
     <ClInclude Include="..\..\plugins\physics2\bullet\portal.h" />
     <ClInclude Include="..\..\plugins\rendermanager\deferred\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
@@ -2339,37 +2308,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\texturecache.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\viscull.h" />
     <ClInclude Include="..\..\plugins\rendermanager\osm\..\..\..\include\csplugincommon\rendermanager\viscullcommon.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\debugcommon.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\dependenttarget.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrexposure_luminance.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\hdrhelper.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\lightsetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\occluvis.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\operations.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\portalsetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffects.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\posteffectssupport.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\render.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendergroupinghandler.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderlayers.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\rendertree.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\renderview.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadersetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_common.h" />
     <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\shadow_pssm.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardsorter.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\standardtreetraits.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svarrayholder.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svsetup.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\svtraverse.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\texturecache.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscull.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\..\..\..\include\csplugincommon\rendermanager\viscullcommon.h" />
-    <ClInclude Include="..\..\plugins\rendermanager\shadow_pssm\shadow_pssm.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_framebuffertex.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\autofx_reflrefr.h" />
     <ClInclude Include="..\..\plugins\rendermanager\unshadowed\..\..\..\include\csplugincommon\rendermanager\cameracache.h" />

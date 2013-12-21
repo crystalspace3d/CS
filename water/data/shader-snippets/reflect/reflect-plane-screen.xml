@@ -22,7 +22,6 @@
     <combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
     <combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
 
-
     <!-- Factor applied to perturbance scaling.
 	 The closer the value to 0 is, the larger is the area at which perturbance is scaled. -->
     <input id="perturbFadeScale" type="float" default="value" defval="0.5" />

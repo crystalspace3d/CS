@@ -1,6 +1,6 @@
 <posteffect>
 
-	<layer name="hbao" shader="/shader/postproc/HBAO/HBAO.xml" downsample="0">
+	<layer name="hbao" shader="/shader/postproc/hbao/HBAO.xml" downsample="0">
 	
 		<parameter name="angle bias" type="float">0.1</parameter> <!-- 5.72 degrees -->
 		<parameter name="sqr radius" type="float">0.01</parameter>
@@ -15,7 +15,7 @@
 		<output name="out" format="argb8" />
 	</layer>
 
-	<layer name="blurX" shader="/shader/postproc/HBAO/BilateralBlurX.xml">
+	<layer name="blurX" shader="/shader/postproc/hbao/BilateralBlurX.xml">
 	
 		<parameter name="blur radius" type="float">7</parameter>
 		<parameter name="blur falloff" type="float">0.010204081632</parameter> <!-- 1 / (2*radius*radius)-->
@@ -25,7 +25,7 @@
 		<output name="out" format="argb8" />
 	</layer>
 	
-	<layer name="blurY" shader="/shader/postproc/HBAO/BilateralBlurY.xml">
+	<layer name="blurY" shader="/shader/postproc/hbao/BilateralBlurY.xml">
 	
 		<parameter name="blur radius" type="float">7</parameter>
 		<parameter name="blur falloff" type="float">0.010204081632</parameter> <!-- 1 / (2*radius*radius)-->
@@ -35,7 +35,7 @@
 		<output name="out" format="argb8" />
 	</layer>
 	
-	<layer name="combine" shader="/shader/postproc/HBAO/combine.xml">
+	<layer name="combine" shader="/shader/postproc/hbao/combine.xml">
 		<parameter name="debug show ao" type="float">0</parameter>
 		<input layer="*screen" texname="tex diffuse"/>
 		<input layer="blurY.out" texname="tex ao"/>

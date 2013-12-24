@@ -1,125 +1,220 @@
 import os
 import bpy
 
+import xml.etree.ElementTree as etree
+
 try:
-  from bpy.types import AddonPreferences
+    from bpy.types import AddonPreferences
 except:
-  AddonPreferences = None
-
-
-def GetExportPath ():
-
-  ve = bpy.app.version
-  if (ve[0] > 2) or (ve[0] == 2 and (ve[1] >= 66 or (ve[1] == 65 and ve[2] >= 5))):
-    if AddonPreferences != None and "io_scene_cs" in bpy.context.user_preferences.addons:
-      return bpy.context.user_preferences.addons["io_scene_cs"].preferences.exportpath
-
-  return B2CS.properties.exportPath
+    AddonPreferences = None
 
 
 def rnaType(rna_type):
-    if bpy: bpy.utils.register_class(rna_type)
+    '''
+    Decorator to register types in blender
+    '''
+    if bpy:
+        bpy.utils.register_class(rna_type)
     return rna_type
 
 
-def rnaOperator(rna_op):
-    #if bpy: bpy.types.register(rna_op)
-    return rna_op
-
-    
-def HasSetProperty(ob, name):
-  if isinstance(ob, bpy.types.Object):
-     return bpy.types.Object.is_property_set(ob, name)
-  elif isinstance(ob, bpy.types.Mesh):
-     return bpy.types.Mesh.is_property_set(ob, name)
-  return False
+def settings(type, attribute="b2cs"):
+    '''
+    Decorator for PropertyGroup settings class
+    Automatically (un)registers in blender
+    '''
+    def decorator(klass):
+        PROPERTYGROUPS.append((klass, type, attribute))
+        return klass
+    return decorator
 
 
-def RemoveSetPropertySet(ob, name):
-  if isinstance(ob, bpy.types.Object):
-     bpy.types.Object.__delitem__(ob, name)
-  elif isinstance(ob, bpy.types.Mesh):
-     bpy.types.Mesh.__delitem__(ob, name)
+def append_draw(type):
+    '''
+    Decorator for appending drawing custom layouts on panel
+    Automatically (un)registers in blender
+    '''
+    def decorator(func):
+        PEND_DRAWS.append(('append', func, type))
+        return func
+    return decorator
 
 
-def RemovePanels(bl_context, exceptions=[], removed=[]):
-  '''
-  for typeName in dir(bpy.types):
-    type = getattr(bpy.types, typeName)
-    if hasattr(type, "bl_context") and type.bl_context == bl_context:
-      if hasattr(type, "bl_space_type") and type.bl_space_type == "PROPERTIES":
-        if hasattr(type, "bl_region_type") and type.bl_region_type == "WINDOW":
-          if not hasattr(type, "b2cs_context"):
-            if typeName not in exceptions:
-              print("Removing: ", type.__module__, type.__name__)
-              removed.append([type.__module__, type])
-              #bpy.types.unregister(type)
-              bpy.utils.unregister_class(type)
-  '''
-  return removed
-  
-
-def RestorePanels(removed):
-  for m, c in removed:
-    if not hasattr(bpy.types, str(c.__name__)):
-      print("Restoring: ", m, c.__name__)
-      c = getattr(__import__(m), c.__name__)
-      #bpy.types.register(c)
-      bpy.utils.register_class(c)
-
-  
-def Property(typ, types, **kwargs):
-  attr = kwargs['attr']
-  del kwargs['attr']
-  kwargs['options'] = {'HIDDEN'}
-  #print('I: Added property %s of type %s to %s.'%(attr, typ, str(types)))
-  for klass in types:
-    p = getattr(bpy.props, typ)
-    t = getattr(bpy.types, klass)
-    setattr(t, attr, p(**kwargs))
+def prepend_draw(type):
+    '''
+    Decorator for prepend drawing custom layouts on panel
+    Automatically (un)registers in blender
+    '''
+    def decorator(func):
+        PEND_DRAWS.append(('prepend', func, type))
+        return func
+    return decorator
 
 
-def BoolProperty(types, **kwargs):
-  Property('BoolProperty', types, **kwargs)   
+PROPERTYGROUPS = []
+PEND_DRAWS = []
 
-def StringProperty(types, **kwargs):
-  Property('StringProperty', types, **kwargs)  
 
-def EnumProperty(types, **kwargs):
-  Property('EnumProperty', types, **kwargs)  
+def _register():
+    for klass, type, attribute in PROPERTYGROUPS:
+        print('INFO: Registering PropertyGroup %s for bpy.types.%s.%s' %
+              (klass.__name__, type, attribute))
+        # bpy.utils.register_class(klass)
+        t = getattr(bpy.types, type)
+        p = bpy.props.PointerProperty(type=klass)
+        setattr(t, attribute, p)
 
-def FloatProperty(types, **kwargs):
-  Property('FloatProperty', types, **kwargs)  
-        
-class B2CS:
-  def B2CSGetProperties(self):
+    for pend, func, type in PEND_DRAWS:
+        t = getattr(bpy.types, type)
+        getattr(t, pend)(func)
+
+
+def _unregister():
+    for klass, type, attribute in PROPERTYGROUPS:
+        print('INFO: Unregistering PropertyGroup %s for bpy.types.%s.%s' %
+              (klass.__name__, type, attribute))
+        # bpy.utils.unregister_class(klass)
+        t = getattr(bpy.types, type)
+        delattr(t, attribute)
+
+    for pend, func, type in PEND_DRAWS:
+        t = getattr(bpy.types, type)
+        t.remove(func)
+
+
+def GetPreferences():
     if "io_scene_cs.settings" not in bpy.data.texts:
-      text = bpy.data.texts.new("io_scene_cs.settings")
+        text = bpy.data.texts.new("io_scene_cs.settings")
     else:
-      text = bpy.data.texts["io_scene_cs.settings"]
-    return text
-    
-  def BoolProperty(self, **kwargs):
-    BoolProperty(['Text'], **kwargs)
-    
-  def StringProperty(self, **kwargs):
-    StringProperty(['Text'], **kwargs)
-    
-  properties = property(B2CSGetProperties) 
+        text = bpy.data.texts["io_scene_cs.settings"]
+    return text.preferences
 
-B2CS = B2CS()
 
-SHADERS =(("DEFAULT", "Default", "Default"),
-          ("*null", "*null", "Shader with no effect."),
-          ("/shader/lighting/lighting_default_binalpha.xml", "lighting_default_binalpha", "Use when using a texture with binary alpha."),
-          ("/shader/lighting/fullbright.xml", "lighting_fullbright", "Use when you want a material to be full bright."),
-          ("/shader/reflect/water_plane.xml", "reflect_water_plane", "A reflecting water-like material.."),
-          ("/shader/reflect/glass.xml", "glass", "A glass-like material.."),)
+def GetAddonPreferences():
+    return bpy.context.user_preferences.addons[__package__].preferences
 
-def GetShaderName(f):
-  i = [l[0] for l in SHADERS].index(f)
-  if i >=0:
-    return SHADERS[i][1]
-  return None
-    
-bpy.types.OperatorProperties.prop = bpy.props.StringProperty(name="operator argument", description="")
+
+def GetDefaultPath(checkAddon=True):
+    default_path = None
+    if checkAddon:
+        default_path = GetAddonPreferences().exportPath
+    if not default_path or default_path == '':
+        default_path = os.environ.get("TEMP")
+        if not default_path:
+            if os.name == 'nt':
+                default_path = "c:/tmp/"
+            else:
+                default_path = "/tmp/"
+        elif not default_path.endswith(os.sep):
+            default_path += os.sep
+    return default_path
+
+
+def GetExportPath():
+    path = GetPreferences().exportPath
+    if not path or path == '':
+        path = GetPreferences().exportPath = GetDefaultPath()
+    if not path.endswith('/'):
+        path += '/'
+    return path
+
+
+def WalkTestPath():
+    if os.name == 'nt':
+        walktest = "walktest.exe"
+    else:
+        walktest = "walktest"
+
+    crystal_env = os.environ.get("CRYSTAL")
+    if not crystal_env:
+        print("Warning: CRYSTAL environment variable not set!")
+        return None
+
+    # Look either in the 'CRYSTAL' and 'CRYSTAL/bin' paths
+    path = os.path.join(crystal_env, walktest).replace('\\', '/')
+    if os.path.exists(path):
+        return path
+    return os.path.join(crystal_env, "bin", walktest).replace('\\', '/')
+
+
+def HasCrystalSpace():
+    path = WalkTestPath()
+    return path and os.path.exists(path)
+
+
+DEFAULT_SHADERSETS = (
+    ("DEFAULT", "Default", "Default"),
+    ("binalpha", "binalpha", ""),
+    ("instanced", "instanced", ""),
+    #("instanced_binalpha", "instanced_binalpha", ""),
+    #("foliage_grass_fullbright", "foliage_grass_fullbright", ""),
+    ("fullbright", "fullbright", ""),
+    ("multisplat", "multisplat", ""),
+    ("water_plane", "water_plane", ""),
+)
+
+__SHADERSETS__ = None
+
+
+def reloadShadersets(prop, context):
+    print('Reset __SHADERSETS__')
+    global __SHADERSETS__
+    __SHADERSETS__ = None
+
+
+def SHADERSETS(prop, context):
+    global __SHADERSETS__
+
+    crystal_env = os.environ.get("CRYSTAL")
+    if not crystal_env:
+        return DEFAULT_SHADERSETS
+
+    path = os.path.join(
+        crystal_env, 'data/config-plugins/shadersets-default.xml').replace('\\', '/')
+    if not os.path.exists(path):
+        return DEFAULT_SHADERSETS
+
+    if __SHADERSETS__:
+        return __SHADERSETS__
+
+    files = [f.name for f in GetAddonPreferences().shaderSetFiles if f.valid]
+    files.append(path)
+
+    shadersets = [("DEFAULT", "Default", "Default")]
+
+    for file in files:
+        try:
+            tree = etree.parse(file)
+            root = tree.getroot()
+
+            for shaderset in root.findall('shaderset'):
+                name = shaderset.attrib['name']
+                shadersets.append((name, name, name))
+        except etree.ParseError as e:
+            print(e)
+
+    __SHADERSETS__ = shadersets
+    return __SHADERSETS__
+
+
+def GetShaderSetName(f):
+    ss = SHADERSETS(None, None)
+    i = [l[0] for l in ss].index(f)
+    if i >= 0:
+        return ss[i][1]
+    return None
+
+RENDERPRIORITIES = [
+    ('init', 'init', ''), ('sky', 'sky', ''), ('sky2', 'sky2', ''),
+    ('portal', 'portal', ''), ('wall', 'wall', ''), (
+        'wall2', 'wall2', ''), ('object', 'object', ''),
+    ('object2', 'object2', ''), ('transp', 'transp',
+                                 ''), ('alpha', 'alpha', ''), ('final', 'final', '')
+]
+
+ZBUFFERMODES = [
+    ('znone', 'Z-None', "Don't test or write"),
+    ('zfill', 'Z-Fill', "Write unconditionally"),
+    ('ztest', 'Z-Test', "Test only"),
+    ('zuse', 'Z-Use', "Test, write if successful")
+]

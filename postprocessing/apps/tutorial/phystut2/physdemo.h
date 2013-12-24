@@ -16,7 +16,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #ifndef __PHYSTUT2_H__
 #define __PHYSTUT2_H__
 
@@ -53,10 +52,11 @@ static const csVector3 UpVector (0, 1, 0);
 enum ActorMode
 {
   ActorModeNone,
-  ActorModeDynamic,
-  ActorModeKinematic,
+  ActorModePhysical,
   ActorModeNoclip
 };
+
+static const csVector3 ActorDimensions (0.5f, 1.8f, 0.5f);
 
 // Levels
 enum PhysDemoLevel
@@ -68,32 +68,25 @@ enum PhysDemoLevel
   PhysDemoLevelCastle
 };
 
-enum CameraMode
-{
-  CameraMode1stPerson,
-  CameraMode3rdPerson,
-  CameraMode3rdPersonFar,
-  CameraModeCount
-};
-
-// Navigation input (use WASD controls)
+// Navigation input keys
 static const int KeyUp = CSKEY_PGUP;
 static const int KeyDown = CSKEY_PGDN;
-//static const int KeyLeft = CSKEY_LEFT;
-//static const int KeyRight = CSKEY_RIGHT;
-//static const int KeyForward = CSKEY_UP;
-//static const int KeyBack = CSKEY_DOWN;
-static const int KeyLeft = 'q';
-static const int KeyRight = 'e';
-static const int KeyForward = 'w';
-static const int KeyBack = 's';
-static const int KeyStrafeLeft = 'a';
-static const int KeyStrafeRight = 'd';
 static const int KeyJump = CSKEY_SPACE;
 static const int KeyHandbrake = CSKEY_SPACE;
 
-
-class PhysDemo;
+#if 1
+// For QWERTY keyboards:
+static const int KeyForward = 'w';
+static const int KeyBackward = 's';
+static const int KeyLeft = 'a';
+static const int KeyRight = 'd';
+#else
+// For AZERTY keyboards:
+static const int KeyForward = 'z';
+static const int KeyBackward = 's';
+static const int KeyLeft = 'q';
+static const int KeyRight = 'd';
+#endif
 
 /// Retreives folder and file information from a full (unix-style) path
 inline void GetFolderAndFile (const char* _path, csString& folder, csString& filename)
@@ -128,10 +121,6 @@ public:
     (const csOrthoTransform& trans, float friction = 1, float density = 30);
 };
 
-//static const csVector3 ActorDimensions (0.8);
-//static const csVector3 ActorDimensions (0.1f, 0.6f, 0.1f);
-static const csVector3 ActorDimensions (0.3f, 1.8f, 0.3f);
-
 class PhysDemo : public CS::Utility::DemoApplication
 {
   friend class RenderMeshColliderPair;
@@ -156,7 +145,6 @@ public:
   int phys_engine_id;
   bool do_bullet_debug;
   bool do_soft_debug;
-  //float remainingStepDuration;
 
   // Dynamic simulation related
   bool allStatic;
@@ -175,15 +163,12 @@ public:
 
   // Camera & actors
   CS::Physics::DebugMode debugMode;
-  float actorAirControl;
   float moveSpeed, turnSpeed;
   ActorMode actorMode;
-  CameraMode cameraMode;
 
   Agent player;
   Item* selectedItem;
-  csRef<CS::Physics::iDynamicActor> dynamicActor;
-  csRef<CS::Collisions::iCollisionActor> kinematicActor;
+  csRef<CS::Collisions::iCollisionActor> actor;
 
   // Ragdoll related
   csRef<CS::Animation::iSkeletonRagdollNodeManager2> ragdollManager;
@@ -204,10 +189,8 @@ public:
   /// The currently applied terrain mode (if any)
   csRef<iTerrainModifier> terrainMod;
 
-  csHash<int, csString> debugNameMap;
-
   // Vehicles
-  csRef<CS::Physics::iVehicle> actorVehicle;
+  csRef<CS::Physics::iVehicle> vehicle;
 
   // Static environment
   csString currentMap;
@@ -297,47 +280,56 @@ public:
   /**
    * The location of the actor's head, i.e. the location of the camera
    */
-  csVector3 GetActorPos () const { return player.GetObject ()->GetTransform ().GetOrigin (); }
+  csVector3 GetActorPos () const
+  { return player.GetObject ()->GetTransform ().GetOrigin (); }
 
   /**
    * The location where the actor stands
    */
-  csVector3 GetActorFeetPos () const { return GetActorPos () - csVector3 (0, .5f * ActorDimensions.y, 0); }
+  csVector3 GetActorFeetPos () const
+  { return GetActorPos () - csVector3 (0, .5f * ActorDimensions.y, 0); }
 
   /**
    * Position of the camera
    */
-  csVector3 GetCameraPosition () const { return view->GetCamera ()->GetTransform ().GetOrigin (); }
+  csVector3 GetCameraPosition () const
+  { return view->GetCamera ()->GetTransform ().GetOrigin (); }
 
   /**
    * Normalized direction of the camera
    */
-  csVector3 GetCameraDirection () const { return view->GetCamera ()->GetTransform ().GetT2O () * csVector3 (0, 0, 1); }
+  csVector3 GetCameraDirection () const
+  { return view->GetCamera ()->GetTransform ().GetT2O () * csVector3 (0, 0, 1); }
 
   /**
    * Normalized direction of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetCameraDirectionXZ () const { csVector3 dist = view->GetCamera ()->GetTransform ().GetT2O () * csVector3 (0, 0, 1); dist.y = 0; dist.Normalize (); return dist; }
+  csVector3 GetCameraDirectionXZ () const
+  { csVector3 dist = view->GetCamera ()->GetTransform ().GetT2O () * csVector3 (0, 0, 1); dist.y = 0; dist.Normalize (); return dist; }
 
   /**
    * Point in the given distance in front of the camera
    */
-  csVector3 GetPointInFront (float distance) const { return GetActorPos () + (GetCameraDirection () * distance); }
+  csVector3 GetPointInFront (float distance) const
+  { return GetActorPos () + (GetCameraDirection () * distance); }
 
   /**
    * Point in the given distance in front of the actor's feet
    */
-  csVector3 GetPointInFrontOfFeet (float distance) const { return GetActorFeetPos () + (GetCameraDirection () * distance); }
+  csVector3 GetPointInFrontOfFeet (float distance) const
+  { return GetActorFeetPos () + (GetCameraDirection () * distance); }
 
   /**
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetPointInFrontXZ (float distance) const { return GetActorPos () + (GetCameraDirectionXZ () * distance); }
+  csVector3 GetPointInFrontXZ (float distance) const
+  { return GetActorPos () + (GetCameraDirectionXZ () * distance); }
 
   /**
    * Point in the given distance in front of the camera, but in the same XZ plane (ignoring vertical direction of the camera)
    */
-  csVector3 GetPointInFrontOfFeetXZ (float distance) const { return GetActorFeetPos () + (GetCameraDirectionXZ () * distance); }
+  csVector3 GetPointInFrontOfFeetXZ (float distance) const
+  { return GetActorFeetPos () + (GetCameraDirectionXZ () * distance); }
 
   /// Find the ground contact point beneath pos
   bool GetPointOnGroundBeneathPos (const csVector3& pos, csVector3& groundPos) const;
@@ -407,33 +399,10 @@ public:
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Input Tools
-
-  csVector3 GetInputDirection ();
-
-  /// 0 or 1, depending on whether the forward key is currently pressed (possibly values in between, depending on input device)
-  float GetForward ();
-  
-  /// 0 or 1, depending on whether the backward key is currently pressed (possibly values in between, depending on input device)
-  float GetBackward ();
-  
-  /// 0 or 1, depending on whether the left/right keys are currently pressed (possibly values in between, depending on input device)
-  float GetLeftRight ();
-
-  
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Frame
-
-  void DoStep ();
 
   void MoveActor ();
   void MoveActorVehicle ();
-
-  void UpdateVehiclePassengers ();
-
-  void RotateActor ();
-
-  void MoveCamera ();
 
   void UpdateDragging ();
 

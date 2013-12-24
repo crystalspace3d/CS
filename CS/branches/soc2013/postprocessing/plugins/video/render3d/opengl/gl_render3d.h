@@ -41,6 +41,7 @@
 #include "csutil/formatter.h"
 #include "csutil/parray.h"
 #include "csutil/scf_implementation.h"
+#include "csutil/scopedpointer.h"
 #include "csutil/weakref.h"
 #include "csutil/weakrefarr.h"
 
@@ -378,6 +379,10 @@ private:
   csRef<csRenderBufferHolder> scrapBufferHolder;
   csRenderBufferName defaultBufferMapping[CS_VATTRIB_SPECIFIC_LAST+1]; 
 
+  // for occlusion queries
+  GLuint queryBuffer;
+  size_t queryBufferSize;
+
   ////////////////////////////////////////////////////////////////////
   //                         Private helpers
   ////////////////////////////////////////////////////////////////////
@@ -445,7 +450,21 @@ private:
     ImageUnit (): texture (0) {}
   };
   GLint numImageUnits;
-  ImageUnit* imageUnits;
+  CS::Utility::ScopedArrayPointer<ImageUnit> imageUnits;
+  struct PendingTextureChange : public CS::Memory::CustomAllocated
+  {
+    csRef<iTextureHandle> texture;
+    bool pending;
+    bool comparisonPending;
+    CS::Graphics::TextureComparisonMode compMode;
+
+    PendingTextureChange() : pending (false), comparisonPending (false) {}
+  };
+  CS::Utility::ScopedArrayPointer<PendingTextureChange> pendingTextureChanges;
+  /// Activate a texture
+  bool ActivateTexture (iTextureHandle *txthandle, int unit = 0);
+  /// Activate a texture (Should probably handled some better way)
+  void DeactivateTexture (int unit = 0);
   GLint numTCUnits;
   void SetSeamlessCubemapFlag ();
 
@@ -454,12 +473,18 @@ private:
    * Changes to buffer bindings are not immediate but queued and set from 
    * within DrawMesh().
    */
-  struct BufferChange
+  struct PendingBufferChange : public CS::Memory::CustomAllocated
   {
-    csVertexAttrib attrib;
+    bool pending;
     csRef<iRenderBuffer> buffer;
+
+    PendingBufferChange() : pending (false) {}
   };
-  csArray<BufferChange> changeQueue;
+  CS::Utility::ScopedArrayPointer<PendingBufferChange> pendingBufferChanges;
+  size_t numPendingBufferChanges;
+  void SetPendingBuffer (csVertexAttrib attr, iRenderBuffer* buffer);
+  inline size_t AttribToPendingIndex (csVertexAttrib attr);
+  inline csVertexAttrib PendingIndexToAttrib (size_t index);
   uint activeVertexAttribs;
   void ApplyBufferChanges();
   //@}
@@ -569,10 +594,10 @@ public:
     iRenderBuffer **buffers, unsigned int count);
   void DeactivateBuffers (csVertexAttrib *attribs, unsigned int count);
 
-  /// Activate a texture
-  bool ActivateTexture (iTextureHandle *txthandle, int unit = 0);
-  /// Activate a texture (Should probably handled some better way)
-  void DeactivateTexture (int unit = 0);
+  /// Apply all pending texture state changes
+  void ApplyTextureChanges();
+  /// Apply pending texture state change for given image unit
+  void ApplyTextureChange (int unit);
   virtual void SetTextureState (int* units, iTextureHandle** textures,
   	int count);
   void SetTextureComparisonModes (int*, CS::Graphics::TextureComparisonMode*,
@@ -781,6 +806,7 @@ public:
   virtual void OQDelQueries(unsigned int* queries, int num_queries);
   virtual bool OQueryFinished(unsigned int occlusion_query);
   virtual bool OQIsVisible(unsigned int occlusion_query, unsigned int sampleLimit);
+  virtual void OQVisibleQueries (unsigned int* queries, bool* results, int num_queries);
   virtual void OQBeginQuery (unsigned int occlusion_query);
   virtual void OQEndQuery ();
 

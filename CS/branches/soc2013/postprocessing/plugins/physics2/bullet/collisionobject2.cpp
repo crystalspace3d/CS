@@ -37,7 +37,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   // TODO: factory in constructor (everywhere)
   void csBulletCollisionObject::CreateCollisionObject (iCollisionObjectFactory* props)
   {
-    collider = dynamic_cast<csBulletCollider*>(props->GetCollider ());
+    collider = dynamic_cast<csBulletCollider*> (props->GetCollider ());
+    colliderTransform = props->GetColliderTransform ();
     group = dynamic_cast<CollisionGroup*> (props->GetCollisionGroup ());
   }
 
@@ -71,25 +72,48 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
   {
     if (sceneNode == newSceneNode) return;
 
-    if (sceneNode)
+    if (sceneNode && sector && sector->sector)
     {
-      // remove old SceneNode from sector
-      if (sector) sector->RemoveSceneNodeFromSector (sceneNode); 
+      // Remove the previous movable from the engine sector
+      sceneNode->GetMovable ()->SetSector (nullptr);
+      sceneNode->GetMovable ()->UpdateMove ();
     }
 
     sceneNode = newSceneNode;
+
     if (sceneNode) 
     {
-      // add new movable to sector
-      sceneNode->GetMovable ()->SetFullTransform (GetTransform ()); 
-      sceneNode->GetMovable ()->UpdateMove ();
-      if (sector)
+      sceneNode->GetMovable ()->SetFullTransform (GetTransform ());
+
+      if (sector && sector->sector)
       {
-        sector->AddSceneNodeToSector (sceneNode); 
+	// Add the new movable to the engine sector
+	sceneNode->GetMovable ()->SetSector (sector->sector);
+	sceneNode->GetMovable ()->UpdateMove ();
       }
     }
   }
   
+  void csBulletCollisionObject::SetAttachedCamera (iCamera* newCamera) 
+  { 
+    if (camera == newCamera) return;
+
+    if (camera && sector && sector->sector)
+    {
+      // Remove the previous camera from the engine sector
+      camera->SetSector (sector->sector);
+    }
+
+    camera = newCamera;
+    if (camera) 
+    {
+      // Add the new camera to the engine sector
+      //camera->SetTransform (GetTransform ());
+      if (sector && sector->sector)
+	camera->SetSector (sector->sector);
+    }
+  }
+
   void csBulletCollisionObject::SetCollider (CS::Collisions::iCollider* newCollider,
 					     const csOrthoTransform& transform)
   {
@@ -255,47 +279,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
       else 
         return nullptr;
     }
-  }
-
-  void csBulletCollisionObject::SetRotation (const csMatrix3& rot)
-  {
-    iSceneNode* sceneNode = GetAttachedSceneNode ();
-    if (sceneNode)
-      sceneNode->GetMovable ()->GetTransform ().SetT2O (rot);
-    if (camera)
-      camera->GetTransform ().SetT2O (rot);
-    if (btObject)
-    {
-      csOrthoTransform trans = GetTransform ();
-      trans.SetT2O (rot);
-      btObject->setWorldTransform (CSToBullet (trans, system->GetInternalScale ()));
-    }
-  }
-
-  bool csBulletCollisionObject::TestOnGround ()
-  { 
-    static const float groundAngleCosThresh = .7f;
-
-    // Find any objects that can at least remotely support the object
-    // TODO: this is really not efficient
-    csRef<iCollisionDataList> collisions = sector->CollisionTest (this);
-
-    for (size_t i = 0; i < collisions->GetCollisionCount (); i++)
-    {
-      iCollisionData* coll = collisions->GetCollision (i);
-      
-      int dir = coll->GetObjectA () == this ? 1 : -1;
-
-      for (size_t j = 0; j < coll->GetContactCount (); j++)
-      {
-	iCollisionContact* contact = coll->GetContact (j);
-	
-	float groundAngleCos = contact->GetNormalOnB () * csVector3 (0.0f, 1.0f, 0.0f);
-	if (dir * groundAngleCos > groundAngleCosThresh)
-	  return true;
-      }
-    }
-    return false;
   }
 
   bool csBulletCollisionObject::IsPassive () const

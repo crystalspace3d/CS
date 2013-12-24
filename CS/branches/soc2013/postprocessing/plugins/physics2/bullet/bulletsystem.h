@@ -23,8 +23,8 @@
 #ifndef __CS_BULLET_PHYSICS_H__
 #define __CS_BULLET_PHYSICS_H__
 
-#include "iutil/comp.h"
 #include "csutil/csobject.h"
+#include "csutil/eventhandlers.h"
 #include "csutil/hash.h"
 #include "csutil/nobjvec.h"
 #include "csutil/scf.h"
@@ -32,12 +32,18 @@
 #include "iengine/movable.h"
 #include "iengine/portal.h"
 #include "iengine/sector.h"
+#include "iutil/comp.h"
+#include "iutil/eventh.h"
+#include "iutil/eventq.h"
+#include "iutil/virtclk.h"
 #include "ivaria/collisions.h"
 #include "ivaria/reporter.h"
 #include "ivaria/physics.h"
 #include "ivaria/view.h"
 
 #include "physicsfactories.h"
+
+static const char* msgid = "crystalspace.physics.bullet";
 
 struct iSector;
 class btCollisionObject;
@@ -53,17 +59,16 @@ class btTriangleMesh;
 CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
 {
   
-class csBulletSector;
-class csBulletSystem;
+class csBulletCollider;
+class BulletCollisionActor;
+class csBulletCollisionObject;
 class csBulletDebugDraw;
 class csBulletGhostCollisionObject;
-class csBulletRigidBody;
-class csBulletSoftBody;
-class csBulletDynamicActor;
-class csBulletCollisionObject;
-class csBulletCollisionActor;
-class csBulletCollider;
 class csBulletJoint;
+class csBulletRigidBody;
+class csBulletSector;
+class csBulletSoftBody;
+class csBulletSystem;
 
 class CollisionGroup : public scfImplementation1<CollisionGroup,
   CS::Collisions::iCollisionGroup>
@@ -88,10 +93,11 @@ public:
    virtual bool GetCollisionEnabled (iCollisionGroup* other);
 };
 
-class csBulletSystem : public scfImplementationExt3<
+class csBulletSystem : public scfImplementationExt4<
   csBulletSystem, csObject,
   scfFakeInterface<CS::Collisions::iCollisionSystem>,
   CS::Physics::iPhysicalSystem, 
+  iEventHandler,
   iComponent>
 {
   friend class csBulletColliderConvexMesh;
@@ -103,6 +109,10 @@ class csBulletSystem : public scfImplementationExt3<
 
 private:
   iObjectRegistry* object_reg;
+
+  csRef<iEventQueue> eventQueue;
+  csRef<iVirtualClock> vc;
+
   btSoftBodyWorldInfo* defaultInfo;
 
   float internalScale;
@@ -135,6 +145,9 @@ public:
 
   //-- iComponent
   virtual bool Initialize (iObjectRegistry* object_reg);
+
+  //-- iEventHandler
+  bool HandleEvent (iEvent& event);
 
   //-- iCollisionSystem
   virtual CS::Physics::iPhysicalSystem* QueryPhysicalSystem ()
@@ -178,7 +191,7 @@ public:
 
   //-- iPhysicalSystem
   virtual void SetStepParameters (float timeStep, size_t maxSteps, size_t iterations);
-  virtual void Step (csTicks duration);
+  virtual void StepSimulation (float duration);
 
   virtual void SetSoftBodyEnabled (bool enabled);
   virtual bool GetSoftBodyEnabled () const { return isSoftWorld; }
@@ -209,9 +222,6 @@ public:
     (iTerrainFactory* terrain);
 
   virtual csPtr<CS::Physics::iRigidBodyFactory> CreateRigidBodyFactory
-    (CS::Collisions::iCollider* collider = nullptr);
-
-  virtual csPtr<CS::Physics::iDynamicActorFactory> CreateDynamicActorFactory
     (CS::Collisions::iCollider* collider = nullptr);
 
   virtual csPtr<CS::Physics::iSoftRopeFactory> CreateSoftRopeFactory ();
@@ -260,7 +270,11 @@ public:
 
   btTriangleMesh* CreateBulletTriMesh (iTriangleMesh* triMesh);
 
+  bool ReportError (const char* msg, ...);
   void ReportWarning (const char* msg, ...);
+
+  // Declare this event handler as listening to the 'LOGIC' frame phase
+  CS_EVENTHANDLER_PHASE_LOGIC (msgid);
 };
 
 }

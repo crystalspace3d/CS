@@ -15,7 +15,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
 #include "csgeom/poly3d.h"
 #include "csgeom/sphere.h"
@@ -42,12 +41,10 @@ PhysDemo::PhysDemo ()
   paused (false), simulationSpeed (1.0f),
   dragging (false), softDragging (false),
   debugMode (DEBUG_COLLIDERS),
-  actorAirControl (.2f),
   moveSpeed (3.f),
   turnSpeed (1.6f),
-  //actorMode (ActorModeKinematic),
-  actorMode (ActorModeDynamic),
-  cameraMode (CameraMode1stPerson),
+  actorMode (ActorModePhysical),
+  //actorMode (ActorModeNoclip),
   selectedItem (nullptr)
 {
 }
@@ -169,8 +166,7 @@ void PhysDemo::Reset ()
   draggedBody = nullptr;
 
   player.SetObject (nullptr);
-  dynamicActor = nullptr;
-  kinematicActor = nullptr;
+  actor = nullptr;
 
   clipboardBody = nullptr;
   clipboardMovable = nullptr;
@@ -179,10 +175,6 @@ void PhysDemo::Reset ()
 
   moddedTerrainFeeder = nullptr;
   terrainMod = nullptr;
-
-  debugNameMap.DeleteAll ();
-
-  actorVehicle = nullptr;
 
   walls = nullptr;
 
@@ -278,11 +270,19 @@ bool PhysDemo::SetLevel (const char* mapPath, bool convexDecomp)
   // Update Camera Manager item
   UpdateCameraManager ();
 
-  // Initialize HUD
+  // Initialize the HUD
   SetupHUD ();
 
-  // Move actor to initial position
-  TeleportObject (player.GetObject (), engine->GetCameraPositions ()->Get (0));
+  // Create a default camera positions if there are none
+  iCameraPositionList* cameraPositions = engine->GetCameraPositions ();
+  if (!cameraPositions->GetCount ())
+  {
+    iCameraPosition* position = cameraPositions->NewCameraPosition ("start");
+    position->SetSector (engine->GetSectors ()->Get (0)->QueryObject ()->GetName ());
+  }
+
+  // Move the actor to the initial position
+  TeleportObject (player.GetObject (), cameraPositions->Get (0));
 
   return true;
 }
@@ -317,7 +317,6 @@ void PhysDemo::SetupHUD ()
   desc.Push ("CTRL-v: paste object");
   
   desc.Push ("C: switch between actor modes (dynamic, kinematic, noclip)");
-  desc.Push ("V: switch between camera follow modes (1st person, 3rd person)");
   desc.Push ("P: pause the simulation");
   desc.Push ("O: toggle speed of simulation");
   desc.Push ("L: toggle Bullet debug display");
@@ -364,114 +363,49 @@ void PhysDemo::SetupHUD ()
 // Misc stuff
 
 
-void PhysDemo::ApplyGhostSlowEffect ()
-{
-  if (!ghostObject) return;
-
-  size_t count = ghostObject->GetContactObjectsCount ();
-  for (size_t i = 0; i < count; i++)
-  {
-    iPhysicalBody* pb = ghostObject->GetContactObject (i)->QueryPhysicalBody ();
-    if (pb && IsDynamic (pb))
-    {
-      if (pb->QueryRigidBody ())
-      {
-        CS::Physics::iRigidBody* rb = pb->QueryRigidBody ();
-        csVector3 velo = pb->GetLinearVelocity ();
-        velo = - velo;
-        //rb->Disable ();
-        rb->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
-        rb->SetAngularVelocity (csVector3 (.0f,.0f,.0f));
-      }
-      else
-      {
-        iSoftBody* sb = pb->QuerySoftBody ();
-        sb->QueryPhysicalBody ()->SetLinearVelocity (csVector3 (.0f,.0f,.0f));
-        //sb->SetLinearVelocity (csVector3 (0,0,-1.0f));
-      }
-    }
-  }
-}
-
 void PhysDemo::UpdateActorMode (ActorMode newActorMode)
 {
   actorMode = newActorMode;
+  iSector* currentSector = view->GetCamera ()->GetSector ();
 
-  iCollisionObject* lastActorObj = player.GetObject ();
-
-  switch (actorMode)
+  if (actorMode == ActorModePhysical)
   {
-    // The camera is controlled by a rigid body
-  case ActorModeDynamic:
+    cameraManager->SetCameraMode (CS::Utility::CAMERA_NO_MOVE);
+
+    if (!actor)
     {
-      cameraManager->SetCameraMode (CS::Utility::CAMERA_NO_MOVE);
+      csRef<CS::Collisions::iColliderBox> collider =
+	physicalSystem->CreateColliderBox (ActorDimensions);
+      csRef<iCollisionActorFactory> factory =
+	physicalSystem->CreateCollisionActorFactory (collider);
+      factory->SetStepHeight (0.4);
 
-      if (!dynamicActor)
-      {
-        //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y);
-        //csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y, ActorDimensions.x/2);
-        csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
-        csRef<iDynamicActorFactory> factory = physicalSystem->CreateDynamicActorFactory (collider);
-        factory->SetMass (80.);
-        factory->SetElasticity (0);
-        factory->SetFriction (.1);
-
-        factory->SetAirControlFactor (actorAirControl);
-        factory->SetStepHeight (0.2);
-
-        dynamicActor = factory->CreateDynamicActor ();
-      }
-
-      player.SetObject (dynamicActor);
-      break;
+      actor = factory->CreateCollisionActor ();
     }
 
-  case ActorModeKinematic:
-    {
-      if (!kinematicActor)
-      {
-        //csRef<CS::Collisions::iColliderSphere> collider = physicalSystem->CreateColliderSphere (ActorDimensions.y/2);
-        csRef<CS::Collisions::iColliderCylinder> collider = physicalSystem->CreateColliderCylinder (ActorDimensions.y / 1.5, ActorDimensions.x/2);
-        //csRef<CS::Collisions::iColliderBox> collider = physicalSystem->CreateColliderBox (ActorDimensions);
-
-        /*csOrthoTransform trans;
-        trans.RotateThis (csVector3 (1, 0, 0), HALF_PI);
-        csRef<CS::Collisions::iCollider> parent = physicalSystem->CreateCollider ();
-        parent->AddCollider (collider, trans);
-        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory (parent);*/
-        csRef<iCollisionActorFactory> factory = physicalSystem->CreateCollisionActorFactory (collider);
-        factory->SetAirControlFactor (actorAirControl);
-        factory->SetJumpSpeed (moveSpeed);
-        factory->SetStepHeight (0.2);
-
-        kinematicActor = factory->CreateCollisionActor ();
-      }
-
-      player.SetObject (kinematicActor);
-    }
-    break;
-
-  default:
-    break;
+    actor->SetTransform (view->GetCamera ()->GetTransform ());
+    iCollisionSector* collisionSector =
+      physicalSystem->FindCollisionSector (view->GetCamera ()->GetSector ());
+    if (collisionSector)
+      collisionSector->AddCollisionObject (actor);
+    player.SetObject (actor);
+    actor->SetAttachedCamera (view->GetCamera ());
   }
 
-  CS_ASSERT (player.GetObject ()->QueryActor ());
-
-  if (actorMode != ActorModeNoclip)
-  {
-    if (lastActorObj)
-    {
-      // remove previous actor
-      lastActorObj->GetSector ()->RemoveCollisionObject (lastActorObj);
-      
-      // move new actor to old transform
-      player.GetObject ()->SetTransform (view->GetCamera ()->GetTransform ());
-      lastActorObj->GetSector ()->AddCollisionObject (player.GetObject ());
-    }
-  }
   else
   {
     // No clip mode
+    if (actor)
+    {
+      iCollisionSector* collisionSector =
+	physicalSystem->FindCollisionSector (currentSector);
+      if (collisionSector)
+	collisionSector->RemoveCollisionObject (actor);
+      actor.Invalidate ();
+      player.SetObject (nullptr);
+    }
+
+    view->GetCamera ()->SetSector (currentSector);
     cameraManager->SetCameraMode (CS::Utility::CAMERA_MOVE_FREE);
   }
 }
@@ -485,7 +419,7 @@ bool PhysDemo::IsDynamic (CS::Collisions::iCollisionObject* obj) const
 
 bool PhysDemo::IsActor (CS::Collisions::iCollisionObject* obj) const
 {
-  return obj->QueryActor () != nullptr;
+  return obj->QueryCollisionActor () != nullptr;
 }
 
 void PhysDemo::SetGravity (const csVector3& g)

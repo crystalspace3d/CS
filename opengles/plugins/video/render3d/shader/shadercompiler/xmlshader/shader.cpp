@@ -1173,7 +1173,30 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
     }
     return 0;
   }
-  
+
+  csPtr<iShaderPassesActivator> csXMLShader::BeginShaderActivation (size_t ticket,
+    iShaderPassesActivator* previous_activator)
+  {
+    if (IsFallbackTicket (ticket))
+    {
+      // @@@ FIXME Check if we need to worry about: useFallbackContext = true;
+      iShader* fallback;
+      iXMLShaderInternal* fallbackXML;
+      GetFallbackShader (fallback, fallbackXML);
+      return fallback->BeginShaderActivation (GetFallbackTicket (ticket), previous_activator);
+    }
+
+    csRef<iShaderPassesActivatorXML> previous (
+      scfQueryInterfaceSafe<iShaderPassesActivatorXML> (previous_activator));
+    Activator* my_previous_activator (static_cast<Activator*> ((iShaderPassesActivatorXML*)previous));
+    if (my_previous_activator)
+    {
+      // TODO: Use less state changes
+    }
+
+    return csPtr<iShaderPassesActivator> (new (activators) Activator (this, ticket));
+  }
+
   void csXMLShader::SelfDestruct ()
   {
     if (shadermgr)
@@ -1814,7 +1837,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
     CS_ASSERT_MSG ("ActivatePass() has already been called.",
       activeTech == 0);
     activeTech = (ticket != csArrayItemNotFound) ? TechForTicket (ticket) : 0;
-    return activeTech ? activeTech->ActivatePass (number) : false;
+    return activeTech ? activeTech->ActivatePass (activationState, number) : false;
   }
 
   bool csXMLShader::DeactivatePass (size_t ticket)
@@ -1828,7 +1851,7 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
       return fallback->DeactivatePass (GetFallbackTicket (ticket));
     }
 
-    bool ret = activeTech ? activeTech->DeactivatePass() : false; 
+    bool ret = activeTech ? activeTech->DeactivatePass (activationState) : false; 
     activeTech = 0;
     return ret;
   }
@@ -1918,6 +1941,55 @@ CS_PLUGIN_NAMESPACE_BEGIN(XMLShader)
         dumpFN.GetData(), variant));
     }
     return programNode;
+  }
+
+  //-------------------------------------------------------------------------
+
+  csXMLShader::Activator::Activator (csXMLShader* parent, size_t ticket) :
+    scfPooledImplementationType (this), parent (parent),
+    activeTech ((ticket != csArrayItemNotFound) ? parent->TechForTicket (ticket) : nullptr),
+    currentPass (0), numPasses (activeTech ? activeTech->GetNumberOfPasses() : 0)
+  {
+  }
+
+  csXMLShader::Activator::~Activator()
+  {
+    Activator::TeardownPass ();
+    Activator::DeactivatePass ();
+  }
+
+  bool csXMLShader::Activator::ActivateNextPass()
+  {
+    if (!activeTech) return false;
+    Activator::TeardownPass ();
+    Activator::DeactivatePass ();
+
+    while (currentPass < numPasses)
+    {
+      if (activeTech->ActivatePass (activationState, currentPass++))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool csXMLShader::Activator::SetupPass (const CS::Graphics::RenderMesh *mesh,
+    CS::Graphics::RenderMeshModes& modes,
+    const csShaderVariableStack& stack)
+  {
+    Activator::TeardownPass ();
+    return (activeTech->SetupPass (activationState, mesh, modes, stack));
+  }
+
+  void csXMLShader::Activator::TeardownPass ()
+  {
+    activeTech->TeardownPass (activationState);
+  }
+
+  void csXMLShader::Activator::DeactivatePass ()
+  {
+    activeTech->DeactivatePass (activationState);
   }
 
   //-------------------------------------------------------------------------

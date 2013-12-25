@@ -85,8 +85,6 @@ void csCameraBase::MoveWorld (const csVector3 &v, bool cd)
 
   if (sector)
   {
-    csVector3 remember_position = new_position;
-
     // Test if the motion crosses a portal
     iSector *new_sector = sector->FollowSegment (
         *this,
@@ -332,15 +330,8 @@ csCameraCustomMatrix::csCameraCustomMatrix (csCameraBase* other)
   : scfImplementationType (this, other), invMatrixDirty (true),
     clipPlanesDirty (true)
 {
-  if (fp)
-  {
-    // Make a copy of the plane.
-    fp = new csPlane3 (*fp);
-  }
-  // Listeners are not supposed to be cloned
-  listeners.DeleteAll();
+  // csCameraBase copy ctor already bumped the cam
   matrix = other->GetProjectionMatrix();
-  BumpCamera();
 }
 
 void csCameraCustomMatrix::UpdateInvMatrix ()

@@ -16,7 +16,6 @@
     License along with this library; if not, write to the Free
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
 #include "cssysdef.h"
 
 #include "iengine/portal.h"
@@ -287,7 +286,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         csPrintf (">>>> Obj setup at portal 0x%lx: 0x%lx\n", this, obj);
 #endif
 
-        // Add mesh to other sector
+        // Add the scene node to the engine sector on the other side of the portal
         iSceneNode* node = obj->GetAttachedSceneNode ();
         if (node)
         {
@@ -305,11 +304,12 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         {
           cloneObj->QueryPhysicalBody ()->SetGravityEnabled (false);
         }
+/*
         else if (cloneObj->QueryActor ())
         {
           cloneObj->QueryActor ()->SetGravityEnabled (false);
         }
-
+*/
         // No collisions with static objects
 	// TODO: why not?
 	// TODO: this is a hack with heavy side effects
@@ -353,7 +353,6 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
         }
       }
     }
-
 
     // Update object book-keeping:
 
@@ -522,6 +521,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (Bullet2)
             }
           }
         }
+
         // Remove clone from CollisionSector
         targetSector->RemoveCollisionObject (obj->portalData->OtherObject);
         obj->portalData->OtherObject = nullptr;

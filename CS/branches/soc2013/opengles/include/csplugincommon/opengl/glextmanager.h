@@ -10159,6 +10159,60 @@ typedef GLvoid (csAPIENTRY* csGLSTRINGMARKERGREMEDY) (GLsizei len, const GLvoid*
  * @{ */
 
 /** @} */
+/**\name GL_ARB_query_buffer_object constants
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt</a>.
+ * @{ */
+#ifndef GL_QUERY_BUFFER_ARB
+#define GL_QUERY_BUFFER_ARB                                          0x9192
+#endif
+
+#ifndef GL_QUERY_BUFFER_BINDING_ARB
+#define GL_QUERY_BUFFER_BINDING_ARB                                  0x9193
+#endif
+
+#ifndef GL_QUERY_RESULT_NO_WAIT_ARB
+#define GL_QUERY_RESULT_NO_WAIT_ARB                                  0x9194
+#endif
+
+#ifndef GL_QUERY_BUFFER_BARRIER_BIT_ARB
+#define GL_QUERY_BUFFER_BARRIER_BIT_ARB                              0x00008000
+#endif
+
+
+/** @} */
+
+/**\name GL_ARB_query_buffer_object functions
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt</a>.
+ * @{ */
+
+/** @} */
+/**\name GL_AMD_query_buffer_object constants
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt">http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt</a>.
+ * @{ */
+#ifndef GL_QUERY_BUFFER_AMD
+#define GL_QUERY_BUFFER_AMD                                          0x9192
+#endif
+
+#ifndef GL_QUERY_BUFFER_BINDING_AMD
+#define GL_QUERY_BUFFER_BINDING_AMD                                  0x9193
+#endif
+
+#ifndef GL_QUERY_RESULT_NO_WAIT_AMD
+#define GL_QUERY_RESULT_NO_WAIT_AMD                                  0x9194
+#endif
+
+#ifndef GL_QUERY_BUFFER_BARRIER_BIT_AMD
+#define GL_QUERY_BUFFER_BARRIER_BIT_AMD                              0x00008000
+#endif
+
+
+/** @} */
+
+/**\name GL_AMD_query_buffer_object functions
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt">http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt</a>.
+ * @{ */
+
+/** @} */
 /**\name GL_ARB_draw_buffers constants
  * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">http://www.opengl.org/registry/specs/ARB/draw_buffers.txt</a>.
  * @{ */
@@ -10837,6 +10891,17 @@ typedef GLvoid (csAPIENTRY* csGLFLUSHMAPPEDBUFFERRANGE) (GLenum target, GLintptr
 
 /**\name GL_AMD_seamless_cubemap_per_texture functions
  * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/AMD/seamless_cubemap_per_texture.txt">http://www.opengl.org/registry/specs/AMD/seamless_cubemap_per_texture.txt</a>.
+ * @{ */
+
+/** @} */
+/**\name GL_ARB_seamless_cubemap_per_texture constants
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt">http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt</a>.
+ * @{ */
+
+/** @} */
+
+/**\name GL_ARB_seamless_cubemap_per_texture functions
+ * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt">http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt</a>.
  * @{ */
 
 /** @} */
@@ -16251,6 +16316,16 @@ public:
    * @{ */
 
   /** @} */
+  /**\name GL_ARB_query_buffer_object functions
+   * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt</a>.
+   * @{ */
+
+  /** @} */
+  /**\name GL_AMD_query_buffer_object functions
+   * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt">http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt</a>.
+   * @{ */
+
+  /** @} */
   /**\name GL_ARB_draw_buffers functions
    * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">http://www.opengl.org/registry/specs/ARB/draw_buffers.txt</a>.
    * @{ */
@@ -16463,6 +16538,11 @@ public:
   /** @} */
   /**\name GL_AMD_seamless_cubemap_per_texture functions
    * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/AMD/seamless_cubemap_per_texture.txt">http://www.opengl.org/registry/specs/AMD/seamless_cubemap_per_texture.txt</a>.
+   * @{ */
+
+  /** @} */
+  /**\name GL_ARB_seamless_cubemap_per_texture functions
+   * For a description of what this ext does, see <a href="http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt">http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt</a>.
    * @{ */
 
   /** @} */
@@ -16971,6 +17051,12 @@ public:
   /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/occlusion_query2.txt">GL_ARB_occlusion_query2</a> extension was found. 
    * Set by csGLExtensionManager::InitGL_ARB_occlusion_query2(). */
   bool CS_GL_ARB_occlusion_query2;
+  /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">GL_ARB_query_buffer_object</a> extension was found. 
+   * Set by csGLExtensionManager::InitGL_ARB_query_buffer_object(). */
+  bool CS_GL_ARB_query_buffer_object;
+  /** Whether the <a href="http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt">GL_AMD_query_buffer_object</a> extension was found. 
+   * Set by csGLExtensionManager::InitGL_AMD_query_buffer_object(). */
+  bool CS_GL_AMD_query_buffer_object;
   /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">GL_ARB_draw_buffers</a> extension was found. 
    * Set by csGLExtensionManager::InitGL_ARB_draw_buffers(). */
   bool CS_GL_ARB_draw_buffers;
@@ -17028,6 +17114,9 @@ public:
   /** Whether the <a href="http://www.opengl.org/registry/specs/AMD/seamless_cubemap_per_texture.txt">GL_AMD_seamless_cubemap_per_texture</a> extension was found. 
    * Set by csGLExtensionManager::InitGL_AMD_seamless_cubemap_per_texture(). */
   bool CS_GL_AMD_seamless_cubemap_per_texture;
+  /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt">GL_ARB_seamless_cubemap_per_texture</a> extension was found. 
+   * Set by csGLExtensionManager::InitGL_ARB_seamless_cubemap_per_texture(). */
+  bool CS_GL_ARB_seamless_cubemap_per_texture;
   /** Whether the <a href="http://www.opengl.org/registry/specs/ARB/timer_query.txt">GL_ARB_timer_query</a> extension was found. 
    * Set by csGLExtensionManager::InitGL_ARB_timer_query(). */
   bool CS_GL_ARB_timer_query;
@@ -17201,6 +17290,8 @@ protected:
   bool tested_CS_GL_EXT_texture_rectangle;
   bool tested_CS_GL_ARB_occlusion_query;
   bool tested_CS_GL_ARB_occlusion_query2;
+  bool tested_CS_GL_ARB_query_buffer_object;
+  bool tested_CS_GL_AMD_query_buffer_object;
   bool tested_CS_GL_ARB_draw_buffers;
   bool tested_CS_GL_EXT_blend_equation_separate;
   bool tested_CS_GL_EXT_texture_sRGB;
@@ -17220,6 +17311,7 @@ protected:
   bool tested_CS_GL_ARB_texture_rg;
   bool tested_CS_GL_ARB_seamless_cube_map;
   bool tested_CS_GL_AMD_seamless_cubemap_per_texture;
+  bool tested_CS_GL_ARB_seamless_cubemap_per_texture;
   bool tested_CS_GL_ARB_timer_query;
   bool tested_CS_GL_EXT_texture_compression_dxt1;
   bool tested_CS_GL_ANGLE_texture_compression_dxt1;
@@ -22901,6 +22993,74 @@ public:
     }
   }
   
+  /** Initialize <a href="http://www.opengl.org/registry/specs/ARB/query_buffer_object.txt">GL_ARB_query_buffer_object</a> extension. 
+   * Check presence with csGLExtensionFlags::CS_GL_ARB_query_buffer_object. */
+  void InitGL_ARB_query_buffer_object ()
+  {
+    if (tested_CS_GL_ARB_query_buffer_object) return;
+    if (!extstr) return;
+    tested_CS_GL_ARB_query_buffer_object = true;
+    const char* ext = "GL_ARB_query_buffer_object";
+    InitQueries();
+    if (!CS_Queries)
+    {
+      Report (msgDependencyNotFound, "GL", CS::Quote::Single (ext), CS::Quote::Single ("Queries"));
+      return;
+    }
+    char cfgkey[26 + 26 + 1];
+    sprintf (cfgkey, "Video.OpenGL.UseExtension.%s", ext);
+    
+    CS_GL_ARB_query_buffer_object = CheckExtension (extstr, ext);
+
+    bool allclear, funcTest;
+    (void)funcTest; // shut up "variable unused" warnings
+    bool init = CS_GL_ARB_query_buffer_object;
+    allclear = true;
+    if (init)	// Don't check the functions if ext isn't reported anyway
+    {
+
+      EXTMGR_REPORT_INIT_RESULT("GL", GL_ARB_query_buffer_object)
+    }
+    else
+    {
+      Report (msgExtNotFound, "GL", CS::Quote::Single (ext));
+    }
+  }
+  
+  /** Initialize <a href="http://www.opengl.org/registry/specs/AMD/query_buffer_object.txt">GL_AMD_query_buffer_object</a> extension. 
+   * Check presence with csGLExtensionFlags::CS_GL_AMD_query_buffer_object. */
+  void InitGL_AMD_query_buffer_object ()
+  {
+    if (tested_CS_GL_AMD_query_buffer_object) return;
+    if (!extstr) return;
+    tested_CS_GL_AMD_query_buffer_object = true;
+    const char* ext = "GL_AMD_query_buffer_object";
+    InitQueries();
+    if (!CS_Queries)
+    {
+      Report (msgDependencyNotFound, "GL", CS::Quote::Single (ext), CS::Quote::Single ("Queries"));
+      return;
+    }
+    char cfgkey[26 + 26 + 1];
+    sprintf (cfgkey, "Video.OpenGL.UseExtension.%s", ext);
+    
+    CS_GL_AMD_query_buffer_object = CheckExtension (extstr, ext);
+
+    bool allclear, funcTest;
+    (void)funcTest; // shut up "variable unused" warnings
+    bool init = CS_GL_AMD_query_buffer_object;
+    allclear = true;
+    if (init)	// Don't check the functions if ext isn't reported anyway
+    {
+
+      EXTMGR_REPORT_INIT_RESULT("GL", GL_AMD_query_buffer_object)
+    }
+    else
+    {
+      Report (msgExtNotFound, "GL", CS::Quote::Single (ext));
+    }
+  }
+  
   /** Initialize <a href="http://www.opengl.org/registry/specs/ARB/draw_buffers.txt">GL_ARB_draw_buffers</a> extension. 
    * Check presence with csGLExtensionFlags::CS_GL_ARB_draw_buffers. */
   void InitGL_ARB_draw_buffers ()
@@ -23479,6 +23639,35 @@ public:
     {
 
       EXTMGR_REPORT_INIT_RESULT("GL", GL_AMD_seamless_cubemap_per_texture)
+    }
+    else
+    {
+      Report (msgExtNotFound, "GL", CS::Quote::Single (ext));
+    }
+  }
+  
+  /** Initialize <a href="http://www.opengl.org/registry/specs/ARB/seamless_cubemap_per_texture.txt">GL_ARB_seamless_cubemap_per_texture</a> extension. 
+   * Check presence with csGLExtensionFlags::CS_GL_ARB_seamless_cubemap_per_texture. */
+  void InitGL_ARB_seamless_cubemap_per_texture ()
+  {
+    if (tested_CS_GL_ARB_seamless_cubemap_per_texture) return;
+    if (!extstr) return;
+    tested_CS_GL_ARB_seamless_cubemap_per_texture = true;
+    const char* ext = "GL_ARB_seamless_cubemap_per_texture";
+
+    char cfgkey[26 + 35 + 1];
+    sprintf (cfgkey, "Video.OpenGL.UseExtension.%s", ext);
+    
+    CS_GL_ARB_seamless_cubemap_per_texture = CheckExtension (extstr, ext);
+
+    bool allclear, funcTest;
+    (void)funcTest; // shut up "variable unused" warnings
+    bool init = CS_GL_ARB_seamless_cubemap_per_texture;
+    allclear = true;
+    if (init)	// Don't check the functions if ext isn't reported anyway
+    {
+
+      EXTMGR_REPORT_INIT_RESULT("GL", GL_ARB_seamless_cubemap_per_texture)
     }
     else
     {

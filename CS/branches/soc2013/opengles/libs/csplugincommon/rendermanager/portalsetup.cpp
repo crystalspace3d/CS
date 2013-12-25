@@ -19,6 +19,8 @@
 
 #include "cssysdef.h"
 
+#include "csutil/objreg.h"
+
 #include "csplugincommon/rendermanager/portalsetup.h"
 
 namespace CS
@@ -116,9 +118,11 @@ namespace CS
       boxClipperCache->agedPurgeInterval = 5000;
     }
 
-    void SPSBPD::Initialize (iShaderManager* shmgr, iGraphics3D* g3d,
+    void SPSBPD::Initialize (iObjectRegistry* object_reg,
                              RenderTreeBase::DebugPersistent& dbgPersist)
     {
+      csRef<iShaderManager> shmgr (csQueryRegistry<iShaderManager> (object_reg));
+      csRef<iGraphics3D> g3d (csQueryRegistry<iGraphics3D> (object_reg));
       svNameTexPortal =
 	shmgr->GetSVNameStringset()->Request ("tex portal");
       texCache.SetG3D (g3d);
@@ -129,6 +133,9 @@ namespace CS
         dbgPersist.RegisterDebugFlag ("draw.portals.planes");
       dbgShowPortalTextures =
         dbgPersist.RegisterDebugFlag ("textures.portals");
+
+      csRef<iEngine> engine (csQueryRegistry<iEngine> (object_reg));
+      cameras.Initialize (engine);
     }
     
     //-----------------------------------------------------------------------
@@ -288,9 +295,11 @@ namespace CS
           portalDir = portal->GetWorldPlane().Normal();
         /* - Offset target camera into portal direction in target sector,
              amount of offset 'd' */
-        csVector3 camorg (inewcam->GetTransform().GetOrigin());
+        csOrthoTransform camTrans (inewcam->GetTransform());
+        csVector3 camorg (camTrans.GetOrigin());
         camorg += d * portalDir;
-        inewcam->GetTransform().SetOrigin (camorg);
+        camTrans.SetOrigin (camorg);
+        inewcam->SetTransform (camTrans);
       }
     }
     

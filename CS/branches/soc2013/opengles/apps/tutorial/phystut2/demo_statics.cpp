@@ -88,7 +88,8 @@ void PhysDemo::CreateBoxRoom (float size)
   room = engine->CreateSector (DefaultSectorName);
   iPhysicalSector* sector =
     physicalSystem->CreateCollisionSector (room)->QueryPhysicalSector ();
-  sector->AddCollisionObject (player.GetObject ());
+  if (player.GetObject ())
+    sector->AddCollisionObject (player.GetObject ());
   view->GetCamera ()->SetSector (room);
 
   // Setup the camera position
@@ -168,7 +169,6 @@ bool PhysDemo::LoadLevel (const char* pathname, bool convexDecomp)
   printf ("Done - level loaded: %s\n", pathname);
   return true;
 }
-
 
 iModifiableDataFeeder* PhysDemo::GetFirstTerrainModDataFeeder (CS::Collisions::iCollisionSector* sector)
 {

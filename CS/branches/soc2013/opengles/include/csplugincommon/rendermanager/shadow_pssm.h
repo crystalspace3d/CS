@@ -552,7 +552,7 @@ namespace RenderManager
 	}
 
 	// initialize persistent context setup data
-	portalPersist.Initialize(shaderManager, graphics3D, dbgPersist);
+	portalPersist.Initialize(objectReg, dbgPersist);
 	layerConfig = SingleRenderLayer(settings.shadowShaderType, settings.shadowDefaultShader);
 
 	// now set up our splitting scheme
@@ -1290,6 +1290,7 @@ namespace RenderManager
 	csRef<iCustomMatrixCamera> shadowCam = rview->GetEngine()->CreateCustomMatrixCamera();
 	shadowCam->SetProjectionMatrix(project);
 	shadowCam->GetCamera()->SetTransform(lightData.light2world);
+	shadowCam->GetCamera()->SetMirrored(true);
 
 	// create render view
 	csRef<CS::RenderManager::RenderView> shadowView;
@@ -1314,12 +1315,12 @@ namespace RenderManager
 	// create context
 	typename RenderTreeType::ContextNode* context = renderTree.CreateContext(shadowView);
 	context->drawFlags = CSDRAW_CLEARSCREEN | CSDRAW_CLEARZBUFFER;
-	context->postEffects = persist.settings.postEffects;
+	context->postEffect = persist.settings.postEffect;
 
 	// setup post-effects if required
-	if(context->postEffects.IsValid())
+	if(context->postEffect.IsValid())
 	{
-	  context->postEffects->SetupView(mapSize, mapSize, context->perspectiveFixup);
+	  context->postEffect->SetupView(mapSize, mapSize);
 	}
 
 	// setup rendertargets

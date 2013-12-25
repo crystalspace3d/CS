@@ -364,6 +364,21 @@ bool csTerrain2FactoryLoader::ParseCell (iDocumentNode *node,
     switch (id)
     {
     case XMLTOKEN_NAME:
+#ifdef CS_DEBUG
+    {
+      // Check name uniqueness
+      const char* name = child->GetContentsValue ();
+      if (name && fact->GetCell (name))
+      {
+	synldr->Report (
+	  "crystalspace.terrain.object.loader.cell",
+	  CS_REPORTER_SEVERITY_WARNING,
+	  child, "Another cell with the name %s already exists",
+	  CS::Quote::Single (name));
+      }
+    }
+#endif
+      
       cell->SetName (child->GetContentsValue ());
       break;
     case XMLTOKEN_SIZE:

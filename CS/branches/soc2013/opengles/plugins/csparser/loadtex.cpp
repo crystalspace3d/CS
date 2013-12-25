@@ -119,31 +119,7 @@ csPtr<iImage> csThreadedLoader::LoadImage (iDataBuffer* buf, const char* fname,
       Format = CS_IMGFMT_TRUECOLOR;
   }
 
-  if (!buf || !buf->GetSize ())
-  {
-    ReportWarning (
-      "crystalspace.maploader.parse.image",
-      "Could not open image file %s on VFS!", CS::Quote::Single (fname ? fname : "<unknown>"));
-    return 0;
-  }
-
-  // we don't use csRef because we need to return an Increfed object later
   csRef<iImage> image (ImageLoader->Load (buf, Format));
-  if (!image)
-  {
-    ReportWarning (
-      "crystalspace.maploader.parse.image",
-      "Could not load image %s. Unknown format!",
-      CS::Quote::Single (fname ? fname : "<unknown>"));
-    return 0;
-  }
-
-  if (fname)
-  {
-    csRef<iDataBuffer> xname = vfs->ExpandPath (fname);
-    image->SetName (**xname);
-  }
-
   return csPtr<iImage> (image);
 }
 
@@ -153,25 +129,52 @@ THREADED_CALLABLE_IMPL4(csThreadedLoader, LoadImage, const char* cwd, const char
   dirChange.ChangeToFull(cwd);
 
   csRef<iDataBuffer> buf = vfs->ReadFile (fname, false);
+  if (!buf || !buf->GetSize ())
+  {
+    ReportWarning (
+      "crystalspace.maploader.parse.image",
+      "Could not open image file %s on VFS!", CS::Quote::Single (fname ? fname : "<unknown>"));
+    return 0;
+  }
+
   csRef<iImage> image = LoadImage (buf, fname, Format, do_verbose);
   if(image.IsValid())
   {
+    csRef<iDataBuffer> xname = vfs->ExpandPath (fname);
+    image->SetName (**xname);
     ret->SetResult(csRef<iBase>(image));
     return true;
   }
+  else
+  {
+    ReportWarning (
+      "crystalspace.maploader.parse.image",
+      "Could not load image %s. Unknown format!",
+      CS::Quote::Single (fname));
+    return 0;
+  }
+
   return false;
 }
 
 THREADED_CALLABLE_IMPL4(csThreadedLoader, LoadImage, const char* cwd, csRef<iDataBuffer> buf, int Format, bool do_verbose)
 {
-  csVfsDirectoryChanger dirChange(vfs);
-  dirChange.ChangeToFull(cwd);
+  return LoadImageTC (ret, sync, buf, Format, do_verbose);
+}
 
-  csRef<iImage> image = LoadImage (buf, 0, Format, do_verbose);
+THREADED_CALLABLE_IMPL3(csThreadedLoader, LoadImage, csRef<iDataBuffer> buf, int Format, bool do_verbose)
+{
+  csRef<iImage> image = LoadImage (buf, nullptr, Format, do_verbose);
   if(image.IsValid())
   {
     ret->SetResult(csRef<iBase>(image));
     return true;
+  }
+  else
+  {
+    ReportWarning (
+      "crystalspace.maploader.parse.image",
+      "Could not load image. Unknown format!");
   }
   return false;
 }
@@ -241,6 +244,12 @@ THREADED_CALLABLE_IMPL6(csThreadedLoader, LoadTexture, const char* cwd, csRef<iD
   csVfsDirectoryChanger dirChange(vfs);
   dirChange.ChangeToFull(cwd);
 
+  return LoadTextureTC (ret, sync, buf, Flags, texman, image, do_verbose);
+}
+
+THREADED_CALLABLE_IMPL5(csThreadedLoader, LoadTexture, csRef<iDataBuffer> buf, int Flags,
+                        csRef<iTextureManager> texman, csRef<iImage>* image, bool do_verbose)
+{
   if (!texman && g3d)
   {
     texman = g3d->GetTextureManager();
@@ -305,6 +314,14 @@ THREADED_CALLABLE_IMPL9(csThreadedLoader, LoadTexture, const char* cwd, const ch
   csVfsDirectoryChanger dirChange(vfs);
   dirChange.ChangeToFull(cwd);
 
+  return LoadTextureTC (ret, sync, buf, Name, Flags, texman, reg, create_material, free_image, do_verbose);
+}
+
+THREADED_CALLABLE_IMPL8(csThreadedLoader, LoadTexture, csRef<iDataBuffer> buf, 
+                        const char* Name, int Flags, csRef<iTextureManager> texman,
+                        bool reg, bool create_material,
+                        bool free_image, bool do_verbose)
+{
   if (!texman && g3d)
   {
     texman = g3d->GetTextureManager();
@@ -312,7 +329,7 @@ THREADED_CALLABLE_IMPL9(csThreadedLoader, LoadTexture, const char* cwd, const ch
 
   csRef<iImage> img;
   csRef<iThreadReturn> itr = csPtr<iThreadReturn>(new csLoaderReturn(threadman));
-  if (!LoadTextureTC (itr, false, cwd, buf, Flags, texman, &img, do_verbose))
+  if (!LoadTextureTC (itr, false, buf, Flags, texman, &img, do_verbose))
   {
     return false;
   }

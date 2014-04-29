@@ -12,7 +12,7 @@ CS_IMPLEMENT_APPLICATION
 
 int main(int argc, char** argv)
 {
-  csPrintf ("waterdemo2 version 0.0.1 by Pavel Krajcevski.\n");
+  csPrintf ("waterdemo2 version 0.0.2 by Naman Gupta.\n");
 
   /* Runs the application.  
    *

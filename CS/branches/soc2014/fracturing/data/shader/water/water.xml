@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<shader compiler="shaderweaver" name="water">
+
+<shadervar name="water perturb scale" type="vector4">0.5,0.5,0.0,0.0</shadervar>
+<shadervar name="water perturb fade" type="float">1.0</shadervar>
+<shadervar name="texture scale" type="vector2">0.3,0.3</shadervar>
+	<technique priority="200">
+		<pass>		
+			<combiner name="glsl" plugin="crystalspace.graphics3d.shader.combiner.glsl" />
+			
+			<snippet id="wave" file="/shader/snippets/wave.xml" />
+			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
+			<snippet id="normalmap" file="/shader-snippets/surface/normalmap-tiled.xml" />
+			<snippet id="perturb_norm_refl" file="/shader-snippets/tcoffset2-perturb-normal-cam.xml" />
+			<snippet id="watercolor" file="/shader-snippets/surface/specular-default-nodiffuse.xml" />
+			<snippet id="finalcolor" file="/shader-snippets/modulate_rgb.xml" />
+			
+			<connection from="wave" to="reflection" />
+			<connection from="wave" to="normalmap" />
+				
+			<connection from="normalmap" to="perturb_norm_refl" />
+			
+			<connection from="watercolor" to="finalcolor">
+				<explicit from="specularColor" to="b" />
+			</connection>
+			
+			<connection from="reflection" to="finalcolor">
+				<explicit from="surfaceColor" to="a" />
+			</connection>
+			
+			<connection from="perturb_norm_refl" to="reflection" />
+			
+			<parameter id="perturbscale" type="shadervar" weavertype="float4">water perturb scale</parameter>
+			<connection from="perturbscale" to="perturb_norm_refl" />
+			
+			<parameter id="perturbfade" type="shadervar" weavertype="float">water perturb fade</parameter>
+			<connection from="perturbfade" to="reflection" />
+			
+		</pass>
+	</technique>
+	
+	<technique priority="100">
+		<pass>		
+			<combiner name="cg" plugin="crystalspace.graphics3d.shader.combiner.glcg" />
+			
+			<snippet id="wave" file="/shader/snippets/wave.xml" />
+			<snippet id="reflection" file="/shader-snippets/reflect/reflect-plane-screen.xml" />
+			<snippet id="normalmap" file="/shader-snippets/surface/normalmap-tiled.xml" />
+			<snippet id="perturb_norm_refl" file="/shader-snippets/tcoffset2-perturb-normal-cam.xml" />
+			<snippet id="watercolor" file="/shader-snippets/surface/specular-default-nodiffuse.xml" />
+			<snippet id="finalcolor" file="/shader-snippets/modulate_rgb.xml" />
+			
+			<connection from="wave" to="reflection" />
+			<connection from="wave" to="normalmap" />
+				
+			<connection from="normalmap" to="perturb_norm_refl" />
+			
+			<connection from="watercolor" to="finalcolor">
+				<explicit from="specularColor" to="b" />
+			</connection>
+			
+			<connection from="reflection" to="finalcolor">
+				<explicit from="surfaceColor" to="a" />
+			</connection>
+			
+			<connection from="perturb_norm_refl" to="reflection" />
+			
+			<parameter id="perturbscale" type="shadervar" weavertype="float4">water perturb scale</parameter>
+			<connection from="perturbscale" to="perturb_norm_refl" />
+			
+			<parameter id="perturbfade" type="shadervar" weavertype="float">water perturb fade</parameter>
+			<connection from="perturbfade" to="reflection" />
+			
+		</pass>
+	</technique>
+	
+</shader> 

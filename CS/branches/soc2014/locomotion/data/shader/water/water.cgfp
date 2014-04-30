@@ -1,0 +1,102 @@
+//---------------------------------------------------------------------------------
+//Input
+//---------------------------------------------------------------------------------
+
+struct vert2frag
+{
+	float4 Position    	: POSITION;
+	float4 Color	   	: COLOR;
+	float4 PosRefl      : TEXCOORD0;
+	float4 PosRefr      : TEXCOORD1;
+	float2 NormalTC		: TEXCOORD2; 
+	float3 Normal;
+	float4 Pos;
+	float2 o2wPos;
+};
+
+// Water color
+const float3 watCol = float3(0.05, 0.15, 0.4);
+
+//---------------------------------------------------------------------------------
+//Shader entry
+//---------------------------------------------------------------------------------
+
+float4 main (vert2frag IN,
+			 uniform float4 lightPos,
+			 uniform float4 lightCol,
+			 uniform float shininess,
+			 uniform float waterAlpha,
+			 uniform sampler2D TexNormal,
+			 uniform sampler2D TexFoam,
+			 uniform sampler2D TexReflect,
+			 uniform sampler2D TexRefract,	 
+			 uniform sampler2D foamDist,
+			 uniform float4x4 ModelViewIT : state.matrix.modelview.invtrans) : COLOR        
+{     
+   
+	float4 color;
+	float4 camera_pos = ModelViewIT[3];
+	
+	float3 light_vector = normalize(lightPos.xyz - IN.Pos.xyz);
+	
+	float3 eye_vector = normalize(camera_pos.xyz - IN.Pos.xyz);   
+
+	float3 N = normalize( tex2D(TexNormal, IN.NormalTC).xyz );    
+
+	N.xyz = normalize(N.xyz*2-1) * 0.09;
+	
+	// Add Distortion 
+	float4 DisRefl = IN.PosRefl;
+	float4 DisRefr = IN.PosRefr;
+	
+	DisRefl.xy += N.xy;
+	DisRefr.xy += N.xy;	
+	
+	N = normalize(N + IN.Normal);
+	
+	float4 reflColor = tex2Dproj(TexReflect, DisRefl);
+	float4 refrColor = tex2Dproj(TexRefract, DisRefr);
+	
+	float3 light_reflection = normalize(reflect(-light_vector, N));      
+	
+	float3 sunlight = max(pow(dot(light_reflection,eye_vector),shininess),0);
+	
+	float3 specularColor = {2.0, 4.0, 8.0};
+	float3 ambientColor  = {0.2, 0.2, 0.3};
+	
+	float3 light = sunlight * specularColor + ambientColor;
+		
+	// Fresnel effect
+    const float R = 0.20373;
+    const float distVar = 150;
+ 
+    float facing = 1.0 - max( dot(eye_vector, N ) ,0);
+    float fresnelWeight = max (R + (1.0 - R) * pow( facing ,3.0) , 0.0);
+    fresnelWeight = min (( fresnelWeight + max(IN.Pos.z / distVar , fresnelWeight ))*0.5 , 1);
+ 
+    reflColor *=  fresnelWeight;
+    refrColor *= (1-fresnelWeight);
+	
+	float4 foam = tex2D(TexFoam,IN.NormalTC);
+	
+	float2 Inposition = IN.o2wPos; 
+	float4 distanceFoamcolor = float4(0.0,0.0,0.0,0.0);
+	
+	{
+		Inposition.y = 512 - Inposition.y;
+		Inposition.x /= 512;
+		Inposition.y /= 512;		
+		distanceFoamcolor = tex2D(foamDist, Inposition);
+	}
+	
+	foam = foam * 0.5 * distanceFoamcolor.x;
+	
+    color.xyz = light + reflColor.xyz + refrColor.xyz + foam.xyz;
+	//color.xyz += vec3(0,0,0.5);
+	color.a = 1.0;
+	return color;
+}
+
+//---------------------------------------------------------------------------------
+//end
+//---------------------------------------------------------------------------------

@@ -1,1 +1,3 @@
 Hello this is a simple file that I'm uploading first time to this repository. Have a good day. :)
+
+Btw, the last revision was not merged. Hopefully this one will be. :)

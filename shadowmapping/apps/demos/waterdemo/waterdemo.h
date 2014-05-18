@@ -21,6 +21,8 @@
 
 #include <stdarg.h>
 #include "csutil/ref.h"
+#include "csgfx/imagememory.h" 
+#include <crystalspace.h>
 
 struct iEngine;
 struct iObjectRegistry;
@@ -49,6 +51,9 @@ private:
   csRef<iKeyboardDriver> kbd;
   csRef<iMouseDriver> mouse;
   csRef<iConsoleOutput> console;
+  csRef<iImage> watertex;
+  
+  csRGBpixel* watercolorArray;
   csRef<FramePrinter> printer;
 
   csRef<iVFS> vfs;
@@ -91,6 +96,7 @@ private:
   int Height; // ditto
 
   float lastSimTime, nextSimTime;
+  float positiontext;
 
 
   void updateWater(float time);

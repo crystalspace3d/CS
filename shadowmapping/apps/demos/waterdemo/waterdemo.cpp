@@ -73,7 +73,7 @@ CS_IMPLEMENT_APPLICATION
 
 static const float SIMPERSECOND = 60.0f;
 
-// The global pointer to simple
+// The global pointer to make things simple
 csWaterDemo *waterdemo;
 
 csWaterDemo::csWaterDemo (iObjectRegistry* object_reg)
@@ -115,29 +115,29 @@ void csWaterDemo::SetupFrame ()
 
   if (hasfocus)
   {
-    view->GetCamera ()->GetTransform ().RotateThis (CS_VEC_TILT_UP, (y-h) * 0.01);
+    view->GetCamera ()->GetTransform ().RotateThis (CS_VEC_TILT_DOWN, (y-h) * 0.01);
     view->GetCamera ()->GetTransform ().RotateOther (CS_VEC_ROT_RIGHT, (x-w) * 0.01);
     r3d->GetDriver2D ()->SetMousePosition (w, h);
     moved |= (y-h)!=0;
     moved |= (x-w)!=0;
   }
 
-  if (kbd->GetKeyState (CSKEY_UP))
+  if (kbd->GetKeyState ('w'))
   {
     view->GetCamera ()->Move (CS_VEC_FORWARD * speed * 25.0);
     moved = true;
   }
-  if (kbd->GetKeyState (CSKEY_DOWN))
+  if (kbd->GetKeyState ('s'))
   {
     view->GetCamera ()->Move (CS_VEC_BACKWARD * speed * 25.0);
     moved = true;
   }
-  if (kbd->GetKeyState (CSKEY_LEFT))
+  if (kbd->GetKeyState ('a'))
   {
     view->GetCamera ()->Move (CS_VEC_LEFT * speed * 25.0);
     moved = true;
   }
-  if (kbd->GetKeyState (CSKEY_RIGHT))
+  if (kbd->GetKeyState ('d'))
   {
     view->GetCamera ()->Move (CS_VEC_RIGHT * speed * 25.0);
     moved = true;
@@ -219,7 +219,7 @@ bool csWaterDemo::HandleEvent (iEvent& ev)
       {
         csRef<iEventQueue> q (csQueryRegistry<iEventQueue> (object_reg));
         if (q)
-	  q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
+			q->GetEventOutlet()->Broadcast (csevQuit (object_reg));
         return true;
       }
     case CSKEY_TAB:
@@ -230,23 +230,27 @@ bool csWaterDemo::HandleEvent (iEvent& ev)
       break;
     case '1':
       WaveSpeed -= 0.01f;
-      WaveSpeed = csMax (WaveSpeed,0.f);
+      WaveSpeed = csMax (WaveSpeed,0.01f);
       break;
     case '2':
       WaveSpeed += 0.01f;
-      WaveSpeed = csMin (WaveSpeed,0.5f);
+      WaveSpeed = csMin (WaveSpeed,1.0f);
       break;
     case '3':
       TimeDelta -= 0.01f;
+	  TimeDelta = csMax (TimeDelta,0.01f);
       break;
     case '4':
       TimeDelta += 0.01f;
+	  TimeDelta = csMin (TimeDelta,0.5f);
       break;
     case '5':
       WaveLife -= 0.01f;
+	  WaveLife = csMax (WaveLife,0.01f);
       break;
     case '6':
       WaveLife += 0.01f;
+	  WaveLife = csMin (WaveLife,1.0f);
       break;
     }
   }
@@ -388,7 +392,25 @@ bool csWaterDemo::Initialize ()
     return false;
   }
 
-  csRef<iSector> room = engine->CreateSector ("room");
+  csRef<iSector> room = engine->CreateSector ("room"); 
+
+  // Trying to add skybox
+  CS::Geometry::DensityTextureMapper mapper (0.3f);
+  CS::Geometry::TesselatedBox box (csVector3 (0, 0, 0), csVector3 (10, 10, 10));
+  box.SetLevel (3);
+  box.SetMapper (&mapper);
+  box.SetFlags (CS::Geometry::Primitives::CS_PRIMBOX_INSIDE);
+
+  // Now we make a factory and a mesh at once.
+  csRef<iMeshWrapper> walls = CS::Geometry::GeneralMeshBuilder::CreateFactoryAndMesh (
+	  engine, room, "walls", "walls_factory", &box);
+
+  csRef<iMaterialWrapper> myMaterial =
+     CS::Material::MaterialBuilder::CreateColorMaterial
+     (object_reg,"waterMaterial",csColor(1,0.5,0));
+
+    walls->GetMeshObject ()->SetMaterialWrapper (myMaterial);
+
 
   view = csPtr<iView> (new csView (engine, r3d));
   view->GetCamera ()->SetSector (room);
@@ -497,6 +519,12 @@ bool csWaterDemo::Initialize ()
   cubeMaker->SetSubImage (5, img);
 
 
+  watertex = loader->LoadImage ("/lib/cubemap/wave.jpg");
+  csRef<csImageMemory> watertexx = new csImageMemory(watertex);
+  watercolorArray = reinterpret_cast<csRGBpixel*> (watertexx->GetImagePtr ());
+  positiontext=0;
+
+
   csRef<iTextureHandle> tex = r3d->GetTextureManager ()->RegisterTexture (
     cubeMaker, CS_TEXTURE_3D | CS_TEXTURE_CLAMP | CS_TEXTURE_NOMIPMAPS);
 
@@ -593,10 +621,9 @@ void csWaterDemo::updateWater (float time)
   bool haveRan=false;
 
   if (time>1000) time =0;
-  lastSimTime += (time/1000.0f);
-
-
-  while (lastSimTime > nextSimTime)
+  lastSimTime += (time/1000.0f); 
+  
+  if (lastSimTime > nextSimTime)
   {
 
     csVector3 *vbuf = gFactState->GetVertices ();
@@ -607,6 +634,11 @@ void csWaterDemo::updateWater (float time)
     float C4, C5;
     C4 = C3*0.5858;
     C5 = C3*0.4142;
+
+	positiontext+=(TimeDelta);
+
+	int pos = positiontext;
+	pos %=Width;
 
     float *tmp;
     tmp=water2;
@@ -623,8 +655,12 @@ void csWaterDemo::updateWater (float time)
                      C2*water2[ind] +
                      C4*(water1[ind+1] + water1[ind-1] + water1[ind+Width] + water1[ind-Width])+
                      C5*(water1[ind+1+Width] + water1[ind-1+Width] + water1[ind-Width+1] + water1[ind-Width-1]);
+        
+		float texwater = water[ind] + ( (watercolorArray[ (x)*Width+z+pos].red)/2550.0)*2.5f - 0.13f;
+		vbuf[ind].y = (1-TimeDelta*TimeDelta)*vbuf[ind].y +  TimeDelta*TimeDelta*texwater;
 
-        vbuf[ind].y = water[ind];
+		//vbuf[ind].y = water[ind];
+					  
       }
     }
     nextSimTime += 1/SIMPERSECOND;
@@ -634,7 +670,7 @@ void csWaterDemo::updateWater (float time)
   if (haveRan)
     generateNormals ();
 
-  gFactState->Invalidate ();
+  gFactState->Invalidate();
 }
 
 void csWaterDemo::pushDownPoint (float x, float z, float depth)
@@ -645,6 +681,8 @@ void csWaterDemo::pushDownPoint (float x, float z, float depth)
   xu = (int)ceilf (x);
   zn = (int)floorf (z);
   zu = (int)ceilf (z);
+
+  depth *= -1.0f;
 
   xn = csMax (xn,0);
   xu = csMin (xu,Height);

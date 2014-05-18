@@ -6,7 +6,7 @@
       <vp plugin="glfixed">
         <fixedvp>  
           <texgen type="reflection" mapping="cube" layer="0" />
-          <!--<ambient/>-->
+          <ambient/>
         </fixedvp>
       </vp>
       <texture name="tex diffuse" destination="unit 0" />
@@ -14,8 +14,8 @@
         <fixedfp>
           <layer>
             <colorsource num="0" source="texture" modifier="color"/>
-            <!--<colorsource num="1" source="texture" modifier="color"/>
-            <coloroperation operation="replace"/>-->
+            <colorsource num="1" source="texture" modifier="color"/>
+            <coloroperation operation="replace"/>
           </layer>
         </fixedfp>
       </fp>

@@ -52,6 +52,8 @@ private:
   csColor4 mainColor;
   csColor4 topColor;
   csColor4 bottomColor;
+  size_t maxVertices;
+  size_t maxTriangles;
 
 public:
 
@@ -80,6 +82,8 @@ public:
   virtual const csColor4& GetMainColor () const;
   virtual const csColor4& GetTopColor () const;
   virtual const csColor4& GetBottomColor () const;
+  virtual size_t GetMaximumVertexCount () const;
+  virtual size_t GetMaximumTriangleCount () const;
 
   virtual void SetTimeToLive (float timeToLive);
   virtual void SetMaterialWrapper (iMaterialWrapper* material);
@@ -97,6 +101,8 @@ public:
   virtual void SetMainColor (const csColor4& color);
   virtual void SetTopColor (const csColor4& color);
   virtual void SetBottomColor (const csColor4& color);
+  virtual void SetMaximumVertexCount (size_t count);
+  virtual void SetMaximumTriangleCount (size_t count);
 };
 
 #endif // __CS_DECAL_TEMPLATE_H__

@@ -45,26 +45,7 @@ csDecal::csDecal(iObjectRegistry * objectReg, csDecalManager * decalManager)
   : objectReg(objectReg), decalManager(decalManager),
     indexCount(0), vertexCount(0), width(0), height(0), currMesh(0)
 {
-  engine = csQueryRegistry<iEngine> (objectReg);
-
-  vertexBuffer = csRenderBuffer::CreateRenderBuffer (
-    CS_DECAL_MAX_VERTS_PER_DECAL, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
-  texCoordBuffer = csRenderBuffer::CreateRenderBuffer (
-    CS_DECAL_MAX_VERTS_PER_DECAL, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 2);
-  normalBuffer = csRenderBuffer::CreateRenderBuffer (
-    CS_DECAL_MAX_VERTS_PER_DECAL, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
-  colorBuffer = csRenderBuffer::CreateRenderBuffer (
-    CS_DECAL_MAX_VERTS_PER_DECAL, CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 4);
-  indexBuffer = csRenderBuffer::CreateIndexRenderBuffer (
-    CS_DECAL_MAX_TRIS_PER_DECAL*3, CS_BUF_STATIC, 
-    CS_BUFCOMP_UNSIGNED_INT, 0, CS_DECAL_MAX_TRIS_PER_DECAL*3-1);
-
   bufferHolder.AttachNew (new csRenderBufferHolder);
-  bufferHolder->SetRenderBuffer (CS_BUFFER_INDEX, indexBuffer);
-  bufferHolder->SetRenderBuffer (CS_BUFFER_POSITION, vertexBuffer);
-  bufferHolder->SetRenderBuffer (CS_BUFFER_TEXCOORD0, texCoordBuffer);
-  bufferHolder->SetRenderBuffer (CS_BUFFER_NORMAL, normalBuffer);
-  bufferHolder->SetRenderBuffer (CS_BUFFER_COLOR, colorBuffer);
 }
 
 csDecal::~csDecal ()
@@ -76,6 +57,36 @@ void csDecal::Initialize (iDecalTemplate * decalTemplate,
   const csVector3 & normal, const csVector3 & pos, const csVector3 & up, 
   const csVector3 & right, float width, float height)
 {
+  engine = csQueryRegistry<iEngine> (objectReg);
+
+  if (!vertexBuffer
+      || vertexBuffer->GetElementCount () != decalTemplate->GetMaximumVertexCount ())
+  {
+    vertexBuffer = csRenderBuffer::CreateRenderBuffer
+      (decalTemplate->GetMaximumVertexCount (), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
+    texCoordBuffer = csRenderBuffer::CreateRenderBuffer
+      (decalTemplate->GetMaximumVertexCount (), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 2);
+    normalBuffer = csRenderBuffer::CreateRenderBuffer
+      (decalTemplate->GetMaximumVertexCount (), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 3);
+    colorBuffer = csRenderBuffer::CreateRenderBuffer
+      (decalTemplate->GetMaximumVertexCount (), CS_BUF_STATIC, CS_BUFCOMP_FLOAT, 4);
+
+    bufferHolder->SetRenderBuffer (CS_BUFFER_POSITION, vertexBuffer);
+    bufferHolder->SetRenderBuffer (CS_BUFFER_TEXCOORD0, texCoordBuffer);
+    bufferHolder->SetRenderBuffer (CS_BUFFER_NORMAL, normalBuffer);
+    bufferHolder->SetRenderBuffer (CS_BUFFER_COLOR, colorBuffer);
+  }
+
+  if (!indexBuffer
+      || indexBuffer->GetElementCount () != decalTemplate->GetMaximumTriangleCount () * 3)
+  {
+    indexBuffer = csRenderBuffer::CreateIndexRenderBuffer
+      (decalTemplate->GetMaximumTriangleCount ()*3, CS_BUF_STATIC, 
+       CS_BUFCOMP_UNSIGNED_INT, 0, decalTemplate->GetMaximumTriangleCount ()*3-1);
+
+    bufferHolder->SetRenderBuffer (CS_BUFFER_INDEX, indexBuffer);
+  }
+
   this->indexCount = 0;
   this->vertexCount = 0;
   this->currMesh = 0;
@@ -106,13 +117,13 @@ void csDecal::Initialize (iDecalTemplate * decalTemplate,
 bool csDecal::BeginMesh(iMeshWrapper * mesh)
 {
   currMesh = 0;
-  
+
   // check if InitializePosition has been called with decent parameters
   if (width <= 0.01f || height <= 0.01f)
     return false;
 
   // check if we hit our maximum allowed triangles
-  if (indexCount >= CS_DECAL_MAX_TRIS_PER_DECAL * 3)
+  if (indexCount >= decalTemplate->GetMaximumTriangleCount () * 3)
     return false;
 
   firstIndex = indexCount;
@@ -268,15 +279,15 @@ void csDecal::AddStaticPoly (const csPoly3D & p, csArray<size_t>* indices)
     return;
 
   // check if we hit our maximum allowed vertices
-  if (vertexCount + vertCount > CS_DECAL_MAX_VERTS_PER_DECAL)
-    vertCount = CS_DECAL_MAX_VERTS_PER_DECAL - vertexCount;
+  if (vertexCount + vertCount > decalTemplate->GetMaximumVertexCount ())
+    vertCount = decalTemplate->GetMaximumVertexCount () - vertexCount;
 
   if (vertCount < 3)
     return;
 
   // check if we hit our maximum allowed indices
   size_t idxCount = (vertCount - 2) * 3;
-  if (indexCount + idxCount > CS_DECAL_MAX_TRIS_PER_DECAL * 3)
+  if (indexCount + idxCount > decalTemplate->GetMaximumTriangleCount () * 3)
     return;
 
   // if this face is too perpendicular, then we'll need to push it out a bit

@@ -19,95 +19,50 @@
 #ifndef __TERRAINED_H__
 #define __TERRAINED_H__
 
-#include <crystalspace.h>
+#include "cstool/demoapplication.h"
+#include "imesh/terrain2.h"
+#include "ivaria/decal.h"
 
 struct iTerrainModifier;
 
-/**
- * This is the main class of this Tutorial. It contains the
- * basic initialization code and the main event handler.
- *
- * csApplicationFramework provides a handy object-oriented wrapper around the
- * Crystal Space initialization and start-up functions.
- *
- * csBaseEventHandler provides a base object which does absolutely nothing
- * with the events that are sent to it.
- */
-class TerrainEd : public csApplicationFramework, public csBaseEventHandler
+class TerrainEd : public CS::Utility::DemoApplication
 {
 private:
-  csRef<iTerrainFactory> factory;
+  csRef<iTerrainFactory> terrainFactory;
   csRef<iTerrainSystem> terrain;
-  csRef<iTerrainModifier> mod;
+  csRef<iTerrainModifier> modifier;
   float rectSize;
   float rectHeight;
 
-  csRefArray<iTerrainModifier> undoStack;
+  csTicks lastUpdate;
+  csVector3 lastPosition;
 
-  void UpdateModifier(iEvent& ev);
-
-private:
   int mouse_x, mouse_y;
 
+  csRefArray<iTerrainModifier> undoStack;
+
+  // Decal textures
+  csRef<iDecalManager> decalManager;
+  csRef<iDecalTemplate> decalTemplate;
+  iDecal* decal;
+
 private:
-  /// A pointer to the 3D engine.
-  csRef<iEngine> engine;
-   
-  /// A pointer to the map loader plugin.
-  csRef<iLoader> loader;
-     
-  /// A pointer to the 3D renderer plugin.
-  csRef<iGraphics3D> g3d;
-	
-  /// A pointer to the keyboard driver.
-  csRef<iKeyboardDriver> kbd;
-	  
-  /// A pointer to the virtual clock.
-  csRef<iVirtualClock> vc;
-
-  /// A pointer to the view which contains the camera.
-  csRef<iView> view;
-
-  /// The render manager, cares about selecting lights+meshes to render
-  csRef<iRenderManager> rm;
-
-  /// A pointer to the sector the camera will be in.
-  iSector* room;
-
-  /// Current orientation of the camera.
-  float rotX, rotY;
-
-  /// Event handlers to draw and print the 3D canvas on each frame
-  csRef<FramePrinter> printer;
+  void UpdateModifier (bool checkPosition = false);
+  void RemoveModifier ();
 
 public:
-  bool SetupModules ();
-
-  bool OnKeyboard (iEvent&);
-
-  bool OnMouseClick (iEvent& ev);
-
-  bool OnMouseDown (iEvent& ev);
-
-  bool OnMouseMove (iEvent& ev);
-  
-  void Frame ();
-  
-  /// Here we will create our little, simple world.
-  void CreateRoom ();
-    
-  /// Construct our game. This will just set the application ID for now.
   TerrainEd ();
-
-  /// Destructor.
   ~TerrainEd ();
 
-  /// Final cleanup.
-  void OnExit ();
-
   bool OnInitialize (int argc, char* argv[]);
-
   bool Application ();
+
+  bool CreateRoom ();
+    
+  void Frame ();
+  bool OnKeyboard (iEvent&);
+  bool OnMouseClick (iEvent& ev);
+  bool OnMouseDown (iEvent& ev);
 
   CS_EVENTHANDLER_PHASE_LOGIC("application.terrained")
 };

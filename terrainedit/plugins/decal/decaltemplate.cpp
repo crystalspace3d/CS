@@ -39,7 +39,9 @@ csDecalTemplate::csDecalTemplate ()
     perpendicularFaceOffset (0.01f),
     mainColor (1, 1, 1, 1),
     topColor (1, 1, 1, 1),
-    bottomColor (1, 1, 1, 1)
+    bottomColor (1, 1, 1, 1),
+    maxVertices (128),
+    maxTriangles (64)
 {
 #ifdef CS_DECAL_CLIP_DECAL
   hasClipping = true;
@@ -174,6 +176,16 @@ const csColor4& csDecalTemplate::GetBottomColor () const
   return bottomColor;
 }
 
+size_t csDecalTemplate::GetMaximumVertexCount () const
+{
+  return maxVertices;
+}
+
+size_t csDecalTemplate::GetMaximumTriangleCount () const
+{
+  return maxTriangles;
+}
+
 void csDecalTemplate::SetTimeToLive (float timeToLive)
 {
   this->timeToLive = timeToLive;
@@ -257,3 +269,14 @@ void csDecalTemplate::SetBottomColor (const csColor4& color)
 {
   bottomColor = color;
 }
+
+void csDecalTemplate::SetMaximumVertexCount (size_t count)
+{
+  maxVertices = count;
+}
+
+void csDecalTemplate::SetMaximumTriangleCount (size_t count)
+{
+  maxTriangles = count;
+}
+

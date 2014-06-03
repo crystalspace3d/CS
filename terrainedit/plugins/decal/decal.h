@@ -35,9 +35,6 @@
 #include "csutil/eventnames.h"
 #include "iutil/virtclk.h"
 
-#define CS_DECAL_MAX_TRIS_PER_DECAL         64 
-#define CS_DECAL_MAX_VERTS_PER_DECAL        128 
-
 class csDecalManager;
 
 struct csDecalRenderMeshInfo

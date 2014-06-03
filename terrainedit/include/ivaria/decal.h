@@ -58,7 +58,7 @@ struct iDecal
  */
 struct iDecalTemplate : public virtual iBase
 {
-  SCF_INTERFACE(iDecalTemplate, 2, 0, 0);
+  SCF_INTERFACE(iDecalTemplate, 2, 0, 1);
 
   virtual iObject* QueryObject () = 0;
 
@@ -328,6 +328,28 @@ struct iDecalTemplate : public virtual iBase
    * Get whether or not the decal will do any clipping.
    */
   virtual bool HasClipping () const = 0;
+
+  /**
+   * Get the maximum count of vertices that can be defined in the decal. The
+   * default value is 128.
+   */
+  virtual size_t GetMaximumVertexCount () const = 0;
+
+  /**
+   * Set the maximum count of vertices that can be defined in the decal.
+   */
+  virtual void SetMaximumVertexCount (size_t count) = 0;
+
+  /**
+   * Get the maximum count of triangles that can be defined in the decal. The
+   * default value is 64.
+   */
+  virtual size_t GetMaximumTriangleCount () const = 0;
+
+  /**
+   * Set the maximum count of triangles that can be defined in the decal.
+   */
+  virtual void SetMaximumTriangleCount (size_t count) = 0;
 };
 
 /**

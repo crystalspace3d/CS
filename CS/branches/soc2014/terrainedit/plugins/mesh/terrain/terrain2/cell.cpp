@@ -20,6 +20,7 @@
 #include "cssysdef.h"
 
 #include "csgeom/csrect.h"
+#include "csgeom/poly3d.h"
 #include "csgeom/vector3.h"
 #include "csgfx/imagebase.h"
 #include "csgfx/imagemanipulate.h"
@@ -27,6 +28,7 @@
 
 #include "iengine/material.h"
 #include "imesh/terrain2.h"
+#include "ivaria/decal.h"
 
 #include "cell.h"
 #include "terrainsystem.h"
@@ -608,8 +610,16 @@ void csTerrainCell::LerpHelper (const csVector2& pos, int& x1, int& x2,
   yfrac = y - y1;
 }
 
+csVector3 csTerrainCell::GetGridPoint (int x, int y) const
+{
+  return csVector3 (position.x + x * step_x,
+		    heightmap[(gridWidth - 1 - y) * gridWidth + x],
+		    position.y + y * step_z);
+}
+
 float csTerrainCell::GetHeight (int x, int y) const
 {
+  // TODO: heightmap[(gridWidth - 1 - y) * gridWidth + x] instead?
   return heightmap[y * gridWidth + x];
 }
 
@@ -770,6 +780,53 @@ void csTerrainCell::SetFeederData (csRefCount* data)
   feederData = data;
 }
 
+void csTerrainCell::BuildDecal (const csVector3* pos, float decalRadius,
+				iDecalBuilder* decalBuilder)
+{
+  csPoly3D poly;
+  poly.SetVertexCount (3);
+  float squaredRadius = decalRadius * decalRadius;
+
+  int minX = csMax ((int) ((pos->x - position.x - decalRadius) / step_x), 0);
+  int maxX = csMin ((int) ((pos->x - position.x + decalRadius) / step_x + 1.f), gridWidth - 1);
+  int minZ = csMax ((int) ((pos->z - position.y - decalRadius) / step_z), 0);
+  int maxZ = csMin ((int) ((pos->z - position.y + decalRadius) / step_z + 1.f), gridHeight - 1);
+
+  for (int i = minX; i < maxX; i++)
+    for (int j = minZ; j < maxZ; j++)
+    {
+      // TODO: This test is an approximation. Use eg a line segment VS sphere intersection
+      // test instead
+      csVector3 a = GetGridPoint (i, j);
+      csVector3 b = GetGridPoint (i + 1, j);
+      csVector3 c = GetGridPoint (i, j + 1);
+      csVector3 d = GetGridPoint (i + 1, j + 1);
+
+      bool ain = (a - *pos).SquaredNorm () < squaredRadius;
+      bool bin = (b - *pos).SquaredNorm () < squaredRadius;
+      bool cin = (c - *pos).SquaredNorm () < squaredRadius;
+      bool din = (d - *pos).SquaredNorm () < squaredRadius;
+
+      if (ain || din || cin)
+      {
+	poly[0] = a;
+	poly[1] = c;
+	poly[2] = d;
+	decalBuilder->AddStaticPoly (poly);
+      }
+
+      if (ain || bin || din)
+      {
+	poly[0] = a;
+	poly[1] = d;
+	poly[2] = b;
+	decalBuilder->AddStaticPoly (poly);
+      }
+    }
+
+  // TODO: add a decal controller in order to update the position of the vertices
+  // when the LOD is changed on the cell or when the heightmap is modified
+}
 
 }
 CS_PLUGIN_NAMESPACE_END(Terrain2)

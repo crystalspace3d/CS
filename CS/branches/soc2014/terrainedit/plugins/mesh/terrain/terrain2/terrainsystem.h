@@ -149,6 +149,9 @@ public:
         csVector3& isect, float* pr, int* polygon_idx,
         iMaterialWrapper** material, bool bf);
 
+  virtual void BuildDecal (const csVector3* pos, float decalRadius,
+			   iDecalBuilder* decalBuilder);
+
   // ------------ iObjectModel implementation ------------
   virtual iTerrainSystem* GetTerrainColldet () { return this; }
   

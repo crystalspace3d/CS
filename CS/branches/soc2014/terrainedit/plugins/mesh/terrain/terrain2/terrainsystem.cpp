@@ -705,6 +705,15 @@ bool csTerrainSystem::HitBeamObject (const csVector3& start,
   return rc;
 }
 
+void csTerrainSystem::BuildDecal (const csVector3* pos, float decalRadius,
+				  iDecalBuilder* decalBuilder)
+{
+  // TODO: add support for defining decals before the terrain cells have been loaded or drawn
+  for (size_t i = 0; i < cells.GetSize (); ++i)
+    if (csIntersect3::BoxSphere (cells[i]->GetBBox (), *pos, decalRadius))
+      cells[i]->BuildDecal (pos, decalRadius, decalBuilder);
+}
+
 csColliderType csTerrainSystem::GetColliderType ()
 {
   return CS_TERRAIN_COLLIDER;

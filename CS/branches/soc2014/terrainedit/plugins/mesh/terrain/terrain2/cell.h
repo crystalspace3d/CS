@@ -123,6 +123,8 @@ public:
     const csReversibleTransform& trans, bool oneHit,
     iTerrainCollisionPairArray* pairs);
 
+  virtual csVector3 GetGridPoint (int x, int y) const;
+
   virtual float GetHeight (int x, int y) const;
   virtual float GetHeight (const csVector2& pos) const;
 
@@ -146,6 +148,9 @@ public:
 
   virtual csRefCount* GetFeederData () const;
   virtual void SetFeederData (csRefCount* data);
+
+  void BuildDecal (const csVector3* pos, float decalRadius,
+		   iDecalBuilder* decalBuilder);
 
   // unloading
   csTicks GetLRU () const

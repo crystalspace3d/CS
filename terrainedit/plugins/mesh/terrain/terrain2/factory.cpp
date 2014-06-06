@@ -33,6 +33,7 @@ csTerrainFactory::csTerrainFactory (iMeshObjectType *pParent)
   maxLoadedCells (~0), virtualViewDistance (2.0f),
   autoPreLoad (false)
 {
+
 }
 
 csTerrainFactory::~csTerrainFactory ()
@@ -58,7 +59,7 @@ csPtr<iMeshObject> csTerrainFactory::NewInstance ()
     csRef<csTerrainCell> c = cells[i]->CreateCell (terrain);
     terrain->AddCell (c);
   }
-
+    
   return csPtr<iMeshObject> (terrain);
 }
 

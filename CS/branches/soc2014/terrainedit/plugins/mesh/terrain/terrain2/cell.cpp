@@ -46,7 +46,6 @@ csTerrainCell::csTerrainCell (csTerrainSystem* terrain, const char* name, int gr
   : scfImplementationType (this),
   terrain (terrain), name (name), materialMapWidth (materialMapWidth), 
   materialMapHeight (materialMapHeight), position (position), size (size),
-  minHeight (-FLT_MAX*0.9f), maxHeight (FLT_MAX*0.9f),
   renderProperties (renderProperties), collisionProperties (collisionProperties),
   feederProperties (feederProperties),
   needTangentsUpdate (true),
@@ -66,6 +65,9 @@ csTerrainCell::csTerrainCell (csTerrainSystem* terrain, const char* name, int gr
   
   step_x = size.x / (this->gridWidth - 1);
   step_z = size.z / (this->gridHeight - 1);
+
+  minHeight = 0.f;
+  maxHeight = size.y;
 
   const csVector3 size01 = size * 0.1f;
   boundingBox.Set (position.x - size01.x, minHeight - size01.y, position.y - size01.z,

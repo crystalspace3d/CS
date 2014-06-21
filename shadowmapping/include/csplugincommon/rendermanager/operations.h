@@ -383,7 +383,7 @@ namespace RenderManager
   
   /**
    * Unspecialized traits class for operations defining their ordering
-   * and parallellization.
+   * and parallelization.
    */
   template<typename T>
   struct OperationTraits

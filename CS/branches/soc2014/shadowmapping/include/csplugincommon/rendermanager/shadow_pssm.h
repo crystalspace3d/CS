@@ -716,6 +716,9 @@ namespace RenderManager
 	int numFrustums = l->GetType() == CS_LIGHT_POINTLIGHT ? 6 : 1;
 	frustums.SetSize(numFrustums);
 
+	
+	//numFrustums = 1; // Test code 
+
 	// create frustums
 	for(int i = 0; i < numFrustums; ++i)
 	{

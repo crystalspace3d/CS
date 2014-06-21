@@ -147,6 +147,8 @@ public:
     // Setup shaders and tickets
     DeferredSetupShader (context, shaderManager, layerConfig, deferredLayer, lightingLayer, zonlyLayer);
 
+	
+
     // Setup shadows and lighting
     {
       typename ShadowType::ShadowParameters shadowParam (rmanager->lightPersistent.shadowPersist, context.owner, rview);
@@ -155,7 +157,7 @@ public:
       {
 	// setup shadows for all lights
 	ForEachLight (context, shadowParam);
-
+    //csPrintf("Checking if it's running.");
 	// setup shadows for all meshes
 	ForEachMeshNode (context, shadowParam);
 

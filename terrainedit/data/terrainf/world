@@ -160,7 +160,9 @@
         <params>
             <renderer>crystalspace.mesh.object.terrain2.bruteblockrenderer</renderer>
             <collider>crystalspace.mesh.object.terrain2.collider</collider>
-            <feeder>crystalspace.mesh.object.terrain2.simpledatafeeder</feeder>
+	    <!-- TODO: Revert into the 'simple' data feeder -->
+	    <!--feeder>crystalspace.mesh.object.terrain2.simpledatafeeder</feeder-->
+            <feeder>crystalspace.mesh.object.terrain2.modifiabledatafeeder</feeder>
             <maxloadedcells>-1</maxloadedcells>
             <cells>
                 <celldefault>

@@ -1,4 +1,5 @@
 #include "VoronoiFrac.h"
+using namespace CS::Collisions;
 
 
 static csVector3 currentVoronoiPoint;
@@ -13,8 +14,8 @@ struct pointCmp
 {
 	bool operator()(const csVector3 &p1, const csVector3 &p2)
 	{
-		float v1 = (p1 - currentVoronoiPoint).Norm();
-		float v2 = (p2 - currentVoronoiPoint).Norm();
+		float v1 = (p1 - currentVoronoiPoint).SquaredNorm();
+		float v2 = (p2 - currentVoronoiPoint).SquaredNorm();
 		bool result0 = v1 < v2;
 		return result0;
 	}
@@ -82,6 +83,8 @@ void VoronoiFrac::getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArr
 
 void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVector3 &bboxMin, const csVector3 &bboxMax,csRef<iMeshWrapper> &mesh)
 {
+
+	//Data declaration
 	csArray<csVector3> vertices;
 	float nlength, maxDistance, distance;
 	csArray<csVector3> sortedVoronoiPoints;
@@ -94,28 +97,6 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 	int numPlaneIndices;
 	int cellnum = 0;
 	int i, j, k;
-
-	/*
-
-	//iStringSet crap
-	csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet>(object_reg, "crystalspace.shared.stringset");
-	csStringID baseID = strings->Request("base");
-	csStringID collisionID = strings->Request("colldet");
-
-
-	csTriangle * meshTriangles = mesh->GetMeshObject()->GetObjectModel()->GetTriangleData(baseID)->GetTriangles();
-	csVector3 * meshVertices = mesh->GetMeshObject()->GetObjectModel()->GetTriangleData(baseID)->GetVertices();
-
-	csTriangle *temp = &meshTriangles[0];
-	csVector3 a = temp->a;
-	csVector3 b = temp->b;
-	csVector3 c = temp->c;
-
-	csVector3 M = b - a;
-	csVector3 N = c - b;
-	csVector3 normal = M%N;		//this gives us normal to the plane
-
-	*/
 
 
 	int numPoints = points.GetSize();
@@ -180,7 +161,10 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 
 		/*
 		The convex hull code should go here below. commit at earliest.
-		Also, there is some trouble producing 'jam' files, which will be uploaded at the earliest.
 		*/
+		csRef<iConvexDecomposer> CHull;
+		csRef<csTriangleMesh> trimesh = CHull->ConvexHull(vertices);
+		convexShards.Push(trimesh);
+
 	}
 }

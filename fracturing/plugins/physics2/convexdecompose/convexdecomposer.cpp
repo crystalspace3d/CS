@@ -16,6 +16,8 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "crystalspace.h"
+
 #include "cssysdef.h"
 
 #include "convexdecomposer.h"
@@ -35,6 +37,7 @@
 #include "hacd/hacdICHull.h"
 #include "hacd/hacdGraph.h"
 #include "hacd/hacdHACD.h"
+
 
 CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 {
@@ -60,8 +63,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
     //-----------------------------------------------
 
     // Setup
-    std::vector< HACD::Vec3<HACD::Real> > hacdVerts;
-    std::vector< HACD::Vec3<long> > hacdTris;
+    std::vector< HACD::Vec3<HACD::Real> > hacdVerts;	//vector of HACD vertices
+    std::vector< HACD::Vec3<long> > hacdTris;			//vector of HACD triangles
 
     {
       // Copy Vertices
@@ -149,5 +152,72 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
     }
   }
 
+  
+  //NEW CODE I'M ADDING
+  
+  csRef<csTriangleMesh> ConvexDecomposer::ConvexHull(csArray<csVector3> &vertices)
+  {
+	//----------------------------------------------
+	//HACD
+	//----------------------------------------------
+
+	//setup
+	  csArray<HACD::Vec3<HACD::Real> > CHullVerts;
+	  csArray<HACD::Vec3<long> > CHullTris;
+
+	  int numVertices=vertices.GetSize();
+	  //copy vertices
+	  for(int i=0;i<numVertices;i++)
+	  {
+		  HACD::Vec3<HACD::Real> vertex (vertices[i].x, vertices[i].y, vertices[i].z);
+		  CHullVerts.Push (vertex);
+	  }
+
+	  HACD::ICHull convexHull;
+
+	  int count=0;
+	  while(count!=numVertices)
+	  {
+		convexHull.AddPoint(CHullVerts[count]);
+		count++;
+	  }
+
+	  convexHull.Process();
+
+	  HACD::TMMesh *computedHull = &convexHull.GetMesh();
+
+	  csRef<csTriangleMesh> triMesh;
+      triMesh.AttachNew (new csTriangleMesh);
+	  
+	  int numCHullVertices = computedHull->GetNVertices();
+	  int numCHullTriangles = computedHull->GetNTriangles();
+
+	  HACD::CircularList<HACD::TMMVertex> *vertList = &computedHull->GetVertices();
+	  HACD::CircularList<HACD::TMMTriangle> *triList = &computedHull->GetTriangles();
+
+	  count=0;
+	  while(count!=numCHullVertices)
+	  {
+		  csVector3 vertex(vertList[count].GetData().GetVertex().X(),vertList[count].GetData().GetVertex().Y(),vertList[count].GetData().GetVertex().Z());
+		  triMesh->AddVertex(vertex);
+		  count++;
+	  }
+	  count=0;
+	  while(count!=numCHullTriangles)
+	  {
+		  HACD::TMMVertex *triangleVerts = triList->GetData().GetTriangles();
+		  
+		  triMesh->AddTriangle((int)triangleVerts[0].m_id,(int)triangleVerts[1].m_id,(int)triangleVerts[2].m_id);
+		  count++;
+	  }
+
+	  /* There seems to be some bug in above loop. Some testing required. */
+	  
+	  //HACD::TMMVertex *vert = &vertList[3].GetData().m_pos;
+	  //HACD::Vec3<HACD::Real> *v = &vert->m_pos;
+
+	  return triMesh;
+  }
+  
 }
 CS_PLUGIN_NAMESPACE_END (ConvexDecompose)

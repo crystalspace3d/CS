@@ -19,6 +19,8 @@
 #ifndef __CS_CONVEXDECOMPOSE_H__
 #define __CS_CONVEXDECOMPOSE_H__
 
+#include "crystalspace.h"
+
 #include "csutil/scf.h"
 #include "csutil/scf_implementation.h"
 #include "iutil/comp.h"
@@ -38,6 +40,7 @@ public scfImplementation2<ConvexDecomposer, iComponent, iConvexDecomposer>
 {
 private:
   iObjectRegistry* object_reg;
+  csRef<csTriangleMesh> convexHull;
 
 public:
   ConvexDecomposer (iBase* parent);
@@ -46,6 +49,8 @@ public:
   bool Initialize (iObjectRegistry* object_reg);
 
   virtual void DecomposeMesh (iTriangleMesh* triMesh, csRefArray<iTriangleMesh>& result) const;
+
+  virtual csRef<csTriangleMesh> ConvexHull(csArray<csVector3> &vertices);
 };
 
 }

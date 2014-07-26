@@ -5,18 +5,25 @@
 #include<crystalspace.h>
 #include<set>
 #include<vector>
-#include "G:\Programs\CS\include\cstool\csapplicationframework.h"
+#include "cstool\csapplicationframework.h"
+#include "ivaria\convexdecompose.h"
 
-class VoronoiFrac : public csApplicationFramework
+
+class VoronoiFrac 
 {
 public:
 
 	VoronoiFrac();
 	~VoronoiFrac();
 
+	csArray<csRef<csTriangleMesh> > GetShards(){ return convexShards; };
 	void getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArray<csVector3> &verticesOut, std::set<int> &planeIndicesOut);
 
 	void voronoiBBoxFrac(const csArray<csVector3> &points,const csVector3 &bboxMin,const csVector3 &bboxMax,csRef<iMeshWrapper> &mesh);
+
+private:
+
+	csArray<csRef<csTriangleMesh> > convexShards;
 
 };
 

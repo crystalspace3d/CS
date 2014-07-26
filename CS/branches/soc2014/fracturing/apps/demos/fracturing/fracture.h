@@ -20,8 +20,10 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define __FRACTURE_H__
 
 #include <crystalspace.h>
+#include "VoronoiFrac.h"
 
-#include<ivaria/convexdecompose.h>
+using namespace CS::Collisions;	//for iConvexDecomposer plugin interface
+
 /**
 * This is the main class of this Tutorial. It contains the
 * basic initialization code and the main event handler.
@@ -32,8 +34,9 @@ Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 * csBaseEventHandler provides a base object which does absolutely nothing
 * with the events that are sent to it.
 */
-class Fracture : public csApplicationFramework, public csBaseEventHandler
+class Fracture : public csApplicationFramework, public csBaseEventHandler, public VoronoiFrac
 {
+
 private:
 	/// A pointer to the 3D engine.
 	csRef<iEngine> engine;
@@ -55,6 +58,10 @@ private:
 
 	/// The render manager, cares about selecting lights+meshes to render
 	csRef<iRenderManager> rm;
+
+	/// The pointer to convex decomposer
+	
+	csRef<iConvexDecomposer> convexDecomposer;
 
 	/// A pointer to the sector the camera will be in.
 	iSector* room;

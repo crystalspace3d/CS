@@ -231,6 +231,9 @@ bool Fracture::SetupModules()
 	loader = csQueryRegistry<iLoader>(GetObjectRegistry());
 	if (!loader) return ReportError("Failed to locate Loader!");
 
+	convexDecomposer = csQueryRegistry<iConvexDecomposer>(GetObjectRegistry());
+	if (!convexDecomposer) return ReportError("Failed to set up convex decomposer plugin!");
+
 	// We need a View to the virtual world.
 	view.AttachNew(new csView(engine, g3d));
 	iGraphics2D* g2d = g3d->GetDriver2D();
@@ -241,8 +244,6 @@ bool Fracture::SetupModules()
 	CreateRoom();
 
 	CreateTeapot();
-
-	//PutRandomPoints();
 
 	// Let the engine prepare the meshes and textures.
 	engine->Prepare();
@@ -349,8 +350,8 @@ void Fracture::CreateTeapot()
 		return;
 	}
 
-	
-	csRef<iMeshFactoryWrapper> imeshfact (engine->FindMeshFactory("Teapot"));//Teapot
+
+	csRef<iMeshFactoryWrapper> imeshfact(engine->FindMeshFactory("Teapot"));//Teapot
 
 	if (imeshfact == 0)
 	{
@@ -359,54 +360,21 @@ void Fracture::CreateTeapot()
 
 	csBox3 bx(3.0f);
 	CS::Geometry::Box rndrBx(bx);
-	
-	//csRef<iMeshWrapper> teapot = CS::Geometry::GeneralMeshBuilder::CreateFactoryAndMesh(engine, room, "dabba", "dabbaFactory", &rndrBx);
-	csRef<iMeshWrapper> teapot (engine->CreateMeshWrapper(imeshfact, "my_teapot", room, csVector3(0, 3, 0)));
-	
-	//iMaterialWrapper* stone = engine->GetMaterialList()->FindByName("stone4");
-	//teapot->GetMeshObject()->SetMaterialWrapper(stone);
+
+	csRef<iMeshWrapper> teapot(engine->CreateMeshWrapper(imeshfact, "my_teapot", room, csVector3(0, 3, 0)));
 
 	teapot->SetRenderPriority(4);
 	using namespace CS::Geometry;
 
-	//Now create a bounding box around the teapot
-	//csBox3 boundingBox(teapot->GetWorldBoundingBox());
-
-	/*
-	csMatrix3 trans;
-	trans.Identity();
-	trans.m22 = 2;
-	teapot->GetMovable()->SetTransform(trans);
-	*/
 	teapot->GetMovable()->UpdateMove();
 	csBox3 boundingBox = teapot->GetWorldBoundingBox();
-	
-	PutRandomPoints(boundingBox, 5,teapot);
 
-	
-}
+	PutRandomPoints(boundingBox, 5, teapot);
 
-void Fracture::HitBeamFunction(csRef<iMeshWrapper> mesh,csVector3 v,csBox3 &box)
-{
-	/*
-	'mesh' is the input mesh
-	'box' is its bounding box.
-	'v' is the point in 3d space(which we need to check whether it is inside mesh)
-	v2 is the point on the back of the bounding box with same x,y as 'v' .
-	*/
-
-
-	
-
-
-
-
-	
 }
 
 
-
-void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> whateverMesh)//CS::Geometry::Box box
+void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> whateverMesh)
 {
 
 	
@@ -421,7 +389,7 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh(engine, room, "cube", "cubeFact", &renderBox);
 	
 
-	mesh->SetRenderPriority(4);
+	//mesh->SetRenderPriority(4);
 
 	iMaterialWrapper* stone = engine->GetMaterialList()->FindByName("stone4");
 
@@ -430,15 +398,14 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	
 	iMaterialWrapper* tm = engine->GetMaterialList()->FindByName("green");
 
-	mesh->GetMeshObject()->SetMaterialWrapper(material);//stone
-	
-	//mesh->SetZBufMode(CS_ZBUF_TEST);
+	//mesh->GetMeshObject()->SetMaterialWrapper(material);//stone
 
-	mesh->GetMovable()->MovePosition(csVector3(0, 0, 0));//-2,4,0
+	//mesh->GetMovable()->MovePosition(csVector3(0, 0, 0));//-2,4,0
 
-	mesh->GetMovable()->UpdateMove();
+	//mesh->GetMovable()->UpdateMove();
 
-	csVector3 points[10]; // Create 5 points
+	csArray<csVector3> points; // Create 5 points
+	points.SetSize(10);
 
 	csVector3 min = box.Min();  //min of a box -2,-2,-2
 	csVector3 max = box.Max(); //max of a box 2,2,2
@@ -456,7 +423,7 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 
 	
 	/*
-	Notice that now we will make 5 meshes(spheres) with 'shpereFact' as factory and move each of these
+	Notice that now we will make 10 meshes(spheres) with 'shpereFact' as factory and move each of these
 	"points" to the their respective positions pointed by points[i] ;
 	*/
 
@@ -472,5 +439,29 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 		pointSphere[i]->GetMovable()->MovePosition(points[i]);
 
 	}
+
+	//getting base and collision mesh ids
+	csRef<iStringSet> strings = csQueryRegistryTagInterface<iStringSet>(object_reg, "crystalspace.shared.stringset");
+	csStringID baseID = strings->Request("base");
+	csStringID collisionID = strings->Request("colldet");
+
+	
+	VoronoiFrac frac;
+
+	//error occurs when calling this function
+	frac.voronoiBBoxFrac(points,min,max,mesh);
+
+	/*
+	csArray< csRef<csTriangleMesh> > shardMeshList = frac.GetShards();
+
+	iTriangleMesh* shardTriMesh = shardMeshList[5];
+
+	csRef<iMeshWrapper> shard1;
+	shard1->GetMeshObject()->GetObjectModel()->SetTriangleData(baseID,shardTriMesh);
+
+
+	//csRef<iMeshWrapper> shardRenderMesh = GeneralMeshBuilder::CreateFactoryAndMesh(engine, room, "shardRenderMesh", "shardMeshFactory", shard1);
+
+	*/
 	
 }

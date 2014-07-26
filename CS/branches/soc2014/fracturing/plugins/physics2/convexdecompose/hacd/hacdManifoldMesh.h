@@ -71,11 +71,14 @@ namespace HACD
 		public:
 																TMMVertex(void);
                                                                 ~TMMVertex(void);
+			Vec3<Real>											GetVertex(){return m_pos;}
+			size_t												m_id;
+																//added separately.
+																//not part of original library
         
         private:
 			Vec3<Real>										m_pos;
 			long												m_name;
-            size_t												m_id;
 			CircularListElement<TMMEdge> *						m_duplicate;		// pointer to incident cone edge (or NULL)
 			bool												m_onHull;
 			bool												m_tag;
@@ -116,6 +119,8 @@ namespace HACD
 		public:
 																TMMTriangle(void);
 																~TMMTriangle(void);
+			TMMVertex*											GetTriangles(){return &m_vertices[3]->GetData();}
+																/* ^^ function added outside original library*/
         private:
             size_t												m_id;
 			CircularListElement<TMMEdge> *						m_edges[3];

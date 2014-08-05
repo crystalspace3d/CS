@@ -367,8 +367,8 @@ void Fracture::CreateTeapot()
 	using namespace CS::Geometry;
 
 	teapot->GetMovable()->UpdateMove();
-	csBox3 boundingBox = teapot->GetWorldBoundingBox();
-
+	csBox3 boundingBox(csVector3(-1,-1,-1),csVector3(1,1,1)); //= teapot->GetWorldBoundingBox();
+	boundingBox.SetCenter(csVector3(0,0,0));
 	PutRandomPoints(boundingBox, 5, teapot);
 
 }
@@ -389,7 +389,7 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	csRef<iMeshWrapper> mesh = GeneralMeshBuilder::CreateFactoryAndMesh(engine, room, "cube", "cubeFact", &renderBox);
 	
 
-	//mesh->SetRenderPriority(4);
+	mesh->SetRenderPriority(4);//
 
 	iMaterialWrapper* stone = engine->GetMaterialList()->FindByName("stone4");
 
@@ -398,29 +398,31 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	
 	iMaterialWrapper* tm = engine->GetMaterialList()->FindByName("green");
 
-	//mesh->GetMeshObject()->SetMaterialWrapper(material);//stone
+	mesh->GetMeshObject()->SetMaterialWrapper(material);//stone//
 
 	//mesh->GetMovable()->MovePosition(csVector3(0, 0, 0));//-2,4,0
 
 	//mesh->GetMovable()->UpdateMove();
 
 	csArray<csVector3> points; // Create 5 points
-	points.SetSize(10);
+//	points.SetSize(2);
 
 	csVector3 min = box.Min();  //min of a box -2,-2,-2
 	csVector3 max = box.Max(); //max of a box 2,2,2
-	
+	points.Push(csVector3((float)1/2,(float)1/3,0));
+	points.Push(csVector3((float)-1/2,(float)-1/3,0));
 
-	csRandomFloatGen rng;    //randomly generated float
+	//csRandomFloatGen rng;    //randomly generated float
 
-	for (int i = 0; i < 10; i++)
+	/*
+	for (int i = 0; i < 2; i++)
 	{
 		points[i].x = (rng.Get(min[0], max[0]));
 		points[i].y = (rng.Get(min[1], max[1]));
 		points[i].z = (rng.Get(min[2], max[2]));
 
 	}
-
+	*/
 	
 	/*
 	Notice that now we will make 10 meshes(spheres) with 'shpereFact' as factory and move each of these
@@ -430,9 +432,9 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	csEllipsoid ellipse(csVector3(0, 0, 0), csVector3(0.05f, 0.05f, 0.05f));
 	Sphere sphere(ellipse, 10);
 	csRef<iMeshFactoryWrapper> sphereFact = GeneralMeshBuilder::CreateFactory(engine, "sphereFact", &sphere);
-		csRef<iMeshWrapper> pointSphere[10];
+		csRef<iMeshWrapper> pointSphere[2];
 	
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		pointSphere[i] = GeneralMeshBuilder::CreateMesh(engine, room, "", sphereFact);
 		pointSphere[i]->GetMeshObject()->SetMaterialWrapper(tm);
@@ -446,10 +448,10 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	csStringID collisionID = strings->Request("colldet");
 
 	
-	VoronoiFrac frac;
+	VoronoiFrac* frac = new VoronoiFrac();
 
 	//error occurs when calling this function
-	frac.voronoiBBoxFrac(points,min,max,mesh);
+	frac->voronoiBBoxFrac(points,min,max,mesh);
 
 	/*
 	csArray< csRef<csTriangleMesh> > shardMeshList = frac.GetShards();

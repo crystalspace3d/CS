@@ -16,14 +16,14 @@ public:
 	VoronoiFrac();
 	~VoronoiFrac();
 
-	csArray<csRef<csTriangleMesh> > GetShards(){ return convexShards; };
+	//csArray<csRef<csTriangleMesh> > GetShards(){ return convexShards; };
 	void getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArray<csVector3> &verticesOut, std::set<int> &planeIndicesOut);
 
 	void voronoiBBoxFrac(const csArray<csVector3> &points,const csVector3 &bboxMin,const csVector3 &bboxMax,csRef<iMeshWrapper> &mesh);
 
 private:
 
-	csArray<csRef<csTriangleMesh> > convexShards;
+	//csArray<csRef<csTriangleMesh> > convexShards;
 
 };
 

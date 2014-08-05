@@ -3,6 +3,7 @@ using namespace CS::Collisions;
 
 
 static csVector3 currentVoronoiPoint;
+csArray<csVector3> potentialVertexList;
 
 VoronoiFrac::VoronoiFrac()
 {}
@@ -24,6 +25,7 @@ struct pointCmp
 
 void VoronoiFrac::getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArray<csVector3> &verticesOut, std::set<int> &planeIndicesOut)
 {
+	potentialVertexList.SetSize(0);
 	verticesOut.SetSize(0);
 	planeIndicesOut.clear();
 	const int numPlanes = planes.GetSize();
@@ -33,22 +35,22 @@ void VoronoiFrac::getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArr
 	for (i = 0; i < numPlanes; i++)
 	{
 		//pick a plane
-		const csPlane3 &N1 = planes[i];
+		const csPlane3 &N1 = planes.Get(i);
 		//from the 'next-closest' plane onwards
 		for (j = i + 1; j < numPlanes; j++)
 		{
-			const csPlane3 &N2 = planes[j];	//get the 2nd plane
+			const csPlane3 &N2 = planes.Get(j);	//get the 2nd plane
 			
 			csVector3 n1(N1.A(), N1.B(), N1.C());
 			csVector3 n2(N2.A(),N2.B(),N2.C());
 			csVector3 n1n2 = n1%n2;			//cross these 2 planes to get line in common with
 			//both planes
 
-			if (n1n2.Norm() > 0.0001)		//If they are NOT parallel
+			if (n1n2.Norm() > 0.000001)		//If they are NOT parallel
 			{
 				for (k = j + 1; k < numPlanes; k++)		//from the next closest plane onwards..
 				{
-					const csPlane3 &N3 = planes[k];		//pick a plane
+					const csPlane3 &N3 = planes.Get(k);		//pick a plane
 					csVector3 n3(N3.A(),N3.B(),N3.C());
 
 					csVector3 n2n3 = n2%n3;			//cross it with the first plane
@@ -57,26 +59,27 @@ void VoronoiFrac::getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArr
 
 					// if (N2 and N3) and (N1 and N3) are both NOT parallel i.e if
 					// lines common with (N2 and N3) and (N1 and N3) are NOT parallel...
-					if (n2n3.Norm()>0.0001 && n3n1.Norm()>0.0001)
+					if (n2n3.Norm()>0.000001 && n3n1.Norm()>0.000001)
 					{
 						float quotient = n1*n2n3;
 						
 						//suppose N1 and n2n3 are not parallel...
-						if (quotient > 0.0001)
+						if (quotient > 0.000001)
 						{
 							//vectors are re-scaled, then added to form a new vector
-							csVector3 potentialVertex(n2n3*N1.DD + n3n1*N2.DD + n1n2*N3.DD);
-							potentialVertex*=(float)(-1 / quotient);
+							csVector3 potentialVertex(n2n3*(N1.D())+ n3n1*(N2.D()) + n1n2*N3.D());
+							potentialVertex*=(float)(1 / quotient);
+							potentialVertexList.Push(potentialVertex);
 
 							//for all planes in vector...
 							for (l = 0; l < numPlanes; l++)
 							{
-								const csPlane3 & NP = planes[l];
+								const csPlane3 & NP = planes.Get(l);
 								const csVector3 np(NP.A(),NP.B(),NP.C());
-
+								float temp = np*potentialVertex , D = NP.DD ;
 								//if this 'potentialVertex' lies outside all the planes,
 								//then reject this point
-								if (((np*potentialVertex) + NP.DD) >0.0001)
+								if ((abs(temp) - abs(D)) > 0)
 									break;
 							}
 
@@ -105,30 +108,30 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 
 	//Data declaration
 	csArray<csVector3> vertices;
-	float nlength, maxDistance, distance;
+	float nlength=0, maxDistance=0, distance=0;
 	csArray<csVector3> sortedVoronoiPoints;
 	sortedVoronoiPoints = points;		//just set this to input points for now
 	csPlane3 plane;
-	csVector3 normal,normalised;
+	csVector3 normal;
 	csArray<csPlane3> planes;
 	std::set<int> planeIndices;
 	std::set<int>::iterator planeIndicesIter;
-	int numPlaneIndices;
+	int numPlaneIndices=0;
 	int cellnum = 0;
 	int i, j, k;
-
 
 	int numPoints = points.GetSize();
 	for (i = 0; i < numPoints; i++)		//for number of voronoi seed points
 	{
-		currentVoronoiPoint = points[i];
-		planes.SetSize(6);
-		planes[0].Set(csVector3(1, 0, 0), bboxMin.x);
-		planes[1].Set(csVector3(0, 1, 0), bboxMin.y);
-		planes[2].Set(csVector3(0, 0, 1), bboxMin.z);
-		planes[3].Set(csVector3(1, 0, 0), bboxMax.x);
-		planes[4].Set(csVector3(0, 1, 0), bboxMax.y);
-		planes[5].Set(csVector3(0, 0, 1), bboxMax.z);
+		currentVoronoiPoint = points.Get(i);
+
+		planes.SetSize(0);
+		planes.Push(csPlane3(csVector3(1, 0, 0), bboxMin.x));
+		planes.Push(csPlane3(csVector3(0, 1, 0), bboxMin.y));
+		planes.Push(csPlane3(csVector3(0, 0, 1), bboxMin.z));
+		planes.Push(csPlane3(csVector3(1, 0, 0), bboxMax.x));
+		planes.Push(csPlane3(csVector3(0, 1, 0), bboxMax.y));
+		planes.Push(csPlane3(csVector3(0, 0, 1), bboxMax.z));
 
 		maxDistance = INFINITE;
 		//sort all vertices by their distance from the current seed point
@@ -137,16 +140,30 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 		for (j = 1; j < numPoints; j++)
 		{
 			//find normal to closest seed point
-			normal = sortedVoronoiPoints[j] - currentVoronoiPoint;
-			nlength = normal.Norm();
-			if (nlength>maxDistance)
+			
+			csVector3 &v1 = currentVoronoiPoint;
+			csVector3 &v2 = sortedVoronoiPoints.Get(j);
+
+			normal.Set(sortedVoronoiPoints.Get(j)-currentVoronoiPoint);
+			//currentVoronoiPoint - sortedVoronoiPoints.Get(j);
+			csVector3 p;
+			if (v2*v1 < 0)
+			{
+				p.Set((v2 + v1) / 2);
+			}
+			else
+				p.Set((v2 - v1) / 2);
+
+			float D = p*normal;
+
+			if (D>maxDistance)
 				break;
 
 			//normalize it
 			normal.Normalize();
 
 			//create perpendicular bisector plane
-			plane.Set(normal,(float)(-nlength/2.0f));
+			plane.Set(normal,(float)D);
 
 			planes.Push(plane);
 			//this function	calculates voronoi vertices anf planes and pushes them onto corresponding
@@ -166,7 +183,7 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 				for (k = 0; k < numPlaneIndices; k++)
 				{
 					if (k != *planeIndicesIter)
-						planes[k] = planes[*planeIndicesIter];
+						planes.Put(k, planes.Get(*planeIndicesIter));
 					planeIndicesIter++;
 				}
 				planes.SetSize(numPlaneIndices);
@@ -174,11 +191,11 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 			}
 
 			//set max distance to displacement with closest voronoi vertex
-			maxDistance = vertices[0].Norm();
+			maxDistance = vertices.Get(0).Norm();
 
 			for (k = 1; k < vertices.GetSize(); k++)
 			{
-				distance = vertices[k].Norm();
+				distance = vertices.Get(k).Norm();
 				if (maxDistance < distance)
 					maxDistance = distance;
 			}
@@ -189,10 +206,11 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 		if (vertices.GetSize() == 0)
 			continue;
 
+
 		//This should produce convex shards for the bounding box
 		csRef<iConvexDecomposer> CHull;
-		csRef<csTriangleMesh> trimesh = CHull->ConvexHull(vertices);
-		convexShards.Push(trimesh);
+//		csRef<csTriangleMesh> trimesh = CHull->ConvexHull(vertices);
+//		convexShards.Push(trimesh);
 
 	}
 }

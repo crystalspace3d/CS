@@ -43,7 +43,7 @@ void csMath3::Between (
   float wid)
 {
   if (pct > EPSILON)
-    pct *= 0.01;
+    pct *= 0.01f;
   else
   {
     float sqdist = (v1 - v2) * (v1 - v2);

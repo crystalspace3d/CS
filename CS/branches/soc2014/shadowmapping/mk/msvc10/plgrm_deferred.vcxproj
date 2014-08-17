@@ -1264,6 +1264,7 @@ copy /y "$(TargetPath)" ..\..\out\debug10-x64\bin\
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\plugins\rendermanager\deferred\rm_deferred.csplugin" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libcrystalspace.vcxproj">

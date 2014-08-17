@@ -289,7 +289,6 @@
                     + shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * (offset + vec2(-1.5,-1.5)), texCoord.z)).x
                     + shadow2D(shadowMap_$L$, vec3(texCoord.xy + texelSize.xy * (offset + vec2( 0.5,-1.5)), texCoord.z)).x;
         attenuation *= 0.25;
-
 <!--
         // filtering using 16-sample lookup (see http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html)
         attenuation = 0.0;

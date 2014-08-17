@@ -83,10 +83,19 @@ bool SelfShadowDemo::OnKeyboard (iEvent &ev)
   csKeyEventType eventtype = csKeyEventHelper::GetEventType(&ev);
   if (eventtype == csKeyEventTypeDown)
   {
-    if (csKeyEventHelper::GetCookedCode (&ev) == 'w')
+	if (csKeyEventHelper::GetCookedCode (&ev) == 'z')
+	{
+		  moveFactor = rotateFactor*5.0f;
+	}
+	else if (csKeyEventHelper::GetCookedCode (&ev) == 'x')
+	{
+		  moveFactor = -rotateFactor*5.0f;
+	}
+    else if (csKeyEventHelper::GetCookedCode (&ev) == 'w')
     {
-      rotateMatrix = csMatrix3(1, 0, 0, 0, cos(rotateFactor), 
-        -sin(rotateFactor), 0, sin(rotateFactor), cos(rotateFactor));
+      rotateMatrix = csMatrix3(	1, 0, 0, 
+								0, cos(rotateFactor),-sin(rotateFactor), 
+						0, sin(rotateFactor), cos(rotateFactor));
     }
     else if (csKeyEventHelper::GetCookedCode (&ev) == 's')
     {
@@ -164,6 +173,7 @@ bool SelfShadowDemo::OnKeyboard (iEvent &ev)
     oldDirection.Normalize();
 
     csVector3 newDirection = (rotateMatrix * oldDirection);
+	newDirection.y += moveFactor; 
     float newLength = oldLength + moveFactor;
     newDirection.Normalize();
 

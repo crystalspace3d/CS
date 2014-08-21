@@ -409,9 +409,17 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 
 	csVector3 min = box.Min();  //min of a box -2,-2,-2
 	csVector3 max = box.Max(); //max of a box 2,2,2
-	points.Push(csVector3((float)1/2,(float)1/3,0));
-	points.Push(csVector3((float)-1/2,(float)-1/3,0));
-
+//	points.Push(csVector3((float)0, (float)0, 0));
+/*	points.Push(csVector3((float)1 / 2, (float)0, 0));
+	points.Push(csVector3((float)-1 / 2, (float)0, 0));
+	points.Push(csVector3((float)0, (float)1 / 2, 0));
+	points.Push(csVector3((float)0, (float)-1 / 2, 0));
+	points.Push(csVector3((float)0, (float)0, (float)1 / 2));
+	points.Push(csVector3((float)0, (float)0, (float)-1 / 2));
+*/
+	points.Push(csVector3((float)-1/3,(float)-1/3,0));
+	points.Push(csVector3((float)1/3,(float)-1/3,0));
+	points.Push(csVector3(0, (float)1 / 3, 0));
 	//csRandomFloatGen rng;    //randomly generated float
 
 	/*
@@ -432,7 +440,8 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	csEllipsoid ellipse(csVector3(0, 0, 0), csVector3(0.05f, 0.05f, 0.05f));
 	Sphere sphere(ellipse, 10);
 	csRef<iMeshFactoryWrapper> sphereFact = GeneralMeshBuilder::CreateFactory(engine, "sphereFact", &sphere);
-		csRef<iMeshWrapper> pointSphere[2];
+	
+	csRef<iMeshWrapper> pointSphere[2];
 	
 	for (int i = 0; i < 2; i++)
 	{
@@ -452,6 +461,24 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 
 	//error occurs when calling this function
 	frac->voronoiBBoxFrac(points,min,max,mesh);
+
+	/*
+	iMaterialWrapper* red = CS::Material::MaterialBuilder::CreateColorMaterial(object_reg, "red_colour", csColor(1.0f, 0.0f, 0.0f));
+
+	const int no_of_points = frac->potentialVertexList.GetSize();
+
+	csRef<iMeshWrapper> potentialVertices[10];
+
+	int i = 0;
+	while (i!=10)
+	{
+		potentialVertices[i] = GeneralMeshBuilder::CreateMesh(engine, room, "", sphereFact);
+		potentialVertices[i]->GetMeshObject()->SetMaterialWrapper(red);
+		potentialVertices[i]->GetMovable()->MovePosition(potentialVertexList.Get(i));
+		i++;
+
+	}
+	*/
 
 	/*
 	csArray< csRef<csTriangleMesh> > shardMeshList = frac.GetShards();

@@ -298,10 +298,7 @@ void Fracture::CreateRoom()
 	csRef<iMeshWrapper> walls = GeneralMeshBuilder::CreateFactoryAndMesh(
 		engine, room, "walls", "walls_factory", &box);
 	walls->GetMeshObject()->SetMaterialWrapper(tm);
-
-	//Now lets make a collider for our room mesh
 	
-
 	// Now we need light to see something.
 	csRef<iLight> light;
 	iLightList* ll = room->GetLights();
@@ -404,22 +401,15 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 
 	//mesh->GetMovable()->UpdateMove();
 
-	csArray<csVector3> points; // Create 5 points
-//	points.SetSize(2);
+	csArray<csVector3> points;
 
-	csVector3 min = box.Min();  //min of a box -2,-2,-2
-	csVector3 max = box.Max(); //max of a box 2,2,2
-//	points.Push(csVector3((float)0, (float)0, 0));
-/*	points.Push(csVector3((float)1 / 2, (float)0, 0));
-	points.Push(csVector3((float)-1 / 2, (float)0, 0));
-	points.Push(csVector3((float)0, (float)1 / 2, 0));
-	points.Push(csVector3((float)0, (float)-1 / 2, 0));
-	points.Push(csVector3((float)0, (float)0, (float)1 / 2));
-	points.Push(csVector3((float)0, (float)0, (float)-1 / 2));
-*/
-	points.Push(csVector3((float)-1/3,(float)-1/3,0));
-	points.Push(csVector3((float)1/3,(float)-1/3,0));
-	points.Push(csVector3(0, (float)1 / 3, 0));
+	csVector3 min = box.Min();  
+	csVector3 max = box.Max(); 
+
+	points.Push(csVector3((float)-1/2,(float)-1/3,0));
+	points.Push(csVector3((float)1/2,(float)1/3,0));
+//	points.Push(csVector3(0, (float)1 / 3, 0));
+	
 	//csRandomFloatGen rng;    //randomly generated float
 
 	/*
@@ -480,17 +470,5 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 	}
 	*/
 
-	/*
-	csArray< csRef<csTriangleMesh> > shardMeshList = frac.GetShards();
-
-	iTriangleMesh* shardTriMesh = shardMeshList[5];
-
-	csRef<iMeshWrapper> shard1;
-	shard1->GetMeshObject()->GetObjectModel()->SetTriangleData(baseID,shardTriMesh);
-
-
-	//csRef<iMeshWrapper> shardRenderMesh = GeneralMeshBuilder::CreateFactoryAndMesh(engine, room, "shardRenderMesh", "shardMeshFactory", shard1);
-
-	*/
 	
 }

@@ -34,7 +34,7 @@ using namespace CS::Collisions;	//for iConvexDecomposer plugin interface
 * csBaseEventHandler provides a base object which does absolutely nothing
 * with the events that are sent to it.
 */
-class Fracture : public csApplicationFramework, public csBaseEventHandler, public VoronoiFrac
+class Fracture : public csApplicationFramework, public csBaseEventHandler//, public VoronoiFrac
 {
 
 private:

@@ -16,21 +16,18 @@ VoronoiFrac::VoronoiFrac()
 VoronoiFrac::~VoronoiFrac()
 {}
 
-/*
-bool VoronoiFrac::Initializer()
+bool VoronoiFrac::Initialize(iObjectRegistry* registry)
 {
-	if (!csInitializer::RequestPlugins(GetObjectRegistry(),
+	if (!csInitializer::RequestPlugins(registry,
 		CS_REQUEST_PLUGIN("crystalspace.mesh.convexdecompose.hacd", iConvexDecomposer),
 		CS_REQUEST_END))
-		return ReportError("Failed to initialize plugins!");
-}
-bool VoronoiFrac::SetupHACD()
-{
-	CHull = csQueryRegistry<iConvexDecomposer>(GetObjectRegistry());
-	if (!CHull) return ReportError("Failed to locate HACD plugin!");
-}
-*/
+	  return false;//ReportError("Failed to initialize plugins!");
 
+	CHull = csQueryRegistry<iConvexDecomposer>(registry);
+	if (!CHull) return false;// ReportError("Failed to locate HACD plugin!");
+
+	return true;
+}
 
 struct pointCmp
 {
@@ -50,7 +47,6 @@ struct planeCmp
 		return (p1.Distance(currentVoronoiPoint) < p2.Distance(currentVoronoiPoint));
 	}
 }planeSorter;
-
 
 void VoronoiFrac::getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArray<csVector3> &verticesOut, std::set<int> &planeIndicesOut)
 {
@@ -182,7 +178,7 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 		planes.Push(csPlane3(csVector3(0, 1, 0), bboxMax.y));
 		planes.Push(csPlane3(csVector3(0, 0, 1), bboxMax.z));
 
-		maxDistance = INFINITE;
+		maxDistance = 2^32;//INFINITE;
 		//sort all vertices by their distance from the current seed point
 		sortedVoronoiPoints.Sort(pointSorter);
 
@@ -228,11 +224,7 @@ void VoronoiFrac::voronoiBBoxFrac(const csArray<csVector3> &points, const csVect
 			continue;	
 	
 		//This should produce convex shards for the bounding box
-		//csRef<iConvexDecomposer> CHull;
-
-//				csRef<csTriangleMesh> trimesh = CHull->ConvexHull(vertices);
-//				convexShards.Push(trimesh);
-		
-		
+		csRef<iTriangleMesh> trimesh = CHull->ConvexHull(vertices);
+		convexShards.Push(trimesh);
 	}
 }

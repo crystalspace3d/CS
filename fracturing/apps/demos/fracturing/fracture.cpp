@@ -448,6 +448,7 @@ void Fracture::PutRandomPoints(csBox3 box, int numOfPoints, csRef<iMeshWrapper> 
 
 	
 	VoronoiFrac* frac = new VoronoiFrac();
+	if (!frac->Initialize(object_reg)) ReportError("Failed to initialize the fracture tool!");
 
 	//error occurs when calling this function
 	frac->voronoiBBoxFrac(points,min,max,mesh);

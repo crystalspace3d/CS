@@ -4,22 +4,22 @@
 
 #include<crystalspace.h>
 #include<set>
-#include "cstool\csapplicationframework.h"
-#include "ivaria\convexdecompose.h"
+#include "cstool/csapplicationframework.h"
+#include "ivaria/convexdecompose.h"
 
 //Should this class inherit from standard Crystalspace classes or should it be standalone?
 
 class VoronoiFrac //: public csApplicationFramework, public csBaseEventHandler 
 {
+
 public:
 
-	VoronoiFrac();
+        VoronoiFrac();
 	~VoronoiFrac();
 
 	//Functions to set up HACD plugin for use within this class
 	
-//	bool Initializer();
-//	bool SetupHACD();
+	bool Initialize(iObjectRegistry* registry);
 	
 	void getVerticesInsidePlanes(const csArray<csPlane3> &planes, csArray<csVector3> &verticesOut, std::set<int> &planeIndicesOut);
 
@@ -27,9 +27,9 @@ public:
 
 	csArray<csVector3> potentialVertexList;
 
-//	csRef<iConvexDecomposer> CHull;
+	csRef<CS::Collisions::iConvexDecomposer> CHull;
 
-	csArray<csRef<csTriangleMesh> > convexShards;
+	csArray<csRef<iTriangleMesh> > convexShards;
 	
 };
 

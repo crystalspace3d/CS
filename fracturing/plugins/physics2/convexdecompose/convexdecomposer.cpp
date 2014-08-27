@@ -16,8 +16,6 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "crystalspace.h"
-
 #include "cssysdef.h"
 
 #include "convexdecomposer.h"
@@ -63,8 +61,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
     //-----------------------------------------------
 
     // Setup
-    std::vector< HACD::Vec3<HACD::Real> > hacdVerts;	//vector of HACD vertices
-    std::vector< HACD::Vec3<long> > hacdTris;			//vector of HACD triangles
+    std::vector< HACD::Vec3<HACD::Real> > hacdVerts;	// vector of HACD vertices
+    std::vector< HACD::Vec3<long> > hacdTris;		// vector of HACD triangles
 
     {
       // Copy Vertices
@@ -154,8 +152,8 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 
   
   //NEW CODE I'M ADDING
-  
-  csRef<csTriangleMesh> ConvexDecomposer::ConvexHull(csArray<csVector3> &vertices)
+
+  csPtr<iTriangleMesh> ConvexDecomposer::ConvexHull(csArray<csVector3> &vertices)
   {
 	//----------------------------------------------
 	//HACD
@@ -187,7 +185,7 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 	  HACD::TMMesh *computedHull = &convexHull.GetMesh();
 
 	  csRef<csTriangleMesh> triMesh;
-      triMesh.AttachNew (new csTriangleMesh);
+	  triMesh.AttachNew (new csTriangleMesh);
 	  
 	  int numCHullVertices = computedHull->GetNVertices();
 	  int numCHullTriangles = computedHull->GetNTriangles();
@@ -211,13 +209,13 @@ CS_PLUGIN_NAMESPACE_BEGIN (ConvexDecompose)
 		  count++;
 	  }
 
-	  /* There seems to be some bug in above loop. Some testing required. */
+	  // There seems to be some bug in above loop. Some testing required.
 	  
 	  //HACD::TMMVertex *vert = &vertList[3].GetData().m_pos;
 	  //HACD::Vec3<HACD::Real> *v = &vert->m_pos;
 
-	  return triMesh;
+	  return csPtr<iTriangleMesh> (triMesh);
   }
-  
+
 }
 CS_PLUGIN_NAMESPACE_END (ConvexDecompose)

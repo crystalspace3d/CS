@@ -1,0 +1,6 @@
+SubDir TOP apps demos fracturing ;
+
+Description fracturetest : "Crystal Space fracturetest demo" ;
+Application fracturetest : [ Wildcard *.cpp *.h ] ;
+LinkWith fracturetest : crystalspace ;
+FileListEntryApplications fracturetest : app-demo ;

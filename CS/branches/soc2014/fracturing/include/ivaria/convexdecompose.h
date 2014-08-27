@@ -43,7 +43,7 @@ struct iConvexDecomposer : public virtual iBase
   virtual void DecomposeMesh (iTriangleMesh* triMesh, csRefArray<iTriangleMesh>& result) const = 0;
   
   /// Finds the convex hull mesh for a given set of csVector3 points
-  virtual csRef<csTriangleMesh> ConvexHull(csArray<csVector3> &vertices);
+  virtual csPtr<iTriangleMesh> ConvexHull(csArray<csVector3> &vertices) = 0;
 };
 
 } // namespace Collisions

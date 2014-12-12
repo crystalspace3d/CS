@@ -24,6 +24,7 @@
 #include "imesh/genmesh.h"
 #include "iengine/engine.h"
 #include "iengine/mesh.h"
+#include "igeom/trimesh.h"
 
 namespace CS
 {
@@ -298,6 +299,45 @@ csPtr<iMeshWrapper> GeneralMeshBuilder::CreateFactoryAndMesh (
   mesh->SetZBufMode (CS_ZBUF_USE);
   mesh->SetRenderPriority (engine->GetObjectRenderPriority ());
   return csPtr<iMeshWrapper> (mesh);
+}
+
+csPtr<iMeshWrapper> GeneralMeshBuilder::CreateFactoryAndTriMesh(iEngine* engine, iSector* sector, const char* name,
+ const char* factoryname, iTriangleMesh* triangleMesh)
+{
+  // Create the mesh factory.
+  csRef<iMeshFactoryWrapper> meshFact =
+    engine->CreateMeshFactory ("crystalspace.mesh.object.genmesh",
+	"meshFact");
+
+  // Generate the mesh topology
+  csRef<iGeneralFactoryState> gmstate = scfQueryInterface<iGeneralFactoryState>
+    (meshFact->GetMeshObjectFactory ());
+
+  //set counts
+  int vertexCount = triangleMesh->GetVertexCount();
+  int triangleCount = triangleMesh->GetTriangleCount();
+  gmstate->SetVertexCount ((int)vertexCount);
+  gmstate->SetTriangleCount ((int)triangleCount);
+
+  //set vertices and triangles and copy them over to gmstate
+  csVector3 *vertices = triangleMesh->GetVertices();
+  csTriangle* triangles = triangleMesh->GetTriangles();
+  for (unsigned int i = 0; i < vertexCount; i++)
+    gmstate->GetVertices ()[i] = vertices[i];
+
+  for (unsigned int i = 0; i < triangleCount; i++)
+  {
+    gmstate->GetTriangles ()[i].a = triangles[i].a;
+    gmstate->GetTriangles ()[i].b = triangles[i].b;
+    gmstate->GetTriangles ()[i].c = triangles[i].c;
+  }
+
+  gmstate->CalculateNormals();
+
+  csRef<iMeshWrapper> mesh (engine->CreateMeshWrapper (meshFact, "mesh",sector));
+  //mesh->GetMeshObject ()->SetMaterialWrapper (material);
+
+  return mesh;
 }
 
 } // namespace Geometry

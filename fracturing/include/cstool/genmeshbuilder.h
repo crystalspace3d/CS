@@ -417,6 +417,11 @@ public:
   static csPtr<iMeshWrapper> CreateFactoryAndMesh (iEngine* engine,
       iSector* sector, const char* name, const char* factoryname,
       Primitive* primitive = 0);
+
+  //Add docs
+  static csPtr<iMeshWrapper> CreateFactoryAndTriMesh (iEngine* engine,
+      iSector* sector, const char* name, const char* factoryname,
+      iTriangleMesh* mesh);
 };
 } // namespace Geometry
 } // namespace CS
